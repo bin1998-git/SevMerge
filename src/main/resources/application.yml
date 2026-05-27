@@ -1,0 +1,23 @@
+spring:
+  profiles:
+    active: dev
+  config:
+    import: optional:file:.env[.properties]
+
+  mustache:
+    servlet:
+      expose-session-attributes: true
+      expose-request-attributes: true
+
+server:
+  port: 8080
+  servlet:
+    session:
+      tracking-modes: cookie
+    encoding:
+      charset: utf-8
+      force: true
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
