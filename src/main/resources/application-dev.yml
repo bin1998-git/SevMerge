@@ -1,0 +1,49 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sevmerge?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      data-locations:
+        - classpath:db/data.sql
+
+  mustache:
+    servlet:
+      expose-session-attributes: true
+      expose-request-attributes: true
+
+server:
+  port: 8080
+  servlet:
+    session:
+      tracking-modes: cookie
+    encoding:
+      charset: utf-8
+      force: true
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+logging:
+  level:
+    root: INFO
+    com.example.SevMerge: DEBUG
