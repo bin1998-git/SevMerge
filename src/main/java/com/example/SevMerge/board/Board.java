@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Table(name = "board_tb")
 @Entity
@@ -23,10 +22,13 @@ public class Board {
     private Integer id;
 
     @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Column(length = 50,nullable = false)
     private String title;
 
+    @Column(length = 1000,nullable = false)
     private String content;
 
     @CreationTimestamp

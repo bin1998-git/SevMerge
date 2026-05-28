@@ -1,12 +1,12 @@
 package com.example.SevMerge.board;
 
-import org.hibernate.type.descriptor.converter.spi.JpaAttributeConverter;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface BoardRepository extends JpaAttributeConverter<Board, Integer> {
+public interface BoardRepository extends JpaRepository<Board, Integer> {
 
     @Query("""
     SELECT b FROM Board b WHERE b.type = :type
