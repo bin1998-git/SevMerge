@@ -1,7 +1,8 @@
 package com.example.SevMerge.core.interceptor;
 
-import com.example.SevMerge.core.exception.CustomException;
-import com.example.SevMerge.core.exception.ErrorCode;
+import com.example.SevMerge.core.exception.ForbiddenException;
+import com.example.SevMerge.core.exception.UnauthorizedException;
+import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -14,15 +15,13 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
-
         if (session == null || session.getAttribute("sessionUser") == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
-
-        // 세션에서 유저 꺼내서 ADMIN 권한 확인
-        Object sessionUser = session.getAttribute("sessionUser");
-        // 추후 Member 엔티티 완성 후 role 체크 로직 추가 예정
-
+        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (!sessionUser.isAdmin()) {
+            throw new ForbiddenException("관리자 권한이 필요합니다.");
+        }
         return true;
     }
 }
