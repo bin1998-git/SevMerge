@@ -37,7 +37,7 @@
 | Backend | Spring Boot, Spring Security, JPA |
 | Frontend | Mustache |
 | Database | MySQL |
-| 인증 | OAuth2 (카카오 · 구글) |
+| 인증 | Session 기반 로그인, OAuth2 (카카오 · 구글) |
 | 결제 | 카카오페이 / 포트원(PortOne) |
 | 협업 | Git Flow, GitHub |
 
@@ -100,11 +100,11 @@ src/main/java/com/project/
 │   ├── review/        # Review, avgRating 집계
 │   └── board/         # Board, Comment
 ├── global/
-│   ├── config/        # SecurityConfig, JwtConfig, WebMvcConfig
+│   ├── config/        # WebMvcConfig
 │   ├── exception/     # GlobalExceptionHandler, CustomException, ErrorCode
-│   └── util/          # JwtUtil, FileUploadUtil
+│   └── util/          # ApiResponse, FileUploadUtil
 └── resources/
-    └── templates/     # Mustache 템플릿
+└── templates/     # Mustache 템플릿
 ```
 
 ---
