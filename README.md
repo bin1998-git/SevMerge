@@ -421,9 +421,9 @@ CREATE TABLE subscription (
 | 이름 | 역할 | 담당 기능 |
 |------|------|-----------|
 | 팀장 | 팀장 / Backend | 인증(세션+OAuth2), Spring Security, 카카오맵 연동, 발자취 기록, 배포 |
-| 팀원A | Frontend / Backend | 메인 UI/UX, 추천 맛집·여행지·야경지 CRUD, 반응형 레이아웃 |
-| 팀원B | Backend | 커뮤니티·게시판 CRUD, 사진 업로드, 네이버 OCR(영수증 스캔) 연동 |
-| 팀원C | Backend / 결제 | WebSocket(채팅·알림), 카카오페이/포트원 결제, 관리자 페이지 |
+| 팀원A, 팀원D | Frontend / Backend | 메인 UI/UX, 추천 맛집·여행지·야경지 CRUD, 반응형 레이아웃 |
+| 팀원B, 팀원 E | Backend | 커뮤니티·게시판 CRUD, 사진 업로드, 네이버 OCR(영수증 스캔) 연동 |
+| 팀원C, 팀원 F | Backend / 결제 | WebSocket(채팅·알림), 카카오페이/포트원 결제, 관리자 페이지 |
 
 ---
 
