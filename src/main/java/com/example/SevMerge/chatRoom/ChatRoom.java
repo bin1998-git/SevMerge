@@ -1,6 +1,8 @@
 package com.example.SevMerge.chatRoom;
 
+import com.example.SevMerge.comment.Comment;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,10 @@ public class ChatRoom {
 
     @CreationTimestamp
     private Timestamp createAt;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id",nullable = false)
+    private Comment comment;
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.SevMerge.board;
 
 
+import com.example.SevMerge.comment.Comment;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Table(name = "board_tb")
 @Entity
@@ -19,7 +21,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -40,6 +42,10 @@ public class Board {
     private Integer viewCount;
 
     // TODO Comment 테이블
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id",nullable = false)
+    private List<Comment> comment;
 
     @Builder
     public Board(Member member, String title, String content, Timestamp createdAt, Integer viewCount,Type type) {
