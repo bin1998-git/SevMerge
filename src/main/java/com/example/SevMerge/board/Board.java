@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -18,14 +19,20 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String content;
-    private Integer viewCount;
+    @ColumnDefault("0")
+    private Integer viewCount = 0;
     @CreationTimestamp
     private Timestamp createdAt;
+
+    @ColumnDefault("true")
+    private Boolean isActive;
 
     // todo - 추후 Member Class추가
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +41,7 @@ public class Board {
 
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JoinColumn(name="comment_id")
-    // todo - 추구 Comment Class 추가
+    // todo - 추후 Comment Class 추가
     //private Comment comment;
 
     @Builder

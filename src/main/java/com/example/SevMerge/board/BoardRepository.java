@@ -13,7 +13,7 @@ public interface BoardRepository extends JpaRepository<Board,Integer> {
     @Query("""
     SELECT b FROM Board b WHERE b.boardType = :boardType
     """)
-    public List<Board> 게시판전체조회(@Param("boardType") BoardType type);
+    public List<Board> findAllByBoardType(@Param("boardType") BoardType type);
 
 
 }
