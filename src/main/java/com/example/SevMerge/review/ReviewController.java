@@ -28,18 +28,25 @@ public class ReviewController {
     @PostMapping("review/save")
     public String reviewSaveProc(ReviewRequest.SaveReviewDTO reviewDTO, Model model, HttpSession session) {
 
-        Member member = (Member) session.getAttribute("member"); // 누가 쓸건지 특정
+        Member member = (Member) session.getAttribute("sessionMember"); // 누가 쓸건지 특정
 
         Review review = reviewService.save(reviewDTO);
         // 작성한 리뷰 뿌리기
         model.addAttribute("review",review);
 
         // 반환후 리뷰 리스트로 이동
+
         // 리뷰 등록·삭제 시마다 avgRating
         return "redirect:/review/list";
     }
 
-    // 리뷰
+
+    // 리뷰조회 해당전문가 누적 별점 , 리뷰목록 공개
+
+
+
+
+    //별점 집계및 뱃지갱신
 
 
 }

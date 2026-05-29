@@ -19,10 +19,9 @@ public class ReviewRequest {
         private ExpertProfile expert;
 
         @Builder
-        public SaveReviewDTO(Member member,ExpertProfile expert,Integer countStar, Double totalStar, String content) {
+        public SaveReviewDTO(Member member,ExpertProfile expert,Integer countStar, String content) {
             this.member = member;
             this.countStar = countStar;
-            this.totalStar = totalStar;
             this.content = content;
             this.expert = expert;
         }

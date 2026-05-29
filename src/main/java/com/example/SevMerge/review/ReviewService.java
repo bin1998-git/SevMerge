@@ -13,6 +13,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
+    // 리뷰작성
     @Transactional
     public Review save(ReviewRequest.SaveReviewDTO reviewDTO) {
 
@@ -25,16 +26,15 @@ public class ReviewService {
         Review newReview = Review.builder()
                 .member(reviewDTO.getMember())
                 .content(reviewDTO.getContent())
-                .totalStar(reviewDTO.getTotalStar())
                 .countStar(reviewDTO.getCountStar())
                 .build();
 
 
-
-
-        // save 레파지토리
-
         return reviewRepository.save(newReview);
 
     }
+
+    // 리뷰조회
+
+
 }
