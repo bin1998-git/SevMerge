@@ -43,5 +43,4 @@ public class ChatMessage {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
-
 }

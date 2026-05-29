@@ -35,9 +35,9 @@ public class Comment {
     private Timestamp createdAt;
 
     @Builder
-    public Comment(Board boardId, Member memberId, String content) {
-        this.board = boardId;
-        this.member = memberId;
+    public Comment(Board board, Member member, String content) {
+        this.board = board;
+        this.member = member;
         this.content = content;
     }
 

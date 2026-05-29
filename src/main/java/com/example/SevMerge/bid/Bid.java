@@ -49,13 +49,9 @@ public class Bid {
     @Column(nullable = false)
     private Timestamp createdAt;
 
-
     // DB에 저장되기 직전에 자동으로 실행되는 메서드
     @PrePersist
     public void prePersist() {
         if (this.status == null) this.status = BidStatus.PENDING;
     }
-
-
-
 }
