@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-
+// member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, created_at
 @Entity
 @Table(name = "project_tb")
 @Data
@@ -28,7 +28,7 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
 
@@ -44,11 +44,11 @@ public class Project {
     @Column(nullable = false)
     private Timestamp deadline; // 마감일
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BidFilter bidFilter; // 어떤 전문가 제안서를 받을지 설정
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProjectStatus projectStatus;
 
