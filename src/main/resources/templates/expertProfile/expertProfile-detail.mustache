@@ -1,0 +1,130 @@
+{{> layout/header}}
+
+<style>
+    .detail-section { padding: 52px 28px 80px; }
+    .detail-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 40px; align-items: start; }
+    /* 프로필 헤더 */
+    .profile-header { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 32px; margin-bottom: 20px; }
+    .profile-top { display: flex; gap: 20px; align-items: center; margin-bottom: 20px; }
+    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
+    .profile-info { flex: 1; }
+    .profile-name { font-size: 22px; font-weight: 900; color: #1c1e26; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .cert-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+    .profile-career { font-size: 14px; color: #6b7280; font-weight: 600; margin-bottom: 8px; }
+    .profile-stars { color: #f59e0b; font-size: 15px; }
+    .profile-stars span { color: #9ca3af; font-size: 13px; font-weight: 500; }
+    .profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #f3f4f8; border-radius: 12px; overflow: hidden; }
+    .profile-stat { background: #f8f9fc; padding: 16px; text-align: center; }
+    .profile-stat-val { font-size: 22px; font-weight: 900; color: #2563eb; margin-bottom: 4px; }
+    .profile-stat-lbl { font-size: 11px; color: #9ca3af; }
+    /* 소개 */
+    .section-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+    .section-card-title { font-size: 15px; font-weight: 800; color: #1c1e26; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #f3f4f8; }
+    .introduce-text { font-size: 14px; color: #374151; line-height: 1.9; white-space: pre-wrap; }
+    .skills-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+    .skill-tag { padding: 6px 14px; background: #f8f9fc; border: 1px solid #e2e5ef; border-radius: 20px; font-size: 13px; font-weight: 600; color: #374151; }
+    .portfolio-link { display: inline-flex; align-items: center; gap: 6px; color: #2563eb; font-size: 14px; font-weight: 600; text-decoration: none; }
+    .portfolio-link:hover { text-decoration: underline; }
+    /* 사이드 카드 */
+    .side-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; position: sticky; top: 80px; }
+    .side-card-title { font-size: 14px; font-weight: 800; color: #1c1e26; margin-bottom: 18px; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f8f9fc; font-size: 13px; }
+    .info-row:last-of-type { border-bottom: none; }
+    .info-label { color: #9ca3af; }
+    .info-value { color: #1c1e26; font-weight: 700; }
+    .chat-btn { display: block; width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px; text-align: center; text-decoration: none; }
+    .chat-btn:hover { background: #1d4ed8; }
+    /* 리뷰 */
+    .review-list { display: flex; flex-direction: column; gap: 14px; }
+    .review-item { padding: 16px; background: #f8f9fc; border-radius: 10px; }
+    .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .review-author { font-size: 13px; font-weight: 700; color: #1c1e26; }
+    .review-stars { color: #f59e0b; font-size: 13px; }
+    .review-content { font-size: 13px; color: #6b7280; line-height: 1.7; }
+    .review-date { font-size: 11px; color: #c4c9d9; margin-top: 6px; }
+    .empty-review { text-align: center; padding: 30px 0; font-size: 14px; color: #c4c9d9; }
+</style>
+
+<section class="detail-section">
+    <div class="detail-inner">
+
+        <div>
+            <!-- 프로필 헤더 -->
+            <div class="profile-header">
+                <div class="profile-top">
+                    <div class="profile-avatar">👨‍💻</div>
+                    <div class="profile-info">
+                        <div class="profile-name">
+                            {{expertProfile.member.name}}
+                            {{#expertProfile.member.isCertified}}<span class="cert-badge">⭐ 인증 전문가</span>{{/expertProfile.member.isCertified}}
+                        </div>
+                        <div class="profile-career">{{expertProfile.career}} · 경력 {{expertProfile.experienceYears}}년</div>
+                        <div class="profile-stars">★★★★★ <span>{{expertProfile.avgRating}} ({{expertProfile.reviewCount}}개 리뷰)</span></div>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat"><div class="profile-stat-val">{{expertProfile.completedCount}}</div><div class="profile-stat-lbl">완료 프로젝트</div></div>
+                    <div class="profile-stat"><div class="profile-stat-val">{{expertProfile.avgRating}}</div><div class="profile-stat-lbl">평균 평점</div></div>
+                    <div class="profile-stat"><div class="profile-stat-val">{{expertProfile.reviewCount}}</div><div class="profile-stat-lbl">리뷰 수</div></div>
+                </div>
+            </div>
+
+            <!-- 자기소개 -->
+            <div class="section-card">
+                <div class="section-card-title">자기소개</div>
+                <div class="introduce-text">{{expertProfile.introduce}}</div>
+            </div>
+
+            <!-- 기술 스택 -->
+            <div class="section-card">
+                <div class="section-card-title">기술 스택</div>
+                <div class="skills-wrap">
+                    {{#expertProfile.skillList}}
+                    <span class="skill-tag">{{.}}</span>
+                    {{/expertProfile.skillList}}
+                </div>
+            </div>
+
+            <!-- 포트폴리오 -->
+            {{#expertProfile.portfolioUrl}}
+            <div class="section-card">
+                <div class="section-card-title">포트폴리오</div>
+                <a href="{{expertProfile.portfolioUrl}}" target="_blank" class="portfolio-link">🔗 {{expertProfile.portfolioUrl}}</a>
+            </div>
+            {{/expertProfile.portfolioUrl}}
+
+            <!-- 리뷰 -->
+            <div class="section-card">
+                <div class="section-card-title">리뷰 ({{expertProfile.reviewCount}})</div>
+                <div class="review-list">
+                    {{#reviews}}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-author">{{member.name}}</span>
+                            <span class="review-stars">★★★★★</span>
+                        </div>
+                        <div class="review-content">{{content}}</div>
+                        <div class="review-date">{{createdAt}}</div>
+                    </div>
+                    {{/reviews}}
+                    {{^reviews}}<div class="empty-review">아직 리뷰가 없습니다.</div>{{/reviews}}
+                </div>
+            </div>
+        </div>
+
+        <!-- 사이드 카드 -->
+        <div class="side-card">
+            <div class="side-card-title">전문가 정보</div>
+            <div class="info-row"><span class="info-label">직종</span><span class="info-value">{{expertProfile.career}}</span></div>
+            <div class="info-row"><span class="info-label">경력</span><span class="info-value">{{expertProfile.experienceYears}}년</span></div>
+            <div class="info-row"><span class="info-label">완료 프로젝트</span><span class="info-value">{{expertProfile.completedCount}}건</span></div>
+            <div class="info-row"><span class="info-label">평균 평점</span><span class="info-value">{{expertProfile.avgRating}} / 5.0</span></div>
+            {{^isOwner}}
+            <a href="/chat?memberId={{expertProfile.member.id}}" class="chat-btn">💬 채팅하기</a>
+            {{/isOwner}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

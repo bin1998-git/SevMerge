@@ -21,11 +21,11 @@ public class ExpertProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 500)
     private String profileImage;
 
     @Column(nullable = true, columnDefinition = "TEXT")
