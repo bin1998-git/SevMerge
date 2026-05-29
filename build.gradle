@@ -18,6 +18,10 @@ repositories {
 }
 
 dependencies {
+    // 웹 소캣 통신 라이브러리
+    // Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
