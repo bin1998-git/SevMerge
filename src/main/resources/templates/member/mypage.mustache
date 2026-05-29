@@ -1,0 +1,179 @@
+{{> layout/header}}
+
+<style>
+    .mypage-section { padding: 52px 28px 80px; }
+    .mypage-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 260px 1fr; gap: 32px; align-items: start; }
+    /* 프로필 카드 */
+    .profile-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 28px; text-align: center; position: sticky; top: 80px; }
+    .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 16px; }
+    .profile-name { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 4px; }
+    .profile-email { font-size: 13px; color: #9ca3af; margin-bottom: 14px; }
+    .profile-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; margin-bottom: 20px; }
+    .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .profile-stat { background: #f8f9fc; border-radius: 10px; padding: 12px; }
+    .profile-stat-val { font-size: 20px; font-weight: 900; color: #2563eb; }
+    .profile-stat-lbl { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+    .profile-btns { display: flex; flex-direction: column; gap: 8px; }
+    .profile-btn { padding: 11px; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; text-decoration: none; display: block; text-align: center; }
+    .profile-btn-primary { background: #2563eb; color: #fff; }
+    .profile-btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .profile-btn-danger { background: #fff3f3; color: #ef4444; border: 1.5px solid #fecaca; }
+    /* 탭 콘텐츠 */
+    .mypage-tabs { display: flex; gap: 0; border-bottom: 2px solid #eaecf4; margin-bottom: 24px; }
+    .mypage-tab { padding: 11px 20px; font-size: 14px; font-weight: 700; color: #9ca3af; border-bottom: 3px solid transparent; margin-bottom: -2px; text-decoration: none; transition: all .15s; }
+    .mypage-tab:hover { color: #1c1e26; }
+    .mypage-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+    /* 프로젝트 목록 */
+    .my-list { display: flex; flex-direction: column; gap: 12px; }
+    .my-item { background: #fff; border: 1.5px solid #eaecf4; border-radius: 12px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; transition: border-color .15s; }
+    .my-item:hover { border-color: #bfdbfe; }
+    .my-item-body { flex: 1; }
+    .my-item-cat { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 9px; border-radius: 5px; display: inline-block; margin-bottom: 6px; }
+    .my-item-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 4px; }
+    .my-item-meta { font-size: 12px; color: #9ca3af; }
+    .my-item-right { text-align: right; flex-shrink: 0; margin-left: 16px; }
+    .my-item-price { font-size: 15px; font-weight: 900; color: #1c1e26; }
+    .my-item-status { font-size: 11px; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-open { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .status-closed { background: #f3f4f8; color: #9ca3af; }
+    .status-wait { background: #f3f4f8; color: #9ca3af; }
+    .status-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .empty-state { text-align: center; padding: 60px 0; font-size: 15px; color: #c4c9d9; }
+    /* 정보 수정 폼 */
+    .edit-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 18px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-input { padding: 12px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input:focus { border-color: #2563eb; background: #fff; }
+    .form-btns { display: flex; justify-content: flex-end; gap: 10px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+</style>
+
+<section class="mypage-section">
+    <div class="mypage-inner">
+
+        <!-- 프로필 카드 -->
+        <div class="profile-card">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-name">{{member.name}}</div>
+            <div class="profile-email">{{member.email}}</div>
+            {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-val">{{member.projectCount}}</div>
+                    <div class="profile-stat-lbl">프로젝트</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-val">{{member.bidCount}}</div>
+                    <div class="profile-stat-lbl">제안서</div>
+                </div>
+            </div>
+            <div class="profile-btns">
+                {{^member.isCertified}}
+                <a href="/expert-profile/form" class="profile-btn profile-btn-primary">⭐ 인증 전문가 신청</a>
+                {{/member.isCertified}}
+                <a href="/logout" class="profile-btn profile-btn-danger">로그아웃</a>
+            </div>
+        </div>
+
+        <!-- 탭 콘텐츠 -->
+        <div>
+            <div class="mypage-tabs">
+                <a href="/mypage?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>
+                <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
+                <a href="/mypage?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
+                <a href="/mypage?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
+            </div>
+
+            {{! 내 프로젝트 }}
+            {{#isProjects}}
+            <div class="my-list">
+                {{#projects}}
+                <a href="/projects/{{id}}" class="my-item">
+                    <div class="my-item-body">
+                        <span class="my-item-cat">{{categoryName}}</span>
+                        <div class="my-item-title">{{title}}</div>
+                        <div class="my-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
+                    </div>
+                    <div class="my-item-right">
+                        <div class="my-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
+                        <span class="my-item-status {{#isOpen}}status-open{{/isOpen}}{{^isOpen}}status-closed{{/isOpen}}">
+                            {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
+                        </span>
+                    </div>
+                </a>
+                {{/projects}}
+                {{^projects}}<div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
+            </div>
+            {{/isProjects}}
+
+            {{! 내 제안서 }}
+            {{#isBids}}
+            <div class="my-list">
+                {{#bids}}
+                <a href="/projects/{{project.id}}" class="my-item">
+                    <div class="my-item-body">
+                        <span class="my-item-cat">{{project.categoryName}}</span>
+                        <div class="my-item-title">{{project.title}}</div>
+                        <div class="my-item-meta">제안일 {{createdAt}}</div>
+                    </div>
+                    <div class="my-item-right">
+                        <div class="my-item-price">{{price}}만원</div>
+                        <span class="my-item-status {{#isSelected}}status-done{{/isSelected}}{{^isSelected}}status-wait{{/isSelected}}">
+                            {{#isSelected}}낙찰{{/isSelected}}{{^isSelected}}대기중{{/isSelected}}
+                        </span>
+                    </div>
+                </a>
+                {{/bids}}
+                {{^bids}}<div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
+            </div>
+            {{/isBids}}
+
+            {{! 내 게시글 }}
+            {{#isBoards}}
+            <div class="my-list">
+                {{#boards}}
+                <a href="/boards/{{id}}" class="my-item">
+                    <div class="my-item-body">
+                        <span class="my-item-cat">{{boardTypeName}}</span>
+                        <div class="my-item-title">{{title}}</div>
+                        <div class="my-item-meta">{{createdAt}} · 조회 {{viewCount}}</div>
+                    </div>
+                </a>
+                {{/boards}}
+                {{^boards}}<div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
+            </div>
+            {{/isBoards}}
+
+            {{! 정보 수정 }}
+            {{#isEdit}}
+            <form class="edit-form" action="/mypage/update" method="POST">
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    <input type="text" name="name" class="form-input" value="{{member.name}}" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" name="email" class="form-input" value="{{member.email}}" disabled />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호</label>
+                    <input type="password" name="newPassword" class="form-input" placeholder="변경할 경우만 입력" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호 확인</label>
+                    <input type="password" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력" />
+                </div>
+                <div class="form-btns">
+                    <button type="submit" class="btn btn-primary">수정완료</button>
+                </div>
+            </form>
+            {{/isEdit}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

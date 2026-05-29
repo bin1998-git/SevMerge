@@ -1,0 +1,110 @@
+{{> layout/header}}
+
+<style>
+    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .page-desc { font-size: 14px; color: #9ca3af; }
+    .list-section { padding: 36px 28px 80px; }
+    .list-inner { max-width: 1140px; margin: 0 auto; }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
+    .tab:hover { border-color: #2563eb; color: #2563eb; }
+    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .search-bar { display: flex; gap: 10px; margin-bottom: 24px; }
+    .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
+    .search-input:focus { border-color: #2563eb; outline: none; }
+    .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .expert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
+    .expert-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; text-decoration: none; color: inherit; display: block; transition: border-color .2s, transform .15s; }
+    .expert-card:hover { border-color: #bfdbfe; transform: translateY(-3px); }
+    .expert-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .expert-avatar { width: 52px; height: 52px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .expert-info { flex: 1; }
+    .expert-name { font-size: 15px; font-weight: 800; color: #1c1e26; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+    .cert-badge { font-size: 10px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 5px; font-weight: 700; }
+    .expert-career { font-size: 12px; color: #9ca3af; font-weight: 600; }
+    .expert-stars { color: #f59e0b; font-size: 13px; }
+    .expert-stars span { color: #9ca3af; font-size: 11px; font-weight: 500; }
+    .expert-introduce { font-size: 13px; color: #6b7280; line-height: 1.7; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .expert-skills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .skill-tag { padding: 4px 10px; background: #f8f9fc; border: 1px solid #e2e5ef; border-radius: 20px; font-size: 11px; font-weight: 600; color: #374151; }
+    .expert-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f8; padding-top: 14px; font-size: 12px; color: #9ca3af; }
+    .expert-stat { display: flex; align-items: center; gap: 4px; font-weight: 600; }
+    .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #c4c9d9; }
+    .paging { display: flex; justify-content: center; gap: 6px; }
+    .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
+    .page-btn:hover { border-color: #2563eb; color: #2563eb; }
+    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+</style>
+
+<div class="page-header">
+    <div class="page-header-inner">
+        <h1 class="page-title">전문가 찾기</h1>
+        <p class="page-desc">검증된 IT 전문가들을 만나보세요.</p>
+    </div>
+</div>
+
+<section class="list-section">
+    <div class="list-inner">
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="이름, 직종, 기술 스택으로 검색..." value="{{keyword}}" />
+            <button class="search-btn">검색</button>
+        </div>
+
+        <div class="filter-row">
+            <a href="/experts" class="tab {{#isAll}}active{{/isAll}}">전체</a>
+            <a href="/experts?career=풀스택" class="tab {{#isFullstack}}active{{/isFullstack}}">풀스택</a>
+            <a href="/experts?career=백엔드" class="tab {{#isBackend}}active{{/isBackend}}">백엔드</a>
+            <a href="/experts?career=프론트엔드" class="tab {{#isFrontend}}active{{/isFrontend}}">프론트엔드</a>
+            <a href="/experts?career=앱개발" class="tab {{#isApp}}active{{/isApp}}">앱개발</a>
+            <a href="/experts?career=UI/UX" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</a>
+            <a href="/experts?certified=true" class="tab" style="border-color:#fde68a; color:#b45309;">⭐ 인증 전문가만</a>
+        </div>
+
+        {{#expertProfiles}}
+        <div class="expert-grid">
+            {{#list}}
+            <a href="/experts/{{id}}" class="expert-card">
+                <div class="expert-top">
+                    <div class="expert-avatar">👨‍💻</div>
+                    <div class="expert-info">
+                        <div class="expert-name">
+                            {{member.name}}
+                            {{#member.isCertified}}<span class="cert-badge">⭐</span>{{/member.isCertified}}
+                        </div>
+                        <div class="expert-career">{{career}} · {{experienceYears}}년</div>
+                        <div class="expert-stars">★★★★★ <span>{{avgRating}} ({{reviewCount}})</span></div>
+                    </div>
+                </div>
+                <div class="expert-introduce">{{introduce}}</div>
+                <div class="expert-skills">
+                    {{#skillList}}
+                    <span class="skill-tag">{{.}}</span>
+                    {{/skillList}}
+                </div>
+                <div class="expert-bottom">
+                    <span class="expert-stat">완료 {{completedCount}}건</span>
+                </div>
+            </a>
+            {{/list}}
+        </div>
+        {{/expertProfiles}}
+
+        {{^expertProfiles}}
+        <div class="empty-state">검색 결과가 없습니다.</div>
+        {{/expertProfiles}}
+
+        <div class="paging">
+            {{#paging}}
+            {{#hasPrev}}<a href="/experts?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
+            {{#pageList}}<a href="/experts?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
+            {{#hasNext}}<a href="/experts?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
+            {{/paging}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

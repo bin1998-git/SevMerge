@@ -1,0 +1,109 @@
+{{> layout/header}}
+
+<style>
+    .detail-section { padding: 52px 28px 80px; }
+    .detail-inner { max-width: 900px; margin: 0 auto; }
+    .detail-nav { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9ca3af; margin-bottom: 32px; }
+    .detail-nav a { color: #9ca3af; text-decoration: none; }
+    .detail-nav a:hover { color: #2563eb; }
+    .detail-header { padding-bottom: 24px; border-bottom: 1.5px solid #eaecf4; margin-bottom: 28px; }
+    .detail-category { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 14px; }
+    .badge-certified { font-size: 10px; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 9px; border-radius: 6px; margin-left: 6px; }
+    .detail-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; line-height: 1.35; margin-bottom: 16px; }
+    .detail-meta { display: flex; align-items: center; gap: 20px; font-size: 13px; color: #9ca3af; flex-wrap: wrap; }
+    .detail-meta .author { color: #374151; font-weight: 700; }
+    .detail-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #d1d5db; }
+    .detail-actions { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 28px; }
+    .detail-body { display: grid; grid-template-columns: 1fr 280px; gap: 40px; align-items: start; }
+    .detail-content { font-size: 15px; color: #374151; line-height: 1.9; white-space: pre-wrap; margin-bottom: 32px; }
+    .detail-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid #eaecf4; }
+    /* 사이드 정보 카드 */
+    .info-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; position: sticky; top: 80px; }
+    .info-card-title { font-size: 14px; font-weight: 900; color: #1c1e26; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #f3f4f8; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f8f9fc; font-size: 13px; }
+    .info-row:last-of-type { border-bottom: none; }
+    .info-label { color: #9ca3af; font-weight: 500; }
+    .info-value { color: #1c1e26; font-weight: 700; }
+    .info-value.highlight { color: #2563eb; font-size: 16px; }
+    .info-value.urgent { color: #ef4444; }
+    .bid-btn { display: block; width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 20px; text-align: center; text-decoration: none; }
+    .bid-btn:hover { background: #1d4ed8; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-outline:hover { border-color: #2563eb; color: #2563eb; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 7px; }
+    .btn-danger { background: #fff3f3; color: #ef4444; border: 1.5px solid #fecaca; }
+</style>
+
+<section class="detail-section">
+    <div class="detail-inner">
+
+        <div class="detail-nav">
+            <a href="/projects">프로젝트</a>
+            <span>›</span>
+            <span>{{project.title}}</span>
+        </div>
+
+        <div class="detail-header">
+            <div>
+                <span class="detail-category">{{project.categoryName}}</span>
+                {{#project.isCertifiedOnly}}<span class="badge-certified">⭐ 인증 전문가만</span>{{/project.isCertifiedOnly}}
+            </div>
+            <h1 class="detail-title">{{project.title}}</h1>
+            <div class="detail-meta">
+                <span class="author">{{project.member.name}}</span>
+                <div class="detail-meta-dot"></div>
+                <span>{{project.createdAt}}</span>
+                <div class="detail-meta-dot"></div>
+                <span>조회 {{project.viewCount}}</span>
+            </div>
+        </div>
+
+        {{#isOwner}}
+        <div class="detail-actions">
+            <a href="/projects/{{project.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+            <form action="/projects/{{project.id}}/delete" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+            </form>
+        </div>
+        {{/isOwner}}
+
+        <div class="detail-body">
+            <div>
+                <div class="detail-content">{{project.content}}</div>
+                <div class="detail-footer">
+                    <a href="/projects" class="btn btn-outline">← 목록으로</a>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-title">프로젝트 정보</div>
+                <div class="info-row">
+                    <span class="info-label">예산</span>
+                    <span class="info-value highlight">{{project.budgetMin}}~{{project.budgetMax}}만원</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">마감</span>
+                    <span class="info-value urgent">D-{{project.dDay}}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">카테고리</span>
+                    <span class="info-value">{{project.categoryName}}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">입찰 수</span>
+                    <span class="info-value">{{project.bidCount}}개</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">인증 전문가</span>
+                    <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
+                </div>
+                {{^isOwner}}
+                <a href="/bids/save?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
+                {{/isOwner}}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}
