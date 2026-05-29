@@ -1,0 +1,133 @@
+{{> layout/header}}
+
+<style>
+    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
+    /* 사이드바 */
+    .admin-sidebar { width: 220px; background: #fff; border-right: 1px solid #eaecf4; padding: 28px 0; flex-shrink: 0; position: sticky; top: 64px; height: calc(100vh - 64px); }
+    .sidebar-label { font-size: 11px; font-weight: 700; color: #c4c9d9; letter-spacing: 1.5px; text-transform: uppercase; padding: 0 20px; margin-bottom: 8px; margin-top: 20px; }
+    .sidebar-label:first-child { margin-top: 0; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .12s; border-left: 3px solid transparent; }
+    .sidebar-link:hover { color: #2563eb; background: #f8f9ff; }
+    .sidebar-link.active { color: #2563eb; background: #eff6ff; border-left-color: #2563eb; }
+    .sidebar-icon { font-size: 16px; }
+    /* 어드민 본문 */
+    .admin-content { flex: 1; padding: 36px 36px 80px; background: #f5f6fa; }
+    .admin-header { margin-bottom: 28px; }
+    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .admin-desc { font-size: 14px; color: #9ca3af; }
+    /* 통계 카드 */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: #fff; border-radius: 14px; border: 1.5px solid #eaecf4; padding: 22px 20px; }
+    .stat-card-label { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+    .stat-card-val { font-size: 30px; font-weight: 900; color: #1c1e26; letter-spacing: -1px; margin-bottom: 6px; }
+    .stat-card-sub { font-size: 12px; color: #9ca3af; }
+    .stat-card-sub .up { color: #059669; font-weight: 700; }
+    .stat-card-sub .down { color: #ef4444; font-weight: 700; }
+    /* 테이블 공통 */
+    .admin-table-wrap { background: #fff; border-radius: 14px; border: 1.5px solid #eaecf4; overflow: hidden; margin-bottom: 24px; }
+    .admin-table-header { padding: 18px 22px; border-bottom: 1px solid #eaecf4; display: flex; justify-content: space-between; align-items: center; }
+    .admin-table-title { font-size: 15px; font-weight: 800; color: #1c1e26; }
+    .admin-table-link { font-size: 13px; color: #2563eb; font-weight: 600; text-decoration: none; }
+    .admin-table { width: 100%; }
+    .admin-table-head { display: grid; padding: 11px 22px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: .5px; }
+    .admin-table-row { display: grid; padding: 14px 22px; border-bottom: 1px solid #f3f4f8; align-items: center; font-size: 13px; }
+    .admin-table-row:last-child { border-bottom: none; }
+    .admin-table-row:hover { background: #f8f9ff; }
+    .col-member { grid-template-columns: 40px 1fr 120px 100px 80px; gap: 12px; }
+    .col-project { grid-template-columns: 40px 1fr 100px 100px 80px; gap: 12px; }
+    .cell-id { color: #c4c9d9; font-weight: 500; }
+    .cell-name { font-weight: 600; color: #1c1e26; }
+    .cell-email { color: #9ca3af; }
+    .cell-date { color: #c4c9d9; }
+    .status-active { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-wait { font-size: 11px; background: #f3f4f8; color: #9ca3af; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+</style>
+
+<div class="admin-wrap">
+
+    <!-- 사이드바 -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-label">관리자</div>
+        <a href="/admin" class="sidebar-link active"><span class="sidebar-icon">📊</span> 대시보드</a>
+        <div class="sidebar-label">관리</div>
+        <a href="/admin/members" class="sidebar-link"><span class="sidebar-icon">👥</span> 회원 관리</a>
+        <a href="/admin/projects" class="sidebar-link"><span class="sidebar-icon">📋</span> 프로젝트 관리</a>
+        <a href="/admin/experts" class="sidebar-link"><span class="sidebar-icon">⭐</span> 전문가 승인</a>
+    </aside>
+
+    <!-- 본문 -->
+    <main class="admin-content">
+
+        <div class="admin-header">
+            <h1 class="admin-title">관리자 대시보드</h1>
+            <p class="admin-desc">SevMerge 플랫폼 현황을 한눈에 확인하세요.</p>
+        </div>
+
+        <!-- 통계 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-label">전체 회원</div>
+                <div class="stat-card-val">{{stats.memberCount}}</div>
+                <div class="stat-card-sub">이번 달 <span class="up">+{{stats.newMemberCount}}</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">전체 프로젝트</div>
+                <div class="stat-card-val">{{stats.projectCount}}</div>
+                <div class="stat-card-sub">진행 중 {{stats.activeProjectCount}}개</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">완료 프로젝트</div>
+                <div class="stat-card-val">{{stats.completedCount}}</div>
+                <div class="stat-card-sub">이번 달 <span class="up">+{{stats.newCompletedCount}}</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">승인 대기 전문가</div>
+                <div class="stat-card-val">{{stats.pendingExpertCount}}</div>
+                <div class="stat-card-sub"><a href="/admin/experts" style="color:#2563eb; font-weight:700;">승인하러 가기 →</a></div>
+            </div>
+        </div>
+
+        <!-- 최근 가입 회원 -->
+        <div class="admin-table-wrap">
+            <div class="admin-table-header">
+                <span class="admin-table-title">최근 가입 회원</span>
+                <a href="/admin/members" class="admin-table-link">전체 보기 →</a>
+            </div>
+            <div class="admin-table-head col-member">
+                <span>No</span><span>이름 / 이메일</span><span>가입일</span><span>권한</span><span>상태</span>
+            </div>
+            {{#recentMembers}}
+            <div class="admin-table-row col-member">
+                <span class="cell-id">{{id}}</span>
+                <div><div class="cell-name">{{name}}</div><div class="cell-email">{{email}}</div></div>
+                <span class="cell-date">{{createdAt}}</span>
+                <span>{{roleName}}</span>
+                <span><span class="status-active">활성</span></span>
+            </div>
+            {{/recentMembers}}
+        </div>
+
+        <!-- 최근 등록 프로젝트 -->
+        <div class="admin-table-wrap">
+            <div class="admin-table-header">
+                <span class="admin-table-title">최근 등록 프로젝트</span>
+                <a href="/admin/projects" class="admin-table-link">전체 보기 →</a>
+            </div>
+            <div class="admin-table-head col-project">
+                <span>No</span><span>프로젝트명</span><span>등록자</span><span>등록일</span><span>상태</span>
+            </div>
+            {{#recentProjects}}
+            <div class="admin-table-row col-project">
+                <span class="cell-id">{{id}}</span>
+                <span class="cell-name">{{title}}</span>
+                <span>{{member.name}}</span>
+                <span class="cell-date">{{createdAt}}</span>
+                <span><span class="status-active">모집중</span></span>
+            </div>
+            {{/recentProjects}}
+        </div>
+
+    </main>
+</div>
+
+{{> layout/footer}}
