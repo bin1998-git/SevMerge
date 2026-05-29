@@ -1,9 +1,17 @@
 package com.example.SevMerge.board;
 
+import com.example.SevMerge.member.Member;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,10 +27,52 @@ public class BoardController {
 
     @GetMapping("/boards")
     // 게시판 메인 화면
-    public String showBoard(Model model) {
+    public String showBoard(@RequestParam(defaultValue = "FREE") String boardType,
+                                Model model) {
 
-        model.addAttribute("boards");
+        List<Board> boardList = new ArrayList<>();
+
+        model.addAttribute("isFree",boardType.equalsIgnoreCase("FREE"));
+        model.addAttribute("isNotice",boardType.equalsIgnoreCase("NOTICE"));
+
+        if (boardType.equalsIgnoreCase("FREE")){
+            boardList = boardService.findAllByBoardType(BoardType.FREE);
+        } else if(boardType.equalsIgnoreCase("NOTICE")) {
+            boardList = boardService.findAllByBoardType(BoardType.NOTICE);
+        }
+
+        model.addAttribute("boards",boardList);
 
         return "board/board";
+    }
+
+    @GetMapping("/boards/save")
+    public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
+                                Model model) {
+
+        model.addAttribute("boardType",boardType);
+        model.addAttribute("isFree",boardType.equalsIgnoreCase("FREE"));
+        model.addAttribute("isNotice",boardType.equalsIgnoreCase("NOTICE"));
+
+        return "board/board-save";
+    }
+
+    @PostMapping("boards/save")
+    public String saveBoard(BoardRequest.SaveBoardDTO saveBoardDTO,
+                            HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute("sessionMember");
+        boardService.saveBoard(sessionMember,saveBoardDTO);
+
+        return "redirect:/boards";
+    }
+
+    @GetMapping("/boards/{boardId}/update")
+    public String updateBoardPage() {
+        return "board/board-update";
+    }
+
+    @PostMapping("/boards/{boardId}/update")
+    public String updateBoard() {
+        return "redirect:board";
     }
 }
