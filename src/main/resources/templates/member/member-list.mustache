@@ -1,0 +1,87 @@
+{{> layout/header}}
+
+<style>
+    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .page-desc { font-size: 14px; color: #9ca3af; }
+    .list-section { padding: 36px 28px 80px; }
+    .list-inner { max-width: 1140px; margin: 0 auto; }
+    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; max-width: 400px; }
+    .search-input:focus { border-color: #2563eb; outline: none; }
+    .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .member-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
+    .member-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; text-align: center; transition: border-color .2s, transform .15s; text-decoration: none; color: inherit; display: block; }
+    .member-card:hover { border-color: #bfdbfe; transform: translateY(-3px); }
+    .member-avatar { width: 64px; height: 64px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; }
+    .member-name { font-size: 16px; font-weight: 800; color: #1c1e26; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .cert-badge { font-size: 10px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2px 8px; border-radius: 5px; font-weight: 700; }
+    .member-email { font-size: 12px; color: #9ca3af; margin-bottom: 14px; }
+    .member-stats { display: flex; justify-content: center; gap: 20px; padding-top: 14px; border-top: 1px solid #f3f4f8; }
+    .member-stat { text-align: center; }
+    .member-stat-val { font-size: 16px; font-weight: 900; color: #2563eb; }
+    .member-stat-lbl { font-size: 11px; color: #9ca3af; }
+    .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #c4c9d9; }
+    .paging { display: flex; justify-content: center; gap: 6px; }
+    .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
+    .page-btn:hover { border-color: #2563eb; color: #2563eb; }
+    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+</style>
+
+<div class="page-header">
+    <div class="page-header-inner">
+        <h1 class="page-title">전문가 목록</h1>
+        <p class="page-desc">다양한 분야의 전문가들을 만나보세요.</p>
+    </div>
+</div>
+
+<section class="list-section">
+    <div class="list-inner">
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="이름으로 검색..." value="{{keyword}}" />
+            <button class="search-btn">검색</button>
+        </div>
+
+        {{#members}}
+        <div class="member-grid">
+            {{#list}}
+            <a href="/members/{{id}}" class="member-card">
+                <div class="member-avatar">👤</div>
+                <div class="member-name">
+                    {{name}}
+                    {{#isCertified}}<span class="cert-badge">⭐ 인증</span>{{/isCertified}}
+                </div>
+                <div class="member-email">{{email}}</div>
+                <div class="member-stats">
+                    <div class="member-stat">
+                        <div class="member-stat-val">{{projectCount}}</div>
+                        <div class="member-stat-lbl">프로젝트</div>
+                    </div>
+                    <div class="member-stat">
+                        <div class="member-stat-val">{{bidCount}}</div>
+                        <div class="member-stat-lbl">제안서</div>
+                    </div>
+                </div>
+            </a>
+            {{/list}}
+        </div>
+        {{/members}}
+
+        {{^members}}
+        <div class="empty-state">검색 결과가 없습니다.</div>
+        {{/members}}
+
+        <div class="paging">
+            {{#paging}}
+            {{#hasPrev}}<a href="/members?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
+            {{#pageList}}<a href="/members?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
+            {{#hasNext}}<a href="/members?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
+            {{/paging}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}
