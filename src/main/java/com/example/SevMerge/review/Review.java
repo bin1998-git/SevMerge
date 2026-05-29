@@ -3,6 +3,7 @@ package com.example.SevMerge.review;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 @Table(name = "review_tb")
 @Entity
 @NoArgsConstructor
+@Data
 public class Review {
 
     @Id
