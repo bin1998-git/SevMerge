@@ -1,5 +1,7 @@
 package com.example.SevMerge.comment;
 
+import com.example.SevMerge.board.BoardRepository;
+import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
