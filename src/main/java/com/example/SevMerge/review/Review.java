@@ -1,8 +1,7 @@
 package com.example.SevMerge.review;
 
-import com.example.SevMerge.expert.Expert;
+import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,7 +21,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expert_id")
-    private Expert expert; // 전문가
+    private ExpertProfile expert; // 전문가
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
