@@ -20,7 +20,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
     @Column(nullable = false)
@@ -40,7 +40,10 @@ public class Board {
     @JoinColumn(name = "member_id")
     private Member member;
 
-
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name="comment_id")
+    // todo - 추구 Comment Class 추가
+    //private Comment comment;
 
     @Builder
     public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member) {
@@ -50,5 +53,6 @@ public class Board {
         this.viewCount = viewCount;
         this.createdAt = createdAt;
         this.member = member;
+        //this.comment = comment;
     }
 }

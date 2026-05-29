@@ -12,12 +12,13 @@ import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
-@Table(name = "member")
+@Table(name = "member_tb")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Member {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
