@@ -1,35 +1,39 @@
 package com.example.SevMerge.member;
 
+import com.example.SevMerge.bid.Bid;
+import com.example.SevMerge.chatRoom.ChatRoom;
+import com.example.SevMerge.project.Project;
+import com.example.SevMerge.review.Review;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
-
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member_tb")
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Member {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(nullable = false, length = 50)
     private String name;
 
+    @Column(nullable = false, length = 20)
     private String phone;
 
     @Enumerated(EnumType.STRING)
@@ -41,9 +45,32 @@ public class Member {
     private Status status;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private Timestamp createdAt;
 
-    @Builder
+    //연관관계
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Project> projects = new ArrayList<>();
+
+    @OneToMany(mappedBy = "expert", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Bid> bids = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ChatRoom> clientChatRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "expert", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ChatRoom> expertChatRooms = new ArrayList<>();
+
+    // 기존 생성자 (유지)
     public Member(Long id, String email, String password,
                   String name, String phone,
                   Role role, Status status) {
@@ -56,39 +83,34 @@ public class Member {
         this.status = (status != null) ? status : Status.ACTIVE;
     }
 
-    // 회원 정보 수정 편의 메서드
+    // 기존 편의 메서드 (유지)
     public void update(String password, String name, String phone) {
         if (password != null) this.password = password;
         if (name != null) this.name = name;
         if (phone != null) this.phone = phone;
     }
 
-    // 관리자 여부 확인 (AdminInterceptor 용)
     public boolean isAdmin() {
         return this.role == Role.ADMIN;
     }
 
-    // 전문가 여부 확인
     public boolean isExpert() {
         return this.role == Role.EXPERT;
     }
 
-    // 승인된 전문가 여부 확인
     public boolean isActiveExpert() {
         return this.role == Role.EXPERT && this.status == Status.ACTIVE;
     }
 
-    // 전문가 승인 대기 여부
     public boolean isPending() {
         return this.status == Status.PENDING;
     }
 
-    // 머스태치 화면 편의 매서드
     public String getRoleDisplay() {
         return this.role.name();
     }
 
-    // ── 추가 비즈니스 메서드 ─────────────────────────────
+    //추가 비즈니스 메서드
     public void approve() {
         this.status = Status.ACTIVE;
     }
@@ -110,5 +132,3 @@ public class Member {
         this.phone = phone;
     }
 }
-
-

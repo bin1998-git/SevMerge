@@ -33,6 +33,4 @@ public class ChatRoom {
 
     @CreationTimestamp
     private Timestamp createAt;
-
-
 }

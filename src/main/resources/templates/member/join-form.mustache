@@ -1,0 +1,104 @@
+{{> layout/header}}
+
+<style>
+    .auth-section { padding: 72px 28px 80px; }
+    .auth-inner { max-width: 480px; margin: 0 auto; }
+    .auth-header { text-align: center; margin-bottom: 36px; }
+    .auth-logo { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; }
+    .auth-logo span { color: #2563eb; }
+    .auth-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .auth-desc { font-size: 14px; color: #9ca3af; }
+    .auth-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 36px; display: flex; flex-direction: column; gap: 18px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-input { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input::placeholder { color: #c4c9d9; }
+    .form-input:focus { border-color: #2563eb; background: #fff; }
+    .form-hint { font-size: 12px; color: #9ca3af; }
+    .role-wrap { display: flex; gap: 10px; }
+    .role-card { flex: 1; padding: 14px; border: 1.5px solid #e2e5ef; border-radius: 10px; cursor: pointer; text-align: center; transition: all .15s; }
+    .role-card input { display: none; }
+    .role-card:has(input:checked) { border-color: #2563eb; background: #eff6ff; }
+    .role-card .role-icon { font-size: 24px; margin-bottom: 6px; }
+    .role-card .role-name { font-size: 13px; font-weight: 700; color: #374151; }
+    .role-card .role-desc { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+    .divider { height: 1px; background: #f3f4f8; margin: 4px 0; }
+    .submit-btn { padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 4px; }
+    .submit-btn:hover { background: #1d4ed8; }
+    .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #9ca3af; }
+    .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+</style>
+
+<section class="auth-section">
+    <div class="auth-inner">
+
+        <div class="auth-header">
+            <div class="auth-logo">Sev<span>Merge</span></div>
+            <h1 class="auth-title">회원가입</h1>
+            <p class="auth-desc">SevMerge와 함께 시작하세요.</p>
+        </div>
+
+        <form class="auth-form" action="/join" method="POST">
+
+            <div class="form-group">
+                <label class="form-label">이름 <span class="required">*</span></label>
+                <input type="text" name="name" class="form-input" placeholder="이름을 입력하세요" maxlength="20" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">이메일 <span class="required">*</span></label>
+                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">비밀번호 <span class="required">*</span></label>
+                <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" />
+                <span class="form-hint">영문, 숫자 포함 8자 이상</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">비밀번호 확인 <span class="required">*</span></label>
+                <input type="password" name="passwordConfirm" class="form-input" placeholder="비밀번호를 다시 입력하세요" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">가입 유형 <span class="required">*</span></label>
+                <div class="role-wrap">
+                    <label class="role-card">
+                        <input type="radio" name="role" value="CLIENT" checked />
+                        <div class="role-icon">💼</div>
+                        <div class="role-name">의뢰인</div>
+                        <div class="role-desc">프로젝트를 등록하고<br>전문가를 찾아요</div>
+                    </label>
+                    <label class="role-card">
+                        <input type="radio" name="role" value="EXPERT" />
+                        <div class="role-icon">👨‍💻</div>
+                        <div class="role-name">전문가</div>
+                        <div class="role-desc">프로젝트에 제안서를<br>보내고 수주해요</div>
+                    </label>
+                </div>
+            </div>
+
+            {{! 유효성 오류 메시지 }}
+            {{#errorMessage}}
+            <div style="background:#fff3f3; border:1px solid #fecaca; border-radius:8px; padding:12px 14px; font-size:13px; color:#ef4444; font-weight:600;">
+                {{errorMessage}}
+            </div>
+            {{/errorMessage}}
+
+            <div class="divider"></div>
+
+            <button type="submit" class="submit-btn">회원가입</button>
+
+        </form>
+
+        <div class="auth-footer">
+            이미 계정이 있으신가요? <a href="/login">로그인</a>
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}
