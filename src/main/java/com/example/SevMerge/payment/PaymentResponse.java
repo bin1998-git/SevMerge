@@ -25,19 +25,19 @@ public class PaymentResponse {
     private String status;
     private Timestamp paidAt;
 
-    public static PaymentResponse from(Payment payment) {
-        return PaymentResponse.builder()
-                .id(payment.getId())
-                .projectId(payment.getProjectId())
-                .clientId(payment.getClientId())
-                .expertId(payment.getExpertId())
-                .amount(payment.getAmount())
-                .platformFee(payment.getPlatformFee())
-                .netAmount(payment.getNetAmount())
-                .paymentKey(payment.getPaymentKey())
-                .method(payment.getMethod())
-                .status(payment.getStatus().name())
-                .paidAt(payment.getPaidAt())
-                .build();
-    }
+//    public static PaymentResponse from(Payment payment) {
+//        return PaymentResponse.builder()
+//                .id(payment.getId())
+//                .projectId(payment.getProjectId())
+//                .clientId(payment.getClientId())
+//                .expertId(payment.getExpertId())
+//                .amount(payment.getAmount())
+//                .platformFee(payment.getPlatformFee())
+//                .netAmount(payment.getNetAmount())
+//                .paymentKey(payment.getPaymentKey())
+//                .method(payment.getMethod())
+//                .status(payment.getStatus().name())
+//                .paidAt(payment.getPaidAt())
+//                .build();
+//    }
 }

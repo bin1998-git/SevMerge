@@ -1,35 +1,15 @@
-CREATE TABLE IF NOT EXISTS expert_profile (
-    id            BIGINT         NOT NULL AUTO_INCREMENT,
-    member_id     BIGINT         NOT NULL,
-    profile_image VARCHAR(255)   NOT NULL,
-    intro         TEXT,
-    career        TEXT,
-    speciality    VARCHAR(255),
-    avg_rating    DECIMAL(3,2)   NOT NULL DEFAULT 0.00,
-    total_reviews INT            NOT NULL DEFAULT 0,
-    is_certified  BOOLEAN        NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_expert_member (member_id),
-    CONSTRAINT fk_expert_member FOREIGN KEY (member_id) REFERENCES member (id)
-);
-
-
-CREATE TABLE IF NOT EXISTS payment (
-    id           BIGINT       NOT NULL AUTO_INCREMENT,
-    project_id   BIGINT       NOT NULL,
-    client_id    BIGINT       NOT NULL,
-    expert_id    BIGINT       NOT NULL,
-    amount       INT          NOT NULL COMMENT '총 결제 금액',
-    platform_fee INT          NOT NULL COMMENT '플랫폼 수수료 (10%)',
-    net_amount   INT          NOT NULL COMMENT '전문가 수령액 (amount - platform_fee)',
-    payment_key  VARCHAR(255)          COMMENT '포트원 imp_uid',
-    method       VARCHAR(50)           COMMENT '결제 수단 (card, kakaopay 등)',
-    status       ENUM('PAID','SETTLED','REFUNDED') NOT NULL DEFAULT 'PAID',
-    paid_at      TIMESTAMP    NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_payment_project (project_id),
-    CONSTRAINT fk_payment_project FOREIGN KEY (project_id) REFERENCES project (id),
-    CONSTRAINT fk_payment_client  FOREIGN KEY (client_id)  REFERENCES member  (id),
-    CONSTRAINT fk_payment_expert  FOREIGN KEY (expert_id)  REFERENCES member  (id)
-);
-
+---- Project 더미데이터
+--INSERT INTO project_tb (client_id, title, category, description, budget_min, budget_max, deadline, bid_filter, status, created_at) VALUES
+--(1, '쇼핑몰 웹사이트 개발', 'WEB', '반응형 쇼핑몰 개발 의뢰합니다.', 1000000, 3000000, DATE_ADD(NOW(), INTERVAL 14 DAY), 'ALL', 'OPEN', NOW()),
+--(2, '배달 앱 개발', 'APP', 'iOS/Android 배달 앱 개발 의뢰합니다.', 5000000, 10000000, DATE_ADD(NOW(), INTERVAL 30 DAY), 'CERTIFIED_ONLY', 'OPEN', NOW()),
+--(3, 'UI/UX 디자인', 'UI_UX', '핀테크 앱 UI/UX 디자인 의뢰합니다.', 800000, 2000000, DATE_ADD(NOW(), INTERVAL 10 DAY), 'ALL', 'OPEN', NOW()),
+--(1, '데이터 분석 대시보드', 'DATA', '판매 데이터 분석 및 시각화 대시보드 개발.', 2000000, 4000000, DATE_ADD(NOW(), INTERVAL 21 DAY), 'CERTIFIED_ONLY', 'OPEN', NOW()),
+--(2, '회사 소개 홈페이지', 'WEB', '기업 소개 홈페이지 제작 의뢰합니다.', 500000, 1500000, DATE_ADD(NOW(), INTERVAL 7 DAY), 'ALL', 'OPEN', NOW());
+--
+---- Bid 더미데이터
+--INSERT INTO bid_tb (project_id, expert_id, cover_letter, approach, estimated_days, proposed_price, status, created_at) VALUES
+--(1, 4, '웹 개발 5년 경력자입니다. 최선을 다하겠습니다.', 'React + Spring Boot로 개발하겠습니다.', 30, 2500000, 'PENDING', NOW()),
+--(1, 5, '쇼핑몰 개발 다수 경험 있습니다.', 'Vue.js + Node.js로 개발하겠습니다.', 25, 2800000, 'PENDING', NOW()),
+--(2, 6, '앱 개발 전문가입니다.', 'Flutter + Firebase로 개발하겠습니다.', 60, 8000000, 'PENDING', NOW()),
+--(3, 4, 'UI/UX 디자인 전문입니다.', '피그마로 작업하겠습니다.', 14, 1500000, 'PENDING', NOW()),
+--(4, 5, '데이터 분석 전문가입니다.', 'Python + Tableau로 개발하겠습니다.', 21, 3500000, 'PENDING', NOW());

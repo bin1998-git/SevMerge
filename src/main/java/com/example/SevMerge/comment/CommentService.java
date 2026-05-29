@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final BoardRepository boardRepository;
-    private final MemberRepository memberRepository;
+    // private final BoardRepository boardRepository;
+    // private final MemberRepository memberRepository;
 
     // 댓글 목록 조회
 

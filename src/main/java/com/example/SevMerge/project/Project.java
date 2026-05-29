@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "project")
+@Table(name = "project_tb")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +22,8 @@ public class Project {
     private Long Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id", nullable = false)
-    private Member client;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false, length = 100)
     private String title;
