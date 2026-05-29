@@ -1,6 +1,7 @@
 package com.example.SevMerge.chatRoom;
 
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

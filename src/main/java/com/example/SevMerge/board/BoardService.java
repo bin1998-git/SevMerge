@@ -29,6 +29,5 @@ public class BoardService {
 
         // 3. 게시글 작성(insert)
         boardRepository.save(newBoard);
-
     }
 }

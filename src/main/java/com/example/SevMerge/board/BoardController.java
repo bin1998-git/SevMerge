@@ -25,4 +25,10 @@ public class BoardController {
 
         return "board/board";
     }
+
+    @GetMapping("/boards/save")
+    public String saveBoardPage() {
+
+        return "board/board-save";
+    }
 }
