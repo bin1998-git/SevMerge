@@ -50,8 +50,6 @@ public class BoardController {
     public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
                                 Model model) {
 
-
-
         model.addAttribute("boardType",boardType);
         model.addAttribute("isFree",boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice",boardType.equalsIgnoreCase("NOTICE"));
@@ -71,5 +69,10 @@ public class BoardController {
     @GetMapping("/boards/{boardId}/update")
     public String updateBoardPage() {
         return "board/board-update";
+    }
+
+    @PostMapping("/boards/{boardId}/update")
+    public String updateBoard() {
+        return "redirect:board";
     }
 }
