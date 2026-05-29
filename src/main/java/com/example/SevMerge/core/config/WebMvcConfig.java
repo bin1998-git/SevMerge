@@ -24,32 +24,33 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-    // 모든 요청에서 세션 정보 뷰에 주입
+        // 모든 요청에서 세션 정보 뷰에 주입
         registry.addInterceptor(sessionInterceptor)
-            .addPathPatterns("/**");
+                .addPathPatterns("/**");
 
-    // 로그인 체크
+        // 로그인 체크
         registry.addInterceptor(loginInterceptor)
-            .addPathPatterns("/**")
+                .addPathPatterns("/users/**")
                 .excludePathPatterns(
                         "/",
-                                "/login-form",
-                                "/join-form",
-                                "/logout",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/favicon.ico"
-    );
+                        "/login-form",
+                        "/join-form",
+                        "/logout",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/favicon.ico",
+                        "/templates"
+                );
 
-    // 관리자 체크
+        // 관리자 체크
         registry.addInterceptor(adminInterceptor)
-            .addPathPatterns("/admin/**");
-}
+                .addPathPatterns("/admin/**");
+    }
 
-@Bean
+    @Bean
     public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-}
+        return new BCryptPasswordEncoder();
+    }
 
 }
