@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+
 // member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, created_at
 @Entity
 @Table(name = "project_tb")
@@ -41,6 +43,7 @@ public class Project {
     @Column(nullable = false)
     private Integer budgetMax; // 최대예산
 
+
     @Column(nullable = false)
     private Timestamp deadline; // 마감일
 
@@ -52,6 +55,7 @@ public class Project {
     @Column(nullable = false)
     private ProjectStatus projectStatus;
 
+    @CreationTimestamp
     private Timestamp createdAt;
 
     // DB에 저장되기 직전에 자동으로 실행되는 메서드
@@ -61,5 +65,15 @@ public class Project {
         if (this.projectStatus == null) this.projectStatus = ProjectStatus.OPEN;
     }
 
+    // update 메서드기능
+    public void update(ProjectRequestDTO.UpdateDTO requestDTO) {
+        if (requestDTO.getTitle() != null) this.title = requestDTO.getTitle();
+        if (requestDTO.getDescription() != null) this.description = requestDTO.getDescription();
+        if (requestDTO.getBudgetMin() != null) this.budgetMin = requestDTO.getBudgetMin();
+        if (requestDTO.getBudgetMax() != null) this.budgetMax = requestDTO.getBudgetMax();
+        if (requestDTO.getDeadline() != null) this.deadline = requestDTO.getDeadline();
+        if (requestDTO.getBidFilter() != null) this.bidFilter = BidFilter.valueOf(requestDTO.getBidFilter());
+    }
 
 }
+
