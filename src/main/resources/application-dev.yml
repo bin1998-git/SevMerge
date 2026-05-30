@@ -27,7 +27,7 @@ spring:
 
   mustache:
     servlet:
-      expose-session-attributes: true
+      expose-session-attributes: false
       expose-request-attributes: true
 
 server:

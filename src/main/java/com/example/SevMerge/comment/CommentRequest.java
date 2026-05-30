@@ -8,7 +8,7 @@ import lombok.Data;
 public class    CommentRequest {
     @Data
     public static class SaveDTO {
-        private Integer boardId; // 게시글 PK
+        private Long boardId; // 게시글 PK
         private String comment; // 댓글 내용
 
         // 유효성 검사

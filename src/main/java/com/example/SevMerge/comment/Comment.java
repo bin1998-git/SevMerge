@@ -44,7 +44,7 @@ public class Comment {
     /**
      * 댓글 소유자 확인 로직 (세션 정보, DB에 작성된 user_id확인용)
      */
-    public boolean isOwner(Integer memberId) {
+    public boolean isOwner(Long memberId) {
         if (this.member == null || memberId == null) {
             return false;
         }
