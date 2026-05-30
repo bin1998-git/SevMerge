@@ -1,8 +1,6 @@
 package com.example.SevMerge.review;
 
 import com.example.SevMerge.core.exception.BadRequestException;
-import com.example.SevMerge.expertprofile.ExpertProfile;
-import com.example.SevMerge.member.Member;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,24 +10,25 @@ public class ReviewRequest {
     @Data
     public static class SaveReviewDTO {
 
-        private Member member;
-        private Integer countStar;
-        private Double totalStar;
+
+        private Integer Rating;
         private String content;
-        private ExpertProfile expert;
+        private Long projectId;
+        private Long expertId;
+
 
         @Builder
-        public SaveReviewDTO(Member member,ExpertProfile expert,Integer countStar, String content) {
-            this.member = member;
-            this.countStar = countStar;
+        public SaveReviewDTO(Integer rating, String content,Long projectId, Long expertProfileId) {
+            Rating = rating;
             this.content = content;
-            this.expert = expert;
+            this.projectId = projectId;
+            this.expertId = expertProfileId;
         }
 
         public void validate(ReviewRequest.SaveReviewDTO review) {
 
-            if (review == null){
-                throw new BadRequestException("리뷰를 작성 하지 않았습니다");
+            if (review.getContent() == null || review.getContent().trim().isEmpty()){
+                throw new BadRequestException("리뷰를 작성해 주세요");
             }
 
         }

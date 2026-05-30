@@ -11,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -42,10 +43,10 @@ public class Board {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="comment_id")
-    private Comment comment;
+    private List<Comment> comment;
 
     @Builder
-    public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member, Comment comment) {
+    public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member, List<Comment> comment) {
         this.boardType = boardType;
         this.title = title;
         this.content = content;

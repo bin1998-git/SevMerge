@@ -16,4 +16,12 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
     """)
     public Optional<BigDecimal> avgRating(@Param("expertId") Long expertId);
 
+
+    // 리뷰 카운트 레파지토리
+    @Query("""
+        SELECT COUNT(r.id) FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
+    """)
+    public Optional<Long> countReview(@Param("expertId") Long expertId);
+
+
 }
