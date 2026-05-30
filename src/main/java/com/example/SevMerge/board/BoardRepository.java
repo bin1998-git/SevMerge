@@ -11,9 +11,9 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board,Integer> {
 
     @Query("""
-    SELECT b FROM Board b WHERE b.boardType = :boardType
+    SELECT b FROM Board b JOIN FETCH b.member WHERE b.boardType = :boardType
     """)
-    public List<Board> findAllByBoardType(@Param("boardType") BoardType type);
+    List<Board> findAllByBoardTypeWithMember(@Param("boardType") BoardType type);
 
 
 }

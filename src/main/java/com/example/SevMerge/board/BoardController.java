@@ -43,7 +43,7 @@ public class BoardController {
 
         model.addAttribute("boards",boardList);
 
-        return "board/board";
+        return "board/board-list";
     }
 
     @GetMapping("/boards/save")
@@ -75,4 +75,5 @@ public class BoardController {
     public String updateBoard() {
         return "redirect:board";
     }
+
 }
