@@ -131,7 +131,7 @@
         </nav>
         <div class="nav-actions">
             {{#isLoggedIn}}
-                <span class="nav-username">{{member.name}}님</span>
+                <span class="nav-username">{{sessionUser.name}}님</span>
                 <a href="/logout" class="btn btn-outline">로그아웃</a>
             {{/isLoggedIn}}
             {{^isLoggedIn}}

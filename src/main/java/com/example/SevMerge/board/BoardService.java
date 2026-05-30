@@ -31,7 +31,6 @@ public class BoardService {
 
         // 1. 로그인 여부 확인 - 로그인 인터셉트
 
-        // todo - findById()통해서 멤버 찾기
         Member memberEntity = memberRepository.findById(member.getId()).orElseThrow(
                 () -> new BadRequestException("사용자를 찾을 수 없습니다.")
         );
@@ -43,6 +42,7 @@ public class BoardService {
                 .title(saveBoardDTO.getTitle())
                 .content(saveBoardDTO.getContent())
                 .boardType(saveBoardDTO.getBoardType())
+                .viewCount(0)
                 .member(memberEntity)
                 .build();
 
