@@ -1,8 +1,12 @@
 package com.example.SevMerge.review;
 
 
+import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.core.exception.ForbiddenException;
+import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,34 +22,44 @@ public class ReviewService {
     private final ProjectRepository projectRepository;
 
 
+
     // 리뷰작성
     @Transactional
-    public Review save(ReviewRequest.SaveReviewDTO reviewDTO) {
+    public void save(ReviewRequest.SaveReviewDTO reviewDTO,Member member) {
 
         // 로그인 인터셉터 처리
 
-        //  DTO 빌더 리뷰는 일반 전문가 둘다 작성 가능하니 Member 하나만 씀
+        //  유효성
         reviewDTO.validate(reviewDTO);
 
-        Review newReview = Review.builder()
+        ExpertProfile expertProfile = expertProfileRepository.findById(reviewDTO.getExpertId()).orElseThrow(() ->
+                new BadRequestException("전문가를 찾을수 없습니다.")
+        );
+        Project project = projectRepository.findByProjectId(reviewDTO.getProjectId()).orElseThrow(() ->
+                new BadRequestException("해당 프로젝트는 존재하지 않습니다.")
+        );
 
+        Review newReview = Review.builder()
+                .project(project)
+                .member(member)
+                .expertProfile(expertProfile)
                 .content(reviewDTO.getContent())
                 .countStar(reviewDTO.getRating())
                 .build();
 
-
-        return reviewRepository.save(newReview);
-
-    }
-
-    public void findById(Long id) {
-
-
-
-        reviewRepository.findById(id);
-
+        reviewRepository.save(newReview);
 
     }
+
+    public ReviewResponse.ReviewDetailDTO detail(Long id) {
+
+       Review review = reviewRepository.findById(id).orElseThrow(() ->
+               new BadRequestException("해당 리뷰는 존재하지 않습니다.")
+               );
+
+        return new ReviewResponse.ReviewDetailDTO(review);
+    }
+
 
     // 리뷰조회
 
