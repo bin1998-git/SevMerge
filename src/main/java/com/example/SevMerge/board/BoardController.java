@@ -1,14 +1,14 @@
 package com.example.SevMerge.board;
 
+import com.example.SevMerge.comment.Comment;
+import com.example.SevMerge.comment.CommentResponse;
+import com.example.SevMerge.comment.CommentService;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;;
+    private final CommentService commentService;
 
     // todo: 추후 메인 페이지 요청하는 곳 생성되면 삭제예정
     @GetMapping("/")
@@ -55,6 +56,17 @@ public class BoardController {
         model.addAttribute("isNotice",boardType.equalsIgnoreCase("NOTICE"));
 
         return "board/board-save";
+    }
+
+    @GetMapping("/boards/{boardId}")
+    public String showBoardDetail(@PathVariable(name="boardId") Long boardId,
+                                  Model model) {
+        Board board = boardService.detailBoard(boardId);
+        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);
+        model.addAttribute("board",board);
+        model.addAttribute("comments",commentList);
+
+        return "board/board-detail";
     }
 
     @PostMapping("boards/save")

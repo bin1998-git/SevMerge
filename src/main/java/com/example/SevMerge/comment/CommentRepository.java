@@ -13,9 +13,9 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
                 SELECT c FROM Comment c JOIN FETCH c.member
                                 WHERE c.board.id = :boardId
             """)
-    List<Comment> findByBoardIdWithMember(@Param("boardId") Integer boardId);
+    List<Comment> findByBoardIdWithMember(@Param("boardId") Long boardId);
 
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.board.id = :boardId")
-    void deleteByBoardId(@Param("boardId") Integer boardId);
+    void deleteByBoardId(@Param("boardId") Long boardId);
 }
