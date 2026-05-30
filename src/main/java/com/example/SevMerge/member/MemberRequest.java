@@ -4,9 +4,7 @@ import lombok.*;
 
 public class MemberRequest {
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Data
     public static class Join {
         private String email;
         private String password;
@@ -15,25 +13,19 @@ public class MemberRequest {
         private Role role;
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Data
     public static class Login {
         private String email;
         private String password;
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Data
     public static class Update {
         private String name;
         private String phone;
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Data
     public static class ChangePassword {
         private String currentPassword;
         private String newPassword;

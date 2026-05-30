@@ -9,7 +9,7 @@ public class CommentResponse {
      */
     @Data
     public static class ListDTO {
-        private Integer id; // 댓글 pk
+        private Long id; // 댓글 pk
         private String comment; // 댓글 내용
         private long userId; // 댓글 작성자 PK
         private String username; // 댓글 작성자 이름

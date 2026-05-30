@@ -21,7 +21,7 @@ public class BoardService {
 
     // 게시글 조회
     public List<Board> findAllByBoardType(BoardType BoardType) {
-        return  boardRepository.findAllByBoardType(BoardType);
+        return  boardRepository.findAllByBoardTypeWithMember(BoardType);
     }
 
     // 게시글 저장

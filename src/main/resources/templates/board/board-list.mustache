@@ -76,10 +76,9 @@
                 <button class="board-search-btn">검색</button>
             </div>
 
-                {{! 게시글 있을 때 — 하드코딩 데이터 }}
                 {{#boards}}
                     <div class = "board-table">
-                        <a href="/boards/{{boards.id}}" class="board-table-row pinned col-free">
+                        <a href="/boards/{{id}}" class="board-table-row pinned col-free">
                             <span class="cell-num">📌</span>
                             <span class="cell-title">{{title}}</span>
                             <span class="cell-author">{{member.name}}</span>
@@ -133,7 +132,7 @@
                 {{! 공지 있을 때 — 하드코딩 데이터 }}
                 {{#boards}}
                     <div class = "board-table">
-                        <a href="/boards/{{boards.id}}" class="board-table-row pinned col-free">
+                        <a href="/boards/{{id}}" class="board-table-row pinned col-free">
                             <span class="cell-num">📌</span>
                             <span class="cell-title">{{title}}</span>
                             <span class="cell-author">{{member.name}}</span>
