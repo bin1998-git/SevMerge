@@ -1,7 +1,7 @@
 -- Member 샘플데이터
 -- 1번 샘플: 프로젝트를 발주하고 대금을 결제하는 의뢰인 (CLIENT)
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('client01@sevmerge.com', '$2a$10$7Z25QpxnL3V6VqN0FmGgduWv9F0bM1HshB38aNExXpExZpS/YhV2.', '김의뢰', '010-1234-5678', 'CLIENT', 'ACTIVE', NOW());
+VALUES ('client01@sevmerge.com', '1234.', '김의뢰', '010-1234-5678', 'CLIENT', 'ACTIVE', NOW());
 
 -- 2번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 1 (EXPERT - 개발자)
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)

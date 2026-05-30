@@ -52,8 +52,6 @@ public class BoardService {
         boardRepository.save(newBoard);
     }
 
-
-
     public void updateBoard(Integer boardId, BoardRequest.updateBoardDTO updateBoardDTO) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new NotFoundException("게시글을 찾을 수 없습니다.")
