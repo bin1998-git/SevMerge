@@ -36,7 +36,7 @@ public class BoardController {
 
         Member sessionMember = (Member) session.getAttribute("sessionUser");
 
-        List<Board> boardList = new ArrayList<>();
+        List<BoardResponse.ListDTO> boardList = new ArrayList<>();
 
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
@@ -59,8 +59,8 @@ public class BoardController {
                                   Model model, HttpSession session) {
 
         Member sessionMember = (Member) session.getAttribute("sessionUser");
-        Board board = boardService.detailBoard(boardId);
-        Long boardOwner = board.getMember().getId();
+        BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
+        Long boardOwner = board.getMemberId();
         List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
@@ -107,7 +107,7 @@ public class BoardController {
     public String updateBoardPage(@PathVariable(name = "boardId") Long boardId,
                                   Model model) {
 
-        Board board = boardService.findBoard(boardId);
+        BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         model.addAttribute("board",board);
 
         return "board/board-update";
@@ -126,11 +126,10 @@ public class BoardController {
 
     @PostMapping("/boards/{boardId}/delete")
     public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
-                              BoardRequest.DeleteDTO deleteDTO,
                               HttpSession session) {
         Member sessionMember = (Member) session.getAttribute("sessionUser");
 
-        boardService.deleteBoard(boardId,deleteDTO,sessionMember.getId());
+        boardService.deleteBoard(boardId,sessionMember.getId());
 
 
         return "redirect:/boards";

@@ -51,4 +51,14 @@ public class Board {
         this.member = member;
         this.isActive = isActive;
     }
+
+    // 편의 메서드
+    public void update(BoardRequest.UpdateBoardDTO updateBoardDTO) {
+        this.title = updateBoardDTO.getTitle();
+        this.content = updateBoardDTO.getContent();
+    }
+
+    public void delete(BoardRequest.DeleteDTO deleteDTO) {
+        this.isActive = deleteDTO.getIsActive();
+    }
 }
