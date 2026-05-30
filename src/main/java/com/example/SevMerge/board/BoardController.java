@@ -3,6 +3,7 @@ package com.example.SevMerge.board;
 import com.example.SevMerge.comment.Comment;
 import com.example.SevMerge.comment.CommentResponse;
 import com.example.SevMerge.comment.CommentService;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
@@ -34,7 +35,7 @@ public class BoardController {
     public String showBoard(@RequestParam(defaultValue = "FREE") String boardType,
                             Model model, HttpSession session) {
 
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         List<BoardResponse.ListDTO> boardList = new ArrayList<>();
 
@@ -58,7 +59,7 @@ public class BoardController {
     public String showBoardDetail(@PathVariable(name = "boardId") Long boardId,
                                   Model model, HttpSession session) {
 
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         Long boardOwner = board.getMemberId();
         List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);
@@ -72,7 +73,7 @@ public class BoardController {
     public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
                                 Model model, HttpSession session) throws BadRequestException {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         // 공지사항은 어드민만
         if (boardType.equalsIgnoreCase("NOTICE")) {
             if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
@@ -97,7 +98,7 @@ public class BoardController {
     @PostMapping("boards/save")
     public String saveBoard(BoardRequest.SaveBoardDTO saveBoardDTO,
                             HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         boardService.saveBoard(sessionMember, saveBoardDTO);
 
         return "redirect:/boards";
@@ -118,7 +119,7 @@ public class BoardController {
                               BoardRequest.UpdateBoardDTO updateBoardDTO,
                               HttpSession session) {
 
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         boardService.updateBoard(boardId,updateBoardDTO,sessionMember.getId());
         return "redirect:/boards";
@@ -127,7 +128,7 @@ public class BoardController {
     @PostMapping("/boards/{boardId}/delete")
     public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
                               HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         boardService.deleteBoard(boardId,sessionMember.getId());
 
