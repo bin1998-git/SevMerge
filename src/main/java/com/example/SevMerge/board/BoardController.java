@@ -1,14 +1,12 @@
 package com.example.SevMerge.board;
 
+import com.example.SevMerge.comment.CommentResponse;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +44,7 @@ public class BoardController {
         return "board/board";
     }
 
-<<<<<<< HEAD
-=======
+
     @GetMapping("/boards/{boardId}")
     public String showBoardDetail(@PathVariable(name="boardId") Long boardId,
                                   Model model) {
@@ -59,7 +56,7 @@ public class BoardController {
         return "board/board-detail";
     }
 
->>>>>>> 93f00c08af1d72a5a838bb517b2de956f358562d
+
     @GetMapping("/boards/save")
     public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
                                 Model model) {

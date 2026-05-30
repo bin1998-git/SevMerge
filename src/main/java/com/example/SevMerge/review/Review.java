@@ -35,6 +35,10 @@ public class Review {
     @JoinColumn(name = "member_id" )
     private Member member; // 의뢰인
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
 
     @CreationTimestamp
     private Timestamp createdAt; // 작성일
