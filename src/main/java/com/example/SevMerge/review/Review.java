@@ -28,7 +28,7 @@ public class Review {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "expertprifile_id" )
+    @JoinColumn(name = "expert_profile_id" )
     private ExpertProfile expertProfile; // 전문가
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

@@ -1,6 +1,8 @@
 package com.example.SevMerge.review;
 
+import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.project.Project;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -27,7 +29,16 @@ public class ReviewController {
 
     // 리뷰작성 화면
     @GetMapping("/reviews/save")
-    public String saveReviewForm() {
+    public String saveReviewForm(Model model , HttpSession session,@RequestParam Long expertId, @RequestParam Long projectId) {
+
+        Member sessionMember = (Member) session.getAttribute("sessionUser");
+
+        ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(sessionMember,expertId,projectId);
+
+
+        model.addAttribute("expertProfile",reviewSaveDTO.getExpertProfile());
+        model.addAttribute("project",reviewSaveDTO.getProject());
+
         return  "review/review-save";
     }
 
@@ -35,7 +46,7 @@ public class ReviewController {
     @PostMapping("/reviews/save")
     public String saveReview(ReviewRequest.SaveReviewDTO reviewDTO, HttpSession session) {
 
-        Member member = (Member) session.getAttribute("sessionMember"); // 누가 쓸건지 특정
+        Member member = (Member) session.getAttribute("sessionUser"); // 누가 쓸건지 특정
 
         reviewService.save(reviewDTO,member);
 

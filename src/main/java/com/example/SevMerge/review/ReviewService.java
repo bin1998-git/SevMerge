@@ -6,8 +6,10 @@ import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +22,12 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ExpertProfileRepository expertProfileRepository;
     private final ProjectRepository projectRepository;
-
+    private final MemberRepository memberRepository;
 
 
     // 리뷰작성
     @Transactional
-    public void save(ReviewRequest.SaveReviewDTO reviewDTO,Member member) {
+    public void save(ReviewRequest.SaveReviewDTO reviewDTO, Member member) {
 
         // 로그인 인터셉터 처리
 
@@ -51,17 +53,31 @@ public class ReviewService {
 
     }
 
-    public ReviewResponse.ReviewDetailDTO detail(Long id) {
 
-       Review review = reviewRepository.findById(id).orElseThrow(() ->
-               new BadRequestException("해당 리뷰는 존재하지 않습니다.")
-               );
+    // 작성 화면
+    public ReviewResponse.ReviewSaveDTO savePage(Member member, Long projectId, Long expertProfileId) {
 
-        return new ReviewResponse.ReviewDetailDTO(review);
+        ExpertProfile expertProfile = expertProfileRepository.findById(expertProfileId).orElseThrow(() ->
+                new BadRequestException("전문가를 찾을수 없습니다.")
+        );
+        Project project = projectRepository.findById(projectId).orElseThrow(() ->
+                new BadRequestException("프로젝트를 찾을수 없습니다.")
+        );
+        ReviewResponse.ReviewSaveDTO saveDTO = new ReviewResponse.ReviewSaveDTO(expertProfile, project);
+
+        return saveDTO;
+
     }
 
 
     // 리뷰조회
+    public ReviewResponse.ReviewDetailDTO detail(Long id) {
 
+        Review review = reviewRepository.findById(id).orElseThrow(() ->
+                new BadRequestException("해당 리뷰는 존재하지 않습니다.")
+        );
+
+        return new ReviewResponse.ReviewDetailDTO(review);
+    }
 
 }

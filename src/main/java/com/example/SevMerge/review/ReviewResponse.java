@@ -15,17 +15,62 @@ public class ReviewResponse {
     @Builder
     public static class ReviewSaveDTO {
 
-        private String expertName;
-        private String projectTitle;
-        private String career;
-        private Long expertId;
+
+        private SaveExpertDTO expertProfile;
+        private SaveProjectDTO project;
+
+
+        // project
+        @Data
+        @Builder
+        public static class SaveProjectDTO {
+
+            private Long id;
+            private String title;
+        }
+
+        // expert
+        @Data
+        @Builder
+        public static class SaveExpertDTO {
+
+            private Long id;
+            private SaveMemberDTO member;
+            private String career;
+
+
+            // member
+            @Data
+            @Builder
+            public static class SaveMemberDTO {
+                private String name;
+            }
+
+
+        }
+
 
         public ReviewSaveDTO (ExpertProfile expertProfile , Project project){
 
-            this.expertName = expertProfile.getMember().getName();
-            this.projectTitle = project.getTitle();
-            this.career = expertProfile.getCareer();
-            this.expertId = expertProfile.getId();
+
+            this.expertProfile = SaveExpertDTO
+                    .builder()
+                    .career(expertProfile.getCareer())
+                    .id(expertProfile.getId())
+                    .build();
+
+            this.expertProfile.member = SaveExpertDTO
+                    .SaveMemberDTO
+                    .builder()
+                    .name(expertProfile.getMember().getName())
+                    .build();
+
+
+            this.project = SaveProjectDTO
+                    .builder()
+                    .id(project.getId())
+                    .title(project.getTitle())
+                    .build();
 
         }
 
