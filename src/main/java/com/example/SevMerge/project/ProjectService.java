@@ -28,50 +28,47 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
-    // 프로젝트 상세조회 서비스(id로 조회)
+    // 프로젝트 상세조회 서비스
     public ProjectResponeDTO.DetailDTO findProjectById(Long id) {
         log.info("project 상세 서비스 시작");
-        Project project = projectRepository.findByProjectId(id).orElseThrow(() ->
-                new NotFoundException("없는 프로젝트 입니다"));
+        Project project = projectRepository.findByProjectId(id)
+                .orElseThrow(() -> new NotFoundException("없는 프로젝트 입니다"));
+        project.increaseViewCount(); // 조회수 증가
         return new ProjectResponeDTO.DetailDTO(project);
     }
 
     // 카테고리별 조회
     public List<ProjectResponeDTO.ListDTO> findByCategory(String category) {
         log.info("project 카테고리별 조회 서비스 시작");
-
         List<Project> projectList = projectRepository.findByCategory(Category.valueOf(category));
         return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
-    // 내가 받은 프로젝트 목록 조회
+    // 내 프로젝트 목록 조회
     public List<ProjectResponeDTO.ListDTO> myProjects(Member sessionMember) {
-        log.info("내가 받은 project 서비스 조회");
+        log.info("내 project 조회 서비스 시작");
         List<Project> projectList = projectRepository.findAllProjectByMemberId(sessionMember.getId());
         return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
-    // 키워드별로 검색
+    // 키워드 검색
     public List<ProjectResponeDTO.ListDTO> findByKeyword(String keyword) {
-        log.info("project 키워드별로 조회 시작");
+        log.info("project 키워드 검색 서비스 시작");
         List<Project> projectList = projectRepository.findByKeyword(keyword);
         return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
-
-    // 프로젝트 등록서비스
+    // 프로젝트 등록
     @Transactional
     public void saveProject(ProjectRequestDTO.SaveDTO req, Member sessionMember) {
         log.info("project 등록 서비스 시작");
-        // 유효성 검사
         req.validate();
-
         Project project = Project.builder()
                 .member(sessionMember)
                 .title(req.getTitle())
@@ -84,25 +81,25 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    // 프로젝트 수정서비스
+    // 프로젝트 수정
     @Transactional
     public void updateProject(Long id, ProjectRequestDTO.UpdateDTO req, Member sessionMember) {
         log.info("project 수정 서비스 시작");
-        Project project = projectRepository.findByProjectId(id).orElseThrow(() ->
-                new NotFoundException("존재하지 않는 프로젝트 입니다"));
-        if (!project.getMember().getId().equals(sessionMember.getBids())) {
+        Project project = projectRepository.findByProjectId(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 프로젝트 입니다"));
+        if (!project.getMember().getId().equals(sessionMember.getId())) {
             throw new ForbiddenException("수정 권한이 없습니다");
         }
         req.validate();
         project.update(req);
     }
 
-    // 프로젝트 삭제서비스
+    // 프로젝트 삭제
     @Transactional
     public void deleteProject(Long id, Member sessionMember) {
-        log.info("project 삭제서비스 시작");
-        Project project = projectRepository.findByProjectId(id).orElseThrow(() ->
-                new ForbiddenException("리스트에 없는 프로젝트 입니다"));
+        log.info("project 삭제 서비스 시작");
+        Project project = projectRepository.findByProjectId(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 프로젝트 입니다"));
         if (!project.getMember().getId().equals(sessionMember.getId())) {
             throw new ForbiddenException("삭제 권한이 없습니다");
         }

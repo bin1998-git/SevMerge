@@ -1,5 +1,6 @@
 package com.example.SevMerge.comment;
 
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class CommentController {
     @PostMapping("/comment/save")
     public String saveProc(CommentRequest.SaveDTO saveDTO, HttpSession session) {
         // 인증검사
-        Member sessionMember = (Member) session.getAttribute("sessionMember");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         // 유효성 검사
         saveDTO.validate();
@@ -35,7 +36,7 @@ public class CommentController {
                          @RequestParam(name = "boardId") long boardId,
                          HttpSession session) {
         // 1. 인증검사 (인터셉터)
-        Member sessionMember = (Member) session.getAttribute("sessionMember");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         commentService.deleteComment(commentId,sessionMember.getId());
 
         return "redirect:/boards/" + boardId;
