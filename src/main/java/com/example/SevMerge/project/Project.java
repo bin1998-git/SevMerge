@@ -51,6 +51,10 @@ public class Project {
     @Column(nullable = false)
     private BidFilter bidFilter; // 어떤 전문가 제안서를 받을지 설정
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer viewCount = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProjectStatus projectStatus;
@@ -73,6 +77,11 @@ public class Project {
         if (requestDTO.getBudgetMax() != null) this.budgetMax = requestDTO.getBudgetMax();
         if (requestDTO.getDeadline() != null) this.deadline = requestDTO.getDeadline();
         if (requestDTO.getBidFilter() != null) this.bidFilter = BidFilter.valueOf(requestDTO.getBidFilter());
+    }
+
+    // viewCount 증가 메서드
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 
 }
