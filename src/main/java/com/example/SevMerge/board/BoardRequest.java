@@ -11,16 +11,20 @@ public class BoardRequest {
     public static class SaveBoardDTO {
         private String title;
         private String content;
+        private Integer viewCount;
         private Member member;
         private BoardType boardType;
 
-        @Builder
-        public SaveBoardDTO(String title, String content, Member member, BoardType boardType) {
+        public SaveBoardDTO(String title, String content, Integer viewCount, Member member, BoardType boardType) {
             this.title = title;
             this.content = content;
+            this.viewCount = viewCount;
             this.member = member;
             this.boardType = boardType;
         }
+
+        @Builder
+
 
         public void validate() {
             if(title == null || title.trim().isEmpty()) {
