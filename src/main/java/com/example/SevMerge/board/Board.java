@@ -40,19 +40,15 @@ public class Board {
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name="comment_id")
-    // todo - 추구 Comment Class 추가
-    //private Comment comment;
 
     @Builder
-    public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member) {
+    public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member,Boolean isActive) {
         this.boardType = boardType;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
         this.createdAt = createdAt;
         this.member = member;
-        //this.comment = comment;
+        this.isActive = isActive;
     }
 }

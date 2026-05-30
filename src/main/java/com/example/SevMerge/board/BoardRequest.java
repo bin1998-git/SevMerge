@@ -38,12 +38,12 @@ public class BoardRequest {
     }
 
     @Data
-    public static class updateBoardDTO {
+    public static class UpdateBoardDTO {
         private String title;
         private String content;
 
         @Builder
-        public updateBoardDTO(String title, String content) {
+        public UpdateBoardDTO(String title, String content) {
             this.title = title;
             this.content = content;
         }
@@ -59,4 +59,12 @@ public class BoardRequest {
         }
     }
 
+    @Data
+    public static class DeleteDTO {
+        private Boolean isActive;;
+
+        public DeleteDTO(Boolean isActive) {
+            this.isActive = isActive;
+        }
+    }
 }

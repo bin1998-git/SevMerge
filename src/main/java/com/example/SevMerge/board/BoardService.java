@@ -2,6 +2,7 @@ package com.example.SevMerge.board;
 
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
+import com.example.SevMerge.core.exception.UnauthorizedException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,13 @@ public class BoardService {
 
     // 게시글 조회
     public List<Board> findAllByBoardType(BoardType BoardType) {
-        return  boardRepository.findAllByBoardTypeWithMember(BoardType);
+        return  boardRepository.findAllByBoardTypeWithMemberIsActive(BoardType);
+    }
+
+    public Board findBoard(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(
+                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
+        );
     }
 
     // 게시글 저장
@@ -44,6 +51,7 @@ public class BoardService {
                 .boardType(saveBoardDTO.getBoardType())
                 .viewCount(0)
                 .member(memberEntity)
+                .isActive(true)
                 .build();
 
         // 3. 게시글 작성(insert)
@@ -52,15 +60,20 @@ public class BoardService {
         boardRepository.save(newBoard);
     }
 
-    public void updateBoard(Long boardId, BoardRequest.updateBoardDTO updateBoardDTO) {
+    @Transactional
+    public void updateBoard(Long boardId, BoardRequest.UpdateBoardDTO updateBoardDTO, Long memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new NotFoundException("게시글을 찾을 수 없습니다.")
         );
 
+        if(!board.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("수정 권한이 없습니다.");
+        }
+
+        updateBoardDTO.validate();
+
         board.setTitle(updateBoardDTO.getTitle());
-        board.setTitle(updateBoardDTO.getContent());
-        log.info("게시글 수정 요청 - title: {}, content: {}",
-                board.getTitle(),board.getContent());
+        board.setContent(updateBoardDTO.getContent());
 
         boardRepository.save(board);
     }
@@ -71,5 +84,19 @@ public class BoardService {
         );
 
         return board;
+    }
+
+    @Transactional
+    public void deleteBoard(Long boardId, BoardRequest.DeleteDTO deleteDTO, Long memberId) {
+        Board board = boardRepository.findByIdWithMember(boardId).orElseThrow(
+                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
+        );
+
+        if(!board.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("삭제 권한이 없습니다.");
+        }
+
+        board.setIsActive(false);
+
     }
 }

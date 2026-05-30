@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("""
-            SELECT b FROM Board b JOIN FETCH b.member WHERE b.boardType = :boardType
+            SELECT b FROM Board b JOIN FETCH b.member WHERE b.boardType = :boardType AND b.isActive = true
             """)
-    List<Board> findAllByBoardTypeWithMember(@Param("boardType") BoardType boardType);
+    List<Board> findAllByBoardTypeWithMemberIsActive(@Param("boardType") BoardType boardType);
 
 
     @Query("""

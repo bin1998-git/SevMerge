@@ -67,7 +67,7 @@
         <div class="board-inner">
 
             <div class="board-action">
-                <span class="board-count">총 <strong>8개</strong>의 게시글</span>
+                <span class="board-count">총 <strong>{{boardCount}}</strong>의 게시글</span>
                 <a href="/boards/save?boardType=FREE" class="btn btn-primary btn-sm">글쓰기</a>
             </div>
 
@@ -117,7 +117,7 @@
         <div class="board-inner">
 
             <div class="board-action">
-                <span class="board-count">총 <strong>6개</strong>의 공지</span>
+                <span class="board-count">총 <strong>{{boardCount}}</strong>의 공지</span>
                     {{#isAdmin}}
                         <a href="/boards/save?boardType=NOTICE" class="btn btn-primary btn-sm">공지 작성</a>
                     {{/isAdmin}}
