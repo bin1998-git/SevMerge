@@ -64,4 +64,12 @@ public class BoardService {
 
         boardRepository.save(board);
     }
+
+    public Board detailBoard(Long boardId) {
+        Board board = boardRepository.findByIdWithMember(boardId).orElseThrow(
+                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
+        );
+
+        return board;
+    }
 }

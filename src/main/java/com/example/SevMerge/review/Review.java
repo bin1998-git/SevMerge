@@ -2,13 +2,11 @@ package com.example.SevMerge.review;
 
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -34,11 +32,6 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "member_id" )
     private Member member; // 의뢰인
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
-
 
     @CreationTimestamp
     private Timestamp createdAt; // 작성일

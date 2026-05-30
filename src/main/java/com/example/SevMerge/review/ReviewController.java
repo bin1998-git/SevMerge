@@ -1,10 +1,11 @@
 package com.example.SevMerge.review;
 
-import com.example.SevMerge.expertprofile.ExpertProfile;
+
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.project.Project;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,35 +21,49 @@ public class ReviewController {
 
     // 리뷰목록 화면
     @GetMapping("/reviews")
-    public String reviewList() {
+    public String reviewList(Model model, @RequestParam("expertId") Long expertId) {
 
 
+        ReviewResponse.ReviewListPageDTO reviewListPageDTO = reviewService.reviewsListPage(expertId);
+
+        model.addAttribute("expertProfile",reviewListPageDTO.getExpertProfile());
+        model.addAttribute("reviews",reviewListPageDTO.getReviews());
 
          return "review/review-list";
     }
 
     // 리뷰작성 화면
     @GetMapping("/reviews/save")
-    public String saveReviewForm(Model model , HttpSession session,@RequestParam Long expertId, @RequestParam Long projectId) {
+    public String saveReviewForm(Model model , HttpSession session,@RequestParam Long expertId) {
 
         Member sessionMember = (Member) session.getAttribute("sessionUser");
+        if(sessionMember == null ){
 
-        ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(sessionMember,expertId,projectId);
+            return "redirect:/login";
 
+        }
+
+        ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(expertId);
 
         model.addAttribute("expertProfile",reviewSaveDTO.getExpertProfile());
-        model.addAttribute("project",reviewSaveDTO.getProject());
 
         return  "review/review-save";
     }
+
 
     // 리뷰 작성 후 저장
     @PostMapping("/reviews/save")
     public String saveReview(ReviewRequest.SaveReviewDTO reviewDTO, HttpSession session) {
 
-        Member member = (Member) session.getAttribute("sessionUser"); // 누가 쓸건지 특정
+        Member sessionMember = (Member) session.getAttribute("sessionUser"); // 누가 쓸건지 특정
 
-        reviewService.save(reviewDTO,member);
+        if(sessionMember == null ){
+
+            return "redirect:/login";
+
+        }
+
+        reviewService.save(reviewDTO,sessionMember);
 
         return "redirect:/reviews";
     }
@@ -75,34 +90,5 @@ public class ReviewController {
     //별점 집계및 뱃지갱신
 
 
-
-    // 리뷰 페이지 테스트용
-    @GetMapping ("reviewTest/detail")
-    public String reviewTestDetail(){
-
-        return "review/review-detailTEST";
-
-    }
-
-    @GetMapping ("reviewTest/list")
-    public String reviewTestList(){
-
-        return "review/review-listTEST";
-
-    }
-
-    @GetMapping ("reviewTest/save")
-    public String reviewTestSave(){
-
-        return "review/review-saveTEST";
-
-    }
-
-    @GetMapping ("reviewTest/update")
-    public String reviewTestUpdate(){
-
-        return "review/review-updateTEST";
-
-    }
 
 }

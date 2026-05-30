@@ -12,19 +12,18 @@ public class BoardRequest {
         private String title;
         private String content;
         private Integer viewCount;
-        private Member member;
         private BoardType boardType;
 
-        public SaveBoardDTO(String title, String content, Integer viewCount, Member member, BoardType boardType) {
-            this.title = title;
-            this.content = content;
-            this.viewCount = viewCount;
-            this.member = member;
-            this.boardType = boardType;
+        public Board toEntity(Member member) {
+            return Board.builder()
+                    .title(title)
+                    .content(content)
+                    .boardType(boardType)
+                    .viewCount(0)
+                    .member(member)
+                    .isActive(true)
+                    .build();
         }
-
-        @Builder
-
 
         public void validate() {
             if(title == null || title.trim().isEmpty()) {
@@ -38,15 +37,9 @@ public class BoardRequest {
     }
 
     @Data
-    public static class updateBoardDTO {
+    public static class UpdateBoardDTO {
         private String title;
         private String content;
-
-        @Builder
-        public updateBoardDTO(String title, String content) {
-            this.title = title;
-            this.content = content;
-        }
 
         public void validate() {
             if(title == null || title.trim().isEmpty()) {

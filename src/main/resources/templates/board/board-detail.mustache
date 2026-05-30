@@ -74,7 +74,7 @@
             <span class="detail-category">{{board.boardType}}</span>
             <h1 class="detail-title">{{board.title}}</h1>
             <div class="detail-meta">
-                <span class="author">{{board.member.name}}</span>
+                <span class="author">{{board.memberName}}</span>
                 <div class="detail-meta-dot"></div>
                 <span>{{board.createdAt}}</span>
                 <div class="detail-meta-dot"></div>
@@ -126,7 +126,6 @@
 
             <!-- 댓글 목록 -->
             <div class="comment-list">
-
                 {{#comments}}
                 <div class="comment-item">
                     <div class="comment-header">

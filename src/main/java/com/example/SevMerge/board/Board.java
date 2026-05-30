@@ -11,7 +11,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +20,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
     @Column(nullable = false)
@@ -41,18 +40,19 @@ public class Board {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="comment_id")
-    private List<Comment> comment;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name="comment_id")
+    // todo - 추구 Comment Class 추가
+    //private Comment comment;
 
     @Builder
-    public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member, List<Comment> comment) {
+    public Board(BoardType boardType, String title, String content, Integer viewCount, Timestamp createdAt, Member member) {
         this.boardType = boardType;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
         this.createdAt = createdAt;
         this.member = member;
-        this.comment = comment;
+        //this.comment = comment;
     }
 }

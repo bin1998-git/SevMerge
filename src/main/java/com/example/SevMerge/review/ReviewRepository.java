@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review , Long> {
@@ -23,5 +24,11 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
     """)
     public Optional<Long> countReview(@Param("expertId") Long expertId);
 
+
+   // 특정 전문가의 리뷰들
+   @Query("""
+        SELECT r FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
+    """)
+    public List<Review> findByExpertProfile(@Param("expertId") Long expertId);
 
 }

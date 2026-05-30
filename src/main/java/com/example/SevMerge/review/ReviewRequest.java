@@ -11,17 +11,17 @@ public class ReviewRequest {
     public static class SaveReviewDTO {
 
 
-        private Integer Rating;
+        private Integer rating;
         private String content;
-        private Long projectId;
+
         private Long expertId;
 
 
         @Builder
-        public SaveReviewDTO(Integer rating, String content,Long projectId, Long expertProfileId) {
-            Rating = rating;
+        public SaveReviewDTO(Integer rating, String content , Long expertProfileId) {
+            this.rating = rating;
             this.content = content;
-            this.projectId = projectId;
+
             this.expertId = expertProfileId;
         }
 

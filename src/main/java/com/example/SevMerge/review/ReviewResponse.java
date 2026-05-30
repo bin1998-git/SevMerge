@@ -2,32 +2,23 @@ package com.example.SevMerge.review;
 
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.project.Project;
+import com.sun.jdi.event.StepEvent;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 public class ReviewResponse {
 
     @Data
     @Builder
+    // 리뷰화면
     public static class ReviewSaveDTO {
 
-
         private SaveExpertDTO expertProfile;
-        private SaveProjectDTO project;
-
-
-        // project
-        @Data
-        @Builder
-        public static class SaveProjectDTO {
-
-            private Long id;
-            private String title;
-        }
 
         // expert
         @Data
@@ -37,8 +28,6 @@ public class ReviewResponse {
             private Long id;
             private SaveMemberDTO member;
             private String career;
-
-
             // member
             @Data
             @Builder
@@ -46,12 +35,8 @@ public class ReviewResponse {
                 private String name;
             }
 
-
         }
-
-
-        public ReviewSaveDTO (ExpertProfile expertProfile , Project project){
-
+        public ReviewSaveDTO (ExpertProfile expertProfile  ){
 
             this.expertProfile = SaveExpertDTO
                     .builder()
@@ -64,19 +49,10 @@ public class ReviewResponse {
                     .builder()
                     .name(expertProfile.getMember().getName())
                     .build();
-
-
-            this.project = SaveProjectDTO
-                    .builder()
-                    .id(project.getId())
-                    .title(project.getTitle())
-                    .build();
-
         }
-
-
     }
 
+    // 리뷰 상세화면
     @Data
     public static class ReviewDetailDTO {
 
@@ -85,8 +61,7 @@ public class ReviewResponse {
         private Long id;
 
         private ExpertDTO expertProfile;
-        private MemberDTO member;
-        private ProjectDTO project;
+        private DetailMemberDTO member;
 
         @Data
         @Builder
@@ -98,22 +73,11 @@ public class ReviewResponse {
 
         @Data
         @Builder
-        public static class MemberDTO {  // 머스테치 파일의 {{review.member}}
+        public static class DetailMemberDTO {  // 머스테치 파일의 {{review.member}}
 
             private String name;
 
-
         }
-
-        @Data
-        @Builder
-        public static class ProjectDTO { // 머스테치 파일의 {{review.project}}
-
-            private String title;
-
-        }
-
-
 
         @Builder
         public ReviewDetailDTO(Review review) {
@@ -122,7 +86,7 @@ public class ReviewResponse {
             this.createdAt = review.getCreatedAt();
             this.id = review.getId();
 
-            this.member = MemberDTO
+            this.member = DetailMemberDTO
                     .builder()
                     .name(review.getMember().getName())
                     .build();
@@ -134,11 +98,88 @@ public class ReviewResponse {
                     .career(review.getExpertProfile().getCareer())
                     .build();
 
-            this.project = ProjectDTO
-                    .builder()
-                    .title(review.getProject().getTitle())
-                    .build();
+
         }
+    }
+
+
+    // 리뷰 목록 화면
+
+    @Data
+    public static class ReviewListDTO {
+
+        private Timestamp createdAt;
+        private String content;
+        private Long id; // reviewId
+        private ReviewListMemberDTO member;
+
+
+        @Data
+        @Builder
+        public static class ReviewListMemberDTO {
+
+            private String name; // 리뷰의 일반회원 이름
+        }
+
+        public ReviewListDTO (Review review){
+
+            this.createdAt = review.getCreatedAt();
+            this.content = review.getContent();
+            this.id = review.getId();
+
+            this.member = ReviewListMemberDTO
+                    .builder()
+                    .name(review.getMember().getName())// 일반회원 이름
+                    .build();
+
+        }
+    }
+
+    // 리뷰 리스트에 뿌려줄 전문가 데이터
+    @Data
+    public static class ExpertListDTO {
+
+        private ExpertListMemberDTO member;
+        private BigDecimal avgRating;
+        private String career;
+//        private BigDecimal experienceYears; // TODO 전문가 경력 추후 전문가에추가
+//        private Long reviewCount; //TODO 전문가가 가진 리뷰갯수 추후 전문가에 추가
+        @Data
+        @Builder
+        public static class ExpertListMemberDTO {
+
+            private String name;
+            private boolean isCertified;
+
+
+        }
+
+        public ExpertListDTO (ExpertProfile expertProfile) {
+            this.avgRating = expertProfile.getAvgRating();
+            this.career = expertProfile.getCareer();
+
+            this.member = ExpertListMemberDTO
+                    .builder()
+                    .name(expertProfile.getMember().getName())
+                    .isCertified(expertProfile.isCertified())
+                    .build();
+
+        }
+
+    }
+
+    @Data
+    public static class ReviewListPageDTO {
+
+        private List<ReviewListDTO> reviews;
+        private ExpertListDTO expertProfile;
+
+        public ReviewListPageDTO(List<ReviewListDTO> reviews , ExpertListDTO expertProfile){
+            this.reviews = reviews;
+            this.expertProfile = expertProfile;
+
+        }
+
     }
 
 
