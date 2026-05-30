@@ -18,7 +18,7 @@ public class ProjectResponeDTO {
         private String category;
         private Integer budgetMin;
         private Integer budgetMax;
-        private java.sql.Timestamp deadline;
+        private Timestamp deadline;
         private String bidFilter;
         private String projectStatus;
         private Timestamp createdAt;
