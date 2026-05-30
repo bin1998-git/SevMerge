@@ -58,7 +58,4 @@ public class Board {
         this.content = updateBoardDTO.getContent();
     }
 
-    public void delete(BoardRequest.DeleteDTO deleteDTO) {
-        this.isActive = deleteDTO.getIsActive();
-    }
 }
