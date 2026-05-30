@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 // member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, created_at
@@ -41,6 +42,7 @@ public class Project {
     @Column(nullable = false)
     private Integer budgetMax; // 최대예산
 
+    @CreationTimestamp
     @Column(nullable = false)
     private Timestamp deadline; // 마감일
 
@@ -52,6 +54,7 @@ public class Project {
     @Column(nullable = false)
     private ProjectStatus projectStatus;
 
+    @CreationTimestamp
     private Timestamp createdAt;
 
     // DB에 저장되기 직전에 자동으로 실행되는 메서드
