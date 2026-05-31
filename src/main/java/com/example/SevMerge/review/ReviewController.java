@@ -23,10 +23,12 @@ public class ReviewController {
 
     // 리뷰목록 화면
     @GetMapping("/reviews")
-    public String reviewList(Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page) {
+    public String reviewList(Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page,HttpSession session) {
 
 
-        ReviewResponse.ReviewListPageDTO reviewListPageDTO = reviewService.reviewsListPage(expertId,page);
+        Member sessionMember =(Member) session.getAttribute("sessionUser");
+
+        ReviewResponse.ReviewListPageDTO reviewListPageDTO = reviewService.reviewsListPage(expertId,page,sessionMember);
 
         model.addAttribute("expertProfile",reviewListPageDTO.getExpertProfile());
         model.addAttribute("reviews",reviewListPageDTO.getReviews());
@@ -39,12 +41,12 @@ public class ReviewController {
     @GetMapping("/reviews/save")
     public String saveReviewForm(Model model , HttpSession session,@RequestParam Long expertId) {
 
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
-        if(sessionMember == null ){
-
-            return "redirect:/login";
-
-        }
+//        Member sessionMember = (Member) session.getAttribute("sessionUser");
+//        if(sessionMember == null ){
+//
+//            return "redirect:/login";
+//
+//        }
 
         ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(expertId);
 
