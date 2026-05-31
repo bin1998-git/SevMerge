@@ -14,7 +14,7 @@ import java.util.List;
 public class ReviewResponse {
 
     @Data
-    @Builder
+
     // 리뷰화면
     public static class ReviewSaveDTO {
 
@@ -146,7 +146,7 @@ public class ReviewResponse {
         private String career;
 
         //        private BigDecimal experienceYears; // TODO 전문가 경력 추후 전문가에추가
-//        private Long reviewCount; //TODO 전문가가 가진 리뷰갯수 추후 전문가에 추가
+//        private Long reviewCount; //TODO 전문가가 가진 리뷰갯수
         @Data
         @Builder
         public static class ExpertListMemberDTO {

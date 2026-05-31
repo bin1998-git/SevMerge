@@ -82,7 +82,6 @@ public class ReviewService {
     }
 
 
-
     // 리뷰 목록
     public ReviewResponse.ReviewListPageDTO reviewsListPage(Long expertProfileId, int page) {
 
@@ -113,7 +112,7 @@ public class ReviewService {
 
         // 페이지 번호 리스트 만들기
         List<ReviewResponse.PagingDTO.PageDTO> pageList = new ArrayList<>();
-        for (int i = 1 ; i <= reviews.getTotalPages(); i++){
+        for (int i = 1; i <= reviews.getTotalPages(); i++) {
 
             ReviewResponse.PagingDTO.PageDTO pageDTO = new ReviewResponse.PagingDTO.PageDTO();
             pageDTO.setNum(i);
@@ -126,19 +125,17 @@ public class ReviewService {
         // 특정 전문가
         ReviewResponse.ExpertListDTO expertListDTO = new ReviewResponse.ExpertListDTO(expertProfileEntity);
 
-        return new ReviewResponse.ReviewListPageDTO(reviewListDTOS, expertListDTO,pagingDTO);
+        return new ReviewResponse.ReviewListPageDTO(reviewListDTOS, expertListDTO, pagingDTO);
 
     }
-
-
 
 
     // 리뷰 수정 화면
     public ReviewResponse.UpdateDTO updatePage(Long reviewId) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
-                    new BadRequestException("해당 리뷰는 존재하지 않습니다.")
-                );
+                new BadRequestException("해당 리뷰는 존재하지 않습니다.")
+        );
 
         ReviewResponse.UpdateDTO reviewEntity = new ReviewResponse.UpdateDTO(review);
 
@@ -147,23 +144,20 @@ public class ReviewService {
     }
 
 
-
-
-
     // 리뷰수정
     @Transactional
-    public void updateReview(ReviewRequest.UpdateRequestDTO dto, Long reviewId){
+    public void updateReview(ReviewRequest.UpdateRequestDTO dto, Long reviewId) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
                 new BadRequestException("해당 리뷰는 존재하지 않습니다.")
-                );
+        );
         review.setCountStar(dto.getRating());
         review.setContent(dto.getContent());
     }
 
 
     // 리뷰 삭제
-    public Long deleteReview (Long reviewId){
+    public Long deleteReview(Long reviewId) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
                 new BadRequestException("해당 리뷰는 존재하지 않습니다.")
