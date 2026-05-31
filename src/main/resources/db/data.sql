@@ -167,7 +167,15 @@ VALUES (3, 1, 3, 1500000, 150000, 1350000, 'imp_vbank_009182', 'vbank', 'PAID', 
 
 
 
+-- Review 샘플데이터
+INSERT INTO review_tb (expert_profile_id, member_id, count_star, content, created_at)
+VALUES (1, 1, 5, '정말 꼼꼼하고 빠르게 작업해 주셨어요. 요구사항을 잘 이해하고 결과물도 깔끔했습니다.', NOW());
 
+INSERT INTO review_tb (expert_profile_id, member_id, count_star, content, created_at)
+VALUES (1, 4, 4, '소통이 원활하고 일정도 잘 지켜주셨습니다. 다음에도 함께하고 싶어요.', NOW());
+
+INSERT INTO review_tb (expert_profile_id, member_id, count_star, content, created_at)
+VALUES (1, 1, 5, '기술적으로 매우 뛰어나신 분입니다. 복잡한 작업도 깔끔하게 처리해 주셨어요.', NOW());
 
 
 
