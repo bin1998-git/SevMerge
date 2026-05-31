@@ -47,9 +47,6 @@ public class BoardService {
                 () -> new BadRequestException("사용자를 찾을 수 없습니다.")
         );
 
-        // 2. 유효성 검사
-        saveBoardDTO.validate();
-
         boardRepository.save(saveBoardDTO.toEntity(memberEntity));
     }
 

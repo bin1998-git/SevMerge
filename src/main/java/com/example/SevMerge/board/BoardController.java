@@ -1,6 +1,5 @@
 package com.example.SevMerge.board;
 
-import com.example.SevMerge.comment.Comment;
 import com.example.SevMerge.comment.CommentResponse;
 import com.example.SevMerge.comment.CommentService;
 import com.example.SevMerge.core.util.Define;
@@ -11,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +100,9 @@ public class BoardController {
     public String saveBoard(BoardRequest.SaveBoardDTO saveBoardDTO,
                             HttpSession session) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+
+        saveBoardDTO.validate();
+
         boardService.saveBoard(sessionMember, saveBoardDTO);
 
         return "redirect:/boards";
