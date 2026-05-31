@@ -35,6 +35,12 @@ public class ReviewRequest {
 
     }
 
+    @Data
+    public static class UpdateRequestDTO {
+        private Integer rating;
+        private String content;
+
+    }
 
 
 }
