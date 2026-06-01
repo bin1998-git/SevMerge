@@ -23,7 +23,7 @@ public class Board {
     private Long id;
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String title;
     @Column(nullable = false)
     private String content;

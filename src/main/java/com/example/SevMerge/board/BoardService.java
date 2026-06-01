@@ -5,11 +5,13 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,10 +24,33 @@ public class BoardService {
 
     // 게시글 조회
     public List<BoardResponse.ListDTO> findAllByBoardType(BoardType BoardType) {
-        return  boardRepository.findAllByBoardTypeWithMemberIsActive(BoardType)
+        return  boardRepository.findAllByBoardTypeIsActive(BoardType)
                 .stream()
                 .map(BoardResponse.ListDTO::new)
                 .toList();
+    }
+
+    // 1:1 게시글 조회
+    public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member) {
+        Member memberEntity = memberRepository.findById(member.getId()).orElseThrow(
+                () -> new NotFoundException("멤버를 찾을 수 없습니다.")
+        );
+
+        List<BoardResponse.ListDTO> inquiryBoards = new ArrayList<>();
+
+        if (member.getRole().equals(Role.ADMIN)) {
+           inquiryBoards = boardRepository.findAllByBoardTypeIsActive(boardType)
+                   .stream()
+                   .map(BoardResponse.ListDTO::new)
+                   .toList();
+        } else {
+            inquiryBoards = boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType,memberEntity.getId())
+                    .stream()
+                    .map(BoardResponse.ListDTO::new)
+                    .toList();;
+        }
+
+        return inquiryBoards;
     }
 
     public BoardResponse.DetailDTO detailBoard(Long boardId) {

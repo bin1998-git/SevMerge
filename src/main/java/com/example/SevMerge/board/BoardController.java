@@ -42,12 +42,15 @@ public class BoardController {
 
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
+        model.addAttribute("isInquiry", boardType.equalsIgnoreCase("INQUIRY"));
         model.addAttribute("isAdmin", sessionMember != null && sessionMember.isAdmin());
 
         if (boardType.equalsIgnoreCase("FREE")) {
             boardList = boardService.findAllByBoardType(BoardType.FREE);
         } else if (boardType.equalsIgnoreCase("NOTICE")) {
             boardList = boardService.findAllByBoardType(BoardType.NOTICE);
+        } else if(boardType.equalsIgnoreCase("INQUIRY")) {
+            boardList = boardService.findAllInquiry(BoardType.INQUIRY,sessionMember);
         }
 
         model.addAttribute("boards", boardList);
@@ -83,7 +86,8 @@ public class BoardController {
         }
 
         // 자유게시판은 로그인만 되어있으면 됨
-        if (boardType.equalsIgnoreCase("FREE")) {
+        if (boardType.equalsIgnoreCase("FREE") ||
+                boardType.equalsIgnoreCase("INQUIRY")) {
             if (sessionUser == null) {
                 return "redirect:/login-form";
             }
@@ -92,6 +96,7 @@ public class BoardController {
         model.addAttribute("boardType", boardType);
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
+        model.addAttribute("isInquiry",boardType.equalsIgnoreCase("INQUIRY"));
 
         return "board/board-save";
     }
