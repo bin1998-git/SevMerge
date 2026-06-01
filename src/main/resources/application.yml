@@ -21,3 +21,9 @@ server:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
+
+# OAuth - 카카오 로그인
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}

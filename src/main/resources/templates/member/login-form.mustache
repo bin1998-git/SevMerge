@@ -39,7 +39,7 @@
 
             <div class="form-group">
                 <label class="form-label">이메일</label>
-                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요" value="{{email}}" />
+                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요" value="{{#email}}{{email}}{{/email}}" />
             </div>
 
             <div class="form-group">
@@ -58,6 +58,17 @@
             <div class="divider"></div>
 
             <button type="submit" class="submit-btn">로그인</button>
+            <div class="social-login-group" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code&state=CLIENT"
+                   style="display: block; text-align: center;">
+                    <img src="/images/kakao_login.png" alt="의뢰인 카카오 로그인" style="width: 100%; border-radius: 10px; cursor: pointer;">
+                </a>
+
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code&state=EXPERT"
+                   style="display: block; text-align: center;">
+                    <img src="/images/kakao_login.png" alt="전문가 카카오 로그인" style="width: 100%; border-radius: 10px; cursor: pointer; filter: saturate(0.7) brightness(0.9);">
+                </a>
+            </div>
 
         </form>
 

@@ -128,8 +128,14 @@
             <a href="/mypage">마이페이지</a>
         </nav>
         <div class="nav-actions">
-            <span class="nav-username">홍길동님</span>
-            <a href="/auth/logout" class="btn btn-outline">로그아웃</a>
+            {{#sessionUser}}
+                <span class="nav-username">{{sessionUser.name}}님</span>
+                <a href="/logout" class="btn btn-outline">로그아웃</a>
+            {{/sessionUser}}
+            {{^sessionUser}}
+                <a href="/login" class="btn btn-outline">로그인</a>
+                <a href="/join" class="btn btn-primary">회원가입</a>
+            {{/sessionUser}}
         </div>
     </div>
 </header>
