@@ -12,14 +12,14 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
     // 프로젝트에 들어온 제안서 조회
     @Query("""
             SELECT b FROM Bid b JOIN FETCH b.expert
-             WHERE b.project.id = :projectId ORDER BY b.createAt DESC
+             WHERE b.project.id = :projectId ORDER BY b.createdAt DESC
             """)
     List<Bid> findByProjectId(@Param("projectId") Long projectId);
 
     // 전문가가 제출 제안서 조회
     @Query("""
             SELECT b FROM Bid b JOIN FETCH b.project
-            WHERE b.expert.id = :expertId ORDER BY b.createAt DESC
+            WHERE b.expert.id = :expertId ORDER BY b.createdAt DESC
             """)
     List<Bid> findByExpertId(@Param("expertId") Long expertId);
 
