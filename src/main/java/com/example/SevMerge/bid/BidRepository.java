@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface BidRepository extends JpaRepository<Bid, Integer> {
+public interface BidRepository extends JpaRepository<Bid, Long> {
 
     // 프로젝트에 들어온 제안서 조회
     @Query("""

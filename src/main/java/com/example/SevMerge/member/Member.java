@@ -131,4 +131,8 @@ public class Member {
         this.name = name;
         this.phone = phone;
     }
+
+    public boolean isClient() {
+        return this.role == Role.CLIENT;
+    }
 }
