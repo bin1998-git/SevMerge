@@ -67,7 +67,7 @@
         <div class="board-inner">
 
             <div class="board-action">
-                <span class="board-count">총 <strong>8개</strong>의 게시글</span>
+                <span class="board-count">총 <strong>{{boardCount}}</strong>의 게시글</span>
                 <a href="/boards/save?boardType=FREE" class="btn btn-primary btn-sm">글쓰기</a>
             </div>
 
@@ -76,13 +76,12 @@
                 <button class="board-search-btn">검색</button>
             </div>
 
-                {{! 게시글 있을 때 — 하드코딩 데이터 }}
                 {{#boards}}
                     <div class = "board-table">
-                        <a href="/boards/{{boards.id}}" class="board-table-row pinned col-free">
+                        <a href="/boards/{{id}}" class="board-table-row pinned col-free">
                             <span class="cell-num">📌</span>
                             <span class="cell-title">{{title}}</span>
-                            <span class="cell-author">{{member.name}}</span>
+                            <span class="cell-author">{{memberName}}</span>
                             <span class="cell-date">{{createdAt}}</span>
                             <span class="cell-view">{{viewCount}}</span>
                         </a>
@@ -118,7 +117,7 @@
         <div class="board-inner">
 
             <div class="board-action">
-                <span class="board-count">총 <strong>6개</strong>의 공지</span>
+                <span class="board-count">총 <strong>{{boardCount}}</strong>의 공지</span>
                     {{#isAdmin}}
                         <a href="/boards/save?boardType=NOTICE" class="btn btn-primary btn-sm">공지 작성</a>
                     {{/isAdmin}}
@@ -133,10 +132,10 @@
                 {{! 공지 있을 때 — 하드코딩 데이터 }}
                 {{#boards}}
                     <div class = "board-table">
-                        <a href="/boards/{{boards.id}}" class="board-table-row pinned col-free">
+                        <a href="/boards/{{id}}" class="board-table-row pinned col-free">
                             <span class="cell-num">📌</span>
                             <span class="cell-title">{{title}}</span>
-                            <span class="cell-author">{{member.name}}</span>
+                            <span class="cell-author">{{memberName}}</span>
                             <span class="cell-date">{{createdAt}}</span>
                             <span class="cell-view">{{viewCount}}</span>
                         </a>

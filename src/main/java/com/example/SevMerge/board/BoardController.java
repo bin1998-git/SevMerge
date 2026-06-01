@@ -1,11 +1,17 @@
 package com.example.SevMerge.board;
 
+import com.example.SevMerge.comment.CommentResponse;
+import com.example.SevMerge.comment.CommentService;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,7 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
 
-    private final BoardService boardService;;
+    private final BoardService boardService;
+    private final CommentService commentService;
 
     // todo: 추후 메인 페이지 요청하는 곳 생성되면 삭제예정
     @GetMapping("/")
@@ -27,31 +34,64 @@ public class BoardController {
     @GetMapping("/boards")
     // 게시판 메인 화면
     public String showBoard(@RequestParam(defaultValue = "FREE") String boardType,
-                                Model model) {
+                            Model model, HttpSession session) {
 
-        List<Board> boardList = new ArrayList<>();
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
-        model.addAttribute("isFree",boardType.equalsIgnoreCase("FREE"));
-        model.addAttribute("isNotice",boardType.equalsIgnoreCase("NOTICE"));
+        List<BoardResponse.ListDTO> boardList = new ArrayList<>();
 
-        if (boardType.equalsIgnoreCase("FREE")){
+        model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
+        model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
+        model.addAttribute("isAdmin", sessionMember != null && sessionMember.isAdmin());
+
+        if (boardType.equalsIgnoreCase("FREE")) {
             boardList = boardService.findAllByBoardType(BoardType.FREE);
-        } else if(boardType.equalsIgnoreCase("NOTICE")) {
+        } else if (boardType.equalsIgnoreCase("NOTICE")) {
             boardList = boardService.findAllByBoardType(BoardType.NOTICE);
         }
 
-        model.addAttribute("boards",boardList);
+        model.addAttribute("boards", boardList);
+        model.addAttribute("boardCount",boardList.size());
 
-        return "board/board";
+        return "board/board-list";
+    }
+
+    @GetMapping("/boards/{boardId}")
+    public String showBoardDetail(@PathVariable(name = "boardId") Long boardId,
+                                  Model model, HttpSession session) {
+
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
+        Long boardOwner = board.getMemberId();
+        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);
+        model.addAttribute("board", board);
+        model.addAttribute("comments", commentList);
+        model.addAttribute("isOwner",sessionMember!=null && boardOwner.equals(sessionMember.getId()));
+        return "board/board-detail";
     }
 
     @GetMapping("/boards/save")
     public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
-                                Model model) {
+                                Model model, HttpSession session) throws BadRequestException {
 
-        model.addAttribute("boardType",boardType);
-        model.addAttribute("isFree",boardType.equalsIgnoreCase("FREE"));
-        model.addAttribute("isNotice",boardType.equalsIgnoreCase("NOTICE"));
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        // 공지사항은 어드민만
+        if (boardType.equalsIgnoreCase("NOTICE")) {
+            if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+                throw new BadRequestException("공지 작성 권한이 없습니다.");
+            }
+        }
+
+        // 자유게시판은 로그인만 되어있으면 됨
+        if (boardType.equalsIgnoreCase("FREE")) {
+            if (sessionUser == null) {
+                return "redirect:/login-form";
+            }
+        }
+
+        model.addAttribute("boardType", boardType);
+        model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
+        model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
 
         return "board/board-save";
     }
@@ -59,19 +99,44 @@ public class BoardController {
     @PostMapping("boards/save")
     public String saveBoard(BoardRequest.SaveBoardDTO saveBoardDTO,
                             HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute("sessionMember");
-        boardService.saveBoard(sessionMember,saveBoardDTO);
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+
+        saveBoardDTO.validate();
+
+        boardService.saveBoard(sessionMember, saveBoardDTO);
 
         return "redirect:/boards";
     }
 
-    @GetMapping("/boards/{boardId}/update")
-    public String updateBoardPage() {
+    @GetMapping("/boards/{boardId}/edit")
+    public String updateBoardPage(@PathVariable(name = "boardId") Long boardId,
+                                  Model model) {
+
+        BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
+        model.addAttribute("board",board);
+
         return "board/board-update";
     }
 
-    @PostMapping("/boards/{boardId}/update")
-    public String updateBoard() {
-        return "redirect:/board";
+    @PostMapping("/boards/{boardId}/edit")
+    public String updateBoard(@PathVariable(name = "boardId") Long boardId,
+                              BoardRequest.UpdateBoardDTO updateBoardDTO,
+                              HttpSession session) {
+
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+
+        boardService.updateBoard(boardId,updateBoardDTO,sessionMember.getId());
+        return "redirect:/boards";
+    }
+
+    @PostMapping("/boards/{boardId}/delete")
+    public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
+                              HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+
+        boardService.deleteBoard(boardId,sessionMember.getId());
+
+
+        return "redirect:/boards";
     }
 }

@@ -21,12 +21,12 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     // 댓글 목록 조회
-    public List<CommentResponse.ListDTO> findComments(Integer boardId, Integer sessionMemberId) {
+    public List<CommentResponse.ListDTO> findComments(Long boardId) {
 
         List<Comment> commentList = commentRepository.findByBoardIdWithMember(boardId);
 
         return commentList.stream()
-                .map(comment -> new CommentResponse.ListDTO(comment, sessionMemberId))
+                .map(CommentResponse.ListDTO::new)
                 .toList();
     }
 

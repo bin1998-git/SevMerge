@@ -3,6 +3,8 @@ package com.example.SevMerge.review;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,27 +17,26 @@ import java.sql.Timestamp;
 @Entity
 @NoArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "expert_id")
-    private ExpertProfile expert; // 전문가
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "expert_profile_id" )
+    private ExpertProfile expertProfile; // 전문가
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "member_id" )
     private Member member; // 의뢰인
 
-
     @CreationTimestamp
-    private Timestamp createdAt;
+    private Timestamp createdAt; // 작성일
 
     private Integer countStar; // 별점
-
-    private Double totalStar; // 평균별점
 
     private String content; // 리뷰 내용
 

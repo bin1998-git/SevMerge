@@ -71,10 +71,10 @@
 
         <!-- 게시글 헤더 -->
         <div class="detail-header">
-            <span class="detail-category">{{board.boardTypeName}}</span>
+            <span class="detail-category">{{board.boardType}}</span>
             <h1 class="detail-title">{{board.title}}</h1>
             <div class="detail-meta">
-                <span class="author">{{board.member.name}}</span>
+                <span class="author">{{board.memberName}}</span>
                 <div class="detail-meta-dot"></div>
                 <span>{{board.createdAt}}</span>
                 <div class="detail-meta-dot"></div>
@@ -109,7 +109,7 @@
         <div class="comment-section">
 
             <div class="comment-title">
-                댓글 <span class="comment-count">{{commentCount}}</span>
+                댓글
             </div>
 
             <!-- 댓글 작성 폼 -->
@@ -126,27 +126,26 @@
 
             <!-- 댓글 목록 -->
             <div class="comment-list">
-
                 {{#comments}}
                 <div class="comment-item">
                     <div class="comment-header">
                         <div class="comment-author-wrap">
                             <div class="comment-avatar">👤</div>
                             <div>
-                                <div class="comment-author">{{member.name}}</div>
+                                <div class="comment-author">{{memberName}}</div>
                                 <div class="comment-date">{{createdAt}}</div>
                             </div>
                         </div>
-                        {{#isCommentOwner}}
+                        {{#isOwner}}
                         <div class="comment-actions">
                             <button class="comment-btn">수정</button>
                             <form action="/boards/{{board.id}}/comments/{{id}}/delete" method="POST" style="display:inline;">
                                 <button type="submit" class="comment-btn delete">삭제</button>
                             </form>
                         </div>
-                        {{/isCommentOwner}}
+                        {{/isOwner}}
                     </div>
-                    <div class="comment-content">{{content}}</div>
+                    <div class="comment-content">{{comment}}</div>
                 </div>
                 {{/comments}}
 

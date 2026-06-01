@@ -45,7 +45,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 관리자 체크
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**");
+                .addPathPatterns("/admin/**","/board/**")
+                .excludePathPatterns(
+                        "/boards",
+                        "/boards/save-form"
+                        );
     }
 
     @Bean

@@ -12,8 +12,8 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    //  회원가입
-    @GetMapping("/join-form")
+    // 회원가입
+    @GetMapping("/join")
     public String joinForm() {
         return "member/join-form";
     }
@@ -21,11 +21,11 @@ public class MemberController {
     @PostMapping("/join")
     public String join(MemberRequest.Join request) {
         memberService.join(request);
-        return "redirect:/login-form";
+        return "redirect:/login";
     }
 
     // 로그인 / 로그아웃
-    @GetMapping("/login-form")
+    @GetMapping("/login")
     public String loginForm() {
         return "member/login-form";
     }
@@ -51,41 +51,48 @@ public class MemberController {
     }
 
     @PostMapping("/mypage/update")
-    public String updateMyInfo(MemberRequest.Update request, HttpSession session) {
+    public String updateMember(MemberRequest.Update request, HttpSession session) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         memberService.updateMyInfo(loginMember.getId(), request);
         return "redirect:/mypage";
     }
 
-    @PostMapping("/mypage/password")
-    public String changePassword(MemberRequest.ChangePassword request, HttpSession session) {
-        Member loginMember = (Member) session.getAttribute("sessionUser");
-        memberService.changePassword(loginMember.getId(), request);
-        return "redirect:/mypage";
-    }
-
-    // 관리자 전용
-    @GetMapping("/admin/members")
+    // 회원 목록
+    @GetMapping("/members")
     public String memberList(Model model) {
         model.addAttribute("members", memberService.getPendingExperts());
-        return "admin/member-list";
+        return "member/member-list";
     }
 
-    @PostMapping("/admin/members/{memberId}/approve")
-    public String approveExpert(@PathVariable Long memberId) {
-        memberService.approveExpert(memberId);
+    // 관리자 - 회원 관리
+    @GetMapping("/admin/members")
+    public String adminMembers(Model model) {
+        model.addAttribute("members", memberService.getPendingExperts());
+        return "admin/admin-members";
+    }
+
+    @PostMapping("/admin/members/{id}/delete")
+    public String deleteMember(@PathVariable Long id) {
+        memberService.suspendMember(id);
         return "redirect:/admin/members";
     }
 
-    @PostMapping("/admin/members/{memberId}/reject")
-    public String rejectExpert(@PathVariable Long memberId) {
-        memberService.rejectExpert(memberId);
-        return "redirect:/admin/members";
+    // 관리자 - 전문가 승인
+    @GetMapping("/admin/experts")
+    public String adminExperts(Model model) {
+        model.addAttribute("experts", memberService.getPendingExperts());
+        return "admin/admin-expert";
     }
 
-    @PostMapping("/admin/members/{memberId}/suspend")
-    public String suspendMember(@PathVariable Long memberId) {
-        memberService.suspendMember(memberId);
-        return "redirect:/admin/members";
+    @PostMapping("/admin/experts/{id}/approve")
+    public String approveExpert(@PathVariable Long id) {
+        memberService.approveExpert(id);
+        return "redirect:/admin/experts";
+    }
+
+    @PostMapping("/admin/experts/{id}/reject")
+    public String rejectExpert(@PathVariable Long id) {
+        memberService.rejectExpert(id);
+        return "redirect:/admin/experts";
     }
 }

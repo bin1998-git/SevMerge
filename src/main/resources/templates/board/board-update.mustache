@@ -34,9 +34,7 @@
         </div>
 
         {{! action에 게시글 id 포함 — 컨트롤러에서 board.id 넘겨줘야 함 }}
-        <form class="save-form" action="/boards/{{board.id}}/update" method="POST">
-
-            <input type="hidden" name="boardType" value="{{board.boardType}}" />
+        <form class="save-form" action="/boards/{{board.id}}/edit" method="POST">
 
             <div class="form-group">
                 <label class="form-label">제목</label>
