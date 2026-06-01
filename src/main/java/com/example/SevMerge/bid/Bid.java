@@ -31,17 +31,17 @@ public class Bid {
     private Member expert;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String coverLetter;
+    private String coverLetter; // 자기소개
 
 
     @Column(columnDefinition = "TEXT")
     private String approach;
 
     @Column(nullable = false)
-    private Long estimatedDays;
+    private Long estimatedDays; // 예상 작업 기간
 
     @Column(nullable = false)
-    private Long proposedPrice;
+    private Long proposedPrice; // 희망금액
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
