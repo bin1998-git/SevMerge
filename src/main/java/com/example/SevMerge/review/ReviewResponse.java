@@ -29,7 +29,7 @@ public class ReviewResponse {
             private SaveMemberDTO member;
             private String career;
 
-            // member
+
             @Data
             @Builder
             public static class SaveMemberDTO {
@@ -55,26 +55,31 @@ public class ReviewResponse {
     }
 
     // 전문가가 의뢰인에게 작성하는 화면
-
     @Data
-    public static class ExpertReviewToClient {
+public static class SaveExpertToClient {
 
-        private Long expertProfileId;
         private MemberDTO member;
+        private ExpertProfileDTO expertProfile;
 
         @Data
         @Builder
-        public static class MemberDTO {
+        public static class ExpertProfileDTO {
 
-            private String name;
-            private String email;
             private Long id;
 
         }
 
-        public ExpertReviewToClient(Long expertProfileId, Member member) {
+        @Data
+        @Builder
+        public static class MemberDTO {
+            private Long id; // member id
+            private String name;
+            private String email;
 
-            this.expertProfileId = expertProfileId;
+        }
+
+        public SaveExpertToClient(Member member, ExpertProfile expertProfile) {
+
             this.member = MemberDTO
                     .builder()
                     .id(member.getId())
@@ -82,8 +87,12 @@ public class ReviewResponse {
                     .email(member.getEmail())
                     .build();
 
-        }
+            this.expertProfile = ExpertProfileDTO
+                    .builder()
+                    .id(expertProfile.getId())
+                    .build();
 
+        }
     }
 
 

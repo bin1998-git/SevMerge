@@ -80,14 +80,16 @@ public class ReviewService {
 
     }
 
-    // 전문가가 의뢰인에게 리뷰 작성화면
-    public ReviewResponse.ExpertReviewToClient saveExpertToClientPage(Long expertProfileId, Long memberId) {
+    // 전문가가 의뢰인에게 리뷰 달때 필요함
+    public ReviewResponse.SaveExpertToClient savePageExpertToClientPage(Long memberId, Long expertId) {
 
-       Member member = memberRepository.findById(memberId).orElseThrow(() ->
-                new BadRequestException("해당 유저를 찾을수 없습니다.")
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new BadRequestException("유저를 찾을수 없습니다.")
                 );
-
-       return new ReviewResponse.ExpertReviewToClient(expertProfileId,member);
+        ExpertProfile expertProfile = expertProfileRepository.findById(expertId).orElseThrow(() ->
+                new BadRequestException("전문가를 찾을수 없습니다.")
+                );
+       return new ReviewResponse.SaveExpertToClient(member, expertProfile);
     }
 
 
@@ -100,6 +102,9 @@ public class ReviewService {
 
         return new ReviewResponse.ReviewDetailDTO(review);
     }
+
+
+
 
 
     // 리뷰 목록
@@ -215,6 +220,8 @@ public class ReviewService {
         return expertId;
 
     }
+
+
 
 
 }
