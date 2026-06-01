@@ -62,7 +62,7 @@
                     {{expertProfile.member.name}}
                     {{#expertProfile.member.isCertified}}<span class="cert-badge">⭐ 인증</span>{{/expertProfile.member.isCertified}}
                 </div>
-                <div class="expert-career">{{expertProfile.career}} · 경력 {{expertProfile.experienceYears}}년</div>
+                <div class="expert-career">{{expertProfile.career}}  경력 {{!expertProfile.experienceYears}}년</div>
             </div>
             <div class="expert-rating-box">
                 <div class="rating-big">{{expertProfile.avgRating}}</div>
@@ -84,7 +84,7 @@
                         <div class="review-avatar">👤</div>
                         <div>
                             <div class="review-author">{{member.name}}</div>
-                            <div class="review-project">프로젝트: {{project.title}}</div>
+                            <div class="review-project">프로젝트: {{!project.title}}</div>
                         </div>
                     </div>
                     <div class="review-right">
