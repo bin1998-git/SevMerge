@@ -39,7 +39,7 @@ public class MemberService {
                 .build();
         memberRepository.save(member);
 
-        // 전문가 신청 시 ExpertProfile 초기 생성
+//         전문가 신청 시 ExpertProfile 초기 생성
 //        if (request.getRole() == Role.EXPERT) {
 //            expertProfileRepository.save(ExpertProfile.builder()
 //                    .member(member)

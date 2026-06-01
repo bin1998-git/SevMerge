@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +38,16 @@ public class ExpertProfileService {
 
     expertProfileRepository.save(profile);
     return ExpertProfileResponse.from(profile);
+  }
+
+  /**
+   * 전문가 전체 목록 조회 (목록 페이지용)
+   */
+  public List<ExpertProfileResponse> getAll() {
+    return expertProfileRepository.findAll()
+        .stream()
+        .map(ExpertProfileResponse::from)
+        .toList();
   }
 
   /**

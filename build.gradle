@@ -19,16 +19,8 @@ repositories {
 
 dependencies {
 
-    // Mustache 템플릿 엔진
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
-
-    // Spring Security & OAuth2 Client (구글 로그인용)
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // 웹 소캣 통신 라이브러리
     // Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket

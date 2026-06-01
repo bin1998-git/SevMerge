@@ -19,4 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 이름 또는 이메일로 검색 (관리자용)
     @Query("SELECT m FROM Member m WHERE m.name LIKE %:keyword% OR m.email LIKE %:keyword%")
     List<Member> searchByKeyword(@Param("keyword") String keyword);
+
+    // 소셜 로그인 회원 조회 (provider + providerId 조합)
+    Optional<Member> findByProviderAndProviderId(String provider, String providerId);
 }

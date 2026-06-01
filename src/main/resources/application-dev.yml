@@ -25,6 +25,15 @@ spring:
       data-locations:
         - classpath:db/data.sql
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email, profile
+
   mustache:
     servlet:
       expose-session-attributes: false
@@ -47,4 +56,3 @@ logging:
   level:
     root: INFO
     com.example.SevMerge: DEBUG
-
