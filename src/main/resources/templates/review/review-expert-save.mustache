@@ -1,0 +1,97 @@
+{{> layout/header}}
+
+<style>
+    .save-section { padding: 52px 28px 80px; }
+    .save-inner { max-width: 680px; margin: 0 auto; }
+    .save-header { margin-bottom: 32px; }
+    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .save-desc { font-size: 14px; color: #9ca3af; }
+    .preview-box { background: #f8f9ff; border: 1.5px solid #e0e8ff; border-radius: 14px; padding: 20px 22px; margin-bottom: 32px; display: flex; gap: 14px; align-items: center; }
+    .preview-avatar { width: 48px; height: 48px; border-radius: 14px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .preview-info .label { font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+    .preview-info .name { font-size: 15px; font-weight: 800; color: #1c1e26; margin-bottom: 2px; }
+    .preview-info .sub { font-size: 12px; color: #9ca3af; }
+    .save-form { display: flex; flex-direction: column; gap: 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .star-wrap { display: flex; gap: 8px; }
+    .star-btn { font-size: 32px; color: #e2e5ef; cursor: pointer; background: none; border: none; padding: 0; transition: color .1s; line-height: 1; }
+    .star-btn:hover,
+    .star-btn.active { color: #f59e0b; }
+    .star-hint { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 200px; line-height: 1.7; transition: border-color .15s; }
+    .form-textarea::placeholder { color: #c4c9d9; }
+    .form-textarea:focus { border-color: #2563eb; }
+    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+</style>
+
+<section class="save-section">
+    <div class="save-inner">
+
+        <div class="save-header">
+            <h1 class="save-title">의뢰인 리뷰 작성</h1>
+            <p class="save-desc">함께 작업한 의뢰인에 대한 솔직한 리뷰를 남겨주세요.</p>
+        </div>
+
+        <!-- 미리보기 -->
+        <div class="preview-box">
+            <div class="preview-avatar">👤</div>
+            <div class="preview-info">
+                <div class="label">리뷰 대상 의뢰인</div>
+                <div class="name">{{member.name}}</div>
+                <div class="sub">{{member.email}}</div>
+            </div>
+        </div>
+
+        <form class="save-form" action="/reviews/expert-save" method="POST">
+
+            <input type="hidden" name="memberId" value="{{member.id}}" />
+            <input type="hidden" name="expertProfileId" value="{{expertProfile.id}}" />
+            <input type="hidden" name="rating" id="ratingInput" value="0" />
+
+            <!-- 별점 -->
+            <div class="form-group">
+                <label class="form-label">별점 <span class="required">*</span></label>
+                <div class="star-wrap">
+                    <button type="button" class="star-btn" onclick="setRating(1)">★</button>
+                    <button type="button" class="star-btn" onclick="setRating(2)">★</button>
+                    <button type="button" class="star-btn" onclick="setRating(3)">★</button>
+                    <button type="button" class="star-btn" onclick="setRating(4)">★</button>
+                    <button type="button" class="star-btn" onclick="setRating(5)">★</button>
+                </div>
+                <span class="star-hint" id="starHint">별점을 선택하세요</span>
+            </div>
+
+            <!-- 리뷰 내용 -->
+            <div class="form-group">
+                <label class="form-label">리뷰 내용 <span class="required">*</span></label>
+                <textarea name="content" class="form-textarea" placeholder="의뢰인과의 작업 경험을 자세히 작성해주세요.&#10;&#10;- 소통은 원활했나요?&#10;- 요구사항이 명확했나요?&#10;- 피드백은 적절했나요?"></textarea>
+            </div>
+
+            <div class="form-btns">
+                <a href="/mypage" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary btn-lg">리뷰 등록</button>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<script>
+    const hints = ['', '별로예요', '조금 아쉬워요', '괜찮아요', '좋아요', '최고예요!'];
+    function setRating(val) {
+        document.getElementById('ratingInput').value = val;
+        document.getElementById('starHint').textContent = hints[val];
+        document.querySelectorAll('.star-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i < val);
+        });
+    }
+</script>
+
+{{> layout/footer}}
