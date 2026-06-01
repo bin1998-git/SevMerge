@@ -163,7 +163,47 @@ VALUES (2, 4, 2, 12000000, 1200000, 10800000, 'imp_910482019482', 'kakaopay', 'P
 INSERT INTO payment (project_id, client_id, expert_id, amount, platform_fee, net_amount, payment_key, method, status, paid_at)
 VALUES (3, 1, 3, 1500000, 150000, 1350000, 'imp_vbank_009182', 'vbank', 'PAID', NOW());
 
+-- Portfolio 샘플데이터
 
+-- 1번 샘플: 홍길동(expert_profile_id: 1) 포트폴리오 - 쇼핑몰 개발
+INSERT INTO portfolio_tb (expert_id, title, description, image_url, project_url, created_at)
+VALUES (1, '대형 쇼핑몰 백엔드 시스템 구축',
+        'Spring Boot 기반 대규모 트래픽 처리 쇼핑몰 백엔드 개발. 일 평균 10만 건 이상의 주문을 안정적으로 처리하는 아키텍처 설계 및 구현.',
+        'https://sevmerge.com/storage/portfolios/portfolio_01.png',
+        'https://github.com/honggildong/shopping-mall',
+        NOW());
+
+-- 2번 샘플: 홍길동(expert_profile_id: 1) 포트폴리오 - 커뮤니티 플랫폼
+INSERT INTO portfolio_tb (expert_id, title, description, image_url, project_url, created_at)
+VALUES (1, '실시간 채팅 기반 커뮤니티 플랫폼',
+        'WebSocket을 활용한 실시간 채팅 및 알림 기능 구현. React + Spring Boot 풀스택 개발. AWS EC2 배포 및 RDS 운영.',
+        'https://sevmerge.com/storage/portfolios/portfolio_02.png',
+        'https://github.com/honggildong/community-platform',
+        NOW());
+
+-- 3번 샘플: 김디자(expert_profile_id: 2) 포트폴리오 - 스타트업 랜딩페이지
+INSERT INTO portfolio_tb (expert_id, title, description, image_url, project_url, created_at)
+VALUES (2, '핀테크 스타트업 랜딩페이지 UI/UX 디자인',
+        'Figma 기반 와이어프레임부터 고도화 프로토타입까지 전담. 브랜드 아이덴티티 정립 및 반응형 디자인 시스템 구축.',
+        'https://sevmerge.com/storage/portfolios/portfolio_03.png',
+        'https://www.figma.com/kimdesign/fintech-landing',
+        NOW());
+
+-- 4번 샘플: 김디자(expert_profile_id: 2) 포트폴리오 - 앱 UI 디자인
+INSERT INTO portfolio_tb (expert_id, title, description, image_url, project_url, created_at)
+VALUES (2, '헬스케어 모바일 앱 UI/UX 디자인',
+        '운동 기록 및 식단 관리 앱 전체 화면 설계. 사용자 인터뷰 기반 UX 리서치 진행 후 직관적인 UI 구현. Adobe XD 프로토타입 납품.',
+        'https://sevmerge.com/storage/portfolios/portfolio_04.png',
+        'https://www.figma.com/kimdesign/healthcare-app',
+        NOW());
+
+-- 5번 샘플: 관리자(expert_profile_id: 3) 포트폴리오 - 주니어 웹 퍼블리싱
+INSERT INTO portfolio_tb (expert_id, title, description, image_url, project_url, created_at)
+VALUES (3, '기업 소개 웹사이트 퍼블리싱',
+        'HTML5, CSS3, JavaScript 기반 반응형 기업 소개 사이트 퍼블리싱. Vue.js 및 Tailwind CSS 활용하여 빠른 개발 완료.',
+        'https://sevmerge.com/storage/portfolios/portfolio_05.png',
+        'https://github.com/junior-dev/company-website',
+        NOW());
 
 
 

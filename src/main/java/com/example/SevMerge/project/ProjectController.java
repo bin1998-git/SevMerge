@@ -71,9 +71,13 @@ public class ProjectController {
 
     // 프로젝트 상세조회(id)
     @GetMapping("/project/{id}/detail")
-    public String detail(@PathVariable Long id, Model model) {
-        log.info("project 상세 조회");
-        model.addAttribute("project", projectService.findProjectById(id));
+    public String detail(@PathVariable Long id, Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
+        model.addAttribute("project", project);
+        // 로그인한 사용자가 프로젝트 작성자인지 확인
+        boolean isOwner = sessionUser != null && sessionUser.getId().equals(project.getMemberId());
+        model.addAttribute("isOwner", isOwner);
         return "project/project-detail";
     }
 
@@ -81,7 +85,14 @@ public class ProjectController {
     @GetMapping("/project/{id}/update-form")
     public String updateForm(@PathVariable Long id, Model model) {
         log.info("project 수정 폼 요청");
-        model.addAttribute("project", projectService.findProjectById(id));
+        ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
+        model.addAttribute("project", project);
+        model.addAttribute("isWeb", "WEB".equals(project.getCategoryName()));
+        model.addAttribute("isApp", "APP".equals(project.getCategoryName()));
+        model.addAttribute("isUiux", "UI_UX".equals(project.getCategoryName()));
+        model.addAttribute("isData", "DATA".equals(project.getCategoryName()));
+        model.addAttribute("isVideo", "VIDEO".equals(project.getCategoryName()));
+        model.addAttribute("isEtc", "ETC".equals(project.getCategoryName()));
         return "project/project-update";
     }
 

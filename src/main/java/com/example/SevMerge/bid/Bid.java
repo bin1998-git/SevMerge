@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -22,30 +23,31 @@ public class Bid {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Project projectId;
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expert_id", nullable = false)
     private Member expert;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String coverLetter;
+    private String coverLetter; // 자기소개
 
 
     @Column(columnDefinition = "TEXT")
     private String approach;
 
     @Column(nullable = false)
-    private Long estimatedDays;
+    private Long estimatedDays; // 예상 작업 기간
 
     @Column(nullable = false)
-    private Long proposedPrice;
+    private Long proposedPrice; // 희망금액
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BidStatus status;
 
+    @CreationTimestamp
     @Column(nullable = false)
     private Timestamp createdAt;
 
