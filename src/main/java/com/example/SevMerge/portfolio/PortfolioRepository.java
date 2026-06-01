@@ -12,3 +12,7 @@ public interface PortfolioRepository extends JpaRepository<Portfolio,Long> {
 """)
     List<PortfolioResponse.ListDTO> findByExpertIdIsActive(Long expertId);
 }
+
+
+
+
