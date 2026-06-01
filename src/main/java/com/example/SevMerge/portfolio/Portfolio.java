@@ -2,6 +2,8 @@ package com.example.SevMerge.portfolio;
 
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -13,6 +15,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Entity
 @Table(name="portfolio_tb")
+@Builder
+@AllArgsConstructor
 public class Portfolio {
 
     @Id

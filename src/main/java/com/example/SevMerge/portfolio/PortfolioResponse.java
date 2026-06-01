@@ -41,4 +41,29 @@ public class PortfolioResponse {
         }
     }
 
+
+    // 일단 form 태그에서 포프폴리오 id 넘겨줌
+    @Data
+    public static class UpdateDTO {
+
+        private Long id;
+        private String title;
+        private String description;
+        private String imageUrl;
+        private String projectUrl;
+
+        public UpdateDTO(Portfolio portfolio) {
+
+            this.id = portfolio.getId();
+            this.title = portfolio.getTitle();
+            this.description = portfolio.getDescription();
+            this.imageUrl = portfolio.getImageUrl();
+            this.projectUrl = portfolio.getProjectUrl();
+
+        }
+
+
+    }
+
+
 }
