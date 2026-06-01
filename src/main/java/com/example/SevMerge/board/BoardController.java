@@ -140,8 +140,6 @@ public class BoardController {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         boardService.deleteBoard(boardId,sessionMember.getId());
-
-
         return "redirect:/boards";
     }
 }

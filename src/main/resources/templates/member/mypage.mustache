@@ -9,8 +9,8 @@
     .profile-name { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 4px; }
     .profile-email { font-size: 13px; color: #9ca3af; margin-bottom: 14px; }
     .profile-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; margin-bottom: 20px; }
-    .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .profile-stat { background: #f8f9fc; border-radius: 10px; padding: 12px; }
+    .profile-stats { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.profile-start { background: #f8f9fc; border-radius: 10px; padding: 12px; min-width: 80px; }
     .profile-stat-val { font-size: 20px; font-weight: 900; color: #2563eb; }
     .profile-stat-lbl { font-size: 11px; color: #9ca3af; margin-top: 2px; }
     .profile-btns { display: flex; flex-direction: column; gap: 8px; }
@@ -61,14 +61,18 @@
             <div class="profile-email">{{member.email}}</div>
             {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
             <div class="profile-stats">
+                {{^member.isExpert}}
+                    <div class="profile-stat">
+                        <div class="profile-stat-val">0</div>
+                        <div class="profile-stat-lbl">프로젝트</div>
+                    </div>
+                {{/member.isExpert}}
+                {{#member.isExpert}}
                 <div class="profile-stat">
-                    <div class="profile-stat-val">{{member.projectCount}}</div>
-                    <div class="profile-stat-lbl">프로젝트</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-val">{{member.bidCount}}</div>
+                    <div class="profile-stat-val">0</div>
                     <div class="profile-stat-lbl">제안서</div>
                 </div>
+                {{/member.isExpert}}
             </div>
             <div class="profile-btns">
                 {{^member.isCertified}}
@@ -81,9 +85,14 @@
         <!-- 탭 콘텐츠 -->
         <div>
             <div class="mypage-tabs">
-                <a href="/mypage?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>
-                <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
+                {{^member.isExpert}}
+                    <a href="/mypage?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>
+                {{/member.isExpert}}
+                {{#member.isExpert}}
+                        <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
+                {{/member.isExpert}}
                 <a href="/mypage?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
+                <a href="/mypage?tab=boards" class="mypage-tab {{#isReview}}active{{/isReview}}">리뷰</a>
                 <a href="/mypage?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
             </div>
 
@@ -146,6 +155,22 @@
                 {{^boards}}<div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
             </div>
             {{/isBoards}}
+
+            {{! 내 리뷰 }}
+            {{#isReviews}}
+                <div class="my-list">
+                    {{#reviews}}
+                        <a href="/reviews/{{id}}" class="my-item">
+                            <div class="my-item-body">
+                                <span class="my-item-cat">리뷰</span>
+                                <div class="my-item-title">{{expertProfile.member.name}} 전문가</div>
+                                <div class="my-item-meta">{{createdAt}} · ★ {{countStar}}</div>
+                            </div>
+                        </a>
+                    {{/reviews}}
+                    {{^reviews}}<div class="empty-state">작성한 리뷰가 없습니다.</div>{{/reviews}}
+                </div>
+            {{/isReviews}}
 
             {{! 정보 수정 }}
             {{#isEdit}}
