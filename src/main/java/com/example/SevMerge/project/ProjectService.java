@@ -103,6 +103,6 @@ public class ProjectService {
         if (!project.getMember().getId().equals(sessionMember.getId())) {
             throw new ForbiddenException("삭제 권한이 없습니다");
         }
-        projectRepository.delete(project);
+        project.delete();
     }
 }

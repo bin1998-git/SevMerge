@@ -59,8 +59,14 @@ public class Project {
     @Column(nullable = false)
     private ProjectStatus projectStatus;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
     @CreationTimestamp
     private Timestamp createdAt;
+
+
 
     // DB에 저장되기 직전에 자동으로 실행되는 메서드
     @PrePersist
@@ -86,6 +92,11 @@ public class Project {
 
     public void updateStatus(ProjectStatus status) {
         this.projectStatus = status;
+    }
+
+    // 소프트 딜리트 사용 메서드
+    public void delete() {
+        this.isDeleted = true;
     }
 
 }
