@@ -2,6 +2,7 @@ package com.example.SevMerge.review;
 
 
 import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 
 import jakarta.servlet.http.HttpSession;
@@ -46,24 +47,20 @@ public class ReviewController {
                                  //필요
     ) {
         // 로그인을 했어
-        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         if(sessionMember == null ){
             return "redirect:/login";
         }
-        boolean isExpert = sessionMember.isExpert(); // 전문가야
 
-
-        if(isExpert && memberId != null){ // 전문가이고 멤버 아이디를 가진고 리뷰할 멤버찾아서 리뷰 즉 전문가가 멤버아이디로 찾아서 리뷰달기
-            // 전문가 -> 의뢰인
-            model.addAttribute("member",reviewService.savePageExpertToClientPage(memberId,expertId));
-
-        } else if (!isExpert && expertId != null) {
-            // 전문가가 아니고 전문가를 리뷰하기 위해 expertId 로 전문가를 찾아서 리뷰달기
-            // 의뢰인 -> 전문가
-            ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(expertId); // 의뢰인이 전문가에게 리뷰달때 불러올 페이지
-            model.addAttribute("expertProfile",reviewSaveDTO.getExpertProfile());
+        if (sessionMember.isExpert()) {
+            if (memberId == null) return "redirect:/";
+            model.addAttribute("member", sessionMember);
+            model.addAttribute("targetId", reviewService.findByMemberId(memberId));
+        } else {
+            if (expertId == null) return "redirect:/";
+            model.addAttribute("member", sessionMember);
+            model.addAttribute("targetId", reviewService.findByMemberId(expertId));
         }
-            model.addAttribute("isExpert",isExpert);
 
         return  "review/review-save";
     }
