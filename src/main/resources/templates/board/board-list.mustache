@@ -58,6 +58,7 @@
     </div>
 </div>
 
+
 <!-- ===================================================
      자유게시판 (type=FREE)
      컨트롤러 : isFree = true, boards = 게시글 리스트
@@ -71,10 +72,13 @@
                 <a href="/boards/save?boardType=FREE" class="btn btn-primary btn-sm">글쓰기</a>
             </div>
 
-            <div class="board-search">
-                <input type="text" class="board-search-input" placeholder="검색어를 입력하세요..."/>
-                <button class="board-search-btn">검색</button>
-            </div>
+            <form action="/boards" method="GET">
+                <input type="hidden" name="boardType" value="{{#isFree}}FREE{{/isFree}}{{#isNotice}}NOTICE{{/isNotice}}{{#isInquiry}}INQUIRY{{/isInquiry}}" />
+                <div class="board-search">
+                    <input type="text" name="keyword" class="board-search-input" placeholder="검색어를 입력하세요..." value="{{keyword}}" />
+                    <button type="submit" class="board-search-btn">검색</button>
+                </div>
+            </form>
 
             {{#boards}}
                 <div class="board-table">
@@ -98,10 +102,11 @@
         </div>
 
         <div class="paging">
-            <a href="/boards?boardType=FREE&page=1" class="page-btn active">1</a>
-            <a href="/boards?boardType=FREE&page=2" class="page-btn">2</a>
-            <a href="/boards?boardType=FREE&page=3" class="page-btn">3</a>
-            <a href="/boards?boardType=FREE&page=2" class="page-btn">다음</a>
+            {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            {{#pageList}}
+                <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+            {{/pageList}}
+            {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
         </div>
 
         </div>
@@ -152,7 +157,11 @@
         </div>
 
         <div class="paging">
-            <a href="/boards?boardType=NOTICE&page=1" class="page-btn active">1</a>
+            {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            {{#pageList}}
+                <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+            {{/pageList}}
+            {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
         </div>
 
         </div>
@@ -191,10 +200,15 @@
             {{/boards}}
 
             <div class="paging">
-                <a href="/boards?boardType=INQUIRY&page=1" class="page-btn active">1</a>
+                {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                {{#pageList}}
+                    <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+                {{/pageList}}
+                {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
             </div>
 
         </div>
+    </section>
 {{/isInquiry}}
 
 {{> layout/footer}}
