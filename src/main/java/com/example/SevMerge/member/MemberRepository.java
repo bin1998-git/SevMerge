@@ -17,7 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByRoleAndStatus(Role role, Status status);
 
     // 이름 또는 이메일로 검색 (관리자용)
-    //todo 이메일 제거
     @Query("SELECT m FROM Member m WHERE m.name LIKE %:keyword% OR m.email LIKE %:keyword%")
     List<Member> searchByKeyword(@Param("keyword") String keyword);
 
