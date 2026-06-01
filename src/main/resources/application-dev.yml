@@ -47,3 +47,4 @@ logging:
   level:
     root: INFO
     com.example.SevMerge: DEBUG
+
