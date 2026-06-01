@@ -39,7 +39,7 @@ public class Review {
     private Integer countStar; // 별점
 
     private String content; // 리뷰 내용
-
+    @Enumerated(EnumType.STRING)
     private ReviewType reviewType;
 
 
