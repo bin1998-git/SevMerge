@@ -147,7 +147,7 @@ public class BidService {
             throw new BadRequestException("처리된 제안서는 취소가 불가능합니다");
         }
 
-        bidRepository.delete(bid);
+        bid.delete();
     }
 
 
