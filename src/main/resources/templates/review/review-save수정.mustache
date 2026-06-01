@@ -35,24 +35,45 @@
     <div class="save-inner">
 
         <div class="save-header">
+            {{#isExpert}}
             <h1 class="save-title">의뢰인 리뷰 작성</h1>
             <p class="save-desc">함께 작업한 의뢰인에 대한 솔직한 리뷰를 남겨주세요.</p>
+            {{/isExpert}}
+            {{^isExpert}}
+            <h1 class="save-title">전문가 리뷰 작성</h1>
+            <p class="save-desc">함께 작업한 전문가에 대한 솔직한 리뷰를 남겨주세요.</p>
+            {{/isExpert}}
         </div>
 
         <!-- 미리보기 -->
         <div class="preview-box">
-            <div class="preview-avatar">👤</div>
+            <div class="preview-avatar">
+                {{#isExpert}}👤{{/isExpert}}
+                {{^isExpert}}👨‍💻{{/isExpert}}
+            </div>
             <div class="preview-info">
+                {{#isExpert}}
                 <div class="label">리뷰 대상 의뢰인</div>
                 <div class="name">{{member.name}}</div>
                 <div class="sub">{{member.email}}</div>
+                {{/isExpert}}
+                {{^isExpert}}
+                <div class="label">리뷰 대상 전문가</div>
+                <div class="name">{{expertProfile.member.name}}</div>
+                <div class="sub">{{expertProfile.career}}</div>
+                {{/isExpert}}
             </div>
         </div>
 
-        <form class="save-form" action="/reviews/expert-save" method="POST">
+        <form class="save-form" action="/reviews/save" method="POST">
 
+            {{#isExpert}}
             <input type="hidden" name="memberId" value="{{member.id}}" />
             <input type="hidden" name="expertProfileId" value="{{expertProfile.id}}" />
+            {{/isExpert}}
+            {{^isExpert}}
+            <input type="hidden" name="expertProfileId" value="{{expertProfile.id}}" />
+            {{/isExpert}}
             <input type="hidden" name="rating" id="ratingInput" value="0" />
 
             <!-- 별점 -->
@@ -71,11 +92,21 @@
             <!-- 리뷰 내용 -->
             <div class="form-group">
                 <label class="form-label">리뷰 내용 <span class="required">*</span></label>
+                {{#isExpert}}
                 <textarea name="content" class="form-textarea" placeholder="의뢰인과의 작업 경험을 자세히 작성해주세요.&#10;&#10;- 소통은 원활했나요?&#10;- 요구사항이 명확했나요?&#10;- 피드백은 적절했나요?"></textarea>
+                {{/isExpert}}
+                {{^isExpert}}
+                <textarea name="content" class="form-textarea" placeholder="전문가와의 작업 경험을 자세히 작성해주세요.&#10;&#10;- 커뮤니케이션은 어땠나요?&#10;- 결과물 퀄리티는 만족스러웠나요?&#10;- 일정 준수는 잘 되었나요?"></textarea>
+                {{/isExpert}}
             </div>
 
             <div class="form-btns">
+                {{#isExpert}}
                 <a href="/mypage" class="btn btn-outline">취소</a>
+                {{/isExpert}}
+                {{^isExpert}}
+                <a href="/experts/{{expertProfile.id}}" class="btn btn-outline">취소</a>
+                {{/isExpert}}
                 <button type="submit" class="btn btn-primary btn-lg">리뷰 등록</button>
             </div>
 
