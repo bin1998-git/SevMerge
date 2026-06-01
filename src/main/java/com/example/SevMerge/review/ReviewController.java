@@ -57,8 +57,14 @@ public class ReviewController {
 
 
     // 전문가가 의뢰인 에게 리뷰 화면
-    @GetMapping("")
+    @GetMapping("/reviews/save/expert")
+    public String saveExpertReviewToMemberForm(Model model , @RequestParam Long expertId, @RequestParam Long memberId) {
 
+        ReviewResponse.ExpertReviewToClient review = reviewService.saveExpertToClientPage(expertId,memberId);
+        model.addAttribute("member",review.getMember());
+        model.addAttribute("expertProfile",review.getExpertProfileId());
+        return "review/review-save-expert";
+    }
 
     // 리뷰 작성 후 저장
     @PostMapping("/reviews/save")

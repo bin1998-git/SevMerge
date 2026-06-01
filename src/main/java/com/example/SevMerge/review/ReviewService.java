@@ -58,8 +58,10 @@ public class ReviewService {
         BigDecimal avgRating = reviewRepository.avgRating(expertProfile.getId()).orElse(BigDecimal.ZERO);
 
         Integer reviewCount = reviewRepository.countReview(expertProfile.getId()).orElse(0);
-        expertProfile.setAvgRating(avgRating);
+
         expertProfile.setTotalReviews(reviewCount);
+        expertProfile.setAvgRating(avgRating);
+
 
     }
 
@@ -179,6 +181,7 @@ public class ReviewService {
         // 전문가 별점 갱신 리뷰수도 갱신
         BigDecimal avgRating = reviewRepository.avgRating(expertProfile.getId()).orElse(BigDecimal.ZERO);
         Integer reviewCount = reviewRepository.countReview(expertProfile.getId()).orElse(0);
+
         expertProfile.setTotalReviews(reviewCount);
         expertProfile.setAvgRating(avgRating);
 
