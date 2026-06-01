@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ExpertProfileRepository extends JpaRepository<ExpertProfile,Integer> {
+public interface ExpertProfileRepository extends JpaRepository<ExpertProfile,Long> {
 
   // member_id로 전문가 프로필 조회
   Optional<ExpertProfile> findByMemberId(Long memberId);
