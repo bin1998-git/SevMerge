@@ -44,7 +44,7 @@ public class ExpertProfileService {
    * 전문가 전체 목록 조회 (목록 페이지용)
    */
   public List<ExpertProfileResponse> getAll() {
-    return expertProfileRepository.findAll()
+    return expertProfileRepository.findByExpert()
         .stream()
         .map(ExpertProfileResponse::from)
         .toList();
