@@ -8,6 +8,10 @@ import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +26,10 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    // 게시글 조회
-    public List<BoardResponse.ListDTO> findAllByBoardType(BoardType BoardType) {
-        return  boardRepository.findAllByBoardTypeIsActive(BoardType)
-                .stream()
-                .map(BoardResponse.ListDTO::new)
-                .toList();
+    public Page<BoardResponse.ListDTO> findAllByBoardType(BoardType boardType, String keyword, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createdAt").descending());
+        Page<Board> boardPage = boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword, pageable);
+        return boardPage.map(BoardResponse.ListDTO::new);
     }
 
     // 1:1 게시글 조회
@@ -36,7 +38,7 @@ public class BoardService {
                 () -> new NotFoundException("멤버를 찾을 수 없습니다.")
         );
 
-        List<BoardResponse.ListDTO> inquiryBoards = new ArrayList<>();
+        List<BoardResponse.ListDTO> inquiryBoards;
 
         if (member.getRole().equals(Role.ADMIN)) {
            inquiryBoards = boardRepository.findAllByBoardTypeIsActive(boardType)

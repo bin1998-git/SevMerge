@@ -1,0 +1,84 @@
+{{> layout/header}}
+
+<style>
+    .detail-section { padding: 52px 28px 80px; }
+    .detail-inner { max-width: 860px; margin: 0 auto; }
+    .detail-nav { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9ca3af; margin-bottom: 32px; }
+    .detail-nav a { color: #9ca3af; text-decoration: none; }
+    .detail-nav a:hover { color: #2563eb; }
+    .portfolio-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; overflow: hidden; }
+    .portfolio-img { width: 100%; height: 320px; background: #f0f4ff; display: flex; align-items: center; justify-content: center; font-size: 80px; overflow: hidden; }
+    .portfolio-img img { width: 100%; height: 100%; object-fit: cover; }
+    .portfolio-body { padding: 32px; }
+    .portfolio-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .portfolio-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #f3f4f8; }
+    .portfolio-expert { display: flex; align-items: center; gap: 10px; }
+    .expert-avatar { width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .expert-name { font-size: 13px; font-weight: 700; color: #374151; }
+    .portfolio-date { font-size: 12px; color: #c4c9d9; margin-left: auto; }
+    .portfolio-desc { font-size: 15px; color: #374151; line-height: 1.9; white-space: pre-wrap; margin-bottom: 28px; }
+    .portfolio-link-box { background: #f8f9ff; border: 1px solid #e0e8ff; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .portfolio-link-label { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .portfolio-link-url { font-size: 13px; color: #2563eb; font-weight: 600; text-decoration: none; }
+    .portfolio-link-url:hover { text-decoration: underline; }
+    .portfolio-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #f3f4f8; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-outline:hover { border-color: #2563eb; color: #2563eb; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 7px; }
+    .btn-danger { background: #fff3f3; color: #ef4444; border: 1.5px solid #fecaca; }
+    .owner-btns { display: flex; gap: 8px; }
+</style>
+
+<section class="detail-section">
+    <div class="detail-inner">
+
+        <div class="detail-nav">
+            <a href="/portfolios?expertId={{expert.id}}">포트폴리오 목록</a>
+            <span>›</span>
+            <span>{{portfolio.title}}</span>
+        </div>
+
+        <div class="portfolio-card">
+            <div class="portfolio-img">
+                {{#portfolio.imageUrl}}
+                <img src="{{portfolio.imageUrl}}" alt="{{portfolio.title}}" />
+                {{/portfolio.imageUrl}}
+                {{^portfolio.imageUrl}}
+                🖼️
+                {{/portfolio.imageUrl}}
+            </div>
+            <div class="portfolio-body">
+                <h1 class="portfolio-title">{{portfolio.title}}</h1>
+                <div class="portfolio-meta">
+                    <div class="portfolio-expert">
+                        <div class="expert-avatar">👨‍💻</div>
+                        <span class="expert-name">{{portfolio.expertProfile.member.name}}</span>
+                    </div>
+                    <span class="portfolio-date">{{portfolio.createdAt}}</span>
+                </div>
+                <div class="portfolio-desc">{{portfolio.description}}</div>
+                {{#portfolio.projectUrl}}
+                <div class="portfolio-link-box">
+                    <span class="portfolio-link-label">🔗 프로젝트 링크</span>
+                    <a href="{{portfolio.projectUrl}}" target="_blank" class="portfolio-link-url">{{portfolio.projectUrl}}</a>
+                </div>
+                {{/portfolio.projectUrl}}
+                <div class="portfolio-actions">
+                    <a href="/portfolios?expertId={{portfolio.expertProfile.id}}" class="btn btn-outline">← 목록으로</a>
+                    {{#isOwner}}
+                    <div class="owner-btns">
+                        <a href="/portfolios/{{portfolio.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+                        <form action="/portfolios/{{portfolio.id}}/delete" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                        </form>
+                    </div>
+                    {{/isOwner}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

@@ -1,0 +1,109 @@
+{{> layout/header}}
+
+<style>
+    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .page-desc { font-size: 14px; color: #9ca3af; }
+    .list-section { padding: 36px 28px 80px; }
+    .list-inner { max-width: 1140px; margin: 0 auto; }
+    .list-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .list-count { font-size: 14px; color: #9ca3af; font-weight: 500; }
+    .list-count strong { color: #1c1e26; font-weight: 700; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 7px; }
+    .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 36px; }
+    .portfolio-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; transition: border-color .2s, box-shadow .2s, transform .15s; }
+    .portfolio-card:hover { border-color: #bfdbfe; box-shadow: 0 8px 28px rgba(37,99,235,.08); transform: translateY(-3px); }
+    .portfolio-card-img { width: 100%; height: 180px; background: #f0f4ff; display: flex; align-items: center; justify-content: center; font-size: 48px; overflow: hidden; }
+    .portfolio-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .portfolio-card-body { padding: 20px; }
+    .portfolio-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 8px; line-height: 1.4; }
+    .portfolio-desc { font-size: 12px; color: #9ca3af; line-height: 1.7; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .portfolio-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f8; padding-top: 14px; }
+    .portfolio-date { font-size: 11px; color: #c4c9d9; }
+    .portfolio-link { font-size: 12px; color: #2563eb; font-weight: 600; text-decoration: none; }
+    .portfolio-link:hover { text-decoration: underline; }
+    .empty-state { text-align: center; padding: 80px 0; }
+    .empty-msg { font-size: 15px; color: #c4c9d9; margin-bottom: 20px; }
+    .paging { display: flex; justify-content: center; gap: 6px; }
+    .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
+    .page-btn:hover { border-color: #2563eb; color: #2563eb; }
+    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+</style>
+
+<div class="page-header">
+    <div class="page-header-inner">
+        <h1 class="page-title">포트폴리오</h1>
+        <p class="page-desc">{{expertProfile.member.name}} 전문가의 포트폴리오입니다.</p>
+    </div>
+</div>
+
+<section class="list-section">
+    <div class="list-inner">
+
+        <div class="list-action">
+            <span class="list-count">총 <strong>{{portfolioCount}}</strong>개의 포트폴리오</span>
+            {{#isOwner}}
+            <a href="/portfolios/save?expertId={{expertProfile.id}}" class="btn btn-primary btn-sm">+ 포트폴리오 추가</a>
+            {{/isOwner}}
+        </div>
+
+        {{#portfolios}}
+        <div class="portfolio-grid">
+            {{#list}}
+            <div class="portfolio-card">
+                <div class="portfolio-card-img">
+                    {{#imageUrl}}
+                    <img src="{{imageUrl}}" alt="{{title}}" />
+                    {{/imageUrl}}
+                    {{^imageUrl}}
+                    🖼️
+                    {{/imageUrl}}
+                </div>
+                <div class="portfolio-card-body">
+                    <div class="portfolio-title">{{title}}</div>
+                    <div class="portfolio-desc">{{description}}</div>
+                    <div class="portfolio-footer">
+                        <span class="portfolio-date">{{createdAt}}</span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            {{#projectUrl}}
+                            <a href="{{projectUrl}}" target="_blank" class="portfolio-link">🔗 보러가기</a>
+                            {{/projectUrl}}
+                            {{#isOwner}}
+                            <a href="/portfolios/{{id}}" class="portfolio-link">상세보기</a>
+                            {{/isOwner}}
+                            {{^isOwner}}
+                            <a href="/portfolios/{{id}}" class="portfolio-link">상세보기</a>
+                            {{/isOwner}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/list}}
+        </div>
+        {{/portfolios}}
+
+        {{^portfolios}}
+        <div class="empty-state">
+            <p class="empty-msg">등록된 포트폴리오가 없습니다.</p>
+            {{#isOwner}}
+            <a href="/portfolios/save?expertId={{expertProfile.id}}" class="btn btn-primary">첫 포트폴리오 등록하기</a>
+            {{/isOwner}}
+        </div>
+        {{/portfolios}}
+
+        <div class="paging">
+            {{#paging}}
+            {{#hasPrev}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
+            {{#pageList}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
+            {{#hasNext}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
+            {{/paging}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

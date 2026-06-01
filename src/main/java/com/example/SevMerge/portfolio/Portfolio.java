@@ -4,6 +4,7 @@ import com.example.SevMerge.expertprofile.ExpertProfile;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -27,4 +28,6 @@ public class Portfolio {
     private String projectUrl;
     @CreationTimestamp
     private Timestamp createdAt;
+    @ColumnDefault("true")
+    private boolean isActive;
 }

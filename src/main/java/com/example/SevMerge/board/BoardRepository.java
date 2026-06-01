@@ -1,5 +1,7 @@
 package com.example.SevMerge.board;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,16 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             SELECT b FROM Board b JOIN FETCH b.member WHERE b.boardType = :boardType AND b.isActive = true
             """)
     List<Board> findAllByBoardTypeIsActive(@Param("boardType") BoardType boardType);
+
+    @Query("SELECT b FROM Board b JOIN FETCH b.member " +
+            "WHERE b.boardType = :boardType " +
+            "AND b.isActive = true " +
+            "AND (:keyword = '' OR b.title LIKE %:keyword%) " +
+            "ORDER BY b.createdAt DESC")
+            Page<Board> findAllByBoardTypeAndKeyword(
+            @Param("boardType") BoardType boardType,
+            @Param("keyword") String keyword,
+            Pageable pageable);
 
     // 1:1 문의 게시글 조회
     @Query("""
