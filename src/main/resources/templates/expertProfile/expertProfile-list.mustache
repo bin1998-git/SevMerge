@@ -49,7 +49,7 @@
     <div class="list-inner">
 
         <div class="search-bar">
-            <input type="text" class="search-input" placeholder="이름, 직종, 기술 스택으로 검색..." value="{{keyword}}" />
+            <input type="text" class="search-input" placeholder="이름, 직종, 기술 스택으로 검색..." value="{{#keyword}}{{keyword}}{{/keyword}}" />
             <button class="search-btn">검색</button>
         </div>
 
@@ -64,43 +64,39 @@
         </div>
 
         {{#expertProfiles}}
-        <div class="expert-grid">
-            {{#list}}
-            <a href="/experts/{{id}}" class="expert-card">
+            <a href="/experts/{{memberId}}" class="expert-card">
                 <div class="expert-top">
                     <div class="expert-avatar">👨‍💻</div>
                     <div class="expert-info">
                         <div class="expert-name">
-                            {{member.name}}
-                            {{#member.isCertified}}<span class="cert-badge">⭐</span>{{/member.isCertified}}
+                            {{memberName}}
+                            {{#isCertified}}<span class="cert-badge">⭐</span>{{/isCertified}}
                         </div>
-                        <div class="expert-career">{{career}} · {{experienceYears}}년</div>
-                        <div class="expert-stars">★★★★★ <span>{{avgRating}} ({{reviewCount}})</span></div>
+                        <div class="expert-career">{{career}}</div>
+                        <div class="expert-stars">★★★★★ <span>{{avgRating}} ({{totalReviews}})</span></div>
                     </div>
                 </div>
-                <div class="expert-introduce">{{introduce}}</div>
+                <div class="expert-introduce">{{intro}}</div>
                 <div class="expert-skills">
-                    {{#skillList}}
-                    <span class="skill-tag">{{.}}</span>
-                    {{/skillList}}
+                    {{#speciality}}
+                        <span class="skill-tag">{{speciality}}</span>
+                    {{/speciality}}
                 </div>
                 <div class="expert-bottom">
-                    <span class="expert-stat">완료 {{completedCount}}건</span>
+                    <span class="expert-stat">완료 {{totalReviews}}건</span>
                 </div>
             </a>
-            {{/list}}
-        </div>
         {{/expertProfiles}}
 
         {{^expertProfiles}}
-        <div class="empty-state">검색 결과가 없습니다.</div>
+            <div class="empty-state">검색 결과가 없습니다.</div>
         {{/expertProfiles}}
 
         <div class="paging">
             {{#paging}}
-            {{#hasPrev}}<a href="/experts?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
-            {{#pageList}}<a href="/experts?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
-            {{#hasNext}}<a href="/experts?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
+                {{#hasPrev}}<a href="/experts?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
+                {{#pageList}}<a href="/experts?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
+                {{#hasNext}}<a href="/experts?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
             {{/paging}}
         </div>
 

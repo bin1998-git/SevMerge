@@ -32,12 +32,12 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
 
-    // application.yml에 등록된 카카오 환경 변수 가져오기
-    @Value("${oauth.kakao.client-id}")
-    private String kakaoClientId;
-
-    @Value("${oauth.kakao.client-secret}")
-    private String kakaoClientSecret;
+//    // application.yml에 등록된 카카오 환경 변수 가져오기
+//    @Value("${oauth.kakao.client-id}")
+//    private String kakaoClientId;
+//
+//    @Value("${oauth.kakao.client-secret}")
+//    private String kakaoClientSecret;
 
     //회원가입
     @Transactional
@@ -167,10 +167,10 @@ public class MemberService {
 
         LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
         multiValueMap.add("grant_type", "authorization_code");
-        multiValueMap.add("client_id", kakaoClientId);
+        //multiValueMap.add("client_id", kakaoClientId);
         multiValueMap.add("redirect_uri", "http://localhost:8080/kakao-redirect");  // 콘솔 등록값과 일치
         multiValueMap.add("code", code);
-        multiValueMap.add("client_secret", kakaoClientSecret);
+        //multiValueMap.add("client_secret", kakaoClientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(multiValueMap, headers1);
 
