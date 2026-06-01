@@ -9,15 +9,15 @@ public class    CommentRequest {
     @Data
     public static class SaveDTO {
         private Long boardId; // 게시글 PK
-        private String comment; // 댓글 내용
+        private String content; // 댓글 내용
 
         // 유효성 검사
         public void validate() {
-            if (comment == null || comment.isBlank()) {
+            if (content == null || content.isBlank()) {
                 throw new BadRequestException("댓글 내용을 입력해 주세요.");
             }
 
-            if (comment.length() > 500) {
+            if (content.length() > 500) {
                 throw new BadRequestException("댓글을 500자 이하여야 합니다.");
             }
 
@@ -29,7 +29,7 @@ public class    CommentRequest {
         // DTO를 엔티티로 변환
         public Comment toEntity(Member member, Board board) {
             return Comment.builder()
-                    .content(this.comment)
+                    .content(this.content)
                     .member(member)
                     .board(board)
                     .build();
