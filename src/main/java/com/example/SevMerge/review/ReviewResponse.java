@@ -71,6 +71,15 @@ public class ReviewResponse {
             private Long id;
             private String name;
             private String career;
+            private DetailExpertMemberDTO member;
+
+            @Data
+            @Builder
+            public static class DetailExpertMemberDTO {
+
+                private String name;
+            }
+
         }
 
         @Data
@@ -97,6 +106,10 @@ public class ReviewResponse {
                     .builder()
                     .id(review.getExpertProfile().getId())
                     .name(review.getExpertProfile().getMember().getName())
+                    .member(ExpertDTO.DetailExpertMemberDTO
+                            .builder()
+                            .name(review.getExpertProfile().getMember().getName())
+                            .build())
                     .career(review.getExpertProfile().getCareer())
                     .build();
 
@@ -113,7 +126,9 @@ public class ReviewResponse {
         private Timestamp createdAt;
         private String content;
         private Long id; // reviewId
+        private boolean isOwner;
         private ReviewListMemberDTO member;
+
 
 
         @Data
@@ -123,11 +138,12 @@ public class ReviewResponse {
             private String name; // 리뷰의 일반회원 이름
         }
 
-        public ReviewListDTO(Review review) {
+        public ReviewListDTO(Review review, Member sessionMember) {
 
             this.createdAt = review.getCreatedAt();
             this.content = review.getContent();
             this.id = review.getId();
+            this.isOwner = sessionMember != null && review.getMember().getId().equals(sessionMember.getId());
 
             this.member = ReviewListMemberDTO
                     .builder()
@@ -144,9 +160,11 @@ public class ReviewResponse {
         private ExpertListMemberDTO member;
         private BigDecimal avgRating;
         private String career;
+        private Integer reviewCount;
+        private Long id; // 전문가 아이디
 
-        //        private BigDecimal experienceYears; // TODO 전문가 경력 추후 전문가에추가
-//        private Long reviewCount; //TODO 전문가가 가진 리뷰갯수
+//                private Timestamp experienceYears; // TODO 전문가 경력 추후 전문가에추가
+
         @Data
         @Builder
         public static class ExpertListMemberDTO {
@@ -160,6 +178,8 @@ public class ReviewResponse {
         public ExpertListDTO(ExpertProfile expertProfile) {
             this.avgRating = expertProfile.getAvgRating();
             this.career = expertProfile.getCareer();
+            this.reviewCount = expertProfile.getTotalReviews();
+            this.id = expertProfile.getId();
 
             this.member = ExpertListMemberDTO
                     .builder()

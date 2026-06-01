@@ -40,5 +40,7 @@ public class Review {
 
     private String content; // 리뷰 내용
 
+    private ReviewType reviewType;
+
 
 }
