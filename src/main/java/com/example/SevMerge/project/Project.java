@@ -84,5 +84,9 @@ public class Project {
         this.viewCount++;
     }
 
+    public void updateStatus(ProjectStatus status) {
+        this.projectStatus = status;
+    }
+
 }
 

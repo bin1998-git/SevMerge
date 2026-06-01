@@ -56,4 +56,15 @@ public class Bid {
     public void prePersist() {
         if (this.status == null) this.status = BidStatus.PENDING;
     }
+
+    public void update(BidRequestDTO.UpdateDTO req) {
+        if (req.getCoverLetter() != null) this.coverLetter = req.getCoverLetter();
+        if (req.getApproach() != null) this.approach = req.getApproach();
+        if (req.getEstimatedDays() != null) this.estimatedDays = req.getEstimatedDays();
+        if (req.getProposedPrice() != null) this.proposedPrice = req.getProposedPrice();
+    }
+
+    public void select() {
+        this.status = BidStatus.SELECTED;
+    }
 }
