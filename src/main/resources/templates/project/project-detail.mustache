@@ -98,7 +98,7 @@
                     <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
                 </div>
                 {{^isOwner}}
-                <a href="/bids/save?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
+                <a href="/bid/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
                 {{/isOwner}}
             </div>
         </div>
