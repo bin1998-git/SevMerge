@@ -56,6 +56,10 @@ public class ReviewController {
     }
 
 
+    // 전문가가 의뢰인 에게 리뷰 화면
+    @GetMapping("")
+
+
     // 리뷰 작성 후 저장
     @PostMapping("/reviews/save")
     public String saveReview(ReviewRequest.SaveReviewDTO reviewDTO, HttpSession session) {

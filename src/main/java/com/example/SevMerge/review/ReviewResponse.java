@@ -54,6 +54,39 @@ public class ReviewResponse {
         }
     }
 
+    // 전문가가 의뢰인에게 작성하는 화면
+
+    @Data
+    public static class ExpertReviewToClient {
+
+        private Long expertProfileId;
+        private MemberDTO member;
+
+        @Data
+        @Builder
+        public static class MemberDTO {
+
+            private String name;
+            private String email;
+            private Long id;
+
+        }
+
+        public ExpertReviewToClient(Long expertProfileId, Member member) {
+
+            this.expertProfileId = expertProfileId;
+            this.member = MemberDTO
+                    .builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .email(member.getEmail())
+                    .build();
+
+        }
+
+    }
+
+
     // 리뷰 상세화면
     @Data
     public static class ReviewDetailDTO {

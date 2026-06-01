@@ -24,7 +24,7 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
     @Query("""
         SELECT COUNT(r.id) FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
     """)
-    public Optional<Integer> countReview(@Param("expertId") Long expertId);
+    public Optional<Long> countReview(@Param("expertId") Long expertId);
 
 
     // 특정 전문가의 리뷰들

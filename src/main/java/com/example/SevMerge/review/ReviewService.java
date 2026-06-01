@@ -5,6 +5,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ExpertProfileRepository expertProfileRepository;
+    private final MemberRepository memberRepository;
 
 
     // 리뷰작성
@@ -74,6 +76,16 @@ public class ReviewService {
 
         return saveDTO;
 
+    }
+
+    // 전문가가 의뢰인에게 리뷰 작성화면
+    public ReviewResponse.ExpertReviewToClient saveExpertToClientPage(Long expertProfileId, Long memberId) {
+
+       Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new BadRequestException("해당 유저를 찾을수 없습니다.")
+                );
+
+       return new ReviewResponse.ExpertReviewToClient(expertProfileId,member);
     }
 
 
