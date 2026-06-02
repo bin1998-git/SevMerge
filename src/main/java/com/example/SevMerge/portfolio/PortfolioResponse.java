@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 
 public class PortfolioResponse {
-
     @Data
     public static class ListDTO {
         private Long id;
@@ -13,7 +12,6 @@ public class PortfolioResponse {
         private String imgUrl;
         private String expertName;
         private String createdAt;
-
         @Builder
         public ListDTO(Portfolio portfolio) {
             this.id = portfolio.getId();
@@ -53,7 +51,6 @@ public class PortfolioResponse {
         private String projectUrl;
 
         public UpdateDTO(Portfolio portfolio) {
-
             this.id = portfolio.getId();
             this.title = portfolio.getTitle();
             this.description = portfolio.getDescription();

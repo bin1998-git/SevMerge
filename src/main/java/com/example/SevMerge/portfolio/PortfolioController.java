@@ -91,6 +91,7 @@ public class PortfolioController {
         return "redirect:/portfolios";
     }
 
+
     @PostMapping("/portfolios/{portfolioId}/delete")
     public String deletePortfolios(@PathVariable(name = "portfolioId") Long portfolioId) {
 

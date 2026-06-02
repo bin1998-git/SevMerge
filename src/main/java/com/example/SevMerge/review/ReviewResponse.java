@@ -64,11 +64,8 @@ public static class SaveExpertToClient {
         @Data
         @Builder
         public static class ExpertProfileDTO {
-
             private Long id;
-
         }
-
         @Data
         @Builder
         public static class MemberDTO {
@@ -118,7 +115,6 @@ public static class SaveExpertToClient {
             @Data
             @Builder
             public static class DetailExpertMemberDTO {
-
                 private String name;
             }
 
@@ -170,9 +166,6 @@ public static class SaveExpertToClient {
         private Long id; // reviewId
         private boolean isOwner;
         private ReviewListMemberDTO member;
-
-
-
         @Data
         @Builder
         public static class ReviewListMemberDTO {
@@ -204,17 +197,13 @@ public static class SaveExpertToClient {
         private String career;
         private Integer reviewCount;
         private Long id; // 전문가 아이디
-
 //                private Timestamp experienceYears; // TODO 전문가 경력 추후 전문가에추가
-
         @Data
         @Builder
         public static class ExpertListMemberDTO {
 
             private String name;
             private boolean isCertified;
-
-
         }
 
         public ExpertListDTO(ExpertProfile expertProfile) {
@@ -228,10 +217,10 @@ public static class SaveExpertToClient {
                     .name(expertProfile.getMember().getName())
                     .isCertified(expertProfile.isCertified())
                     .build();
-
         }
 
     }
+
 
     @Data
     public static class ReviewListPageDTO {
@@ -294,16 +283,12 @@ public static class SaveExpertToClient {
             @Data
             @Builder
             public static class UpdateMemberDTO {
-
                 private String name; // 전문가 이름
-
             }
-
         }
 
+
         public UpdateDTO(Review review) {
-
-
             this.isRating1 = review.getCountStar() >= 1;
             this.isRating2 = review.getCountStar() >= 2;
             this.isRating3 = review.getCountStar() >= 3;
@@ -320,8 +305,8 @@ public static class SaveExpertToClient {
                             .build())
                     .career(review.getExpertProfile().getCareer())
                     .build();
-
         }
     }
+
 
 }
