@@ -39,6 +39,20 @@ public class MemberService {
     @Value("${oauth.kakao.client-secret}")
     private String kakaoClientSecret;
 
+    /**
+     * 회원 전체 조회 기능
+     */
+    public List<MemberResponse> getAllMembers() {
+        // 1. DB에서 전체 회원 엔티티 리스트 조회 (기본 내장 메서드)
+        List<Member> members = memberRepository.findAll();
+
+        // 2. 엔티티 리스트를 응답용 DTO 리스트로 변환하여 반환
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
+    }
+
+
     //회원가입
     @Transactional
     public void join(MemberRequest.Join request) {
