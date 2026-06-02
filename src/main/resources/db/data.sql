@@ -9,6 +9,9 @@ VALUES ('expert02@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnp
 
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
 VALUES ('admin@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '최관리', '010-0000-0000', 'ADMIN', 'ACTIVE', NOW());
+
+
+
 -- Board 샘플데이터
 -- 1번 샘플 (자유게시판): 프리랜서 전문가의 제안서 작성 노하우 공유
 INSERT INTO board_tb (board_type, title, content, view_count, is_active, member_id, created_at)

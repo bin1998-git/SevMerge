@@ -167,6 +167,17 @@ public class MemberService {
 
     // --------------------------------------------------------------------------------------
 
+//    // 카카오 로그인 (역할은 state로 전달받음)
+//    @Transactional
+//    public Member kakaoLogin(String code, String selectedRole) {
+//        // 1. 발급 받은 인가 코드로 액세스 토큰 발급 요청
+//        MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
+//        // 2. 발급 받은 액세스 토큰으로 사용자 카카오 프로필 조회
+//        MemberResponse.KakaoProfile kakaoProfile = getKakaoUserProfile(oAuthToken.getAccessToken());
+//        // 3. 응답 받은 결과로 우리 서버에 가입여부 조회 및 자동 회원가입 처리
+//        return processKakaoUserSync(kakaoProfile, selectedRole);
+//    }
+
     // 1. 인가 코드로 카카오 액세스 토큰 요청
     private MemberResponse.OAuthToken getKakaoAccessToken(String code) {
         RestTemplate restTemplate1 = new RestTemplate();

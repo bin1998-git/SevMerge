@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,16 @@ public class BoardController {
 
     // todo: 추후 메인 페이지 요청하는 곳 생성되면 삭제예정
     @GetMapping("/")
-    public String mainPage() {
-        return "main";
+    public String mainPage(Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute("sessionUser");
+
+        if (sessionUser != null && sessionUser.getRole() == Role.ADMIN) {
+            model.addAttribute("isAdmin", true);
+        } else {
+            model.addAttribute("isAdmin", false);
+        }
+
+            return "main";
     }
 
     @GetMapping("/boards")
