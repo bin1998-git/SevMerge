@@ -36,26 +36,23 @@ public class OAuth2MemberService extends DefaultOAuth2UserService {
         String email      = (String) attributes.get("email");
         String name       = (String) attributes.get("name");
 
-        // 기존 회원 조회 → 없으면 자동 가입
-        Member member = memberRepository.findByProviderAndProviderId(provider, providerId)
-                .orElseGet(() -> {
-                    log.info("[OAuth2] 신규 구글 회원 자동 가입 - email={}", email);
-                    return memberRepository.save(
-                            Member.builder()
-                                    .email(email)
-                                    .password(null)       // 소셜 로그인은 비밀번호 없음
-                                    .name(name)
-                                    .phone("")            // 전화번호는 추후 입력
-                                    .role(Role.CLIENT)
-                                    .status(Status.ACTIVE)
-                                    .provider(provider)
-                                    .providerId(providerId)
-                                    .build()
-                    );
-                });
+        //변경: 없으면 바로 저장하지 않고, null인 상태로 둠
+        Member member = memberRepository.findByProviderAndProviderId(provider, providerId).orElse(null);
 
+        if (member != null) {
+            log.info("[OAuth2] 구글 기존 회원 확인 - email={}", email);
+        } else {
+            log.info("[OAuth2] 구글 신규 유저 감지 (역할 선택 필요) - email={}", email);
+            // 임시 세팅 (가입 x)
+            member = Member.builder()
+                    .email(email)
+                    .name(name)
+                    .provider(provider)
+                    .providerId(providerId)
+                    .role(Role.CLIENT)
+                    .build();
+        }
         log.info("[OAuth2] 로그인 성공 - memberId={}, email={}", member.getId(), email);
-
         // 세션에 저장할 Member 객체를 attribute로 담아서 전달
         return new OAuth2MemberDetails(member, attributes);
     }
