@@ -48,7 +48,8 @@ public class MemberController {
 
     // 마이페이지
     @GetMapping("/mypage")
-    public String mypage(HttpSession session, Model model) {
+    public String mypage(@RequestParam(defaultValue = "projects") String tab,
+            HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
         return "member/mypage";

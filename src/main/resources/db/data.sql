@@ -1,21 +1,14 @@
--- Member 샘플데이터
--- 1번 샘플: 프로젝트를 발주하고 대금을 결제하는 의뢰인 (CLIENT)
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('client01@sevmerge.com', '2a$10$7Z25QpxnL3V6VqN0FmGgduWv9F0bM1HshB38aNExXpExZpS/YhV2.', '김의뢰', '010-1234-5678', 'CLIENT', 'ACTIVE', NOW());
+VALUES ('client01@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '김의뢰', '010-1234-5678', 'CLIENT', 'ACTIVE', NOW());
 
--- 2번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 1 (EXPERT - 개발자)
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('expert01@sevmerge.com', '$2a$10$7Z25QpxnL3V6VqN0FmGgduWv9F0bM1HshB38aNExXpExZpS/YhV2.', '홍길동', '010-9876-5432', 'EXPERT', 'ACTIVE', NOW());
+VALUES ('expert01@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '홍길동', '010-9876-5432', 'EXPERT', 'ACTIVE', NOW());
 
--- 3번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 2 (EXPERT - 디자이너)
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('expert02@sevmerge.com', '$2a$10$7Z25QpxnL3V6VqN0FmGgduWv9F0bM1HshB38aNExXpExZpS/YhV2.', '김디자', '010-5555-4444', 'EXPERT', 'ACTIVE', NOW());
+VALUES ('expert02@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '김디자', '010-5555-4444', 'EXPERT', 'ACTIVE', NOW());
 
--- 4번 샘플: 플랫폼을 관리하고 분쟁을 조정하는 최고 관리자 (ADMIN)
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('admin@sevmerge.com', '$2a$10$7Z25QpxnL3V6VqN0FmGgduWv9F0bM1HshB38aNExXpExZpS/YhV2.', '최관리', '010-0000-0000', 'ADMIN', 'ACTIVE', NOW());
-
-
+VALUES ('admin@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '최관리', '010-0000-0000', 'ADMIN', 'ACTIVE', NOW());
 -- Board 샘플데이터
 -- 1번 샘플 (자유게시판): 프리랜서 전문가의 제안서 작성 노하우 공유
 INSERT INTO board_tb (board_type, title, content, view_count, is_active, member_id, created_at)

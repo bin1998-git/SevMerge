@@ -43,15 +43,17 @@
 
         <div class="save-header">
             <h1 class="save-title">리뷰 작성</h1>
-            <p class="save-desc">함께 작업한 전문가에 대한 솔직한 리뷰를 남겨주세요.</p>
+            {{#isExpert}}<p class="save-desc">함께 작업한 의뢰인에 대한 솔직한 리뷰를 남겨주세요.</p>{{/isExpert}}
+            {{^isExpert}}<p class="save-desc">함께 작업한 전문가에 대한 솔직한 리뷰를 남겨주세요.</p>{{/isExpert}}
+
         </div>
 
         <!-- 미리보기 -->
         <div class="preview-box">
             <div class="preview-avatar">👨‍💻</div>
             <div class="preview-info">
-                <div class="label">리뷰 대상 전문가</div>
-                <div class="name">{{expertProfile.member.name}}</div>
+                <div class="label">리뷰 대상 {{#isExpert}}의뢰인{{/isExpert}} {{^isExpert}}전문가{{/isExpert}}</div>
+                <div class="name">{{member.name}}</div>
                 <div class="sub">{{expertProfile.career}} · 프로젝트: {{!project.title}}</div>
             </div>
         </div>
@@ -82,8 +84,8 @@
             </div>
 
             <div class="form-btns">
-                <a href="/experts/{{expertProfile.id}}" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-prigit mary btn-lg">리뷰 등록</button>
+                <a href="/experts/{{targetId}}" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary btn-lg">리뷰 등록</button>
             </div>
 
         </form>
