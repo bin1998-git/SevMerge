@@ -1,6 +1,5 @@
 package com.example.SevMerge.chatRoom;
 
-import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
