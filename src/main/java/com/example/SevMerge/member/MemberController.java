@@ -101,7 +101,7 @@ public class MemberController {
     }
     // 카카오 소셜 로그인 콜백
     @GetMapping("/kakao-redirect")
-    public String kakaoRedirect(@RequestParam String code,
+    public String kakaoRedirect(@RequestParam(name = "code") String code,
                                 @RequestParam String state,
                                 HttpSession session) {
         Member member = memberService.kakaoLogin(code, state);

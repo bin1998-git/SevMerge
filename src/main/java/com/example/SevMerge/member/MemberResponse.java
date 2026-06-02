@@ -68,8 +68,6 @@ public class MemberResponse {
         @NoArgsConstructor
         @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
         public static class KakaoAccount {
-            //todo 이메일 제거
-            //private String email;
             private Profile profile;
 
             @Data

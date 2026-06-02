@@ -32,12 +32,12 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
 
-//    // application.yml에 등록된 카카오 환경 변수 가져오기
-//    @Value("${oauth.kakao.client-id}")
-//    private String kakaoClientId;
-//
-//    @Value("${oauth.kakao.client-secret}")
-//    private String kakaoClientSecret;
+    // application.yml에 등록된 카카오 환경 변수 가져오기
+    @Value("${oauth.kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${oauth.kakao.client-secret}")
+    private String kakaoClientSecret;
 
     //회원가입
     @Transactional
@@ -153,8 +153,11 @@ public class MemberService {
     // 카카오 로그인 (역할은 state로 전달받음)
     @Transactional
     public Member kakaoLogin(String code, String selectedRole) {
+        // 1. 발급 받은 인가 코드로 액세스 토큰 발급 요청
         MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
+        // 2. 발급 받은 액세스 토큰으로 사용자 카카오 프로필 조회
         MemberResponse.KakaoProfile kakaoProfile = getKakaoUserProfile(oAuthToken.getAccessToken());
+        // 3. 응답 받은 결과로 우리 서버에 가입여부 조회 및 자동 회원가입 처리
         return processKakaoUserSync(kakaoProfile, selectedRole);
     }
 
@@ -167,10 +170,10 @@ public class MemberService {
 
         LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
         multiValueMap.add("grant_type", "authorization_code");
-        //multiValueMap.add("client_id", kakaoClientId);
+        multiValueMap.add("client_id", kakaoClientId);
         multiValueMap.add("redirect_uri", "http://localhost:8080/kakao-redirect");  // 콘솔 등록값과 일치
         multiValueMap.add("code", code);
-        //multiValueMap.add("client_secret", kakaoClientSecret);
+        multiValueMap.add("client_secret", kakaoClientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(multiValueMap, headers1);
 
@@ -209,47 +212,42 @@ public class MemberService {
     // 3단계.
     private Member processKakaoUserSync(MemberResponse.KakaoProfile kakaoProfile, String selectedRole) {
 
-        String nickname = kakaoProfile.getKakaoAccount().getProfile().getNickname();
+        String nickname = kakaoProfile.getKakaoAccount().getProfile().getNickname() + "_" + kakaoProfile.getId();
 
-        //todo 이메일 제거
-        // 1. MemberRepository 표준 인터페이스 사양(Optional)에 맞춰 연동 및 가입 유무 분기 처리
-        return memberRepository.findByEmail(nickname)
+        // 이메일 미제공 대안
+        // 카카오가 보낸 고유 숫자 ID(Long)를 문자열로 변환하여 DB의 식별자(email 컬럼)로 인식
+        String kakaoUserKey = String.valueOf(kakaoProfile.getId());
+        // Role.USER 대신 프로젝트 규격인 Role.CLIENT로 매핑을 수정
+        String roleStr = (selectedRole == null || selectedRole.isBlank() || selectedRole.equals("CLIENT")) ? "CLIENT" : selectedRole;
+        Role role = roleStr.equals("CLIENT") ? Role.CLIENT : Role.EXPERT;
+
+        return memberRepository.findByEmail(kakaoUserKey)
                 .orElseGet(() -> {
-                    log.info("기존 SevMerge 소셜 회원이 아님 - 카카오 자동 회원 가입을 진행합니다: {}");
+                    log.info("기존 소셜 회원이 아님 - 카카오 고유 식별자 가입 진행: {}", nickname);
 
-                    Role role = Role.valueOf(selectedRole);
-                    // 전문가(EXPERT) 계정으로 접근한 경우 관리자 승인 전까지 PENDING, 의뢰인은 즉시 ACTIVE 상태 부여
                     Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
-
-                    // password 컬럼 무결성(nullable=false) 규격을 충족하기 위해 유추 불가능한 난수 패스워드 주입
                     String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
 
-                    // 2. 신규 Member 엔티티 구축 및 영속화
                     Member newMember = Member.builder()
-                            //todo 이메일 제거
-                            //.email(email)
+                            .email(kakaoUserKey)
                             .password(dummyPassword)
                             .name(nickname)
-                            .phone("010-0000-0000") // 엔티티 필수 컬럼 제약 방어 공통 기본값
+                            .phone("010-0000-0000")
                             .role(role)
                             .status(status)
                             .build();
 
                     Member savedMember = memberRepository.save(newMember);
 
-                    // 3. 전문가(EXPERT) 소셜 회원 가입인 경우, 1:1 매핑 테이블인 ExpertProfile 연관 데이터 동시 생성
                     if (role == Role.EXPERT) {
-                        ExpertProfile defaultProfile = ExpertProfile.builder()
+                        expertProfileRepository.save(ExpertProfile.builder()
                                 .member(savedMember)
-                                .profileImage("default.png") // 필수 이미지 텍스트 조건 방어
+                                .profileImage("default.png")
                                 .avgRating(BigDecimal.ZERO)
                                 .totalReviews(0)
                                 .isCertified(false)
-                                .build();
-                        expertProfileRepository.save(defaultProfile);
-                        log.info("카카오 전문가 프로필 껍데기 레코드 적재 완료 - memberId={}", savedMember.getId());
+                                .build());
                     }
-
                     return savedMember;
                 });
     }
