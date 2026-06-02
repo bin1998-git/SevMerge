@@ -60,11 +60,17 @@ public class MemberController {
     public String mypage(@RequestParam(defaultValue = "projects") String tab,
                          HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
+        // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
+        if (loginMember == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
+
         model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
         model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
-        model.addAttribute("isReviews", tab.equalsIgnoreCase("bids"));
+        model.addAttribute("isBids", tab.equalsIgnoreCase("bids")); // 오타수정
+        model.addAttribute("isEdit", tab.equalsIgnoreCase("edit")); // 정보수정추가
 
         if (tab.equals("projects")) {
             model.addAttribute("projects", projectService.myProjects(loginMember));
@@ -79,15 +85,33 @@ public class MemberController {
         return "member/mypage";
     }
 
-    @GetMapping("/mypage/update")
-    public String updateMemberPage(){
+    // 회원 정보 수정 페이지 이동 (GET)
+    @GetMapping("/mypage/update") //
+    public String updateMemberPage(HttpSession session, Model model){
+        Member loginMember = (Member) session.getAttribute("sessionUser");
+        if (loginMember == null) {
+            return "redirect:/login";
+        }
+        // 머스테치에 주입
+        model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
         return "member/update-form";
     }
 
+    // 회원 정보 수정 처리 (POST)
     @PostMapping("/mypage/update")
     public String updateMember(MemberRequest.Update request, HttpSession session) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
+        if (loginMember == null) {
+            return "redirect:/login";
+        }
+
+        // 1. DB 회원 정보 수정 요청
         memberService.updateMyInfo(loginMember.getId(), request);
+
+        Member updatedMember = memberService.findMemberById(loginMember.getId());
+        session.setAttribute("sessionUser", updatedMember);
+
+        log.info("회원 정보 수정 완료 - memberId={}", loginMember.getId());
         return "redirect:/mypage";
     }
 
@@ -131,16 +155,6 @@ public class MemberController {
     }
 
     // --------------------------------------------------------------------
-//    // 카카오 소셜 로그인 콜백
-//    @GetMapping("/kakao-redirect")
-//    public String kakaoRedirect(@RequestParam(name = "code") String code,
-//                                @RequestParam String state,
-//                                HttpSession session) {
-//        Member member = memberService.kakaoLogin(code, state);
-//        session.setAttribute("sessionUser", member);
-//        log.info("카카오 로그인 성공 - memberId={}", member.getId());
-//        return "redirect:/";
-//    }
 
     // 카카오 콜백: 기존 회원이면 바로 로그인, 신규면 역할 선택 화면으로
     @GetMapping("/kakao-redirect")
