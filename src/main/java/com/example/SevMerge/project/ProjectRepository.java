@@ -1,10 +1,9 @@
 package com.example.SevMerge.project;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,12 +11,36 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 
     // 프로젝트 전체 조회(최신순 조회)
-    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted = false ORDER BY p.createdAt DESC")
     List<Project> findAllProjects();
 
     // 프로젝트 상세조회
     @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.id = :id AND p.isDeleted = false")
     Optional<Project> findByProjectId(@Param("id") Long id);
+
+    // 진행중인 프로젝트 조회
+    @Query("""
+        SELECT count(p) FROM Project p WHERE p.isDeleted = false AND p.projectStatus = 'IN_PROGRESS'
+        """)
+    Long countActiveProjects();
+
+    // 완료 프로젝트 조회
+    @Query("""
+        SELECT count(p) FROM Project p WHERE p.isDeleted = false AND p.projectStatus = 'DONE'
+        """)
+    Long doneProjects();
+
+    // 이번달에 완료한 프로젝트 조회
+    @Query("""
+        SELECT COUNT(p) 
+        FROM Project p 
+        WHERE p.isDeleted = false 
+          AND p.projectStatus = DONE
+          AND FUNCTION('YEAR', p.createdAt) = FUNCTION('YEAR', CURRENT_DATE) 
+          AND FUNCTION('MONTH', p.createdAt) = FUNCTION('MONTH', CURRENT_DATE)
+        """)
+    Long monthDoneProjects();
+
 
     // 프로젝트 카테고리별 조회
     @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.category = :category AND p.isDeleted = false ORDER BY p.createdAt DESC")
