@@ -1,5 +1,6 @@
 package com.example.SevMerge.portfolio;
 
+import com.example.SevMerge.core.exception.BadRequestException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,16 +11,24 @@ public class PortfolioRequest {
     public static class SaveDTO {
 
         private Long expertId;
-        private String title;
-        private String description;
-        private String imageUrl;
-        private String projectUrl;
+        private String title; // 제목
+        private String description; // 설명
+        private String imageUrl; // 이미지 링크
+        private String projectUrl; // 프로젝트 링크
 
         public void validate () {
 
             if(title == null || title.trim().isEmpty()) {
-
-
+                throw new BadRequestException("제목 입력은 필수 입니다.");
+            }
+            if(description == null || description.trim().isEmpty()) {
+                throw new BadRequestException("설명란을 입력해 주세요.");
+            }
+            if(imageUrl == null || imageUrl.trim().isEmpty()) {
+                throw new BadRequestException("이미지를 올려주세요.");
+            }
+            if(projectUrl == null || projectUrl.trim().isEmpty()) {
+                throw new BadRequestException("프로젝트를 올려 주세요.");
             }
 
         }
@@ -36,7 +45,15 @@ public class PortfolioRequest {
         private String imageUrl;
         private String projectUrl;
 
+        public void validate () {
 
+            if(title == null || title.trim().isEmpty()) {
+                throw new BadRequestException("제목 입력은 필수 입니다.");
+            }
+            if(description == null || description.trim().isEmpty()) {
+                throw new BadRequestException("설명란을 입력해 주세요.");
+            }
+        }
     }
 
 }
