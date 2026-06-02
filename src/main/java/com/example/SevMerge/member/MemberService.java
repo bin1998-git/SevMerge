@@ -150,16 +150,18 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
     }
 
-    // 카카오 로그인 (역할은 state로 전달받음)
-    @Transactional
-    public Member kakaoLogin(String code, String selectedRole) {
-        // 1. 발급 받은 인가 코드로 액세스 토큰 발급 요청
-        MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
-        // 2. 발급 받은 액세스 토큰으로 사용자 카카오 프로필 조회
-        MemberResponse.KakaoProfile kakaoProfile = getKakaoUserProfile(oAuthToken.getAccessToken());
-        // 3. 응답 받은 결과로 우리 서버에 가입여부 조회 및 자동 회원가입 처리
-        return processKakaoUserSync(kakaoProfile, selectedRole);
-    }
+    // --------------------------------------------------------------------------------------
+
+//    // 카카오 로그인 (역할은 state로 전달받음)
+//    @Transactional
+//    public Member kakaoLogin(String code, String selectedRole) {
+//        // 1. 발급 받은 인가 코드로 액세스 토큰 발급 요청
+//        MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
+//        // 2. 발급 받은 액세스 토큰으로 사용자 카카오 프로필 조회
+//        MemberResponse.KakaoProfile kakaoProfile = getKakaoUserProfile(oAuthToken.getAccessToken());
+//        // 3. 응답 받은 결과로 우리 서버에 가입여부 조회 및 자동 회원가입 처리
+//        return processKakaoUserSync(kakaoProfile, selectedRole);
+//    }
 
     // 1. 인가 코드로 카카오 액세스 토큰 요청
     private MemberResponse.OAuthToken getKakaoAccessToken(String code) {
@@ -210,45 +212,54 @@ public class MemberService {
     }
 
     // 3단계.
-    private Member processKakaoUserSync(MemberResponse.KakaoProfile kakaoProfile, String selectedRole) {
+    // 카카오 콜백 1단계: 프로필만 받아서 기존 회원인지 확인
+    // 기존 회원 → Member 반환 / 신규 → null 반환(가입은 역할 선택 후)
+    @Transactional(readOnly = true)
+    public MemberResponse.KakaoProfile getKakaoProfile(String code) {
+        MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
+        return getKakaoUserProfile(oAuthToken.getAccessToken());
+    }
 
-        String nickname = kakaoProfile.getKakaoAccount().getProfile().getNickname() + "_" + kakaoProfile.getId();
+    // 카카오 식별자로 기존 회원 조회 (없으면 null)
+    @Transactional(readOnly = true)
+    public Member findKakaoMember(Long kakaoId) {
+        String kakaoUserKey = String.valueOf(kakaoId);
+        return memberRepository.findByEmail(kakaoUserKey).orElse(null);
+    }
 
-        // 이메일 미제공 대안
-        // 카카오가 보낸 고유 숫자 ID(Long)를 문자열로 변환하여 DB의 식별자(email 컬럼)로 인식
-        String kakaoUserKey = String.valueOf(kakaoProfile.getId());
-        // Role.USER 대신 프로젝트 규격인 Role.CLIENT로 매핑을 수정
-        String roleStr = (selectedRole == null || selectedRole.isBlank() || selectedRole.equals("CLIENT")) ? "CLIENT" : selectedRole;
-        Role role = roleStr.equals("CLIENT") ? Role.CLIENT : Role.EXPERT;
+    // 카카오 신규 회원 가입 (역할 선택 후 호출)
+    @Transactional
+    public Member registerKakaoMember(Long kakaoId, String nickname, String selectedRole) {
+        String kakaoUserKey = String.valueOf(kakaoId);
 
-        return memberRepository.findByEmail(kakaoUserKey)
-                .orElseGet(() -> {
-                    log.info("기존 소셜 회원이 아님 - 카카오 고유 식별자 가입 진행: {}", nickname);
+        // 이미 가입돼 있으면 그대로 반환 (중복 방지)
+        Member existing = memberRepository.findByEmail(kakaoUserKey).orElse(null);
+        if (existing != null) return existing;
 
-                    Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
-                    String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
+        Role role = "EXPERT".equals(selectedRole) ? Role.EXPERT : Role.CLIENT;
+        Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
+        String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
 
-                    Member newMember = Member.builder()
-                            .email(kakaoUserKey)
-                            .password(dummyPassword)
-                            .name(nickname)
-                            .phone("010-0000-0000")
-                            .role(role)
-                            .status(status)
-                            .build();
+        Member newMember = Member.builder()
+                .email(kakaoUserKey)
+                .password(dummyPassword)
+                .name(nickname)
+                .phone("010-0000-0000")
+                .role(role)
+                .status(status)
+                .build();
+        Member savedMember = memberRepository.save(newMember);
 
-                    Member savedMember = memberRepository.save(newMember);
-
-                    if (role == Role.EXPERT) {
-                        expertProfileRepository.save(ExpertProfile.builder()
-                                .member(savedMember)
-                                .profileImage("default.png")
-                                .avgRating(BigDecimal.ZERO)
-                                .totalReviews(0)
-                                .isCertified(false)
-                                .build());
-                    }
-                    return savedMember;
-                });
+        if (role == Role.EXPERT) {
+            expertProfileRepository.save(ExpertProfile.builder()
+                    .member(savedMember)
+                    .profileImage("default.png")
+                    .avgRating(BigDecimal.ZERO)
+                    .totalReviews(0)
+                    .isCertified(false)
+                    .build());
+            log.info("카카오 전문가 가입 완료 - memberId={}", savedMember.getId());
+        }
+        return savedMember;
     }
 }
