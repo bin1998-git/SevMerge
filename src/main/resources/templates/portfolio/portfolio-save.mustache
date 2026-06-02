@@ -1,0 +1,85 @@
+{{> layout/header}}
+
+<style>
+    .save-section { padding: 52px 28px 80px; }
+    .save-inner { max-width: 760px; margin: 0 auto; }
+    .save-header { margin-bottom: 32px; }
+    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .save-desc { font-size: 14px; color: #9ca3af; }
+    .save-form { display: flex; flex-direction: column; gap: 22px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input::placeholder { color: #c4c9d9; }
+    .form-input:focus { border-color: #2563eb; }
+    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 200px; line-height: 1.7; transition: border-color .15s; }
+    .form-textarea::placeholder { color: #c4c9d9; }
+    .form-textarea:focus { border-color: #2563eb; }
+    .form-hint { font-size: 12px; color: #9ca3af; }
+    .img-preview { width: 100%; height: 200px; background: #f0f4ff; border: 1.5px dashed #bfdbfe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 8px; overflow: hidden; }
+    .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+</style>
+
+<section class="save-section">
+    <div class="save-inner">
+
+        <div class="save-header">
+            <h1 class="save-title">포트폴리오 등록</h1>
+            <p class="save-desc">나의 작업물을 소개해보세요.</p>
+        </div>
+
+        <form class="save-form" action="/portfolios/save" method="POST" enctype="multipart/form-data">
+
+            <input type="hidden" name="expertId" value="{{expertProfile.id}}" />
+
+            <div class="form-group">
+                <label class="form-label">제목 <span class="required">*</span></label>
+                <input type="text" name="title" class="form-input" placeholder="포트폴리오 제목을 입력하세요" maxlength="100" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">설명 <span class="required">*</span></label>
+                <textarea name="description" class="form-textarea" placeholder="프로젝트 내용, 사용 기술, 담당 역할 등을 소개해주세요."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">대표 이미지</label>
+                <div class="img-preview" id="imgPreview">🖼️</div>
+                <input type="text" name="imageUrl" class="form-input" placeholder="이미지 URL을 입력하세요 (예: https://...)" />
+                <span class="form-hint">이미지 URL을 입력하면 미리보기가 표시됩니다.</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">프로젝트 링크</label>
+                <input type="url" name="projectUrl" class="form-input" placeholder="https://github.com/... 또는 배포 URL" />
+                <span class="form-hint">GitHub, 배포 사이트 등 관련 링크를 입력하세요.</span>
+            </div>
+
+            <div class="form-btns">
+                <a href="/portfolios?expertId={{expertProfile.id}}" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary btn-lg">등록하기</button>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<script>
+    document.querySelector('input[name="imageUrl"]').addEventListener('input', function() {
+        const preview = document.getElementById('imgPreview');
+        if (this.value) {
+            preview.innerHTML = '<img src="' + this.value + '" alt="미리보기" onerror="this.parentElement.innerHTML=\'🖼️\'" />';
+        } else {
+            preview.innerHTML = '🖼️';
+        }
+    });
+</script>
+
+{{> layout/footer}}

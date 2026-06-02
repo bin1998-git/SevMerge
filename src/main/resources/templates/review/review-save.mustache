@@ -36,6 +36,9 @@
 </style>
 
 <section class="save-section">
+
+
+
     <div class="save-inner">
 
         <div class="save-header">
@@ -49,14 +52,14 @@
             <div class="preview-info">
                 <div class="label">리뷰 대상 전문가</div>
                 <div class="name">{{expertProfile.member.name}}</div>
-                <div class="sub">{{expertProfile.career}} · 프로젝트: {{project.title}}</div>
+                <div class="sub">{{expertProfile.career}} · 프로젝트: {{!project.title}}</div>
             </div>
         </div>
 
         <form class="save-form" action="/reviews/save" method="POST">
 
             <input type="hidden" name="expertProfileId" value="{{expertProfile.id}}" />
-            <input type="hidden" name="projectId" value="{{project.id}}" />
+            <input type="hidden" name="projectId" value="{{!project.id}}" />
             <input type="hidden" name="rating" id="ratingInput" value="0" />
 
             <!-- 별점 -->
@@ -80,7 +83,7 @@
 
             <div class="form-btns">
                 <a href="/experts/{{expertProfile.id}}" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary btn-lg">리뷰 등록</button>
+                <button type="submit" class="btn btn-prigit mary btn-lg">리뷰 등록</button>
             </div>
 
         </form>

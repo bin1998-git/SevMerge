@@ -58,6 +58,7 @@
     </div>
 </div>
 
+
 <!-- ===================================================
      자유게시판 (type=FREE)
      컨트롤러 : isFree = true, boards = 게시글 리스트
@@ -71,38 +72,42 @@
                 <a href="/boards/save?boardType=FREE" class="btn btn-primary btn-sm">글쓰기</a>
             </div>
 
-            <div class="board-search">
-                <input type="text" class="board-search-input" placeholder="검색어를 입력하세요..." />
-                <button class="board-search-btn">검색</button>
-            </div>
+            <form action="/boards" method="GET">
+                <input type="hidden" name="boardType" value="{{#isFree}}FREE{{/isFree}}{{#isNotice}}NOTICE{{/isNotice}}{{#isInquiry}}INQUIRY{{/isInquiry}}" />
+                <div class="board-search">
+                    <input type="text" name="keyword" class="board-search-input" placeholder="검색어를 입력하세요..." value="{{keyword}}" />
+                    <button type="submit" class="board-search-btn">검색</button>
+                </div>
+            </form>
 
-                {{#boards}}
-                    <div class = "board-table">
-                        <a href="/boards/{{id}}" class="board-table-row pinned col-free">
-                            <span class="cell-num">📌</span>
-                            <span class="cell-title">{{title}}</span>
-                            <span class="cell-author">{{memberName}}</span>
-                            <span class="cell-date">{{createdAt}}</span>
-                            <span class="cell-view">{{viewCount}}</span>
-                        </a>
-                    </div>
-                {{/boards}}
+            {{#boards}}
+                <div class="board-table">
+                    <a href="/boards/{{id}}" class="board-table-row pinned col-free">
+                        <span class="cell-num">📌</span>
+                        <span class="cell-title">{{title}}</span>
+                        <span class="cell-author">{{memberName}}</span>
+                        <span class="cell-date">{{createdAt}}</span>
+                        <span class="cell-view">{{viewCount}}</span>
+                    </a>
+                </div>
+            {{/boards}}
 
-                {{! 게시글 없을 때 }}
-                {{^boards}}
-                    <div class="empty-state">
-                        <p class="empty-msg">등록된 게시글이 없습니다.</p>
-                    </div>
-                {{/boards}}
+            {{! 게시글 없을 때 }}
+            {{^boards}}
+                <div class="empty-state">
+                    <p class="empty-msg">등록된 게시글이 없습니다.</p>
+                </div>
+            {{/boards}}
 
-            </div>
+        </div>
 
-            <div class="paging">
-                <a href="/boards?boardType=FREE&page=1" class="page-btn active">1</a>
-                <a href="/boards?boardType=FREE&page=2" class="page-btn">2</a>
-                <a href="/boards?boardType=FREE&page=3" class="page-btn">3</a>
-                <a href="/boards?boardType=FREE&page=2" class="page-btn">다음</a>
-            </div>
+        <div class="paging">
+            {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            {{#pageList}}
+                <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+            {{/pageList}}
+            {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+        </div>
 
         </div>
     </section>
@@ -118,42 +123,46 @@
 
             <div class="board-action">
                 <span class="board-count">총 <strong>{{boardCount}}</strong>의 공지</span>
-                    {{#isAdmin}}
-                        <a href="/boards/save?boardType=NOTICE" class="btn btn-primary btn-sm">공지 작성</a>
-                    {{/isAdmin}}
+                {{#isAdmin}}
+                    <a href="/boards/save?boardType=NOTICE" class="btn btn-primary btn-sm">공지 작성</a>
+                {{/isAdmin}}
 
             </div>
 
             <div class="board-search">
-                <input type="text" class="board-search-input" placeholder="검색어를 입력하세요..." />
+                <input type="text" class="board-search-input" placeholder="검색어를 입력하세요..."/>
                 <button class="board-search-btn">검색</button>
             </div>
 
-                {{! 공지 있을 때 — 하드코딩 데이터 }}
-                {{#boards}}
-                    <div class = "board-table">
-                        <a href="/boards/{{id}}" class="board-table-row pinned col-free">
-                            <span class="cell-num">📌</span>
-                            <span class="cell-title">{{title}}</span>
-                            <span class="cell-author">{{memberName}}</span>
-                            <span class="cell-date">{{createdAt}}</span>
-                            <span class="cell-view">{{viewCount}}</span>
-                        </a>
-                    </div>
-                {{/boards}}
+            {{! 공지 있을 때 — 하드코딩 데이터 }}
+            {{#boards}}
+                <div class="board-table">
+                    <a href="/boards/{{id}}" class="board-table-row pinned col-free">
+                        <span class="cell-num">📌</span>
+                        <span class="cell-title">{{title}}</span>
+                        <span class="cell-author">{{memberName}}</span>
+                        <span class="cell-date">{{createdAt}}</span>
+                        <span class="cell-view">{{viewCount}}</span>
+                    </a>
+                </div>
+            {{/boards}}
 
-                {{! 공지 없을 때 }}
-                {{^boards}}
-                    <div class="empty-state">
-                        <p class="empty-msg">등록된 공지사항이 없습니다.</p>
-                    </div>
-                {{/boards}}
+            {{! 공지 없을 때 }}
+            {{^boards}}
+                <div class="empty-state">
+                    <p class="empty-msg">등록된 공지사항이 없습니다.</p>
+                </div>
+            {{/boards}}
 
-            </div>
+        </div>
 
-            <div class="paging">
-                <a href="/boards?boardType=NOTICE&page=1" class="page-btn active">1</a>
-            </div>
+        <div class="paging">
+            {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            {{#pageList}}
+                <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+            {{/pageList}}
+            {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+        </div>
 
         </div>
     </section>
@@ -168,69 +177,34 @@
         <div class="board-inner">
 
             <div class="board-action">
-                <span class="board-count">총 <strong>5개</strong>의 문의</span>
-                <a href="/boards/save-form?boardType=INQUIRY" class="btn btn-primary btn-sm">문의하기</a>
+                <span class="board-count">총 <strong>{{boardCount}}</strong>의 문의</span>
+                <a href="/boards/save?boardType=INQUIRY" class="btn btn-primary btn-sm">문의하기</a>
             </div>
 
-            <div class="board-table">
-                <div class="board-table-head col-inquiry">
-                    <span style="text-align:center;">번호</span>
-                    <span>제목</span>
-                    <span>작성자</span>
-                    <span>작성일</span>
-                    <span style="text-align:center;">상태</span>
+            {{#boards}}
+                <div class="board-table">
+                    <a href="/boards/{{id}}" class="board-table-row pinned col-free">
+                        <span class="cell-num">📌</span>
+                        <span class="cell-title">{{title}}</span>
+                        <span class="cell-author">{{memberName}}</span>
+                        <span class="cell-date">{{createdAt}}</span>
+                        <span class="cell-view">{{viewCount}}</span>
+                    </a>
                 </div>
+            {{/boards}}
 
-                {{! 문의 있을 때 — 하드코딩 데이터 }}
-                {{#boards}}
-                    <a href="/boards/5" class="board-table-row col-inquiry">
-                        <span class="cell-num">5</span>
-                        <span class="cell-title">결제 취소 환불 처리 문의 <span class="new-badge">NEW</span></span>
-                        <span class="cell-author">홍길동</span>
-                        <span class="cell-date">2025.01.15</span>
-                        <span class="cell-status"><span class="status-wait">대기중</span></span>
-                    </a>
-                    <a href="/boards/4" class="board-table-row col-inquiry">
-                        <span class="cell-num">4</span>
-                        <span class="cell-title">전문가 인증 신청 후 진행 상황 문의</span>
-                        <span class="cell-author">홍길동</span>
-                        <span class="cell-date">2025.01.10</span>
-                        <span class="cell-status"><span class="status-done">답변완료</span></span>
-                    </a>
-                    <a href="/boards/3" class="board-table-row col-inquiry">
-                        <span class="cell-num">3</span>
-                        <span class="cell-title">프로젝트 마감 후 재등록 가능한지 문의</span>
-                        <span class="cell-author">홍길동</span>
-                        <span class="cell-date">2025.01.07</span>
-                        <span class="cell-status"><span class="status-done">답변완료</span></span>
-                    </a>
-                    <a href="/boards/2" class="board-table-row col-inquiry">
-                        <span class="cell-num">2</span>
-                        <span class="cell-title">포트폴리오 파일 업로드 오류 문의</span>
-                        <span class="cell-author">홍길동</span>
-                        <span class="cell-date">2025.01.05</span>
-                        <span class="cell-status"><span class="status-done">답변완료</span></span>
-                    </a>
-                    <a href="/boards/1" class="board-table-row col-inquiry">
-                        <span class="cell-num">1</span>
-                        <span class="cell-title">회원 탈퇴 방법 문의</span>
-                        <span class="cell-author">홍길동</span>
-                        <span class="cell-date">2025.01.02</span>
-                        <span class="cell-status"><span class="status-done">답변완료</span></span>
-                    </a>
-                {{/boards}}
-
-                {{! 문의 없을 때 }}
-                {{^boards}}
-                    <div class="empty-state">
-                        <p class="empty-msg">등록된 문의가 없습니다.</p>
-                    </div>
-                {{/boards}}
-
-            </div>
+            {{^boards}}
+                <div class="empty-state">
+                    <p class="empty-msg">등록된 문의가 없습니다.</p>
+                </div>
+            {{/boards}}
 
             <div class="paging">
-                <a href="/boards?boardType=INQUIRY&page=1" class="page-btn active">1</a>
+                {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                {{#pageList}}
+                    <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+                {{/pageList}}
+                {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
             </div>
 
         </div>

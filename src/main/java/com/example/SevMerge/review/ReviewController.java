@@ -23,10 +23,12 @@ public class ReviewController {
 
     // 리뷰목록 화면
     @GetMapping("/reviews")
-    public String reviewList(Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page) {
+    public String reviewList(Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page,HttpSession session) {
 
 
-        ReviewResponse.ReviewListPageDTO reviewListPageDTO = reviewService.reviewsListPage(expertId,page);
+        Member sessionMember =(Member) session.getAttribute("sessionUser");
+
+        ReviewResponse.ReviewListPageDTO reviewListPageDTO = reviewService.reviewsListPage(expertId,page,sessionMember);
 
         model.addAttribute("expertProfile",reviewListPageDTO.getExpertProfile());
         model.addAttribute("reviews",reviewListPageDTO.getReviews());
@@ -37,18 +39,31 @@ public class ReviewController {
 
     // 리뷰작성 화면
     @GetMapping("/reviews/save")
-    public String saveReviewForm(Model model , HttpSession session,@RequestParam Long expertId) {
-
+    public String saveReviewForm(Model model , HttpSession session
+            ,@RequestParam (required = false)Long expertId
+            ,@RequestParam(required = false) Long memberId // 원래 기존에는 의뢰인이 전문가 리뷰달때 memberId는 필요없었음
+                                 // 리뷰달 대상이 전문가니까 memberId불필요 근데 이제 전문가가 의뢰인을 리뷰 하니까 memberId
+                                 //필요
+    ) {
+        // 로그인을 했어
         Member sessionMember = (Member) session.getAttribute("sessionUser");
         if(sessionMember == null ){
-
             return "redirect:/login";
-
         }
+        boolean isExpert = sessionMember.isExpert(); // 전문가야
 
-        ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(expertId);
 
-        model.addAttribute("expertProfile",reviewSaveDTO.getExpertProfile());
+        if(isExpert && memberId != null){ // 전문가이고 멤버 아이디를 가진고 리뷰할 멤버찾아서 리뷰 즉 전문가가 멤버아이디로 찾아서 리뷰달기
+            // 전문가 -> 의뢰인
+            model.addAttribute("member",reviewService.savePageExpertToClientPage(memberId,expertId));
+
+        } else if (!isExpert && expertId != null) {
+            // 전문가가 아니고 전문가를 리뷰하기 위해 expertId 로 전문가를 찾아서 리뷰달기
+            // 의뢰인 -> 전문가
+            ReviewResponse.ReviewSaveDTO reviewSaveDTO = reviewService.savePage(expertId); // 의뢰인이 전문가에게 리뷰달때 불러올 페이지
+            model.addAttribute("expertProfile",reviewSaveDTO.getExpertProfile());
+        }
+            model.addAttribute("isExpert",isExpert);
 
         return  "review/review-save";
     }
@@ -61,9 +76,7 @@ public class ReviewController {
         Member sessionMember = (Member) session.getAttribute("sessionUser"); // 누가 쓸건지 특정
 
         if(sessionMember == null ){
-
             return "redirect:/login";
-
         }
 
         reviewService.save(reviewDTO,sessionMember);

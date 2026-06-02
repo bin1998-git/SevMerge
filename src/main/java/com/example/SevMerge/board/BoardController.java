@@ -4,10 +4,12 @@ import com.example.SevMerge.comment.CommentResponse;
 import com.example.SevMerge.comment.CommentService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberResponse;
 import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,26 +34,29 @@ public class BoardController {
     }
 
     @GetMapping("/boards")
-    // 게시판 메인 화면
     public String showBoard(@RequestParam(defaultValue = "FREE") String boardType,
+                            @RequestParam(defaultValue = "") String keyword,
+                            @RequestParam(defaultValue = "1") int page,
                             Model model, HttpSession session) {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
-        List<BoardResponse.ListDTO> boardList = new ArrayList<>();
+        // 페이징 + 키워드 서비스 호출
+        Page<BoardResponse.ListDTO> boardPage = boardService.findAllByBoardType(BoardType.valueOf(boardType.toUpperCase()), keyword, page);
 
+        // todo-추후 페이지 번호 추가
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
-        model.addAttribute("isAdmin", sessionMember != null && sessionMember.isAdmin());
-
-        if (boardType.equalsIgnoreCase("FREE")) {
-            boardList = boardService.findAllByBoardType(BoardType.FREE);
-        } else if (boardType.equalsIgnoreCase("NOTICE")) {
-            boardList = boardService.findAllByBoardType(BoardType.NOTICE);
-        }
-
-        model.addAttribute("boards", boardList);
-        model.addAttribute("boardCount",boardList.size());
+        model.addAttribute("isInquiry", boardType.equalsIgnoreCase("INQUIRY"));
+        model.addAttribute("isAdmin", sessionMember != null && sessionMember.getRole() == Role.ADMIN);
+        model.addAttribute("boards", boardPage.getContent());
+        model.addAttribute("boardCount", boardPage.getTotalElements());
+        model.addAttribute("totalPages", boardPage.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+        model.addAttribute("nextPage", page < boardPage.getTotalPages() ? page + 1 : null);
+        model.addAttribute("boardType", boardType);
 
         return "board/board-list";
     }
@@ -83,7 +88,8 @@ public class BoardController {
         }
 
         // 자유게시판은 로그인만 되어있으면 됨
-        if (boardType.equalsIgnoreCase("FREE")) {
+        if (boardType.equalsIgnoreCase("FREE") ||
+                boardType.equalsIgnoreCase("INQUIRY")) {
             if (sessionUser == null) {
                 return "redirect:/login-form";
             }
@@ -92,6 +98,7 @@ public class BoardController {
         model.addAttribute("boardType", boardType);
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
+        model.addAttribute("isInquiry",boardType.equalsIgnoreCase("INQUIRY"));
 
         return "board/board-save";
     }
@@ -135,8 +142,6 @@ public class BoardController {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         boardService.deleteBoard(boardId,sessionMember.getId());
-
-
         return "redirect:/boards";
     }
 }

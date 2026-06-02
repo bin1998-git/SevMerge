@@ -2,10 +2,12 @@ package com.example.SevMerge.member;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
@@ -26,7 +28,8 @@ public class MemberController {
 
     // 로그인 / 로그아웃
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(Model model) {
+        model.addAttribute("email", "");
         return "member/login-form";
     }
 
@@ -39,6 +42,7 @@ public class MemberController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         memberService.logout(session);
+        log.info("로그아웃완료");
         return "redirect:/";
     }
 
@@ -94,5 +98,15 @@ public class MemberController {
     public String rejectExpert(@PathVariable Long id) {
         memberService.rejectExpert(id);
         return "redirect:/admin/experts";
+    }
+    // 카카오 소셜 로그인 콜백
+    @GetMapping("/kakao-redirect")
+    public String kakaoRedirect(@RequestParam(name = "code") String code,
+                                @RequestParam String state,
+                                HttpSession session) {
+        Member member = memberService.kakaoLogin(code, state);
+        session.setAttribute("sessionUser", member);
+        log.info("카카오 로그인 성공 - memberId={}", member.getId());
+        return "redirect:/";
     }
 }

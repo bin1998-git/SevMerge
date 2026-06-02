@@ -5,6 +5,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,17 +14,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class ReviewService {
 
 
     private final ReviewRepository reviewRepository;
     private final ExpertProfileRepository expertProfileRepository;
+    private final MemberRepository memberRepository;
 
 
     // 리뷰작성
@@ -42,16 +46,22 @@ public class ReviewService {
         ExpertProfile expertProfile = expertProfileRepository.findById(reviewDTO.getExpertId()).orElseThrow(() ->
                 new BadRequestException("전문가를 찾을수 없습니다.")
         );
-
-
         Review newReview = Review.builder()
                 .member(member)
                 .expertProfile(expertProfile)
                 .content(reviewDTO.getContent())
                 .countStar(reviewDTO.getRating())
                 .build();
-
         reviewRepository.save(newReview);
+
+        // ExpertProfile 갱신
+        BigDecimal avgRating = reviewRepository.avgRating(expertProfile.getId()).orElse(BigDecimal.ZERO);
+
+        Integer reviewCount = reviewRepository.countReview(expertProfile.getId()).orElse(0);
+
+        expertProfile.setTotalReviews(reviewCount);
+        expertProfile.setAvgRating(avgRating);
+
 
     }
 
@@ -70,6 +80,18 @@ public class ReviewService {
 
     }
 
+    // 전문가가 의뢰인에게 리뷰 달때 필요함
+    public ReviewResponse.SaveExpertToClient savePageExpertToClientPage(Long memberId, Long expertId) {
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new BadRequestException("유저를 찾을수 없습니다.")
+                );
+        ExpertProfile expertProfile = expertProfileRepository.findById(expertId).orElseThrow(() ->
+                new BadRequestException("전문가를 찾을수 없습니다.")
+                );
+       return new ReviewResponse.SaveExpertToClient(member, expertProfile);
+    }
+
 
     // 리뷰조회
     public ReviewResponse.ReviewDetailDTO detail(Long id) {
@@ -82,8 +104,11 @@ public class ReviewService {
     }
 
 
+
+
+
     // 리뷰 목록
-    public ReviewResponse.ReviewListPageDTO reviewsListPage(Long expertProfileId, int page) {
+    public ReviewResponse.ReviewListPageDTO reviewsListPage(Long expertProfileId, int page, Member sessionMember) {
 
         // 1 페이지씩 5개
         Pageable pageable = PageRequest.of(page - 1, 5);
@@ -99,7 +124,8 @@ public class ReviewService {
         List<Review> reviewList = reviews.getContent();
 
 
-        List<ReviewResponse.ReviewListDTO> reviewListDTOS = reviewList.stream().map(ReviewResponse.ReviewListDTO::new)
+        List<ReviewResponse.ReviewListDTO> reviewListDTOS = reviewList.stream()
+                .map(review -> new ReviewResponse.ReviewListDTO(review, sessionMember))
                 .collect(Collectors.toList());
 
 
@@ -153,10 +179,24 @@ public class ReviewService {
         );
         review.setCountStar(dto.getRating());
         review.setContent(dto.getContent());
+
+        // 리뷰로 전문가 찾기
+        ExpertProfile expertProfile = review.getExpertProfile();
+
+        // 전문가 별점 갱신 리뷰수도 갱신
+        BigDecimal avgRating = reviewRepository.avgRating(expertProfile.getId()).orElse(BigDecimal.ZERO);
+        Integer reviewCount = reviewRepository.countReview(expertProfile.getId()).orElse(0);
+
+        expertProfile.setTotalReviews(reviewCount);
+        expertProfile.setAvgRating(avgRating);
+
+
+
     }
 
 
     // 리뷰 삭제
+    @Transactional
     public Long deleteReview(Long reviewId) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
@@ -166,9 +206,22 @@ public class ReviewService {
 
         reviewRepository.deleteById(reviewId);
 
+        Integer reviewCount = reviewRepository.countReview(expertId).orElse(0);
+        BigDecimal avgRating = reviewRepository.avgRating(expertId).orElse(BigDecimal.ZERO);
+
+        ExpertProfile expertProfile = expertProfileRepository.findById(expertId).orElseThrow(() ->
+                    new BadRequestException("전문가를 찾을수 없습니다.")
+                );
+
+        expertProfile.setTotalReviews(reviewCount);
+        expertProfile.setAvgRating(avgRating);
+
+
         return expertId;
 
     }
+
+
 
 
 }

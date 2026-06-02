@@ -1,0 +1,84 @@
+{{> layout/header}}
+
+<style>
+    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .page-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
+    .list-section { padding: 36px 28px 80px; }
+    .list-inner { max-width: 1140px; margin: 0 auto; }
+    .list-count { font-size: 14px; color: #9ca3af; font-weight: 500; margin-bottom: 20px; }
+    .list-count strong { color: #1c1e26; font-weight: 700; }
+    .pay-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
+    .pay-table-head { display: grid; grid-template-columns: 80px 120px 130px 130px 130px 110px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
+    .pay-table-row { display: grid; grid-template-columns: 80px 120px 130px 130px 130px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .pay-table-row:last-child { border-bottom: none; }
+    .pay-table-row:hover { background: #f8f9ff; }
+    .cell { font-size: 13px; color: #4b5563; }
+    .cell-id { font-weight: 700; color: #1c1e26; }
+    .cell-amount { font-weight: 700; color: #1c1e26; }
+    .status-paid     { font-size: 11px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-settled  { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-refunded { font-size: 11px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .empty-state { text-align: center; padding: 80px 0; }
+    .empty-msg { font-size: 15px; color: #c4c9d9; }
+</style>
+
+<div class="page-header">
+    <div class="page-header-inner">
+        {{#isExpert}}
+        <h1 class="page-title">정산 내역</h1>
+        <p class="page-desc">완료된 프로젝트의 정산 내역을 확인하세요.</p>
+        {{/isExpert}}
+        {{^isExpert}}
+        <h1 class="page-title">결제 내역</h1>
+        <p class="page-desc">진행한 프로젝트의 결제 내역을 확인하세요.</p>
+        {{/isExpert}}
+    </div>
+</div>
+
+<section class="list-section">
+    <div class="list-inner">
+
+        {{#payments}}
+        <div class="pay-table">
+            <div class="pay-table-head">
+                <span>결제 ID</span>
+                <span>프로젝트</span>
+                <span>결제 금액</span>
+                <span>수수료</span>
+                <span>{{#isExpert}}수령액{{/isExpert}}{{^isExpert}}전문가 수령액{{/isExpert}}</span>
+                <span>상태</span>
+            </div>
+            <div class="pay-table-row">
+                <span class="cell cell-id">#{{id}}</span>
+                <span class="cell">프로젝트 #{{projectId}}</span>
+                <span class="cell cell-amount">{{amount}}원</span>
+                <span class="cell">{{platformFee}}원</span>
+                <span class="cell">{{netAmount}}원</span>
+                <span class="cell">
+                    {{#isPaid}}<span class="status-paid">결제완료</span>{{/isPaid}}
+                    {{#isSettled}}<span class="status-settled">정산완료</span>{{/isSettled}}
+                    {{#isRefunded}}<span class="status-refunded">환불완료</span>{{/isRefunded}}
+                </span>
+            </div>
+        </div>
+        {{/payments}}
+
+        {{^payments}}
+        <div class="pay-table">
+            <div class="empty-state">
+                {{#isExpert}}
+                <p class="empty-msg">정산 내역이 없습니다.</p>
+                {{/isExpert}}
+                {{^isExpert}}
+                <p class="empty-msg">결제 내역이 없습니다.</p>
+                {{/isExpert}}
+            </div>
+        </div>
+        {{/payments}}
+
+    </div>
+</section>
+
+{{> layout/footer}}

@@ -1,5 +1,7 @@
 package com.example.SevMerge.member;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -29,4 +31,57 @@ public class MemberResponse {
                 .createdAt(member.getCreatedAt())
                 .build();
     }
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
+    public boolean isExpert() {
+        return this.role == Role.EXPERT;
+    }
+    /**
+     * 액세스 토큰 응답 정보
+     */
+    @Data
+    @NoArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public static class OAuthToken {
+        private String accessToken;
+        private String tokenType;
+        private String refreshToken;
+        private Integer expiresIn;
+        private String scope;
+        private Integer refreshTokenExpiresIn;
+    }
+
+    /**
+     * 카카오 사용자 정보 응답
+     */
+    @Data
+    @NoArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public static class KakaoProfile {
+        private Long id;
+        private KakaoAccount kakaoAccount;
+
+
+        @Data
+        @NoArgsConstructor
+        @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+        public static class KakaoAccount {
+            private Profile profile;
+
+            @Data
+            @NoArgsConstructor
+            @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+            public static class Profile {
+                private String nickname;
+                private String thumbnailImageUrl;
+                private String profileImageUrl;
+                private Boolean isDefaultImage;
+                private Boolean isDefaultNickname;
+            }
+        }
+    }
+
+
 }

@@ -27,8 +27,16 @@ public class Member {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)  // 구글 로그인 시 비밀번호 없음 → nullable 허용
     private String password;
+
+    // 소셜 로그인 구분 ("LOCAL" | "GOOGLE")
+    @Column(length = 20)
+    private String provider;
+
+    // 구글 sub 값 (소셜 로그인 고유 ID)
+    @Column(name = "provider_id", length = 255)
+    private String providerId;
 
     @Column(nullable = false, length = 50)
     private String name;
@@ -130,5 +138,9 @@ public class Member {
     public void updateInfo(String name, String phone) {
         this.name = name;
         this.phone = phone;
+    }
+
+    public boolean isClient() {
+        return this.role == Role.CLIENT;
     }
 }

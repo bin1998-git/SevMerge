@@ -1,6 +1,8 @@
 package com.example.SevMerge.review;
 
 import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.expertprofile.ExpertProfile;
+import com.example.SevMerge.member.Member;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,9 +15,7 @@ public class ReviewRequest {
 
         private Integer rating;
         private String content;
-
         private Long expertId;
-
 
         @Builder
         public SaveReviewDTO(Integer rating, String content , Long expertProfileId) {
@@ -39,6 +39,19 @@ public class ReviewRequest {
     public static class UpdateRequestDTO {
         private Integer rating;
         private String content;
+
+    }
+
+    // 전문가 가 유저에게 리뷰달기
+    // member expertProfile 두개 키값
+    @Data
+    public static class ExpertReviewToClientSaveDTO {
+
+        private Long expertId; // 전문가  Id
+        private Long memberId; // 유저 Id
+        private String content;
+        private Integer rating;
+
 
     }
 

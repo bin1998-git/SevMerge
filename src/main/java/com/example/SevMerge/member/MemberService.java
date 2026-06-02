@@ -7,9 +7,17 @@ import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +30,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
+
+
+    // application.yml에 등록된 카카오 환경 변수 가져오기
+    @Value("${oauth.kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${oauth.kakao.client-secret}")
+    private String kakaoClientSecret;
 
     //회원가입
     @Transactional
@@ -40,15 +56,15 @@ public class MemberService {
         memberRepository.save(member);
 
         // 전문가 신청 시 ExpertProfile 초기 생성
-//        if (request.getRole() == Role.EXPERT) {
-//            expertProfileRepository.save(ExpertProfile.builder()
-//                    .member(member)
-//                    .avgRating(BigDecimal.ZERO)
-//                    .totalReviews(0)
-//                    .isCertified(false)
-//                    .build());
-//            log.info("전문가 신청 완료 - memberId={}", member.getId());
-//        }
+        if (request.getRole() == Role.EXPERT) {
+            expertProfileRepository.save(ExpertProfile.builder()
+                    .member(member)
+                    .avgRating(BigDecimal.ZERO)
+                    .totalReviews(0)
+                    .isCertified(false)
+                    .build());
+            log.info("전문가 신청 완료 - memberId={}", member.getId());
+        }
     }
 
     //로그인 / 로그아웃
@@ -132,5 +148,107 @@ public class MemberService {
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+    }
+
+    // 카카오 로그인 (역할은 state로 전달받음)
+    @Transactional
+    public Member kakaoLogin(String code, String selectedRole) {
+        // 1. 발급 받은 인가 코드로 액세스 토큰 발급 요청
+        MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
+        // 2. 발급 받은 액세스 토큰으로 사용자 카카오 프로필 조회
+        MemberResponse.KakaoProfile kakaoProfile = getKakaoUserProfile(oAuthToken.getAccessToken());
+        // 3. 응답 받은 결과로 우리 서버에 가입여부 조회 및 자동 회원가입 처리
+        return processKakaoUserSync(kakaoProfile, selectedRole);
+    }
+
+    // 1. 인가 코드로 카카오 액세스 토큰 요청
+    private MemberResponse.OAuthToken getKakaoAccessToken(String code) {
+        RestTemplate restTemplate1 = new RestTemplate();
+
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+        multiValueMap.add("grant_type", "authorization_code");
+        multiValueMap.add("client_id", kakaoClientId);
+        multiValueMap.add("redirect_uri", "http://localhost:8080/kakao-redirect");  // 콘솔 등록값과 일치
+        multiValueMap.add("code", code);
+        multiValueMap.add("client_secret", kakaoClientSecret);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(multiValueMap, headers1);
+
+        ResponseEntity<MemberResponse.OAuthToken> response1 = restTemplate1.exchange(
+                "https://kauth.kakao.com/oauth/token",
+                HttpMethod.POST,
+                request,
+                MemberResponse.OAuthToken.class
+        );
+        return response1.getBody();
+    }
+
+    // 2단계 액세스 토큰으로 카카오 사용자 정보 조회
+    private MemberResponse.KakaoProfile getKakaoUserProfile(String accessToken) {
+
+        RestTemplate restTemplate2 = new RestTemplate();
+
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.add("Authorization", "Bearer " + accessToken);
+        headers2.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity request2 = new HttpEntity(headers2);
+
+        // HTTP  요청 2
+        ResponseEntity<MemberResponse.KakaoProfile> response2 = restTemplate2.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.POST,
+                request2,
+                MemberResponse.KakaoProfile.class
+        );
+        MemberResponse.KakaoProfile kakaoProfile = response2.getBody();
+        return kakaoProfile;
+
+    }
+
+    // 3단계.
+    private Member processKakaoUserSync(MemberResponse.KakaoProfile kakaoProfile, String selectedRole) {
+
+        String nickname = kakaoProfile.getKakaoAccount().getProfile().getNickname() + "_" + kakaoProfile.getId();
+
+        // 이메일 미제공 대안
+        // 카카오가 보낸 고유 숫자 ID(Long)를 문자열로 변환하여 DB의 식별자(email 컬럼)로 인식
+        String kakaoUserKey = String.valueOf(kakaoProfile.getId());
+        // Role.USER 대신 프로젝트 규격인 Role.CLIENT로 매핑을 수정
+        String roleStr = (selectedRole == null || selectedRole.isBlank() || selectedRole.equals("CLIENT")) ? "CLIENT" : selectedRole;
+        Role role = roleStr.equals("CLIENT") ? Role.CLIENT : Role.EXPERT;
+
+        return memberRepository.findByEmail(kakaoUserKey)
+                .orElseGet(() -> {
+                    log.info("기존 소셜 회원이 아님 - 카카오 고유 식별자 가입 진행: {}", nickname);
+
+                    Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
+                    String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
+
+                    Member newMember = Member.builder()
+                            .email(kakaoUserKey)
+                            .password(dummyPassword)
+                            .name(nickname)
+                            .phone("010-0000-0000")
+                            .role(role)
+                            .status(status)
+                            .build();
+
+                    Member savedMember = memberRepository.save(newMember);
+
+                    if (role == Role.EXPERT) {
+                        expertProfileRepository.save(ExpertProfile.builder()
+                                .member(savedMember)
+                                .profileImage("default.png")
+                                .avgRating(BigDecimal.ZERO)
+                                .totalReviews(0)
+                                .isCertified(false)
+                                .build());
+                    }
+                    return savedMember;
+                });
     }
 }

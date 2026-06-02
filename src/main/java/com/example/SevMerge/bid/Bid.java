@@ -28,14 +28,14 @@ public class Bid {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expert_id", nullable = false)
-    private Member expert;
+    private Member expert; // 입찰한 전문가
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String coverLetter; // 자기소개
 
 
     @Column(columnDefinition = "TEXT")
-    private String approach;
+    private String approach; // 작업 접근 방식
 
     @Column(nullable = false)
     private Long estimatedDays; // 예상 작업 기간
@@ -47,6 +47,10 @@ public class Bid {
     @Column(nullable = false)
     private BidStatus status;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
     @CreationTimestamp
     @Column(nullable = false)
     private Timestamp createdAt;
@@ -55,5 +59,21 @@ public class Bid {
     @PrePersist
     public void prePersist() {
         if (this.status == null) this.status = BidStatus.PENDING;
+    }
+
+    public void update(BidRequestDTO.UpdateDTO req) {
+        if (req.getCoverLetter() != null) this.coverLetter = req.getCoverLetter();
+        if (req.getApproach() != null) this.approach = req.getApproach();
+        if (req.getEstimatedDays() != null) this.estimatedDays = req.getEstimatedDays();
+        if (req.getProposedPrice() != null) this.proposedPrice = req.getProposedPrice();
+    }
+
+    public void select() {
+        this.status = BidStatus.SELECTED;
+    }
+
+    // 소프트 딜리트 삭제 메서드
+    public void delete() {
+        this.isDeleted = true;
     }
 }

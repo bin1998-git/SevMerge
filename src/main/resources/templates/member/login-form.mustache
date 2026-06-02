@@ -58,6 +58,29 @@
             <div class="divider"></div>
 
             <button type="submit" class="submit-btn">로그인</button>
+            <div class="social-login-group" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code&state=CLIENT"
+                   style="display: block; text-align: center;">
+                    <img src="/images/kakao_login.png" alt="의뢰인 카카오 로그인" style="width: 100%; border-radius: 10px; cursor: pointer;">
+                </a>
+
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code&state=EXPERT"
+                   style="display: block; text-align: center;">
+                    <img src="/images/kakao_login.png" alt="전문가 카카오 로그인" style="width: 100%; border-radius: 10px; cursor: pointer; filter: saturate(0.7) brightness(0.9);">
+                </a>
+            </div>
+
+            <!-- 구분선 -->
+            <div style="text-align:center; margin: 20px 0; color: #c4c9d9; font-size: 13px;">또는</div>
+
+            <!-- 구글 로그인 버튼 -->
+            <a href="/oauth2/authorization/google"
+               style="display:flex; align-items:center; justify-content:center; gap:10px;
+          width:100%; padding:13px; border:1.5px solid #e2e5ef; border-radius:10px;
+          font-size:14px; font-weight:600; color:#4b5563; background:#fff; text-decoration:none;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" />
+                Google로 로그인
+            </a>
 
         </form>
 

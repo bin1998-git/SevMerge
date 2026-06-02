@@ -5,11 +5,17 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -20,12 +26,33 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    // 게시글 조회
-    public List<BoardResponse.ListDTO> findAllByBoardType(BoardType BoardType) {
-        return  boardRepository.findAllByBoardTypeWithMemberIsActive(BoardType)
-                .stream()
-                .map(BoardResponse.ListDTO::new)
-                .toList();
+    public Page<BoardResponse.ListDTO> findAllByBoardType(BoardType boardType, String keyword, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createdAt").descending());
+        Page<Board> boardPage = boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword, pageable);
+        return boardPage.map(BoardResponse.ListDTO::new);
+    }
+
+    // 1:1 게시글 조회
+    public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member) {
+        Member memberEntity = memberRepository.findById(member.getId()).orElseThrow(
+                () -> new NotFoundException("멤버를 찾을 수 없습니다.")
+        );
+
+        List<BoardResponse.ListDTO> inquiryBoards;
+
+        if (member.getRole().equals(Role.ADMIN)) {
+           inquiryBoards = boardRepository.findAllByBoardTypeIsActive(boardType)
+                   .stream()
+                   .map(BoardResponse.ListDTO::new)
+                   .toList();
+        } else {
+            inquiryBoards = boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType,memberEntity.getId())
+                    .stream()
+                    .map(BoardResponse.ListDTO::new)
+                    .toList();;
+        }
+
+        return inquiryBoards;
     }
 
     public BoardResponse.DetailDTO detailBoard(Long boardId) {
