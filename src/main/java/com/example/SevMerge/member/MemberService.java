@@ -158,6 +158,8 @@ public class MemberService {
                 .stream().map(MemberResponse::from).toList();
     }
 
+
+
     //내부 유틸
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
