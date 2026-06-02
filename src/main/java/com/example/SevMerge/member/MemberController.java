@@ -1,5 +1,10 @@
 package com.example.SevMerge.member;
 
+import com.example.SevMerge.bid.BidService;
+import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.review.Review;
+import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ProjectService projectService;
+    private final ReviewService reviewService;
+    private final BoardService boardService;
+    private final BidService bidService;
 
     // 회원가입
     @GetMapping("/join")
@@ -49,10 +58,30 @@ public class MemberController {
     // 마이페이지
     @GetMapping("/mypage")
     public String mypage(@RequestParam(defaultValue = "projects") String tab,
-            HttpSession session, Model model) {
+                         HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
+        model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
+        model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
+        model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
+        model.addAttribute("isReviews", tab.equalsIgnoreCase("bids"));
+
+        if (tab.equals("projects")) {
+            model.addAttribute("projects", projectService.myProjects(loginMember));
+        } else if (tab.equals("boards")) {
+            model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
+        } else if (tab.equals("reviews")) {
+            model.addAttribute("reviews", projectService.myProjects(loginMember));
+        } else if (tab.equals("bids")) {
+            model.addAttribute("bid", projectService.myProjects(loginMember));
+        }
+
         return "member/mypage";
+    }
+
+    @GetMapping("/mypage/update")
+    public String updateMemberPage(){
+        return "member/update-form";
     }
 
     @PostMapping("/mypage/update")
@@ -100,6 +129,7 @@ public class MemberController {
         memberService.rejectExpert(id);
         return "redirect:/admin/experts";
     }
+
     // 카카오 소셜 로그인 콜백
     @GetMapping("/kakao-redirect")
     public String kakaoRedirect(@RequestParam(name = "code") String code,
