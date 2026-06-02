@@ -66,13 +66,13 @@
                 <div class="profile-stats">
                     {{^member.isExpert}}
                         <div class="profile-stat">
-                            <div class="profile-stat-val">0</div>
+                            <div class="profile-stat-val">{{projectCount}}</div>
                             <div class="profile-stat-lbl">프로젝트</div>
                         </div>
                     {{/member.isExpert}}
                     {{#member.isExpert}}
                         <div class="profile-stat">
-                            <div class="profile-stat-val">0</div>
+                            <div class="profile-stat-val">{{bidCount}}</div>
                             <div class="profile-stat-lbl">제안서</div>
                         </div>
                     {{/member.isExpert}}
@@ -133,9 +133,8 @@
                 <div class="my-list">
                     {{#bids}}
                         <div class="my-item">
-                            <a href="/projects/{{project.id}}" class="my-item-body" style="text-decoration:none; color:inherit;">
-                                <span class="my-item-cat">{{project.categoryName}}</span>
-                                <div class="my-item-title">{{project.title}}</div>
+                            <a href="/projects/{{projectId}}" class="my-item-body" style="text-decoration:none; color:inherit;">
+                                <div class="my-item-title">{{projectTitle}}</div>
                                 <div class="my-item-meta">제안일 {{createdAt}}</div>
                             </a>
                             <div class="my-item-right">
@@ -192,8 +191,12 @@
                         <a href="/reviews/{{id}}" class="my-item">
                             <div class="my-item-body">
                                 <span class="my-item-cat">리뷰</span>
-                                <div class="my-item-title">{{expertProfile.member.name}} 전문가</div>
-                                <div class="my-item-meta">{{createdAt}} · ★ {{countStar}}</div>
+                                <div class="my-item-title">{{member.name}} 님의 리뷰</div>
+                                <div class="my-item-meta">{{content}}</div>
+                                <div class="my-item-meta">{{createdAt}}</div>
+                            </div>
+                            <div class="my-item-right">
+                                <span class="my-item-status status-done">★ {{countStart}}</span>
                             </div>
                         </a>
                     {{/reviews}}

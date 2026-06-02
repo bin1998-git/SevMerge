@@ -60,20 +60,25 @@ public class MemberController {
     public String mypage(@RequestParam(defaultValue = "projects") String tab,
                          HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
+
+
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
         model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
         model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
-        model.addAttribute("isReviews", tab.equalsIgnoreCase("bids"));
-
+        model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
+        model.addAttribute("projectCount",projectService.myProjects(loginMember).size());
+        if(loginMember.getRole() == Role.EXPERT) {
+            model.addAttribute("bidCount",bidService.findMyBids(loginMember).size());
+        }
         if (tab.equals("projects")) {
             model.addAttribute("projects", projectService.myProjects(loginMember));
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {
-            model.addAttribute("reviews", projectService.myProjects(loginMember));
+            model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
-            model.addAttribute("bid", projectService.myProjects(loginMember));
+            model.addAttribute("bids", bidService.findMyBids(loginMember));
         }
 
         return "member/mypage";

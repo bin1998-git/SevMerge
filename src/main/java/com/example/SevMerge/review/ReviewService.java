@@ -7,6 +7,7 @@ import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.MemberResponse;
 import com.example.SevMerge.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.AbstractProtocol;
@@ -30,7 +31,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ExpertProfileRepository expertProfileRepository;
     private final MemberRepository memberRepository;
-
 
     // 리뷰작성
     @Transactional
@@ -64,36 +64,7 @@ public class ReviewService {
         expertProfile.setTotalReviews(reviewCount);
         expertProfile.setAvgRating(avgRating);
 
-
     }
-
-
-    // 리뷰작성 화면
-    public ReviewResponse.ReviewSaveDTO savePage(Long expertProfileId) {
-
-
-        ExpertProfile expertProfile = expertProfileRepository.findById(expertProfileId).orElseThrow(() ->
-                new BadRequestException("전문가를 찾을수 없습니다.")
-        );
-
-        ReviewResponse.ReviewSaveDTO saveDTO = new ReviewResponse.ReviewSaveDTO(expertProfile);
-
-        return saveDTO;
-
-    }
-
-    // 전문가가 의뢰인에게 리뷰 달때 필요함
-    public ReviewResponse.SaveExpertToClient savePageExpertToClientPage(Long memberId, Long expertId) {
-
-        Member member = memberRepository.findById(memberId).orElseThrow(() ->
-                new BadRequestException("유저를 찾을수 없습니다.")
-                );
-        ExpertProfile expertProfile = expertProfileRepository.findById(expertId).orElseThrow(() ->
-                new BadRequestException("전문가를 찾을수 없습니다.")
-                );
-       return new ReviewResponse.SaveExpertToClient(member, expertProfile);
-    }
-
 
     // 리뷰조회
     public ReviewResponse.ReviewDetailDTO detail(Long id) {
@@ -105,58 +76,39 @@ public class ReviewService {
         return new ReviewResponse.ReviewDetailDTO(review);
     }
 
-
-
-
-
-    // 리뷰 목록
     public ReviewResponse.ReviewListPageDTO reviewsListPage(Long expertProfileId, int page, Member sessionMember) {
 
-        // 1 페이지씩 5개
         Pageable pageable = PageRequest.of(page - 1, 5);
-
-        // 0 부터 4 까지 리뷰목록
         Page<Review> reviews = reviewRepository.findByExpertProfileReviewPage(expertProfileId, pageable);
 
         ExpertProfile expertProfileEntity = expertProfileRepository.findById(expertProfileId).orElseThrow(() ->
-                new BadRequestException("전문가를 찾을수 없습니다.")
+                new BadRequestException("전문가를 찾을 수 없습니다.")
         );
 
-        // 실제 리뷰 목록
-        List<Review> reviewList = reviews.getContent();
+        List<ReviewResponse.ReviewListDTO> reviewListDTOS = reviews.getContent()
+                .stream()
+                .map(ReviewResponse.ReviewListDTO::new)
+                .toList();
 
-
-        List<ReviewResponse.ReviewListDTO> reviewListDTOS = reviewList.stream()
-                .map(review -> new ReviewResponse.ReviewListDTO(review, sessionMember))
-                .collect(Collectors.toList());
-
-
-        // 페이징 정보 만들기
         ReviewResponse.PagingDTO pagingDTO = new ReviewResponse.PagingDTO();
         pagingDTO.setHasNext(reviews.hasNext());
         pagingDTO.setHasPrev(reviews.hasPrevious());
         pagingDTO.setNextPage(page + 1);
         pagingDTO.setPrevPage(page - 1);
 
-        // 페이지 번호 리스트 만들기
         List<ReviewResponse.PagingDTO.PageDTO> pageList = new ArrayList<>();
         for (int i = 1; i <= reviews.getTotalPages(); i++) {
-
             ReviewResponse.PagingDTO.PageDTO pageDTO = new ReviewResponse.PagingDTO.PageDTO();
             pageDTO.setNum(i);
             pageDTO.setCurrent(i == page);
             pageList.add(pageDTO);
-
         }
         pagingDTO.setPageList(pageList);
 
-        // 특정 전문가
         ReviewResponse.ExpertListDTO expertListDTO = new ReviewResponse.ExpertListDTO(expertProfileEntity);
 
         return new ReviewResponse.ReviewListPageDTO(reviewListDTOS, expertListDTO, pagingDTO);
-
     }
-
 
     // 리뷰 수정 화면
     public ReviewResponse.UpdateDTO updatePage(Long reviewId) {
@@ -168,9 +120,7 @@ public class ReviewService {
         ReviewResponse.UpdateDTO reviewEntity = new ReviewResponse.UpdateDTO(review);
 
         return reviewEntity;
-
     }
-
 
     // 리뷰수정
     @Transactional
@@ -195,7 +145,6 @@ public class ReviewService {
 
 
     }
-
 
     // 리뷰 삭제
     @Transactional
@@ -223,7 +172,6 @@ public class ReviewService {
 
     }
 
-
     public Long findByMemberId(Long memberId) {
 
         Member member = memberRepository.findById(memberId).orElseThrow(
@@ -231,5 +179,12 @@ public class ReviewService {
         );
 
         return member.getId();
+    }
+
+    public List<ReviewResponse.ReviewListDTO> findMyReviews(Long memberId) {
+        return reviewRepository.findMyReviews(memberId)
+                .stream()
+                .map(ReviewResponse.ReviewListDTO::new)
+                .toList();
     }
 }

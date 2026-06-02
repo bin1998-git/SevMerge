@@ -13,24 +13,28 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review , Long> {
 
+    // Repository
+    @Query("SELECT r FROM Review r JOIN FETCH r.member WHERE r.expertProfile.member.id = :memberId")
+    List<Review> findMyReviews(@Param("memberId") Long memberId);
+
     // 평균값 계산
     @Query("""
         SELECT AVG(r.countStar) FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
     """)
-    public Optional<BigDecimal> avgRating(@Param("expertId") Long expertId);
+     Optional<BigDecimal> avgRating(@Param("expertId") Long expertId);
 
 
     // 리뷰 카운트 레파지토리
     @Query("""
         SELECT COUNT(r.id) FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
     """)
-    public Optional<Integer> countReview(@Param("expertId") Long expertId);
+     Optional<Integer> countReview(@Param("expertId") Long expertId);
 
 
     // 특정 전문가의 리뷰들
     @Query("""
         SELECT r FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
     """)
-    public Page<Review> findByExpertProfileReviewPage(@Param("expertId") Long expertId, Pageable pageable);
+     Page<Review> findByExpertProfileReviewPage(@Param("expertId") Long expertId, Pageable pageable);
 
 }

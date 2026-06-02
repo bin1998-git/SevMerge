@@ -56,7 +56,7 @@ public class ReviewResponse {
 
     // 전문가가 의뢰인에게 작성하는 화면
     @Data
-public static class SaveExpertToClient {
+    public static class SaveExpertToClient {
 
         private MemberDTO member;
         private ExpertProfileDTO expertProfile;
@@ -165,33 +165,18 @@ public static class SaveExpertToClient {
     @Data
     public static class ReviewListDTO {
 
-        private Timestamp createdAt;
-        private String content;
         private Long id; // reviewId
-        private boolean isOwner;
-        private ReviewListMemberDTO member;
+        private String content;
+        private Integer countStart;
+        private Timestamp createdAt;
+        private Member member;
 
-
-
-        @Data
-        @Builder
-        public static class ReviewListMemberDTO {
-
-            private String name; // 리뷰의 일반회원 이름
-        }
-
-        public ReviewListDTO(Review review, Member sessionMember) {
-
-            this.createdAt = review.getCreatedAt();
-            this.content = review.getContent();
+        public ReviewListDTO(Review review) {
             this.id = review.getId();
-            this.isOwner = sessionMember != null && review.getMember().getId().equals(sessionMember.getId());
-
-            this.member = ReviewListMemberDTO
-                    .builder()
-                    .name(review.getMember().getName())// 일반회원 이름
-                    .build();
-
+            this.content = review.getContent();
+            this.countStart = review.getCountStar();
+            this.createdAt = review.getCreatedAt();
+            this.member = review.getMember();
         }
     }
 
