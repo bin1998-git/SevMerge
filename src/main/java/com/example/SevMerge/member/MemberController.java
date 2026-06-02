@@ -1,5 +1,10 @@
 package com.example.SevMerge.member;
 
+import com.example.SevMerge.bid.BidService;
+import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.review.Review;
+import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ProjectService projectService;
+    private final ReviewService reviewService;
+    private final BoardService boardService;
+    private final BidService bidService;
 
     // 회원가입
     @GetMapping("/join")
@@ -48,10 +57,31 @@ public class MemberController {
 
     // 마이페이지
     @GetMapping("/mypage")
-    public String mypage(HttpSession session, Model model) {
+    public String mypage(@RequestParam(defaultValue = "projects") String tab,
+                         HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
+        model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
+        model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
+        model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
+        model.addAttribute("isReviews", tab.equalsIgnoreCase("bids"));
+
+        if (tab.equals("projects")) {
+            model.addAttribute("projects", projectService.myProjects(loginMember));
+        } else if (tab.equals("boards")) {
+            model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
+        } else if (tab.equals("reviews")) {
+            model.addAttribute("reviews", projectService.myProjects(loginMember));
+        } else if (tab.equals("bids")) {
+            model.addAttribute("bid", projectService.myProjects(loginMember));
+        }
+
         return "member/mypage";
+    }
+
+    @GetMapping("/mypage/update")
+    public String updateMemberPage(){
+        return "member/update-form";
     }
 
     @PostMapping("/mypage/update")
@@ -99,14 +129,71 @@ public class MemberController {
         memberService.rejectExpert(id);
         return "redirect:/admin/experts";
     }
-    // 카카오 소셜 로그인 콜백
+
+    // --------------------------------------------------------------------
+//    // 카카오 소셜 로그인 콜백
+//    @GetMapping("/kakao-redirect")
+//    public String kakaoRedirect(@RequestParam(name = "code") String code,
+//                                @RequestParam String state,
+//                                HttpSession session) {
+//        Member member = memberService.kakaoLogin(code, state);
+//        session.setAttribute("sessionUser", member);
+//        log.info("카카오 로그인 성공 - memberId={}", member.getId());
+//        return "redirect:/";
+//    }
+
+    // 카카오 콜백: 기존 회원이면 바로 로그인, 신규면 역할 선택 화면으로
     @GetMapping("/kakao-redirect")
-    public String kakaoRedirect(@RequestParam(name = "code") String code,
-                                @RequestParam String state,
-                                HttpSession session) {
-        Member member = memberService.kakaoLogin(code, state);
+    public String kakaoRedirect(@RequestParam String code,
+                                HttpSession session, Model model) {
+
+        MemberResponse.KakaoProfile profile = memberService.getKakaoProfile(code);
+        Long kakaoId = profile.getId();
+        String nickname = profile.getKakaoAccount().getProfile().getNickname() + "_" + kakaoId;
+
+        Member existing = memberService.findKakaoMember(kakaoId);
+
+        if (existing != null) {
+            // 기존 회원 → 바로 로그인
+            session.setAttribute("sessionUser", existing);
+            log.info("카카오 기존 회원 로그인 - memberId={}", existing.getId());
+            return "redirect:/";
+        }
+
+        // 신규 회원 → 카카오 정보 잠깐 세션에 보관하고 역할 선택 화면으로
+        session.setAttribute("kakaoId", kakaoId);
+        session.setAttribute("kakaoNickname", nickname);
+        return "redirect:/kakao-role";
+    }
+
+    // 역할 선택 화면
+    @GetMapping("/kakao-role")
+    public String kakaoRoleForm(HttpSession session) {
+        // 카카오 인증 안 거치고 직접 들어오면 차단
+        if (session.getAttribute("kakaoId") == null) {
+            return "redirect:/login";
+        }
+        return "member/kakao-role";
+    }
+
+    // 역할 선택 후 가입 처리
+    @PostMapping("/kakao-join")
+    public String kakaoJoin(@RequestParam String role, HttpSession session) {
+        Long kakaoId = (Long) session.getAttribute("kakaoId");
+        String nickname = (String) session.getAttribute("kakaoNickname");
+
+        if (kakaoId == null) {
+            return "redirect:/login";
+        }
+
+        Member member = memberService.registerKakaoMember(kakaoId, nickname, role);
         session.setAttribute("sessionUser", member);
-        log.info("카카오 로그인 성공 - memberId={}", member.getId());
+
+        // 임시 보관한 카카오 정보 정리
+        session.removeAttribute("kakaoId");
+        session.removeAttribute("kakaoNickname");
+
+        log.info("카카오 신규 가입+로그인 - memberId={}", member.getId());
         return "redirect:/";
     }
 }
