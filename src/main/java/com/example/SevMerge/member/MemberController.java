@@ -34,8 +34,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(MemberRequest.Login request, HttpSession session) {
+    public String login(MemberRequest.Login request, HttpSession session, Model model) {
         memberService.login(request, session);
+
         return "redirect:/";
     }
 
