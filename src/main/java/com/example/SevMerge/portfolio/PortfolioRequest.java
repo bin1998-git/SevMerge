@@ -15,6 +15,15 @@ public class PortfolioRequest {
         private String imageUrl;
         private String projectUrl;
 
+        public void validate () {
+
+            if(title == null || title.trim().isEmpty()) {
+
+
+            }
+
+        }
+
     }
 
     @Data
