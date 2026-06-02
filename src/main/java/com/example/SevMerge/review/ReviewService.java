@@ -2,12 +2,14 @@ package com.example.SevMerge.review;
 
 
 import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.project.Project;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.AbstractProtocol;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -222,6 +224,12 @@ public class ReviewService {
     }
 
 
+    public Long findByMemberId(Long memberId) {
 
+        Member member = memberRepository.findById(memberId).orElseThrow(
+                () -> new NotFoundException("사용자를 찾을 수 없습니다.")
+        );
 
+        return member.getId();
+    }
 }
