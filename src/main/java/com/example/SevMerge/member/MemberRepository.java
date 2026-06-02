@@ -26,4 +26,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 이번달 신규 회원 조회 기능
     @Query(value = "SELECT COUNT(*) FROM member_tb WHERE YEAR(created_at) = YEAR(NOW()) AND MONTH(created_at) = MONTH(NOW())", nativeQuery = true)
     long countNewMembersThisMonth();
+
+    // 승인 대기 전문가 조회하기
+    @Query("""
+        SELECT count(m) FROM Member m WHERE status = 'PENDING'
+        """)
+    Long pendingProjectsCount();
 }

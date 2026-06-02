@@ -31,8 +31,14 @@ public class AdminController {
 
         // 전체 프로젝트 보여주고 진행중 몇건인지 보여주는 코드
         model.addAttribute("projectCount", projectService.findAllProjects().size());
-        // model.addAttribute("activeProjectCount", projectService.getActiveProjectsCount());
+        model.addAttribute("activeProjectCount", projectService.getActiveProjectsCount());
 
+        // 완료한 프로젝트 보여주고 이번달 몇번 완료했는지 보여주는 코드
+        model.addAttribute("completedCount", projectService.getDoneProjectsCount());
+        model.addAttribute("newCompletedCount", projectService.getMonthDoneProjectsCount());
+
+        // 승인 대기 전문가 조회하는 코드
+        model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
 
 
         return "admin/admin-main";

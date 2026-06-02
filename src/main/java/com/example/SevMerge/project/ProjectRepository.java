@@ -19,10 +19,27 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByProjectId(@Param("id") Long id);
 
     // 진행중인 프로젝트 조회
-//    @Query("SELECT COUNT(p) FROM Project p WHERE p.isDeleted = false AND p.status = com.t.csr_blog_v1.core.model.ProjectStatus.IN_PROGRESS")
-//    long countActiveProjects();
+    @Query("""
+        SELECT count(p) FROM Project p WHERE p.isDeleted = false AND p.projectStatus = 'IN_PROGRESS'
+        """)
+    Long countActiveProjects();
 
+    // 완료 프로젝트 조회
+    @Query("""
+        SELECT count(p) FROM Project p WHERE p.isDeleted = false AND p.projectStatus = 'DONE'
+        """)
+    Long doneProjects();
 
+    // 이번달에 완료한 프로젝트 조회
+    @Query("""
+        SELECT COUNT(p) 
+        FROM Project p 
+        WHERE p.isDeleted = false 
+          AND p.projectStatus = DONE
+          AND FUNCTION('YEAR', p.createdAt) = FUNCTION('YEAR', CURRENT_DATE) 
+          AND FUNCTION('MONTH', p.createdAt) = FUNCTION('MONTH', CURRENT_DATE)
+        """)
+    Long monthDoneProjects();
 
 
     // 프로젝트 카테고리별 조회

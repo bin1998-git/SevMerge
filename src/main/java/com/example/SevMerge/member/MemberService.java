@@ -58,6 +58,13 @@ public class MemberService {
         return memberRepository.countNewMembersThisMonth();
     }
 
+    // 승인 대기 전문가 조회 기능
+    public long getPendingExpertCount() {
+        log.info("승인 대기 전문가 수 조회 서비스 시작");
+        Long count = memberRepository.pendingProjectsCount();
+        return count == null ? 0L : count;
+    }
+
     //회원가입
     @Transactional
     public void join(MemberRequest.Join request) {
