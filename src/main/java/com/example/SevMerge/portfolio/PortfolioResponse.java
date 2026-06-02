@@ -59,11 +59,6 @@ public class PortfolioResponse {
             this.description = portfolio.getDescription();
             this.imageUrl = portfolio.getImageUrl();
             this.projectUrl = portfolio.getProjectUrl();
-
         }
-
-
     }
-
-
 }
