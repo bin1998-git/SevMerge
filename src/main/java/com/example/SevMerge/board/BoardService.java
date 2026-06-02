@@ -32,6 +32,11 @@ public class BoardService {
         return boardPage.map(BoardResponse.ListDTO::new);
     }
 
+    public List<BoardResponse.ListDTO> findAllByMyBoard(Long memberId) {
+
+        return boardRepository.findByMyBoard(memberId);
+    }
+
     // 1:1 게시글 조회
     public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member) {
         Member memberEntity = memberRepository.findById(member.getId()).orElseThrow(
@@ -93,8 +98,6 @@ public class BoardService {
 
         boardRepository.save(boardEntity);
     }
-
-
 
     @Transactional
     public void deleteBoard(Long boardId, Long memberId) {

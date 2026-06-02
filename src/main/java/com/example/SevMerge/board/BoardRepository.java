@@ -19,21 +19,28 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             """)
     List<Board> findAllByBoardTypeIsActive(@Param("boardType") BoardType boardType);
 
-    @Query("SELECT b FROM Board b JOIN FETCH b.member " +
-            "WHERE b.boardType = :boardType " +
-            "AND b.isActive = true " +
-            "AND (:keyword = '' OR b.title LIKE %:keyword%) " +
-            "ORDER BY b.createdAt DESC")
-            Page<Board> findAllByBoardTypeAndKeyword(
+    @Query(""" 
+            SELECT b FROM Board b JOIN FETCH b.member
+            WHERE b.boardType = :boardType
+            AND b.isActive = true
+            AND (:keyword = '' OR b.title LIKE %:keyword%)
+            ORDER BY b.createdAt DESC""")
+    Page<Board> findAllByBoardTypeAndKeyword(
             @Param("boardType") BoardType boardType,
             @Param("keyword") String keyword,
             Pageable pageable);
+
+    @Query("""
+                SELECT b FROM Board b JOIN FETCH b.member
+                WHERE b.member.id = :memberId
+            """)
+    List<BoardResponse.ListDTO> findByMyBoard(@Param("memberId") Long memberId);
 
     // 1:1 문의 게시글 조회
     @Query("""
             SELECT b FROM Board b JOIN FETCH b.member WHERE b.boardType = :boardType AND b.member.id = :memberId AND b.isActive = true
             """)
-    List<Board> findInquiryByBoardTypeWithMemberIdAndIsActive(@Param("boardType") BoardType boardType,Long memberId);
+    List<Board> findInquiryByBoardTypeWithMemberIdAndIsActive(@Param("boardType") BoardType boardType, Long memberId);
 
     // 사용자가 작성한 게시글 검색 용
     @Query("""
