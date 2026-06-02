@@ -52,6 +52,18 @@ public class MemberService {
                 .toList();
     }
 
+    // 이번 달 가입한 신규 회원 수 조회 기능
+    @Transactional(readOnly = true)
+    public long getNewMemberCountThisMonth() {
+        return memberRepository.countNewMembersThisMonth();
+    }
+
+    // 승인 대기 전문가 조회 기능
+    public long getPendingExpertCount() {
+        log.info("승인 대기 전문가 수 조회 서비스 시작");
+        Long count = memberRepository.pendingProjectsCount();
+        return count == null ? 0L : count;
+    }
 
     //회원가입
     @Transactional
