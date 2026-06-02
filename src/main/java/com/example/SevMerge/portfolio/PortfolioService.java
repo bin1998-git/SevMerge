@@ -24,18 +24,24 @@ public class PortfolioService {
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
                 () -> new NotFoundException("전문가를 찾을 수 없습니다.")
         );
-
+        // 전문가 아이디로 찾아 해당 전문가 포트 폴리오
         return portfolioRepository.findByExpertIdIsActive(expertEntity.getId());
     }
+
+
+
 
     public PortfolioResponse.DetailDTO findPortfolio(Long portfolioId) {
 
         Portfolio portfolioEntity = portfolioRepository.findById(portfolioId).orElseThrow(
                 () -> new NotFoundException("게시글을 찾을 수 없습니다.")
         );
-
+        //
         return new PortfolioResponse.DetailDTO(portfolioEntity);
     }
+
+
+
 
 
     public void save(PortfolioRequest.SaveDTO saveDTO) {

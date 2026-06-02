@@ -16,12 +16,12 @@ public class PortfolioResponse {
 
         @Builder
         public ListDTO(Portfolio portfolio) {
-            this.id = id;
-            this.title = title;
-            this.description = description;
-            this.imgUrl = imgUrl;
-            this.expertName = expertName;
-            this.createdAt = createdAt;
+            this.id = portfolio.getId();
+            this.title = portfolio.getTitle();
+            this.description = portfolio.getDescription();
+            this.imgUrl = portfolio.getImageUrl();
+            this.expertName = portfolio.getExpertProfile().getMember().getName();
+            this.createdAt = portfolio.getCreatedAt().toString();
         }
     }
 
@@ -34,10 +34,10 @@ public class PortfolioResponse {
 
         @Builder
         public DetailDTO(Portfolio portfolio) {
-            this.title = title;
-            this.description = description;
-            this.expertName = expertName;
-            this.projectUrl = projectUrl;
+            this.title = portfolio.getTitle();
+            this.description = portfolio.getDescription();
+            this.expertName = portfolio.getExpertProfile().getMember().getName();
+            this.projectUrl = portfolio.getProjectUrl();
         }
     }
 
