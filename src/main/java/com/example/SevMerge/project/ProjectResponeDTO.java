@@ -27,6 +27,7 @@ public class ProjectResponeDTO {
         private boolean isCertifiedOnly;
         private boolean isUrgent;
         private Timestamp createdAt;
+        private boolean isOpen;
 
         public ListDTO(Project project) {
             this.id = project.getId();
@@ -45,6 +46,7 @@ public class ProjectResponeDTO {
             long diff = project.getDeadline().getTime() - System.currentTimeMillis();
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
             this.isUrgent = this.dDay <= 3;
+            this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
         }
 
     }

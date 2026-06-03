@@ -96,6 +96,7 @@
                 {{^member.isExpert}}
                     <a href="/mypage?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>
                 {{/member.isExpert}}
+
                 {{#member.isExpert}}
                     <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
                     <a href="/mypage?tab=portfolio" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내 포트폴리오</a>
@@ -109,19 +110,28 @@
             {{#isProjects}}
                 <div class="my-list">
                     {{#projects}}
-                        <a href="/projects/{{id}}" class="my-item">
+                        <div class="my-item">
                             <div class="my-item-body">
                                 <span class="my-item-cat">{{categoryName}}</span>
-                                <div class="my-item-title">{{title}}</div>
+                                {{#isOpen}}
+                                    <a href="/bid/list?projectId={{id}}" style="text-decoration:none; color:inherit;">
+                                    <div class="my-item-title">{{title}}</div>
+                                    </a>
+                                {{/isOpen}}
+                                {{^isOpen}}
+                                    <a href="/projects/{{id}}/detail" style="text-decoration:none; color:inherit;">
+                                        <div class="my-item-title">{{title}}</div>
+                                    </a>
+                                {{/isOpen}}
                                 <div class="my-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
                             </div>
                             <div class="my-item-right">
                                 <div class="my-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
                                 <span class="my-item-status {{#isOpen}}status-open{{/isOpen}}{{^isOpen}}status-closed{{/isOpen}}">
-                            {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
-                        </span>
+                                {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
+                                </span>
                             </div>
-                        </a>
+                        </div>
                     {{/projects}}
                     {{^projects}}<div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
                 </div>
