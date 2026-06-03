@@ -32,7 +32,7 @@
             <p class="save-desc">프로젝트 정보를 수정합니다.</p>
         </div>
 
-        <form class="save-form" action="/project/{{project.id}}/update" method="POST">
+            <form class="save-form" action="/projects/{{project.id}}/update" method="POST">
 
             <div class="form-group">
                 <label class="form-label">프로젝트 제목</label>
@@ -82,7 +82,7 @@
             </div>
 
             <div class="form-btns">
-                <a href="/project/{{project.id}}/detail" class="btn btn-outline">취소</a>
+                <a href="/projects/{{project.id}}/detail" class="btn btn-outline">취소</a>
                 <button type="submit" class="btn btn-primary btn-lg">수정완료</button>
             </div>
 
