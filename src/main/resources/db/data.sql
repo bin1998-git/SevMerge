@@ -172,7 +172,7 @@ VALUES (3, 1, 3, 1500000, 150000, 1350000, 'imp_vbank_009182', 'vbank', 'PAID', 
 INSERT INTO portfolio_tb (expert_id, title, description, image_url, project_url, created_at)
 VALUES (1, '대형 쇼핑몰 백엔드 시스템 구축',
         'Spring Boot 기반 대규모 트래픽 처리 쇼핑몰 백엔드 개발. 일 평균 10만 건 이상의 주문을 안정적으로 처리하는 아키텍처 설계 및 구현.',
-        'https://sevmerge.com/storage/portfolios/portfolio_01.png',
+        'https://picsum.photos/400/300',
         'https://github.com/honggildong/shopping-mall',
         NOW());
 

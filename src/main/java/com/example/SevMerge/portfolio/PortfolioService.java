@@ -6,6 +6,7 @@ import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
@@ -21,16 +24,27 @@ public class PortfolioService {
 
     public List<PortfolioResponse.ListDTO> findByMemberId(Long expertId) {
 
+
+        // 애초에 expertId의 memberId 가 넘어올테니 여기에 넣는 memberId는 전문가 memberId 이다
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
                 () -> new NotFoundException("전문가를 찾을 수 없습니다.")
         );
-        // 전문가 아이디로 찾아 해당 전문가 포트 폴리오
-        return portfolioRepository.findByExpertIdIsActive(expertEntity.getId());
+
+        // 1. 해당 전문가의 활성화된 포트폴리오 엔티티 리스트 조회
+        List<Portfolio> portfolios = portfolioRepository.findByExpertIdIsActive(expertEntity.getId());
+
+        // 2. 해당 전문가의 총 포트폴리오 개수 조회
+        Long count = portfolioRepository.portfolioCountByExpertId(expertEntity.getId());
+
+        // 3. 엔티티 리스트를 DTO 리스트로 변환 (생성자 활용)
+        return portfolios.stream()
+                .map(portfolio -> new PortfolioResponse.ListDTO(portfolio,count))
+                .toList();
     }
 
 
 
-
+    @Transactional
     public PortfolioResponse.DetailDTO findPortfolio(Long portfolioId) {
 
         Portfolio portfolioEntity = portfolioRepository.findById(portfolioId).orElseThrow(
@@ -46,14 +60,18 @@ public class PortfolioService {
 
     public void save(PortfolioRequest.SaveDTO saveDTO) {
 
+//        saveDTO.validate();
+
         Portfolio newPortfolio = Portfolio
                 .builder()
-                .expertProfile(expertProfileRepository
-                        .findById(saveDTO.getExpertId()).orElseThrow(() -> new BadRequestException("전문가를 찾지못했습니다.")))
+                .expertProfile(expertProfileRepository.findByMemberId(saveDTO.getExpertId()).orElseThrow(() ->
+                            new BadRequestException("전문가로 로그인해야 포트폴리오를 작성할수 있습니다.")
+                        ))
                 .title(saveDTO.getTitle())
                 .description(saveDTO.getDescription())
                 .imageUrl(saveDTO.getImageUrl())
                 .projectUrl(saveDTO.getProjectUrl())
+                .isActive(true)
                 .build();
 
         portfolioRepository.save(newPortfolio);
