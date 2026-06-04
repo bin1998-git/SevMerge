@@ -98,6 +98,11 @@ public class MemberService {
                     .avgRating(BigDecimal.ZERO)
                     .totalReviews(0)
                     .isCertified(false)
+                    // 프로필이미지 널값 방지
+                    .profileImage("default.png")
+                    .intro("")
+                    .career("")
+                    .speciality("")
                     .build());
             log.info("전문가 신청 완료 - memberId={}", member.getId());
         }
