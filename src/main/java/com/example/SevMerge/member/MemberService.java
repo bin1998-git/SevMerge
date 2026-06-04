@@ -140,6 +140,7 @@ public class MemberService {
                 .stream().map(MemberResponse::from).toList();
     }
 
+
     @Transactional
     public void approveExpert(Long memberId) {
         Member member = findMemberById(memberId);

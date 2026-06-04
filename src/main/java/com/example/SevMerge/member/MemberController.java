@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -70,9 +71,9 @@ public class MemberController {
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
         model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
         model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
-        model.addAttribute("projectCount",projectService.myProjects(loginMember).size());
-        if(loginMember.getRole() == Role.EXPERT) {
-            model.addAttribute("bidCount",bidService.findMyBids(loginMember).size());
+        model.addAttribute("projectCount", projectService.myProjects(loginMember).size());
+        if (loginMember.getRole() == Role.EXPERT) {
+            model.addAttribute("bidCount", bidService.findMyBids(loginMember).size());
         }
         if (tab.equals("projects")) {
             model.addAttribute("projects", projectService.myProjects(loginMember));
@@ -89,7 +90,7 @@ public class MemberController {
 
     // 회원 정보 수정 페이지 이동 (GET)
     @GetMapping("/mypage/update") //
-    public String updateMemberPage(HttpSession session, Model model){
+    public String updateMemberPage(HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         if (loginMember == null) {
             return "redirect:/login";
@@ -126,9 +127,12 @@ public class MemberController {
 
     // 관리자 - 회원 관리
     @GetMapping("/admin/members")
-    public String adminMembers(Model model) {
+    public String adminMembers(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+
         model.addAttribute("members", memberService.getPendingExperts());
-        return "admin/admin-members";
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+
+        return "admin/admin-member";
     }
 
     @PostMapping("/admin/members/{id}/delete")
