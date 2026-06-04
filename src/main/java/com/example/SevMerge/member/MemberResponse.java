@@ -31,6 +31,7 @@ public class MemberResponse {
                 .createdAt(member.getCreatedAt())
                 .build();
     }
+
     public boolean isAdmin() {
         return this.role == Role.ADMIN;
     }
@@ -38,6 +39,7 @@ public class MemberResponse {
     public boolean isExpert() {
         return this.role == Role.EXPERT;
     }
+
     /**
      * 액세스 토큰 응답 정보
      */

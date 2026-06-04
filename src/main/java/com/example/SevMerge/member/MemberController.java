@@ -4,6 +4,7 @@ import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
+import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+
 
 @Slf4j
 @Controller
@@ -26,6 +33,7 @@ public class MemberController {
     private final ReviewService reviewService;
     private final BoardService boardService;
     private final BidService bidService;
+    private final ReviewRepository reviewRepository;
 
     // 회원가입
     @GetMapping("/join")
@@ -63,13 +71,18 @@ public class MemberController {
 
     // 마이페이지
     @GetMapping("/mypage")
-    public String mypage(@RequestParam(defaultValue = "projects") String tab,
+    public String mypage(@RequestParam(required = false) String tab,
                          HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
         if (loginMember == null) {
             return "redirect:/login";
         }
+
+        if(tab == null) {
+            tab = loginMember.isExpert() ? "bids" : "projects";
+        }
+
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
         model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
@@ -88,7 +101,7 @@ public class MemberController {
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {
-            model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
+            model.addAttribute("reviews", reviewRepository.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
             model.addAttribute("bids", bidService.findMyBids(loginMember));
         } else if (tab.equals("edit")) {
@@ -140,14 +153,27 @@ public class MemberController {
 
     // 관리자 - 회원 관리
     @GetMapping("/admin/members")
-    public String adminMembers(Model model) {
-        model.addAttribute("members", memberService.getPendingExperts());
-        return "admin/admin-members";
+    public String adminMembers(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<MemberResponse> memberList;
+
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            memberList = memberService.searchMembers(keyword.trim());
+        } else {
+            memberList = memberService.getAllMembers();
+        }
+
+        model.addAttribute("members", memberList);
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+        model.addAttribute("isAdmin", true);
+
+        return "admin/admin-member";
     }
 
     @PostMapping("/admin/members/{id}/delete")
-    public String deleteMember(@PathVariable Long id) {
+    public String deleteMember(@PathVariable Long id, Model model) {
         memberService.suspendMember(id);
+        model.addAttribute("isAdmin", true);
         return "redirect:/admin/members";
     }
 
@@ -155,18 +181,21 @@ public class MemberController {
     @GetMapping("/admin/experts")
     public String adminExperts(Model model) {
         model.addAttribute("experts", memberService.getPendingExperts());
+        model.addAttribute("isAdmin", true);
         return "admin/admin-expert";
     }
 
     @PostMapping("/admin/experts/{id}/approve")
-    public String approveExpert(@PathVariable Long id) {
+    public String approveExpert(@PathVariable Long id, Model model) {
         memberService.approveExpert(id);
+        model.addAttribute("isAdmin", true);
         return "redirect:/admin/experts";
     }
 
     @PostMapping("/admin/experts/{id}/reject")
-    public String rejectExpert(@PathVariable Long id) {
+    public String rejectExpert(@PathVariable Long id,  Model model) {
         memberService.rejectExpert(id);
+        model.addAttribute("isAdmin", true);
         return "redirect:/admin/experts";
     }
 
@@ -270,7 +299,6 @@ public class MemberController {
         }
 
         // 로그인 세션 장착 후 메인화면 이동
-        session.setAttribute("sessionUser", member);
         return "redirect:/";
     }
 }

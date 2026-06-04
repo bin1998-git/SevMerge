@@ -32,4 +32,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         SELECT count(m) FROM Member m WHERE status = 'PENDING'
         """)
     Long pendingProjectsCount();
+
 }

@@ -61,7 +61,8 @@
             <div class="profile-info">
                 <div class="profile-name">{{member.name}}</div>
                 <div class="profile-email">{{member.email}}</div>
-                {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
+                {{#member.isCertified}}
+                    <div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
                 <div class="profile-stats">
                     {{^member.isExpert}}
                         <div class="profile-stat">
@@ -99,7 +100,8 @@
 
                 {{#member.isExpert}}
                     <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
-                    <a href="/mypage?tab=portfolio" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내 포트폴리오</a>
+                    <a href="/mypage?tab=portfolio" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내
+                        포트폴리오</a>
                 {{/member.isExpert}}
                 <a href="/mypage?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
                 <a href="/mypage?tab=reviews" class="mypage-tab {{#isReview}}active{{/isReview}}">리뷰</a>
@@ -129,11 +131,17 @@
                                 <div class="my-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
                                 <span class="my-item-status {{#isOpen}}status-open{{/isOpen}}{{^isOpen}}status-closed{{/isOpen}}">
                                 {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
-                                </span>
+                             </span>
+                                {{! 마감된 프로젝트에만 리뷰 버튼 }}
+                                {{^isOpen}}
+                                    <a href="/reviews/save?targetId={{selectedExpertId}}" class="btn btn-primary"
+                                    style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
+                                {{/isOpen}}
                             </div>
                         </div>
                     {{/projects}}
-                    {{^projects}}<div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
+                    {{^projects}}
+                        <div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
                 </div>
             {{/isProjects}}
 
@@ -142,7 +150,8 @@
                 <div class="my-list">
                     {{#bids}}
                         <div class="my-item">
-                            <a href="/projects/{{projectId}}" class="my-item-body" style="text-decoration:none; color:inherit;">
+                            <a href="/projects/{{projectId}}" class="my-item-body"
+                               style="text-decoration:none; color:inherit;">
                                 <div class="my-item-title">{{projectTitle}}</div>
                                 <div class="my-item-meta">제안일 {{createdAt}}</div>
                             </a>
@@ -152,12 +161,14 @@
                             {{#isSelected}}낙찰{{/isSelected}}{{^isSelected}}대기중{{/isSelected}}
                         </span>
                                 {{#isSelected}}
-                                    <a href="/reviews/save?memberId={{project.memberId}}" class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
+                                    <a href="/reviews/save?targetId={{memberId}}" class="btn btn-primary"
+                                    style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
                                 {{/isSelected}}
                             </div>
                         </div>
                     {{/bids}}
-                    {{^bids}}<div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
+                    {{^bids}}
+                        <div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
                 </div>
             {{/isBids}}
 
@@ -173,7 +184,8 @@
                             </div>
                         </a>
                     {{/portfolios}}
-                    {{^portfolios}}<div class="empty-state">등록한 포트폴리오가 없습니다.</div>{{/portfolios}}
+                    {{^portfolios}}
+                        <div class="empty-state">등록한 포트폴리오가 없습니다.</div>{{/portfolios}}
                 </div>
             {{/isPortfolio}}
 
@@ -189,7 +201,8 @@
                             </div>
                         </a>
                     {{/boards}}
-                    {{^boards}}<div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
+                    {{^boards}}
+                        <div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
                 </div>
             {{/isBoards}}
 
@@ -200,16 +213,17 @@
                         <a href="/reviews/{{id}}" class="my-item">
                             <div class="my-item-body">
                                 <span class="my-item-cat">리뷰</span>
-                                <div class="my-item-title">{{member.name}} 님의 리뷰</div>
+                                <div class="my-item-title">{{member.name}} 님이 받은 리뷰</div>
                                 <div class="my-item-meta">{{content}}</div>
                                 <div class="my-item-meta">{{createdAt}}</div>
                             </div>
                             <div class="my-item-right">
-                                <span class="my-item-status status-done">★ {{countStart}}</span>
+                                <span class="my-item-status status-done">★ 0</span>
                             </div>
                         </a>
                     {{/reviews}}
-                    {{^reviews}}<div class="empty-state">작성한 리뷰가 없습니다.</div>{{/reviews}}
+                    {{^reviews}}
+                        <div class="empty-state">작성한 리뷰가 없습니다.</div>{{/reviews}}
                 </div>
             {{/isReviews}}
 
@@ -218,19 +232,19 @@
                 <form class="edit-form" action="/mypage/update" method="POST">
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input type="text" name="name" class="form-input" value="{{member.name}}" />
+                        <input type="text" name="name" class="form-input" value="{{member.name}}"/>
                     </div>
                     <div class="form-group">
                         <label class="form-label">이메일</label>
-                        <input type="email" class="form-input" value="{{member.email}}" disabled />
+                        <input type="email" class="form-input" value="{{member.email}}" disabled/>
                     </div>
                     <div class="form-group">
                         <label class="form-label">새 비밀번호</label>
-                        <input type="password" name="newPassword" class="form-input" placeholder="변경할 경우만 입력" />
+                        <input type="password" name="newPassword" class="form-input" placeholder="변경할 경우만 입력"/>
                     </div>
                     <div class="form-group">
                         <label class="form-label">새 비밀번호 확인</label>
-                        <input type="password" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력" />
+                        <input type="password" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력"/>
                     </div>
                     <div class="form-btns">
                         <button type="submit" class="btn btn-primary">수정완료</button>

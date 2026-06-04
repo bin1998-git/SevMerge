@@ -11,18 +11,18 @@ public class ReviewRequest {
 
     @Data
     public static class SaveReviewDTO {
-
-
+        private Long reviewerId;
+        private Long targetId;
         private Integer rating;
         private String content;
-        private Long expertId;
 
-        @Builder
-        public SaveReviewDTO(Integer rating, String content , Long expertProfileId) {
-            this.rating = rating;
-            this.content = content;
-
-            this.expertId = expertProfileId;
+        public Review toEntity(Member reviewer, Member targeter) {
+            return Review.builder()
+                    .reviewer(reviewer)
+                    .targeter(targeter)
+                    .content(content)
+                    .countStar(rating)
+                    .build();
         }
 
         public void validate(ReviewRequest.SaveReviewDTO review) {
@@ -37,8 +37,8 @@ public class ReviewRequest {
 
     @Data
     public static class UpdateRequestDTO {
-        private Integer rating;
-        private String content;
+        private Integer rating; // 별점
+        private String content; // 내용
 
     }
 

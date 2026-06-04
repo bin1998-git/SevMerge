@@ -19,7 +19,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
     // 전문가가 제출 제안서 조회
     @Query("""
-            SELECT b FROM Bid b JOIN FETCH b.project
+            SELECT b FROM Bid b JOIN FETCH b.project p JOIN FETCH p.member
             WHERE b.expert.id = :expertId AND b.isDeleted = false
             ORDER BY b.createdAt DESC
             """)
