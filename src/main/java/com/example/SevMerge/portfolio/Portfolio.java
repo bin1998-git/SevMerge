@@ -28,7 +28,7 @@ public class Portfolio {
     @Column(nullable = false)
     private String title; // 제목
     private String description; // 설명
-    private String imageUrl; // 파일 저장 경로
+    private String imageUrl; // 이미지 경로
     private String projectUrl; // 프로젝트 링크
     @CreationTimestamp
     private Timestamp createdAt; // 작성일

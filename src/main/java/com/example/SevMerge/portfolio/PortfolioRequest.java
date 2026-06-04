@@ -16,7 +16,6 @@ public class PortfolioRequest {
         private String description; // 설명
         private String imageUrl; // 이미지 링크
         private String projectUrl; // 프로젝트 링크
-        private MultipartFile imageFile; // 이미지 파일
 
         public void validate () {
 
