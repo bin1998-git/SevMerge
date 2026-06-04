@@ -13,14 +13,13 @@ public class SessionInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
                            Object handler, ModelAndView modelAndView) throws Exception {
 
-        // 뷰를 반환하는 요청일 때만 동작
         if (modelAndView != null) {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 Object sessionUser = session.getAttribute("sessionUser");
                 if (sessionUser != null) {
                     modelAndView.addObject("isLoggedIn", true);
-                    modelAndView.addObject("sessionUser", sessionUser);
+                    // modelAndView.addObject("sessionUser", sessionUser);// <- (expose-session-attributes와 중복)
                 } else {
                     modelAndView.addObject("isLoggedIn", false);
                 }
