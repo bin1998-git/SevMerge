@@ -4,9 +4,11 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,20 +26,37 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
-    private final ExpertProfileRepository expertProfileRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private  MemberRepository memberRepository;
+    @Autowired
+    private  ExpertProfileRepository expertProfileRepository;
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
+
+    // {oauth.kakao.client-id}
 
     // application.yml에 등록된 카카오 환경 변수 가져오기
     @Value("${oauth.kakao.client-id}")
     private String kakaoClientId;
 
+
+
     @Value("${oauth.kakao.client-secret}")
     private String kakaoClientSecret;
+
+    @PostConstruct
+    public void init() {
+        log.info("==================================================");
+        log.info("[초기화] 카카오 OAuth 파라미터 로드 완료");
+        log.info("Kakao Client ID     : {}", kakaoClientId);
+        // 보안을 위해 시크릿 값은 앞자리 일부만 보여주거나 글자 수만 표시하는 것을 권장합니다.
+        log.info("Kakao Client Secret : {}", (kakaoClientSecret));
+        log.info("==================================================");
+    }
 
     /**
      * 회원 전체 조회 기능

@@ -3,11 +3,24 @@ spring:
     active: dev
   config:
     import: optional:file:.env[.properties]
-
   mustache:
     servlet:
       expose-session-attributes: true
       expose-request-attributes: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email, profile
+
+# spring 밖으로 이동
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
 
 server:
   port: 8080
@@ -21,20 +34,3 @@ server:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
-
-# OAuth2 - 구글 로그인
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope: email, profile
-
-
-# OAuth - 카카오 로그인
-oauth:
-  kakao:
-    client-id: ${KAKAO_CLIENT_ID}
-    client-secret: ${KAKAO_CLIENT_SECRET}
