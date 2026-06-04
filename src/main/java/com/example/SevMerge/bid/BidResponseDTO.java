@@ -22,6 +22,8 @@ public class BidResponseDTO {
         private Long estimatedDays;
         private Long proposedPrice;
         private String status;
+        private boolean isPending;
+        private boolean isSelected;
         private Timestamp createdAt;
 
         public ListDTO(Bid bid) {
@@ -35,6 +37,9 @@ public class BidResponseDTO {
             this.estimatedDays = bid.getEstimatedDays();
             this.proposedPrice = bid.getProposedPrice();
             this.status = bid.getStatus().name();
+            // 엔티티의 status를 기반으로 true / false 지정
+            this.isPending = bid.getStatus() == BidStatus.PENDING;
+            this.isSelected = bid.getStatus() == BidStatus.SELECTED;
             this.createdAt = bid.getCreatedAt();
         }
     }

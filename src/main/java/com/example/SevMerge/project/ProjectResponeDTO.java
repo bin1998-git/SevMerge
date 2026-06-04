@@ -20,7 +20,9 @@ public class ProjectResponeDTO {
         private Integer budgetMin;
         private Integer budgetMax;
         private Timestamp deadline;
-        private String projectStatus;
+        private String projectStatus; // // OPEN, CLOSED
+        private boolean isClosed; // 머스태치 파일용 불리언타(낙찰완료 확인용)
+
         private Integer viewCount;
         private Integer bidCount;
         private Integer dDay;
@@ -39,6 +41,7 @@ public class ProjectResponeDTO {
             this.budgetMax = project.getBudgetMax();
             this.deadline = project.getDeadline();
             this.projectStatus = project.getProjectStatus().name();
+            this.isClosed = project.getProjectStatus() == ProjectStatus.CLOSED; // 프로젝트 상태가 CLOSED(낙찰 완료)인지 확인하는 용도
             this.viewCount = project.getViewCount();
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
@@ -64,6 +67,7 @@ public class ProjectResponeDTO {
         private Integer budgetMin;
         private Integer budgetMax;
         private Timestamp deadline;
+        private String deadlineDate;
         private String bidFilter;
         private String projectStatus;
         private Integer viewCount;
@@ -82,13 +86,13 @@ public class ProjectResponeDTO {
             this.budgetMin = project.getBudgetMin();
             this.budgetMax = project.getBudgetMax();
             this.deadline = project.getDeadline();
+            this.deadlineDate = project.getDeadline().toString().substring(0, 10);
             this.bidFilter = project.getBidFilter().name();
             this.projectStatus = project.getProjectStatus().name();
             this.viewCount = project.getViewCount();
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
             this.createdAt = project.getCreatedAt();
-            // dDay 계산
             long diff = project.getDeadline().getTime() - System.currentTimeMillis();
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
         }

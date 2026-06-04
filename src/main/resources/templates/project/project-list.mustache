@@ -54,7 +54,6 @@
         <div class="list-action">
             <span class="list-count">총 <strong>{{totalCount}}</strong>개의 프로젝트</span>
             <a href="/projects/save-form" class="btn btn-primary btn-sm">프로젝트 등록</a>
-
         </div>
 
         <form action="/projects/search" method="GET">
@@ -72,6 +71,9 @@
            <a href="/projects/list?category=DATA" class="tab {{#isData}}active{{/isData}}">데이터</a>
            <a href="/projects/list?category=VIDEO" class="tab {{#isVideo}}active{{/isVideo}}">영상편집</a>
            <a href="/projects/list?category=ETC" class="tab {{#isEtc}}active{{/isEtc}}">기타</a>
+
+           <a href="/projects/list?statusFilter=CLOSED" class="tab {{#isClosedFilter}}active{{/isClosedFilter}}" style="border-color:#cbd5e1; color:#475569;">🔒 낙찰 완료 건</a>
+
            <a href="/projects/list?bidFilter=CERTIFIED_ONLY" class="tab" style="border-color:#fde68a; color:#b45309;">⭐ 인증 전문가만</a>
         </div>
 
@@ -80,19 +82,43 @@
             <article class="project-card">
                 <a href="/projects/{{id}}/detail" class="project-card-link">
 
-                    <div class="project-card-top">
-                        <span class="project-category">{{categoryName}}</span>
-                        {{#isCertifiedOnly}}<span class="badge-certified">⭐ 인증 전문가만</span>{{/isCertifiedOnly}}
-                    </div>
+                   <div class="project-card-top">
+                       <span class="project-category">{{categoryName}}</span>
+
+                       {{#isClosed}}
+                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 6px;">🔒 낙찰 완료</span>
+                       {{/isClosed}}
+                       {{^isClosed}}
+                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 3px 9px; border-radius: 6px;">⚡ 모집 중</span>
+                       {{/isClosed}}
+
+                       {{#isCertifiedOnly}}
+                       <span class="badge-certified">⭐ 인증 전문가만</span>
+                       {{/isCertifiedOnly}}
+                   </div>
+
                     <h3 class="project-title">{{title}}</h3>
                     <p class="project-desc">{{description}}</p>
-                    <div class="project-card-bottom">
-                        <div class="project-budget">{{budgetMin}}~{{budgetMax}}만원</div>
-                        <div class="project-meta">
-                            <span>입찰 {{bidCount}}개</span>
-                            <span class="d-day {{#isUrgent}}urgent{{/isUrgent}}">D-{{dDay}}</span>
-                        </div>
-                    </div>
+
+                   <div class="project-card-bottom">
+                      <div class="project-budget">{{budgetMin}}~{{budgetMax}}만원</div>
+                      <div class="project-meta">
+
+                          {{#isClosed}}
+                          <span style="color: #9ca3af; font-weight: 600;">체결 완료</span>
+                          {{/isClosed}}
+                          {{^isClosed}}
+                          <span>입찰 {{bidCount}}개</span>
+                          {{/isClosed}}
+
+                          {{#isClosed}}
+                          <span class="d-day" style="color: #9ca3af; font-weight: 700;">마감</span>
+                          {{/isClosed}}
+                          {{^isClosed}}
+                          <span class="d-day {{#isUrgent}}urgent{{/isUrgent}}">D-{{dDay}}</span>
+                          {{/isClosed}}
+                      </div>
+                   </div>
                 </a>
             </article>
             {{/projects}}
