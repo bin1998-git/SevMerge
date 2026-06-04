@@ -2,7 +2,6 @@ package com.example.SevMerge.review;
 
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
-import com.sun.jdi.event.StepEvent;
 import lombok.Builder;
 import lombok.Data;
 
