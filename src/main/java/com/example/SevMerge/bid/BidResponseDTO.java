@@ -42,7 +42,6 @@ public class BidResponseDTO {
             // 엔티티의 status를 기반으로 true / false 지정
             this.isPending = bid.getStatus() == BidStatus.PENDING;
             this.isSelected = bid.getStatus() == BidStatus.SELECTED;
-            this.isSelected = bid.getStatus() == BidStatus.SELECTED;
             this.createdAt = bid.getCreatedAt();
         }
     }
