@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -66,7 +67,11 @@ public class PortfolioController {
     @PostMapping("/portfolios/save")
     public String savePortfolios(PortfolioRequest.SaveDTO saveDTO) {
 
-        portfolioService.save(saveDTO);
+        try {
+            portfolioService.save(saveDTO);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return "redirect:/portfolios";
     }
