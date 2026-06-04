@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: dev
   config:
     import: optional:file:.env[.properties]
   mustache:
@@ -21,6 +21,11 @@ oauth:
   kakao:
     client-id: ${KAKAO_CLIENT_ID}
     client-secret: ${KAKAO_CLIENT_SECRET}
+
+solapi:
+  api-key: ${SOLAPI_KEY}
+  api-secret: ${SOLAPI_SECRET_KEY}
+  sender-number: ${SOLAPI_SENDER_NUMBER}
 
 server:
   port: 8080
