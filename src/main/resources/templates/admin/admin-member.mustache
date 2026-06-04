@@ -57,10 +57,10 @@
             </div>
         </div>
 
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="이름 또는 이메일로 검색..." value="{{keyword}}" />
-            <button class="search-btn">검색</button>
-        </div>
+        <form action="/admin/members" method="get" class="search-bar">
+            <input type="text" class="search-input" name="keyword" placeholder="이름 또는 이메일로 검색..." value="{{keyword}}" />
+            <button type="submit" class="search-btn">검색</button>
+        </form>
 
 
 

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Slf4j
 @Controller
@@ -128,10 +130,16 @@ public class MemberController {
     // 관리자 - 회원 관리
     @GetMapping("/admin/members")
     public String adminMembers(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<MemberResponse> memberList;
 
-        model.addAttribute("members", memberService.getPendingExperts());
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            memberList = memberService.searchMembers(keyword.trim());
+        } else {
+            memberList = memberService.getAllMembers();
+        }
+        model.addAttribute("members", memberList);
         model.addAttribute("keyword", keyword != null ? keyword : "");
-
         return "admin/admin-member";
     }
 
