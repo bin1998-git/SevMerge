@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
