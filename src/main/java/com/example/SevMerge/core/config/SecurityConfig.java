@@ -1,5 +1,6 @@
 package com.example.SevMerge.core.config;
 
+import com.example.SevMerge.member.CustomOAuth2SuccessHandler;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.OAuth2MemberDetails;
 import com.example.SevMerge.member.OAuth2MemberService;
@@ -19,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final OAuth2MemberService oAuth2MemberService;
+
+    // 구글 로그인용 추가
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,15 +44,8 @@ public class SecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(oAuth2MemberService)       // 유저 정보 처리
                 )
-                .successHandler((request, response, authentication) -> {
-                    // 로그인 성공 → Member 객체를 세션에 저장 (기존 인터셉터와 동일한 방식)
-                    OAuth2MemberDetails details = (OAuth2MemberDetails) authentication.getPrincipal();
-                    Member member = details.getMember();
-                    HttpSession session = request.getSession();
-                    session.setAttribute("sessionUser", member);
-                    response.sendRedirect("/");
-                })
-                .failureUrl("/login?error=true")
+                    .successHandler(customOAuth2SuccessHandler)
+                    .failureUrl("/login?error=true")
             );
 
         return http.build();
