@@ -41,3 +41,4 @@ out/
 # 개발환경 설정 파일
 application-local.yml
 data-local.sql
+.README_HS.md

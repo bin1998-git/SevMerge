@@ -53,6 +53,11 @@ toss:
   client-key: ${TOSS_CLIENT_KEY}
   secret-key: ${TOSS_SECRET_KEY}
 
+solapi:
+  api-key: ${SOLAPI_KEY}
+  api-secret: ${SOLAPI_SECRET_KEY}
+  sender-number: ${SOLAPI_SENDER_NUMBER}
+
 logging:
   level:
     root: INFO
