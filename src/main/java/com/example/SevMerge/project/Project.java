@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
 
@@ -45,7 +46,7 @@ public class Project {
 
 
     @Column(nullable = false)
-    private Timestamp deadline; // 마감일
+    private Timestamp deadline;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -76,12 +77,14 @@ public class Project {
     }
 
     // update 메서드기능
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     public void update(ProjectRequestDTO.UpdateDTO requestDTO) {
         if (requestDTO.getTitle() != null) this.title = requestDTO.getTitle();
         if (requestDTO.getDescription() != null) this.description = requestDTO.getDescription();
         if (requestDTO.getBudgetMin() != null) this.budgetMin = requestDTO.getBudgetMin();
         if (requestDTO.getBudgetMax() != null) this.budgetMax = requestDTO.getBudgetMax();
-        if (requestDTO.getDeadline() != null) this.deadline = requestDTO.getDeadline();
+        if (requestDTO.getDeadline() != null)
+            this.deadline = Timestamp.valueOf(requestDTO.getDeadline() + " 00:00:00");
         if (requestDTO.getBidFilter() != null) this.bidFilter = BidFilter.valueOf(requestDTO.getBidFilter());
     }
 

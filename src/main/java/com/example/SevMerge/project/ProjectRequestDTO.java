@@ -15,7 +15,7 @@ public class ProjectRequestDTO {
         private String description;
         private Integer budgetMin;
         private Integer budgetMax;
-        private Timestamp deadline;
+        private String deadline;
         private String bidFilter;
 
         public void validate() {
@@ -49,7 +49,7 @@ public class ProjectRequestDTO {
         private String description;
         private Integer budgetMin;
         private Integer budgetMax;
-        private Timestamp deadline;
+        private String deadline;
         private String bidFilter;
 
         public void validate() {
