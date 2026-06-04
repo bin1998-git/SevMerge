@@ -116,8 +116,8 @@ public class MemberService {
     //로그인 / 로그아웃
     @Transactional(readOnly = true)
     public void login(MemberRequest.Login request, HttpSession session) {
-        Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword()))
             throw new BadRequestException("비밀번호가 올바르지 않습니다.");
@@ -131,6 +131,18 @@ public class MemberService {
 
     public void logout(HttpSession session) {
         session.invalidate();
+    }
+
+
+    // 소프트삭제 메서드
+    @Transactional
+    public void withdrawMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        //엔티티 메서드를 호출해 상태만 true 변경.
+        member.withdraw();
+        log.info("회원 탈퇴 완료 (Dirty Checking으로 DB 반영) - memberId={}", memberId);
     }
 
     // 마이페이지
@@ -279,7 +291,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member findKakaoMember(Long kakaoId) {
         String kakaoUserKey = String.valueOf(kakaoId);
-        return memberRepository.findByEmail(kakaoUserKey).orElse(null);
+        return memberRepository.findByEmailAndIsDeletedFalse(kakaoUserKey).orElse(null);
     }
 
     // 카카오 신규 회원 가입 (역할 선택 후 호출)

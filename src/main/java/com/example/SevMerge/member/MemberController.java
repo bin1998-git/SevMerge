@@ -224,7 +224,7 @@ public class MemberController {
         session.setAttribute("googleId",       googleId);
         session.setAttribute("googleNickname", nickname);
         session.setAttribute("googleEmail",    email);
-        return "redirect:/kakao-role";
+        return "redirect:/social-role";
     }
 
     // 카카오 콜백: 기존 회원이면 바로 로그인, 신규면 역할 선택 화면으로
@@ -248,22 +248,22 @@ public class MemberController {
         // 신규 회원 → 카카오 정보 잠깐 세션에 보관하고 역할 선택 화면으로
         session.setAttribute("kakaoId", kakaoId);
         session.setAttribute("kakaoNickname", nickname);
-        return "redirect:/kakao-role";
+        return "redirect:/social-role";
     }
 
     // 역할 선택 화면
-    @GetMapping("/kakao-role")
-    public String kakaoRoleForm(HttpSession session) {
+    @GetMapping("/social-role")
+    public String socialRoleForm(HttpSession session) {
         // 카카오 ID도 없고 구글 ID도 세션에 없으면 비정상 접근으로 차단
         if (session.getAttribute("kakaoId") == null && session.getAttribute("googleId") == null) {
             return "redirect:/login";
         }
-        return "member/kakao-role";
+        return "member/social-role";
     }
 
     // 3. 역할 선택 후 가입 처리 (카카오 + 구글 통합 분기 완료)
-    @PostMapping("/kakao-join")
-    public String kakaoJoin(@RequestParam String role, HttpSession session) {
+    @PostMapping("/social-join")
+    public String socialJoin(@RequestParam String role, HttpSession session) {
         Long kakaoId = (Long) session.getAttribute("kakaoId");
         String googleId = (String) session.getAttribute("googleId");
 
