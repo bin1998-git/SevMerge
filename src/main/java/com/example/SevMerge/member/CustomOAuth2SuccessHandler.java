@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * 구글 로그인 역할 선택(최초 가입자)
+ */
+
 @Slf4j
 @Component
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
@@ -31,14 +35,14 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             log.info("[구글 소셜] 기존 회원 로그인 성공 - memberId={}", member.getId());
             response.sendRedirect("/");
         } else {
-            // 신규 회원 -> 구글 정보를 세션에 임시 보관하고 역할 선택 화면으로 강제 이동!
-            // 카카오에서 사용하던 세션 키값 규격과 통일하여 뷰 화면을 그대로 재활용합니다.
+            // 신규 회원 -> 구글 정보를 세션에 임시 보관하고 역할 선택 화면으로 강제 이동
+            // 카카오에서 사용하던 세션 키값 규격과 통일하여 뷰 화면을 그대로 재활용
             session.setAttribute("googleId", member.getProviderId());
             session.setAttribute("googleNickname", member.getName() + "_" + member.getProviderId());
             session.setAttribute("googleEmail", member.getEmail());
 
-            log.info("[구글 소셜] 신규 회원 감지 -> 역할 선택 페이지(/kakao-role)로 이동시킵니다.");
-            response.sendRedirect("/kakao-role"); //  기존에 만들어두신 화면 주소
+            log.info("[구글 소셜] 신규 회원 감지 -> 역할 선택 페이지(/kakao-role)로 이동시킴.");
+            response.sendRedirect("/kakao-role");
         }
     }
 }

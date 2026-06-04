@@ -70,9 +70,11 @@ public class MemberController {
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
         model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
         model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
-        model.addAttribute("projectCount",projectService.myProjects(loginMember).size());
-        if(loginMember.getRole() == Role.EXPERT) {
-            model.addAttribute("bidCount",bidService.findMyBids(loginMember).size());
+        model.addAttribute("isEdit", tab.equalsIgnoreCase("edit"));
+
+        model.addAttribute("projectCount", projectService.myProjects(loginMember).size());
+        if (loginMember.getRole() == Role.EXPERT) {
+            model.addAttribute("bidCount", bidService.findMyBids(loginMember).size());
         }
         if (tab.equals("projects")) {
             model.addAttribute("projects", projectService.myProjects(loginMember));
@@ -82,6 +84,9 @@ public class MemberController {
             model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
             model.addAttribute("bids", bidService.findMyBids(loginMember));
+        } else if (tab.equals("edit")) {
+            model.addAttribute("rawName", loginMember.getName());
+            model.addAttribute("rawEmail", loginMember.getEmail());
         }
 
         return "member/mypage";
@@ -89,7 +94,7 @@ public class MemberController {
 
     // 회원 정보 수정 페이지 이동 (GET)
     @GetMapping("/mypage/update") //
-    public String updateMemberPage(HttpSession session, Model model){
+    public String updateMemberPage(HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         if (loginMember == null) {
             return "redirect:/login";
@@ -213,8 +218,7 @@ public class MemberController {
             session.removeAttribute("kakaoId");
             session.removeAttribute("kakaoNickname");
             log.info("카카오 소셜 가입 완료 - memberId={}", member.getId());
-        }
-        else if (googleId != null) {
+        } else if (googleId != null) {
             // 구글 가입 처리 로직 (이전 답변에서 드린 CustomSuccessHandler가 세팅한 값을 꺼냅니다)
             String nickname = (String) session.getAttribute("googleNickname");
             String email = (String) session.getAttribute("googleEmail");
@@ -225,6 +229,11 @@ public class MemberController {
             session.removeAttribute("googleNickname");
             session.removeAttribute("googleEmail");
             log.info("구글 소셜 가입 완료 - memberId={}", member.getId());
+        }
+        if (member != null) {
+            Member freshMember = memberService.findMemberById(member.getId());
+            session.setAttribute("sessionUser", freshMember);
+            log.info("소셜 회원가입 최종 완료 -> 온전한 세션 주입 완료 - memberId={}", freshMember.getId());
         }
 
         // 로그인 세션 장착 후 메인화면 이동

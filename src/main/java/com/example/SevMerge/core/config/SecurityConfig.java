@@ -20,6 +20,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final OAuth2MemberService oAuth2MemberService;
+
+    // 구글 로그인용 추가
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Bean
