@@ -3,6 +3,8 @@ package com.example.SevMerge.member;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.review.Review;
+import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class MemberController {
     private final ReviewService reviewService;
     private final BoardService boardService;
     private final BidService bidService;
+    private final ReviewRepository reviewRepository;
 
     // 회원가입
     @GetMapping("/join")
@@ -68,13 +71,18 @@ public class MemberController {
 
     // 마이페이지
     @GetMapping("/mypage")
-    public String mypage(@RequestParam(defaultValue = "projects") String tab,
+    public String mypage(@RequestParam(required = false) String tab,
                          HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute("sessionUser");
         // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
         if (loginMember == null) {
             return "redirect:/login";
         }
+
+        if(tab == null) {
+            tab = loginMember.isExpert() ? "bids" : "projects";
+        }
+
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
         model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
@@ -91,7 +99,7 @@ public class MemberController {
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {
-            model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
+            model.addAttribute("reviews", reviewRepository.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
             model.addAttribute("bids", bidService.findMyBids(loginMember));
         } else if (tab.equals("edit")) {

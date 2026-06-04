@@ -12,7 +12,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 
     // 프로젝트 전체 조회(최신순 조회)
-    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted = false ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted = false AND p.projectStatus = 'OPEN' ORDER BY p.createdAt DESC")
     List<Project> findAllProjects();
 
     // 프로젝트 상세조회
