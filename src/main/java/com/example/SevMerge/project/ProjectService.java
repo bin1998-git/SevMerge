@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,10 +54,6 @@ public class ProjectService {
     }
 
 
-
-
-
-
     // 프로젝트 상세조회 서비스
     public ProjectResponeDTO.DetailDTO findProjectById(Long id) {
         log.info("project 상세 서비스 시작");
@@ -75,6 +72,20 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    //  낙찰 완료된 프로젝트만 필터링하여 조회하는 서비스 메서드 추가
+    public List<ProjectResponeDTO.ListDTO> findByStatusClosed() {
+        log.info("project 낙찰 완료(CLOSED) 상태별 조회 서비스 시작");
+
+        // CLOSED 상태인 프로젝트 엔티티들을 조회
+        List<Project> projectList = projectRepository.findByStatus(ProjectStatus.CLOSED);
+
+
+        return projectList.stream()
+                .map(ProjectResponeDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // 내 프로젝트 목록 조회
     public List<ProjectResponeDTO.ListDTO> myProjects(Member sessionMember) {
         log.info("내 project 조회 서비스 시작");
         List<Project> projectList = projectRepository.findAllProjectByMemberId(sessionMember.getId());
@@ -109,7 +120,7 @@ public class ProjectService {
                 .description(req.getDescription())
                 .budgetMin(req.getBudgetMin())
                 .budgetMax(req.getBudgetMax())
-                .deadline(req.getDeadline())
+                .deadline(Timestamp.valueOf(req.getDeadline() + " 00:00:00"))
                 .build();
         projectRepository.save(project);
     }
