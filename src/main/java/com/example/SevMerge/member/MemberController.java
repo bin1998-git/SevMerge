@@ -2,6 +2,7 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewService;
@@ -22,6 +23,7 @@ public class MemberController {
     private final ReviewService reviewService;
     private final BoardService boardService;
     private final BidService bidService;
+    private final PortfolioService portfolioService;
 
     // 회원가입
     @GetMapping("/join")
@@ -70,6 +72,7 @@ public class MemberController {
         model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
         model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
         model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
+        model.addAttribute("isPortfolio", tab.equalsIgnoreCase("portfolios"));
         model.addAttribute("projectCount",projectService.myProjects(loginMember).size());
         if(loginMember.getRole() == Role.EXPERT) {
             model.addAttribute("bidCount",bidService.findMyBids(loginMember).size());
@@ -82,6 +85,8 @@ public class MemberController {
             model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
             model.addAttribute("bids", bidService.findMyBids(loginMember));
+        } else if (tab.equals("portfolios")) {
+            model.addAttribute("portfolios", portfolioService.findByMemberId(loginMember.getId()));
         }
 
         return "member/mypage";

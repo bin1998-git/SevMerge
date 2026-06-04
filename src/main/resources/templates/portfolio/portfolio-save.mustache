@@ -37,7 +37,7 @@
 
         <form class="save-form" action="/portfolios/save" method="POST" enctype="multipart/form-data">
 
-            <input type="hidden" name="expertId" value="{{expertProfile.id}}" />
+            <input type="hidden" name="expertId" value="{{expertProfile.memberId}}" />
 
             <div class="form-group">
                 <label class="form-label">제목 <span class="required">*</span></label>
@@ -63,7 +63,7 @@
             </div>
 
             <div class="form-btns">
-                <a href="/portfolios?expertId={{expertProfile.id}}" class="btn btn-outline">취소</a>
+                <a href="/portfolios?expertId={{expertProfile.memberId}}" class="btn btn-outline">취소</a>
                 <button type="submit" class="btn btn-primary btn-lg">등록하기</button>
             </div>
 
