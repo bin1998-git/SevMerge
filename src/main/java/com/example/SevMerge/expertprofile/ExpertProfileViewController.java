@@ -1,6 +1,7 @@
 package com.example.SevMerge.expertprofile;
 
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.portfolio.PortfolioService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ExpertProfileViewController {
 
     private final ExpertProfileService expertProfileService;
+    private final PortfolioService portfolioService;
 
     /**
      * 전문가 목록 페이지
@@ -52,6 +54,10 @@ public class ExpertProfileViewController {
         Member sessionUser = (Member) session.getAttribute("sessionUser");
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
         model.addAttribute("isOwner", isOwner);
+
+        model.addAttribute("portfolios", portfolioService.findByMemberId(memberId));
+
+
 
         return "expertProfile/expertProfile-detail";
     }
