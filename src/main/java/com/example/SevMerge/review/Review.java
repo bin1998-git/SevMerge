@@ -26,12 +26,12 @@ public class Review {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "expert_profile_id" )
-    private ExpertProfile expertProfile; // 전문가
+    @JoinColumn(name = "reviewer_id" )
+    private Member reviewer; // 리뷰 작성자
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "member_id" )
-    private Member member; // 의뢰인
+    @JoinColumn(name = "targeter_id" )
+    private Member targeter; // 리뷰 수신자
 
     @CreationTimestamp
     private Timestamp createdAt; // 작성일
@@ -39,8 +39,6 @@ public class Review {
     private Integer countStar; // 별점
 
     private String content; // 리뷰 내용
-    @Enumerated(EnumType.STRING)
-    private ReviewType reviewType;
 
 
 }
