@@ -40,13 +40,11 @@ public class PortfolioController {
         log.info("전문가 데이터" + expertProfile);
 
         model.addAttribute("portfolios", portfolios);
-        model.addAttribute("expertProfile",expertProfile);
-        model.addAttribute("portfolioCount",portfolios.get(0).getPortfolioCount());
-        model.addAttribute("isOwner", member!=null && expertProfile.getMemberId().equals(member.getId()));
+        model.addAttribute("expertProfile", expertProfile);
+        model.addAttribute("portfolioCount", portfolios.get(0).getPortfolioCount());
+        model.addAttribute("isOwner", member != null && expertProfile.getMemberId().equals(member.getId()));
         return "portfolio/portfolio-list";
     }
-
-
 
 
     @GetMapping("/portfolios/{portfolioId}")
@@ -60,7 +58,7 @@ public class PortfolioController {
 
         model.addAttribute("expert", expert);
         model.addAttribute("portfolio", detailPortfolio);
-        model.addAttribute("isOwner",expert != null && expert.getId().equals(detailPortfolio.getExpertId()));
+        model.addAttribute("isOwner", expert != null && expert.getId().equals(detailPortfolio.getExpertId()));
 
         return "portfolio/portfolio-detail";
     }
@@ -86,21 +84,19 @@ public class PortfolioController {
     }
 
 
-
-
     @GetMapping("/portfolios/{portfolioId}/edit")
-    public String updatePortfoliosPage(@PathVariable(name = "portfolioId") Long portfolioId , Model model) {
+    public String updatePortfoliosPage(@PathVariable(name = "portfolioId") Long portfolioId, Model model) {
 
         PortfolioResponse.UpdateDTO portfolio = portfolioService.updatePage(portfolioId);
 
-        model.addAttribute("portfolio",portfolio);
+        model.addAttribute("portfolio", portfolio);
         return "portfolio/portfolio-update";
     }
 
-    @PostMapping("/portfolios/{portfolioId}/update" )
-    public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId,PortfolioRequest.UpdateDTO updateDTO) {
+    @PostMapping("/portfolios/{portfolioId}/update")
+    public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, PortfolioRequest.UpdateDTO updateDTO) {
 
-        portfolioService.update(portfolioId,updateDTO);
+        portfolioService.update(portfolioId, updateDTO);
 
         return "redirect:/portfolios";
     }
