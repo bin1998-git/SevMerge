@@ -9,7 +9,7 @@
     .profile-name { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 4px; }
     .profile-email { font-size: 13px; color: #9ca3af; margin-bottom: 14px; }
     .profile-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; margin-bottom: 20px; }
-    .profile-stats { display: flex; gap: 20px; margin-bottom: 0; }
+    ..profile-stats { display: flex; gap: 20px; margin-bottom: 0; }
 .profile-start { background: #f8f9fc; border-radius: 10px; padding: 12px; min-width: 80px; }
     .profile-stat-val { font-size: 20px; font-weight: 900; color: #2563eb; }
     .profile-stat-lbl { font-size: 11px; color: #9ca3af; margin-top: 2px; }
@@ -99,7 +99,7 @@
 
                 {{#member.isExpert}}
                     <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
-                    <a href="/mypage?tab=portfolios" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내 포트폴리오</a>
+                    <a href="/mypage?tab=portfolio" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내 포트폴리오</a>
                 {{/member.isExpert}}
                 <a href="/mypage?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
                 <a href="/mypage?tab=reviews" class="mypage-tab {{#isReview}}active{{/isReview}}">리뷰</a>

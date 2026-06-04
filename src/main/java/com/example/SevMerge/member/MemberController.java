@@ -2,13 +2,13 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
-import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+
+    @Value("${oauth.google.client-id}")
+    private String googleClientId;
     private final ProjectService projectService;
     private final ReviewService reviewService;
     private final BoardService boardService;
     private final BidService bidService;
-    private final PortfolioService portfolioService;
 
     // 회원가입
     @GetMapping("/join")
@@ -41,6 +43,7 @@ public class MemberController {
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("email", "");
+        model.addAttribute("googleClientId", googleClientId);
         return "member/login-form";
     }
 
@@ -168,6 +171,30 @@ public class MemberController {
     }
 
     // --------------------------------------------------------------------
+
+    // 구글 콜백: 기존 회원이면 바로 로그인, 신규면 역할 선택 화면으로
+    @GetMapping("/google-redirect")
+    public String googleRedirect(@RequestParam String code, HttpSession session) {
+
+        MemberResponse.GoogleProfile profile = memberService.getGoogleProfile(code);
+        String googleId = profile.getSub();
+        String nickname = profile.getName();
+        String email    = profile.getEmail();
+
+        Member existing = memberService.findGoogleMember(googleId);
+
+        if (existing != null) {
+            session.setAttribute("sessionUser", existing);
+            log.info("구글 기존 회원 로그인 - memberId={}", existing.getId());
+            return "redirect:/";
+        }
+
+        // 신규 회원 → 세션에 임시 보관 후 역할 선택 화면으로
+        session.setAttribute("googleId",       googleId);
+        session.setAttribute("googleNickname", nickname);
+        session.setAttribute("googleEmail",    email);
+        return "redirect:/kakao-role";
+    }
 
     // 카카오 콜백: 기존 회원이면 바로 로그인, 신규면 역할 선택 화면으로
     @GetMapping("/kakao-redirect")

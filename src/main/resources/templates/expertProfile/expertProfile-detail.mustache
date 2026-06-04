@@ -86,13 +86,12 @@
             </div>
 
             <!-- 포트폴리오 -->
+            {{!#expertProfile.portfolioUrl}}
             <div class="section-card">
                 <div class="section-card-title">포트폴리오</div>
-                {{#portfolios}}
-                    <a href="/portfolios/{{id}}" class="portfolio-link">🔗 {{title}}</a>
-                {{/portfolios}}
-                {{^portfolios}}<div>포트폴리오가 없습니다.</div>{{/portfolios}}
+                <a href="{{expertProfile.portfolioUrl}}" target="_blank" class="portfolio-link">🔗 {{expertProfile.portfolioUrl}}</a>
             </div>
+            {{!/expertProfile.portfolioUrl}}
 
             <!-- 리뷰 -->
             <div class="section-card">
