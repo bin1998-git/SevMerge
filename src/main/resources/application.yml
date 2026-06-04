@@ -5,7 +5,7 @@ spring:
     import: optional:file:.env[.properties]
   mustache:
     servlet:
-      expose-session-attributes: false
+      expose-session-attributes: true
       expose-request-attributes: true
   security:
     oauth2:

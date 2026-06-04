@@ -3,32 +3,23 @@ package com.example.SevMerge.portfolio;
 import lombok.Builder;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 public class PortfolioResponse {
     @Data
     public static class ListDTO {
         private Long id;
         private String title;
         private String description;
-        private String imageUrl;
+        private String imgUrl;
         private String expertName;
         private String createdAt;
-
-        private Long portfolioCount;
-
         @Builder
-        public ListDTO(Portfolio portfolio , Long portfolioCount) {
+        public ListDTO(Portfolio portfolio) {
             this.id = portfolio.getId();
             this.title = portfolio.getTitle();
             this.description = portfolio.getDescription();
-            this.imageUrl = portfolio.getImageUrl();
+            this.imgUrl = portfolio.getImageUrl();
             this.expertName = portfolio.getExpertProfile().getMember().getName();
             this.createdAt = portfolio.getCreatedAt().toString();
-
-            this.portfolioCount = portfolioCount;
-
-
         }
     }
 
@@ -38,9 +29,6 @@ public class PortfolioResponse {
         private String description;
         private String expertName;
         private String projectUrl;
-        private Timestamp createdAt;
-        private Long expertId;
-        private Long id; // 포트폴리오 아이디
 
         @Builder
         public DetailDTO(Portfolio portfolio) {
@@ -48,9 +36,6 @@ public class PortfolioResponse {
             this.description = portfolio.getDescription();
             this.expertName = portfolio.getExpertProfile().getMember().getName();
             this.projectUrl = portfolio.getProjectUrl();
-            this.createdAt = portfolio.getCreatedAt();
-            this.expertId = portfolio.getExpertProfile().getMember().getId();
-            this.id = portfolio.getId();
         }
     }
 
@@ -59,7 +44,7 @@ public class PortfolioResponse {
     @Data
     public static class UpdateDTO {
 
-        private Long id; // 포트폴리오 아이디
+        private Long id;
         private String title;
         private String description;
         private String imageUrl;
