@@ -3,14 +3,16 @@ package com.example.SevMerge.member;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.project.ProjectService;
-import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
@@ -237,7 +239,6 @@ public class MemberController {
         }
 
         // 로그인 세션 장착 후 메인화면 이동
-        session.setAttribute("sessionUser", member);
         return "redirect:/";
     }
 }
