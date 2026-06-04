@@ -25,7 +25,7 @@ public class ExpertProfile {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String profileImage;
 
     @Column(nullable = true, columnDefinition = "TEXT")

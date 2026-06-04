@@ -29,6 +29,23 @@
     .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #9ca3af; }
     .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
     .auth-footer a:hover { text-decoration: underline; }
+    .email-verify-wrap { display: flex; gap: 8px; }
+    .email-verify-wrap .form-input { flex: 1; }
+    .verify-btn {
+        padding: 0 18px;
+        background: #1c1e26;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+    }
+    .verify-btn:hover { background: #2563eb; }
+    .verify-btn:disabled { background: #c4c9d9; cursor: not-allowed; }
+    .form-input:disabled { background: #f0f1f5; color: #9ca3af; cursor: not-allowed; }
 </style>
 
 <section class="auth-section">
@@ -49,9 +66,20 @@
 
             <div class="form-group">
                 <label class="form-label">이메일 <span class="required">*</span></label>
-                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요" />
+                <div class="email-verify-wrap">
+                    <input type="email" name="email" id="emailInput" class="form-input" placeholder="이메일을 입력하세요" />
+                    <button type="button" id="sendCodeBtn" class="verify-btn">인증</button>
+                </div>
             </div>
 
+            <div class="form-group" id="codeGroup" style="display:none;">
+                <label class="form-label">인증 코드 <span class="required">*</span></label>
+                <div class="email-verify-wrap">
+                    <input type="text" name="authCode" id="codeInput" class="form-input" placeholder="인증 코드 6자리" maxlength="6" />
+                    <button type="button" id="verifyCodeBtn" class="verify-btn">확인</button>
+                </div>
+                <span class="form-hint" id="codeHint"></span>
+            </div>
             <div class="form-group">
                 <label class="form-label">비밀번호 <span class="required">*</span></label>
                 <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" />
@@ -110,5 +138,72 @@
 
     </div>
 </section>
+<script>
+    const emailInput    = document.getElementById("emailInput");
+    const sendCodeBtn   = document.getElementById("sendCodeBtn");
+    const codeGroup     = document.getElementById("codeGroup");
+    const codeInput     = document.getElementById("codeInput");
+    const verifyCodeBtn = document.getElementById("verifyCodeBtn");
+    const codeHint      = document.getElementById("codeHint");
+
+    // 1. 이메일 인증 코드 발송
+    sendCodeBtn.addEventListener("click", async function () {
+        const email = emailInput.value.trim();
+        if (!email) {
+            alert("이메일을 입력해주세요.");
+            return;
+        }
+
+        // 서버에 인증 코드 발송 요청
+        const res = await fetch("/api/email/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email })
+        });
+
+        if (res.ok) {
+            alert("인증 코드가 발송되었습니다.");
+            // 인증 코드 입력칸 표시
+            codeGroup.style.display = "flex";
+            codeGroup.style.flexDirection = "column";
+        } else {
+            alert("발송에 실패했습니다. 다시 시도해주세요.");
+        }
+    });
+
+    // 2. 인증 코드 확인
+    verifyCodeBtn.addEventListener("click", async function () {
+        const email = emailInput.value.trim();
+        const code  = codeInput.value.trim();
+        if (!code) {
+            alert("인증 코드를 입력해주세요.");
+            return;
+        }
+
+        // 서버에 인증 코드 검증 요청
+        const res = await fetch("/api/email/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, code: code })
+        });
+
+        if (res.ok) {
+            // 인증 성공 처리
+            codeHint.textContent = "✓ 인증이 완료되었습니다.";
+            codeHint.style.color = "#10b981";
+
+            // 요구사항 2: 이메일 변경 불가 처리
+            emailInput.readOnly = true;
+            sendCodeBtn.readOnly = true;
+
+            // 요구사항 3: 인증 코드 부분 수정 불가 처리
+            codeInput.disabled = true;
+            verifyCodeBtn.disabled = true;
+        } else {
+            codeHint.textContent = "✗ 인증 코드가 일치하지 않습니다.";
+            codeHint.style.color = "#ef4444";
+        }
+    });
+</script>
 
 {{> layout/footer}}

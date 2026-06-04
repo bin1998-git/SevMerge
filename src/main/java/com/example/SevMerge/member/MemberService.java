@@ -30,6 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final HttpSession session;
 
 
     // application.yml에 등록된 카카오 환경 변수 가져오기
@@ -68,6 +69,14 @@ public class MemberService {
     //회원가입
     @Transactional
     public void join(MemberRequest.Join request) {
+
+        log.info("세션에서 꺼낸 verified_email: {}", session.getAttribute("verified_email"));
+        log.info("요청 이메일: {}", request.getEmail());
+        String verifiedEmail = (String) session.getAttribute("verified_email");
+        if (verifiedEmail == null || !verifiedEmail.equals(request.getEmail())) {
+            throw new BadRequestException("이메일 인증이 완료되지 않았습니다.");
+        }
+
         if (memberRepository.existsByEmail(request.getEmail()))
             throw new BadRequestException("이미 사용 중인 이메일입니다.");
 
@@ -78,6 +87,7 @@ public class MemberService {
                 .phone(request.getPhone())
                 .role(request.getRole())
                 .status(request.getRole() == Role.EXPERT ? Status.PENDING : Status.ACTIVE)
+
                 .build();
         memberRepository.save(member);
 
@@ -88,6 +98,11 @@ public class MemberService {
                     .avgRating(BigDecimal.ZERO)
                     .totalReviews(0)
                     .isCertified(false)
+                    // 프로필이미지 널값 방지
+                    .profileImage("default.png")
+                    .intro("")
+                    .career("")
+                    .speciality("")
                     .build());
             log.info("전문가 신청 완료 - memberId={}", member.getId());
         }
@@ -180,17 +195,9 @@ public class MemberService {
 
     // --------------------------------------------------------------------------------------
 
-//    // 카카오 로그인 (역할은 state로 전달받음)
-//    @Transactional
-//    public Member kakaoLogin(String code, String selectedRole) {
-//        // 1. 발급 받은 인가 코드로 액세스 토큰 발급 요청
-//        MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
-//        // 2. 발급 받은 액세스 토큰으로 사용자 카카오 프로필 조회
-//        MemberResponse.KakaoProfile kakaoProfile = getKakaoUserProfile(oAuthToken.getAccessToken());
-//        // 3. 응답 받은 결과로 우리 서버에 가입여부 조회 및 자동 회원가입 처리
-//        return processKakaoUserSync(kakaoProfile, selectedRole);
-//    }
-
+    /**
+     * 카카오 회원가입처리
+     */
     // 1. 인가 코드로 카카오 액세스 토큰 요청
     private MemberResponse.OAuthToken getKakaoAccessToken(String code) {
         RestTemplate restTemplate1 = new RestTemplate();
@@ -288,6 +295,47 @@ public class MemberService {
                     .build());
             log.info("카카오 전문가 가입 완료 - memberId={}", savedMember.getId());
         }
+        return savedMember;
+    }
+
+    /**
+     * 구글 신규 회원 가입 처리 (역할 선택 완료 후 호출)
+     */
+    @Transactional
+    public Member registerGoogleMember(String googleId, String nickname, String email, String selectedRole) {
+
+        // 1. 역할(Role) 및 상태(Status) 결정
+        Role role = "EXPERT".equals(selectedRole) ? Role.EXPERT : Role.CLIENT;
+        Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
+
+        // 소셜 로그인은 비밀번호가 없으므로 암호화된 임의의 UUID 비밀번호 부여
+        String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
+
+        // 2. Member 엔티티 생성 및 저장
+        Member newMember = Member.builder()
+                .email(email)
+                .password(dummyPassword)
+                .name(nickname)
+                .phone("") // 전화번호는 빈 값 처리 (이후 정보수정에서 입력 가능)
+                .role(role)
+                .status(status)
+                .provider("google")
+                .providerId(googleId)
+                .build();
+
+        Member savedMember = memberRepository.save(newMember);
+
+        // 3. 전문가(EXPERT)를 선택한 경우에만 전문가 프로필 데이터 생성
+        if (role == Role.EXPERT) {
+            expertProfileRepository.save(ExpertProfile.builder()
+                    .member(savedMember)
+                    .profileImage("default.png")
+                    .avgRating(java.math.BigDecimal.valueOf(0.00))
+                    .totalReviews(0)
+                    .isCertified(false)
+                    .build());
+        }
+
         return savedMember;
     }
 }

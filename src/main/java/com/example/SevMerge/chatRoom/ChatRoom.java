@@ -3,6 +3,7 @@ package com.example.SevMerge.chatRoom;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,7 +18,7 @@ public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
@@ -32,5 +33,23 @@ public class ChatRoom {
     private Member expert;
 
     @CreationTimestamp
-    private Timestamp createAt;
+    private Timestamp createdAt;
+
+    @Builder
+    public ChatRoom(Long id, Project project, Member client, Member expert, Timestamp createdAt) {
+        this.id = id;
+        this.project = project;
+        this.client = client;
+        this.expert = expert;
+        this.createdAt = createdAt;
+    }
+
+    public boolean validate(Member sessionMember) {
+        if (this.getClient().getId().equals(sessionMember.getId()) || this.getExpert().getId().equals(sessionMember.getId())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

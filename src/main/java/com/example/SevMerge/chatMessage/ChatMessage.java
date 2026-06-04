@@ -3,6 +3,8 @@ package com.example.SevMerge.chatMessage;
 import com.example.SevMerge.chatRoom.ChatRoom;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -15,6 +17,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Table(name = "chat_message_tb")
 @Entity
+@Builder
 public class ChatMessage {
 
     @Id
@@ -43,4 +46,15 @@ public class ChatMessage {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    @Builder
+    public ChatMessage(Long id, ChatRoom chatRoom, Member sender, String text, Boolean isDeleted, Timestamp createdAt, Timestamp updatedAt) {
+        this.id = id;
+        this.chatRoom = chatRoom;
+        this.sender = sender;
+        this.text = text;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

@@ -1,6 +1,21 @@
 spring:
   config:
     import: optional:file:.env[.properties]
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -25,6 +40,7 @@ spring:
       data-locations:
         - classpath:db/data.sql
 
+  # ⚠️ 교정: spring 내부 자식으로 줄을 맞췄습니다 (공백 2칸)
   security:
     oauth2:
       client:
@@ -34,23 +50,13 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email, profile
 
-  mustache:
-    servlet:
-      expose-session-attributes: false
-      expose-request-attributes: true
+  # ⚠️ 교정: spring 내부 자식으로 줄을 맞췄습니다 (공백 2칸)
+  oauth:
+    kakao:
+      client-id: ${KAKAO_CLIENT_ID}
+      client-secret: ${KAKAO_CLIENT_SECRET}
 
-server:
-  port: 8080
-  servlet:
-    session:
-      tracking-modes: cookie
-    encoding:
-      charset: utf-8
-      force: true
-    multipart:
-      enabled: true
-      max-file-size: 10MB
-      max-request-size: 20MB
+
 
 toss:
   client-key: ${TOSS_CLIENT_KEY}

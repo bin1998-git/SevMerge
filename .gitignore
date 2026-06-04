@@ -37,3 +37,7 @@ out/
 .vscode/
 .env
 .DS_Store
+
+# 개발환경 설정 파일
+application-local.yml
+data-local.sql
