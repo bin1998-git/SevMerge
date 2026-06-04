@@ -145,14 +145,18 @@ public class MemberController {
         } else {
             memberList = memberService.getAllMembers();
         }
+
         model.addAttribute("members", memberList);
         model.addAttribute("keyword", keyword != null ? keyword : "");
+        model.addAttribute("isAdmin", true);
+
         return "admin/admin-member";
     }
 
     @PostMapping("/admin/members/{id}/delete")
-    public String deleteMember(@PathVariable Long id) {
+    public String deleteMember(@PathVariable Long id, Model model) {
         memberService.suspendMember(id);
+        model.addAttribute("isAdmin", true);
         return "redirect:/admin/members";
     }
 
@@ -160,18 +164,21 @@ public class MemberController {
     @GetMapping("/admin/experts")
     public String adminExperts(Model model) {
         model.addAttribute("experts", memberService.getPendingExperts());
+        model.addAttribute("isAdmin", true);
         return "admin/admin-expert";
     }
 
     @PostMapping("/admin/experts/{id}/approve")
-    public String approveExpert(@PathVariable Long id) {
+    public String approveExpert(@PathVariable Long id, Model model) {
         memberService.approveExpert(id);
+        model.addAttribute("isAdmin", true);
         return "redirect:/admin/experts";
     }
 
     @PostMapping("/admin/experts/{id}/reject")
-    public String rejectExpert(@PathVariable Long id) {
+    public String rejectExpert(@PathVariable Long id,  Model model) {
         memberService.rejectExpert(id);
+        model.addAttribute("isAdmin", true);
         return "redirect:/admin/experts";
     }
 

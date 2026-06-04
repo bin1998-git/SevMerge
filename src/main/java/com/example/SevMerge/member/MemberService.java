@@ -155,14 +155,6 @@ public class MemberService {
         return count == null ? 0L : count;
     }
 
-
-
-
-
-
-
-
-
     @Transactional
     public void approveExpert(Long memberId) {
         Member member = findMemberById(memberId);

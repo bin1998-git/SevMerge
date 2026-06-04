@@ -1,40 +1,264 @@
 {{> layout/header}}
 
 <style>
-    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
-    .admin-sidebar { width: 220px; background: #fff; border-right: 1px solid #eaecf4; padding: 28px 0; flex-shrink: 0; position: sticky; top: 64px; height: calc(100vh - 64px); }
-    .sidebar-label { font-size: 11px; font-weight: 700; color: #c4c9d9; letter-spacing: 1.5px; text-transform: uppercase; padding: 0 20px; margin-bottom: 8px; margin-top: 20px; }
-    .sidebar-label:first-child { margin-top: 0; }
-    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .12s; border-left: 3px solid transparent; }
-    .sidebar-link:hover { color: #2563eb; background: #f8f9ff; }
-    .sidebar-link.active { color: #2563eb; background: #eff6ff; border-left-color: #2563eb; }
-    .sidebar-icon { font-size: 16px; }
-    .admin-content { flex: 1; padding: 36px 36px 80px; background: #f5f6fa; }
-    .admin-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 4px; }
-    .admin-desc { font-size: 14px; color: #9ca3af; }
-    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .search-input { flex: 1; padding: 11px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; max-width: 360px; }
-    .search-input:focus { border-color: #2563eb; outline: none; }
-    .search-btn { padding: 11px 22px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .admin-table-wrap { background: #fff; border-radius: 14px; border: 1.5px solid #eaecf4; overflow: hidden; }
-    .admin-table-head { display: grid; grid-template-columns: 60px 1fr 160px 100px 100px 80px; gap: 12px; padding: 12px 22px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: .5px; }
-    .admin-table-row { display: grid; grid-template-columns: 60px 1fr 160px 100px 100px 80px; gap: 12px; padding: 15px 22px; border-bottom: 1px solid #f3f4f8; align-items: center; font-size: 13px; }
-    .admin-table-row:last-child { border-bottom: none; }
-    .admin-table-row:hover { background: #f8f9ff; }
-    .cell-id { color: #c4c9d9; font-weight: 500; }
-    .cell-name { font-weight: 700; color: #1c1e26; }
-    .cell-email { font-size: 12px; color: #9ca3af; margin-top: 2px; }
-    .cell-date { color: #9ca3af; font-size: 12px; }
-    .role-admin { font-size: 11px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
-    .role-member { font-size: 11px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
-    .status-active { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
-    .del-btn { padding: 5px 12px; background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .del-btn:hover { background: #fee2e2; }
-    .paging { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
-    .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
-    .page-btn:hover { border-color: #2563eb; color: #2563eb; }
-    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .admin-wrap {
+        display: flex;
+        min-height: calc(100vh - 64px);
+    }
+
+    .admin-sidebar {
+        width: 220px;
+        background: #fff;
+        border-right: 1px solid #eaecf4;
+        padding: 28px 0;
+        flex-shrink: 0;
+        position: sticky;
+        top: 64px;
+        height: calc(100vh - 64px);
+    }
+
+    .sidebar-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #c4c9d9;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 0 20px;
+        margin-bottom: 8px;
+        margin-top: 20px;
+    }
+
+    .sidebar-label:first-child {
+        margin-top: 0;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b7280;
+        text-decoration: none;
+        transition: all .12s;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover {
+        color: #2563eb;
+        background: #f8f9ff;
+    }
+
+    .sidebar-link.active {
+        color: #2563eb;
+        background: #eff6ff;
+        border-left-color: #2563eb;
+    }
+
+    .sidebar-icon {
+        font-size: 16px;
+    }
+
+    .admin-content {
+        flex: 1;
+        padding: 36px 36px 80px;
+        background: #f5f6fa;
+    }
+
+    .admin-header {
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .admin-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #1c1e26;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+    }
+
+    .admin-desc {
+        font-size: 14px;
+        color: #9ca3af;
+    }
+
+    .search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 11px 16px;
+        background: #fff;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 9px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1c1e26;
+        outline: none;
+        max-width: 360px;
+    }
+
+    .search-input:focus {
+        border-color: #2563eb;
+        outline: none;
+    }
+
+    .search-btn {
+        padding: 11px 22px;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .admin-table-wrap {
+        background: #fff;
+        border-radius: 14px;
+        border: 1.5px solid #eaecf4;
+        overflow: hidden;
+    }
+
+    .admin-table-head {
+        display: grid;
+        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
+        gap: 12px;
+        padding: 12px 22px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #eaecf4;
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ca3af;
+        letter-spacing: .5px;
+    }
+
+    .admin-table-row {
+        display: grid;
+        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
+        gap: 12px;
+        padding: 15px 22px;
+        border-bottom: 1px solid #f3f4f8;
+        align-items: center;
+        font-size: 13px;
+    }
+
+    .admin-table-row:last-child {
+        border-bottom: none;
+    }
+
+    .admin-table-row:hover {
+        background: #f8f9ff;
+    }
+
+    .cell-id {
+        color: #c4c9d9;
+        font-weight: 500;
+    }
+
+    .cell-name {
+        font-weight: 700;
+        color: #1c1e26;
+    }
+
+    .cell-email {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 2px;
+    }
+
+    .cell-date {
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+    .role-admin {
+        font-size: 11px;
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .role-member {
+        font-size: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .status-active {
+        font-size: 11px;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .del-btn {
+        padding: 5px 12px;
+        background: #fff3f3;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .del-btn:hover {
+        background: #fee2e2;
+    }
+
+    .paging {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 24px;
+    }
+
+    .page-btn {
+        padding: 9px 15px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e5ef;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
+        background: #fff;
+        text-decoration: none;
+        transition: all .15s;
+    }
+
+    .page-btn:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+    }
+
+    .page-btn.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+    }
 </style>
 
 <div class="admin-wrap">
@@ -58,10 +282,9 @@
         </div>
 
         <form action="/admin/members" method="get" class="search-bar">
-            <input type="text" class="search-input" name="keyword" placeholder="이름 또는 이메일로 검색..." value="{{keyword}}" />
+            <input type="text" class="search-input" name="keyword" placeholder="이름 또는 이메일로 검색..." value="{{keyword}}"/>
             <button type="submit" class="search-btn">검색</button>
         </form>
-
 
 
         <div class="admin-table-wrap">
@@ -70,31 +293,43 @@
             </div>
 
             {{#members}}
-            <div class="admin-table-row">
-                <span class="cell-id">{{id}}</span>
-                <div>
-                    <div class="cell-name">{{name}}</div>
-                    <div class="cell-email">{{email}}</div>
+                <div class="admin-table-row">
+                    <span class="cell-id">{{id}}</span>
+                    <div>
+                        <div class="cell-name">{{name}}</div>
+                        <div class="cell-email">{{email}}</div>
+                    </div>
+                    <span class="cell-email">{{email}}</span>
+                    <span class="cell-date">{{createdAt}}</span>
+                    <span>
+                        {{#admin}}
+                            <span class="role-admin">관리자</span>
+                        {{/admin}}
+                        {{#expert}}
+                            <span class="role-member" style="border-color: #4f46e5; color: #4f46e5;">전문가</span>
+                        {{/expert}}
+
+                        {{^admin}}
+                            {{^expert}}
+                                <span class="role-member">일반</span>
+                            {{/expert}}
+                        {{/admin}}
+                    </span>
+                    <form action="/admin/members/{{id}}/delete" method="POST">
+                        <button type="submit" class="del-btn">삭제</button>
+                    </form>
                 </div>
-                <span class="cell-email">{{email}}</span>
-                <span class="cell-date">{{createdAt}}</span>
-                <span>
-                    {{#isAdmin}}<span class="role-admin">관리자</span>{{/isAdmin}}
-                    {{^isAdmin}}<span class="role-member">일반</span>{{/isAdmin}}
-                </span>
-                <form action="/admin/members/{{id}}/delete" method="POST">
-                    <button type="submit" class="del-btn">삭제</button>
-                </form>
-            </div>
             {{/members}}
 
         </div>
 
         <div class="paging">
             {{#paging}}
-            {{#hasPrev}}<a href="/admin/members?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
-            {{#pageList}}<a href="/admin/members?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
-            {{#hasNext}}<a href="/admin/members?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
+                {{#hasPrev}}<a href="/admin/members?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
+                {{#pageList}}
+                    <a href="/admin/members?page={{num}}" class="page-btn {{#isCurrent}}
+                    active{{/isCurrent}}">{{num}}</a>{{/pageList}}
+                {{#hasNext}}<a href="/admin/members?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
             {{/paging}}
         </div>
 
