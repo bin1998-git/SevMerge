@@ -64,42 +64,42 @@ INSERT INTO bid_tb (project_id, expert_id, cover_letter, approach, estimated_day
 -- ChatRoom 샘플데이터
 -- [1번 채팅방]: 1번 프로젝트('스타트업 중고 부품 거래 플랫폼 구축')를 두고
 -- 의뢰인(1번 회원)과 입찰에 참여한 전문가(2번 회원 - 개발자 홍길동) 간의 대화방
-INSERT INTO chat_room_tb (project_id, client_id, expert_id, create_at)
-VALUES (1, 1, 2, NOW());
-
--- [2번 채팅방]: 동일한 1번 프로젝트에
--- 또 다른 전문가(3번 회원 - 디자이너 김씨)가 입찰하여 의뢰인(1번 회원)과 조율하는 대화방
-INSERT INTO chat_room_tb (project_id, client_id, expert_id, create_at)
-VALUES (1, 1, 3, NOW());
-
--- [3번 채팅방]: 2번 프로젝트('제조업 불량품 검출용 AI 모델 개발')를 두고
--- 의뢰인(4번 회원)과 입찰에 참여한 전문가(2번 회원 - 개발자 홍길동) 간의 대화방
-INSERT INTO chat_room_tb (project_id, client_id, expert_id, create_at)
-VALUES (2, 4, 2, NOW());
+-- INSERT INTO chat_room_tb (project_id, client_id, expert_id, create_at)
+-- VALUES (1, 1, 2, NOW());
+--
+-- -- [2번 채팅방]: 동일한 1번 프로젝트에
+-- -- 또 다른 전문가(3번 회원 - 디자이너 김씨)가 입찰하여 의뢰인(1번 회원)과 조율하는 대화방
+-- INSERT INTO chat_room_tb (project_id, client_id, expert_id, create_at)
+-- VALUES (1, 1, 2, NOW());
+--
+-- -- [3번 채팅방]: 2번 프로젝트('제조업 불량품 검출용 AI 모델 개발')를 두고
+-- -- 의뢰인(4번 회원)과 입찰에 참여한 전문가(2번 회원 - 개발자 홍길동) 간의 대화방
+-- INSERT INTO chat_room_tb (project_id, client_id, expert_id, create_at)
+-- VALUES (1, 1, 2, NOW());
 
 
 -- ChatMessage 샘플데이터
 -- [1번 채팅방] 의뢰인(id: 1)과 전문가(id: 2)의 실시간 외주 조율 대화
 
--- 1. 전문가(2번)의 첫인사 및 요구사항 확인 요청
-INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
-VALUES (1, 2, '안녕하세요 클라이언트님, SevMerge에서 프로젝트 제안서 제출한 풀스택 개발자 홍길동입니다. 보내주신 첨부 파일 문서 잘 검토해보았습니다.', false, NOW(), NOW());
-
--- 2. 의뢰인(1번)의 답변
-INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
-VALUES (1, 1, '아, 네 반갑습니다 개발자님! 제안서에 아키텍처 구성을 꼼꼼하게 잘 적어주셔서 인상 깊었습니다.', false, NOW(), NOW());
-
--- 3. 전문가(2번)의 일정 및 마일스톤 조율
-INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
-VALUES (1, 2, '감사합니다. 혹시 기획서 상의 안심 대금 결제 연동 범위가 1차 런칭 스펙에 포함되는 걸까요? 그에 따라 일정을 3일 정도 조정해야 할 수도 있어서 여쭤봅니다.', false, NOW(), NOW());
-
--- 4. 의뢰인(1번)의 피드백
-INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
-VALUES (1, 1, '결제 연동은 필수 스펙입니다! 대신 알림톡 발송 부분은 2차 개발로 미뤄도 괜찮으니, 결제 기능 위주로 일정 먼저 잡아주시면 감사하겠습니다.', false, NOW(), NOW());
-
--- 5. 전문가(2번)의 확답
-INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
-VALUES (1, 2, '확인했습니다. 그럼 말씀하신 범위로 WBS(작업스케줄러) 수정해서 채팅방에 공유해 드린 뒤 바로 에스크로 계약 요청 진행하겠습니다!', false, NOW(), NOW());
+-- -- 1. 전문가(2번)의 첫인사 및 요구사항 확인 요청
+-- INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
+-- VALUES (1, 2, '안녕하세요 클라이언트님, SevMerge에서 프로젝트 제안서 제출한 풀스택 개발자 홍길동입니다. 보내주신 첨부 파일 문서 잘 검토해보았습니다.', false, NOW(), NOW());
+--
+-- -- 2. 의뢰인(1번)의 답변
+-- INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
+-- VALUES (1, 1, '아, 네 반갑습니다 개발자님! 제안서에 아키텍처 구성을 꼼꼼하게 잘 적어주셔서 인상 깊었습니다.', false, NOW(), NOW());
+--
+-- -- 3. 전문가(2번)의 일정 및 마일스톤 조율
+-- INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
+-- VALUES (1, 2, '감사합니다. 혹시 기획서 상의 안심 대금 결제 연동 범위가 1차 런칭 스펙에 포함되는 걸까요? 그에 따라 일정을 3일 정도 조정해야 할 수도 있어서 여쭤봅니다.', false, NOW(), NOW());
+--
+-- -- 4. 의뢰인(1번)의 피드백
+-- INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
+-- VALUES (1, 1, '결제 연동은 필수 스펙입니다! 대신 알림톡 발송 부분은 2차 개발로 미뤄도 괜찮으니, 결제 기능 위주로 일정 먼저 잡아주시면 감사하겠습니다.', false, NOW(), NOW());
+--
+-- -- 5. 전문가(2번)의 확답
+-- INSERT INTO chat_message_tb (chat_room_id, sender_id, text, is_deleted, created_at, updated_at)
+-- VALUES (1, 2, '확인했습니다. 그럼 말씀하신 범위로 WBS(작업스케줄러) 수정해서 채팅방에 공유해 드린 뒤 바로 에스크로 계약 요청 진행하겠습니다!', false, NOW(), NOW());
 
 
 
