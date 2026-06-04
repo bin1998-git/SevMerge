@@ -74,20 +74,30 @@
                 <div class="bid-body">
                     <div class="bid-name-wrap">
                         <span class="bid-name">{{expertName}}</span>
+
+                        {{#isPending}}
+                        <span class="cert-badge" style="background: #fff7ed; color: #ea580c; border-color: #ffedd5; margin-left: 8px;">⏳ 검토 대기중</span>
+                        {{/isPending}}
+                        {{#isSelected}}
+                        <span class="cert-badge" style="background: #ecfdf5; color: #059669; border-color: #a7f3d0; margin-left: 8px;">🎉 최종 낙찰됨</span>
+                        {{/isSelected}}
                     </div>
                     <div class="bid-content">{{coverLetter}}</div>
                 </div>
                 <div class="bid-right">
                     <div class="bid-price">{{proposedPrice}}만원</div>
                     <div class="bid-date">{{createdAt}}</div>
+
                     {{#isSelected}}
                     <span class="selected-badge">✓ 낙찰 완료</span>
                     {{/isSelected}}
-                    {{^isSelected}}
-                    <form action="/bid/{{id}}/select" method="POST">
+
+                    {{#isPending}}
+                    <form action="/bid/{{id}}/select" method="POST" onsubmit="return confirm('정말 이 전문가를 낙찰하시겠습니까?');">
+                        <input type="hidden" name="projectId" value="{{projectId}}">
                         <button type="submit" class="select-btn">낙찰 선택</button>
                     </form>
-                    {{/isSelected}}
+                    {{/isPending}}
                 </div>
             </div>
             {{/bids}}

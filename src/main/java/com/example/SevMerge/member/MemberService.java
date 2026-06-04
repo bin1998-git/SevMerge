@@ -4,6 +4,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
+import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,8 @@ public class MemberService {
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
+//    문자 메세지 보내는 기능 DI
+//    private final SolApiService solApiService;
 
 
     // 카카오 환경 변수
@@ -67,8 +70,6 @@ public class MemberService {
     @Transactional
     public void join(MemberRequest.Join request) {
 
-        log.info("세션에서 꺼낸 verified_email: {}", session.getAttribute("verified_email"));
-        log.info("요청 이메일: {}", request.getEmail());
         String verifiedEmail = (String) session.getAttribute("verified_email");
         if (verifiedEmail == null || !verifiedEmail.equals(request.getEmail())) {
             throw new BadRequestException("이메일 인증이 완료되지 않았습니다.");
@@ -103,6 +104,13 @@ public class MemberService {
                     .build());
             log.info("전문가 신청 완료 - memberId={}", member.getId());
         }
+        // 문자 메세지 보내기 기능 예시
+//        if (member.isClient()) {
+//            // todo - SevMerge 프로젝트명으로 수정
+//            solApiService.sendSms(member.getPhone(), member.getName() + "의뢰인님 Sev Merge에 가입하신 걸 환영합니다!");
+//        } else if (member.isExpert()) {
+//            solApiService.sendSms(member.getPhone(), member.getName() + "전문가님 Sev Merge에 가입하신 걸 환영합니다!\n관리자 승인까지 약 30분 소요됩니다.");
+//        }
     }
 
     //로그인 / 로그아웃

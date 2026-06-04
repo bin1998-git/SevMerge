@@ -2,6 +2,7 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewRepository;
@@ -34,6 +35,7 @@ public class MemberController {
     private final BoardService boardService;
     private final BidService bidService;
     private final ReviewRepository reviewRepository;
+    private final PortfolioService portfolioService;
 
     // 회원가입
     @GetMapping("/join")
@@ -89,6 +91,8 @@ public class MemberController {
         model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
         model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
         model.addAttribute("isEdit", tab.equalsIgnoreCase("edit"));
+        model.addAttribute("isPortfolio",tab.equalsIgnoreCase("portfolios"));
+
 
         model.addAttribute("projectCount", projectService.myProjects(loginMember).size());
         if (loginMember.getRole() == Role.EXPERT) {
@@ -105,6 +109,8 @@ public class MemberController {
         } else if (tab.equals("edit")) {
             model.addAttribute("rawName", loginMember.getName());
             model.addAttribute("rawEmail", loginMember.getEmail());
+        } else if(tab.equals("portfolios")) {
+            model.addAttribute("portfolios",portfolioService.findByMemberId(loginMember.getId()));
         }
 
         return "member/mypage";

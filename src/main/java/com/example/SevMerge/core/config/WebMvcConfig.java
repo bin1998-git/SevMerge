@@ -34,11 +34,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/login-form",
                         "/join-form",
                         "/logout",
+                        "/projects/list",
+                        "/projects/{id}/detail",
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/favicon.ico",
-                        "/templates"
+                        "/favicon.ico"
                 );
 
         // 관리자 체크
