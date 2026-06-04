@@ -1,5 +1,7 @@
 package com.example.SevMerge.project;
 
+import com.example.SevMerge.bid.BidRepository;
+import com.example.SevMerge.bid.BidStatus;
 import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final BidRepository bidRepository;
 
     // 프로젝트 전체조회 서비스
     public List<ProjectResponeDTO.ListDTO> findAllProjects() {
@@ -72,12 +75,16 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
-    // 내 프로젝트 목록 조회
     public List<ProjectResponeDTO.ListDTO> myProjects(Member sessionMember) {
         log.info("내 project 조회 서비스 시작");
         List<Project> projectList = projectRepository.findAllProjectByMemberId(sessionMember.getId());
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(p -> {
+                    ProjectResponeDTO.ListDTO dto = new ProjectResponeDTO.ListDTO(p);
+                    bidRepository.findSelectedBidByProjectId(p.getId(), BidStatus.SELECTED)
+                            .ifPresent(bid -> dto.setSelectedExpertId(bid.getExpert().getId()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
