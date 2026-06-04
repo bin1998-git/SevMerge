@@ -5,10 +5,12 @@ import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -20,24 +22,24 @@ public class ProjectController {
     private final ProjectService projectService;
 
     // 프로젝트 등록 폼
-    @GetMapping("/project/save-form")
+    @GetMapping("/projects/save-form")
     public String saveForm() {
         log.info("project 등록폼 요청");
         return "project/project-save";
     }
 
     // 프로젝트 등록
-    @PostMapping("/project/save")
+    @PostMapping("/projects/save")
     public String save(ProjectRequestDTO.SaveDTO req, HttpSession session) {
         log.info("project 등록 요청");
         req.validate();
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         projectService.saveProject(req, sessionUser);
-        return "redirect:/project/list";
+        return "redirect:/projects/list";
     }
 
     // 프로젝트 목록 조회
-    @GetMapping("/project/list")
+    @GetMapping("/projects/list")
     public String list(Model model,
                        @RequestParam(required = false) String keyword,
                        @RequestParam(required = false) String category) {
@@ -70,7 +72,7 @@ public class ProjectController {
     }
 
     // 프로젝트 상세조회(id)
-    @GetMapping("/project/{id}/detail")
+    @GetMapping("/projects/{id}/detail")
     public String detail(@PathVariable Long id, Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
@@ -82,7 +84,7 @@ public class ProjectController {
     }
 
     // 프로젝트 수정 폼
-    @GetMapping("/project/{id}/update-form")
+    @GetMapping("/projects/{id}/update-form")
     public String updateForm(@PathVariable Long id, Model model) {
         log.info("project 수정 폼 요청");
         ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
@@ -97,7 +99,7 @@ public class ProjectController {
     }
 
     // 프로젝트 수정
-    @PostMapping("/project/{id}/update")
+    @PostMapping("/projects/{id}/update")
     public String update(@PathVariable Long id,
                          ProjectRequestDTO.UpdateDTO req,
                          HttpSession session) {
@@ -105,11 +107,11 @@ public class ProjectController {
         req.validate();
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         projectService.updateProject(id, req, sessionUser);
-        return "redirect:/project/" + id + "/detail";
+        return "redirect:/projects/" + id + "/detail";
     }
 
     // 카테고리별 조회
-    @GetMapping("/project/category")
+    @GetMapping("/projects/category")
     public String findByCategory(@RequestParam String category, Model model) {
         log.info("카테고리별 조회 요청");
         model.addAttribute("projects", projectService.findByCategory(category));
@@ -117,7 +119,7 @@ public class ProjectController {
     }
 
     // 키워드 검색
-    @GetMapping("/project/search")
+    @GetMapping("/projects/search")
     public String search(@RequestParam String keyword, Model model) {
         log.info("키워드별 검색 요청");
         model.addAttribute("projects", projectService.findByKeyword(keyword));
@@ -125,12 +127,12 @@ public class ProjectController {
     }
 
     // 프로젝트 삭제
-    @PostMapping("/project/{id}/delete")
+    @PostMapping("/projects/{id}/delete")
     public String delete(@PathVariable Long id, HttpSession session) {
         log.info("project 삭제 요청");
         Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
         projectService.deleteProject(id,sessionUser);
-        return "redirect:/project/list";
+        return "redirect:/projects/list";
     }
 
 }

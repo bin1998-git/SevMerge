@@ -53,6 +53,18 @@ public class MemberService {
                 .toList();
     }
 
+    // 이번 달 가입한 신규 회원 수 조회 기능
+    @Transactional(readOnly = true)
+    public long getNewMemberCountThisMonth() {
+        return memberRepository.countNewMembersThisMonth();
+    }
+
+    // 승인 대기 전문가 조회 기능
+    public long getPendingExpertCount() {
+        log.info("승인 대기 전문가 수 조회 서비스 시작");
+        Long count = memberRepository.pendingProjectsCount();
+        return count == null ? 0L : count;
+    }
 
     //회원가입
     @Transactional
@@ -164,8 +176,9 @@ public class MemberService {
                 .stream().map(MemberResponse::from).toList();
     }
 
-    //내부 유틸
-    private Member findMemberById(Long memberId) {
+    //유틸
+    @Transactional(readOnly = true) //단독수행
+    public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
     }

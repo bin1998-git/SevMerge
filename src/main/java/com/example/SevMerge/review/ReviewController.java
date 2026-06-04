@@ -41,26 +41,25 @@ public class ReviewController {
     // 리뷰작성 화면
     @GetMapping("/reviews/save")
     public String saveReviewForm(Model model , HttpSession session
-            ,@RequestParam (required = false)Long expertId
-            ,@RequestParam(required = false) Long memberId // 원래 기존에는 의뢰인이 전문가 리뷰달때 memberId는 필요없었음
+            ,@RequestParam (required = false)Long reviewerId
+            ,@RequestParam(required = false) Long targetId // 원래 기존에는 의뢰인이 전문가 리뷰달때 memberId는 필요없었음
                                  // 리뷰달 대상이 전문가니까 memberId불필요 근데 이제 전문가가 의뢰인을 리뷰 하니까 memberId
                                  //필요
     ) {
-        // 로그인을 했어
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         if(sessionMember == null ){
             return "redirect:/login";
         }
 
-        if (sessionMember.isExpert()) {
-            if (memberId == null) return "redirect:/";
-            model.addAttribute("member", sessionMember);
-            model.addAttribute("targetId", reviewService.findByMemberId(memberId));
-        } else {
-            if (expertId == null) return "redirect:/";
-            model.addAttribute("member", sessionMember);
-            model.addAttribute("targetId", reviewService.findByMemberId(expertId));
-        }
+//        if (sessionMember.isExpert()) {
+//            if (memberId == null) return "redirect:/";
+//            model.addAttribute("member", sessionMember);
+//            model.addAttribute("targetId", reviewService.findByMemberId(memberId));
+//        } else {
+//            if (expertId == null) return "redirect:/";
+//            model.addAttribute("member", sessionMember);
+//            model.addAttribute("targetId", reviewService.findByMemberId(expertId));
+//        }
 
         return  "review/review-save";
     }

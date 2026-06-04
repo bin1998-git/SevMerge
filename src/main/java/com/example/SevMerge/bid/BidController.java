@@ -39,7 +39,7 @@ public class BidController {
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         bidService.saveBid(req, sessionUser);
-        return "redirect:/project/" + req.getProjectId() + "/detail";
+        return "redirect:/projects/" + req.getProjectId() + "/detail";
 
     }
 
@@ -50,7 +50,7 @@ public class BidController {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("bids", bidService.findByProjectId(projectId, sessionUser));
         model.addAttribute("projectId", projectId);
-        model.addAttribute("project", projectService.findProjectById(projectId));
+        model.addAttribute("projects", projectService.findProjectById(projectId));
         return "bid/bid-list";
     }
 
@@ -96,7 +96,7 @@ public class BidController {
         log.info("낙찰 처리 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         bidService.selectBid(id, sessionUser);
-        return "redirect:/project/list";
+        return "redirect:/projects/list";
     }
 
 }

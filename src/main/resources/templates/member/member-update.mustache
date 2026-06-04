@@ -1,0 +1,87 @@
+{{> layout/header}}
+
+<style>
+    .save-section { padding: 52px 28px 80px; }
+    .save-inner { max-width: 600px; margin: 0 auto; }
+    .save-header { margin-bottom: 32px; }
+    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .save-desc { font-size: 14px; color: #9ca3af; }
+    .edit-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 36px; display: flex; flex-direction: column; gap: 20px; }
+    .form-section-title { font-size: 13px; font-weight: 700; color: #2563eb; letter-spacing: 1px; text-transform: uppercase; padding-bottom: 12px; border-bottom: 1px solid #f3f4f8; margin-bottom: 4px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-input { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input::placeholder { color: #c4c9d9; }
+    .form-input:focus { border-color: #2563eb; background: #fff; }
+    .form-input:disabled { color: #9ca3af; cursor: not-allowed; background: #f3f4f8; }
+    .form-hint { font-size: 12px; color: #9ca3af; }
+    .divider { height: 1px; background: #f3f4f8; }
+    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+</style>
+
+<section class="save-section">
+    <div class="save-inner">
+
+        <div class="save-header">
+            <h1 class="save-title">회원 정보 수정</h1>
+            <p class="save-desc">개인 정보를 수정합니다.</p>
+        </div>
+
+        <form class="edit-form" action="/mypage/update" method="POST">
+
+            <!-- 기본 정보 -->
+            <div class="form-section-title">기본 정보</div>
+
+            <div class="form-group">
+                <label class="form-label">이름</label>
+                <input type="text" name="name" class="form-input" value="{{member.name}}" placeholder="이름을 입력하세요" maxlength="20" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">이메일</label>
+                <input type="email" class="form-input" value="{{member.email}}" disabled />
+                <span class="form-hint">이메일은 변경할 수 없습니다.</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">전화번호</label>
+                <input type="tel" name="phone" class="form-input" value="{{member.phone}}" placeholder="010-0000-0000" />
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 비밀번호 변경 -->
+            <div class="form-section-title">비밀번호 변경</div>
+
+            <div class="form-group">
+                <label class="form-label">현재 비밀번호</label>
+                <input type="password" name="currentPassword" class="form-input" placeholder="현재 비밀번호를 입력하세요" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">새 비밀번호</label>
+                <input type="password" name="newPassword" class="form-input" placeholder="새 비밀번호를 입력하세요" />
+                <span class="form-hint">영문, 숫자 포함 8자 이상</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">새 비밀번호 확인</label>
+                <input type="password" name="newPasswordConfirm" class="form-input" placeholder="새 비밀번호를 다시 입력하세요" />
+            </div>
+
+            <div class="form-btns">
+                <a href="/mypage" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary btn-lg">수정완료</button>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+
+{{> layout/footer}}

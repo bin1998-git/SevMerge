@@ -1,0 +1,19 @@
+{{> layout/header}}
+
+<style>
+    .fail-section { padding: 80px 28px; text-align: center; }
+    .fail-icon { font-size: 48px; margin-bottom: 20px; }
+    .fail-title { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; }
+    .fail-msg { font-size: 14px; color: #9ca3af; margin-bottom: 32px; }
+    .btn-primary { display: inline-block; padding: 13px 28px; background: #2563eb; color: #fff; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; }
+    .btn-primary:hover { background: #1d4ed8; }
+</style>
+
+<section class="fail-section">
+    <div class="fail-icon">❌</div>
+    <h1 class="fail-title">결제에 실패했습니다</h1>
+    <p class="fail-msg">{{errorMessage}}</p>
+    <a href="javascript:history.back()" class="btn-primary">다시 시도하기</a>
+</section>
+
+{{> layout/footer}}

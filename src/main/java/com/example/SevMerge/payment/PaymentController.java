@@ -3,8 +3,8 @@ package com.example.SevMerge.payment;
 import com.example.SevMerge.core.util.ApiResponse;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,18 +16,14 @@ import java.util.List;
  * PaymentController
  * 요구사항: PAY-001 ~ PAY-006
  *
- * [인터셉터 적용 현황 - WebMvcConfig 기준]
- * - /payment/** : LoginInterceptor 적용 (로그인 필수)
- * - /admin/**   : AdminInterceptor 적용 (관리자 전용)
- * → 별도 인터셉터 추가 없이 현재 설정으로 동작합니다.
- *
  * [엔드포인트 목록]
- * GET  /payment/form          - PAY-001: 결제 페이지 (Mustache 뷰)
- * POST /payment/confirm       - PAY-003: 포트원 결제 완료 확인 (JSON)
- * POST /payment/{id}/settle   - PAY-004: 정산 처리 (JSON)
- * POST /payment/{id}/refund   - PAY-005: 환불 요청 (JSON)
- * GET  /payment/my            - PAY-006: 결제/정산 내역 페이지 (Mustache 뷰)
- * GET  /payment/project/{id}  - 프로젝트별 결제 조회 (JSON, 타 도메인 연동용)
+ * GET  /payment/form              - PAY-001: 결제 페이지 (Mustache 뷰)
+ * GET  /payment/success           - PAY-003: 토스 결제 완료 콜백
+ * GET  /payment/fail              - PAY-003: 토스 결제 실패 콜백
+ * POST /payment/{id}/settle       - PAY-004: 정산 처리 (JSON)
+ * POST /payment/{id}/refund       - PAY-005: 환불 요청 (JSON)
+ * GET  /payment/my                - PAY-006: 결제/정산 내역 페이지 (Mustache 뷰)
+ * GET  /payment/project/{id}      - 프로젝트별 결제 조회 (JSON, 타 도메인 연동용)
  */
 @Controller
 @RequestMapping("/payment")
@@ -36,14 +32,15 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    @Value("${toss.client-key}")
+    private String tossClientKey;
+
     // ===================== PAY-001: 결제 페이지 =====================
 
     /**
      * PAY-001: 결제 페이지 진입
-     * 낙찰 처리 후 팀장(BidController)에서 아래 URL로 리다이렉트:
+     * 낙찰 처리 후 BidController에서 아래 URL로 리다이렉트:
      *   redirect:/payment/form?projectId={id}&expertId={id}&amount={금액}
-     *
-     * GET /payment/form?projectId=1&expertId=2&amount=500000
      */
     @GetMapping("/form")
     public String paymentForm(@RequestParam Long projectId,
@@ -53,44 +50,53 @@ public class PaymentController {
                               Model model) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
-        String merchantUid = paymentService.generateMerchantUid(projectId);
+        String orderId = "sev-project-" + projectId;
 
-        model.addAttribute("projectId",   projectId);
-        model.addAttribute("expertId",    expertId);
-        model.addAttribute("amount",      amount);
-        model.addAttribute("merchantUid", merchantUid);
-        model.addAttribute("clientId",    sessionUser.getId());
+        model.addAttribute("projectId",  projectId);
+        model.addAttribute("expertId",   expertId);
+        model.addAttribute("amount",     amount);
+        model.addAttribute("orderId",    orderId);
+        model.addAttribute("clientId",   sessionUser.getId());
+        model.addAttribute("clientKey",  tossClientKey);
 
-        // templates/payment/form.mustache
         return "payment/form";
     }
 
-    // ===================== PAY-003: 결제 완료 확인 =====================
+    // ===================== PAY-003: 토스 결제 콜백 =====================
 
     /**
-     * PAY-003: 포트원 결제 완료 후 프론트에서 호출 (AJAX)
-     * 포트원 JS SDK → 결제 완료 → fetch("POST /payment/confirm", body)
-     *
-     * POST /payment/confirm
-     * Body: { impUid, merchantUid, paidAmount, expertId, payMethod }
+     * PAY-003: 토스 결제 성공 콜백
+     * 토스 JS SDK 결제 완료 → successUrl(GET)로 리다이렉트
+     * GET /payment/success?paymentKey=...&orderId=...&amount=...&expertId=...
      */
-    @PostMapping("/confirm")
-    @ResponseBody
-    public ResponseEntity<ApiResponse<PaymentResponse>> confirmPayment(
-            @RequestBody @Valid PaymentRequest.ConfirmRequest req,
-            HttpSession session) {
+    @GetMapping("/success")
+    public String paymentSuccess(@RequestParam String paymentKey,
+                                 @RequestParam String orderId,
+                                 @RequestParam Integer amount,
+                                 @RequestParam Long expertId,
+                                 @RequestParam(required = false) String method,
+                                 HttpSession session) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
-        PaymentResponse response = paymentService.completePayment(sessionUser.getId(), req);
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        paymentService.confirmTossPayment(
+                sessionUser.getId(), paymentKey, orderId, amount, expertId, method);
+        return "redirect:/payment/my";
+    }
+
+    /**
+     * PAY-003: 토스 결제 실패 콜백
+     * GET /payment/fail?code=...&message=...
+     */
+    @GetMapping("/fail")
+    public String paymentFail(@RequestParam(required = false) String message, Model model) {
+        model.addAttribute("errorMessage", message);
+        return "payment/fail";
     }
 
     // ===================== PAY-004: 정산 처리 =====================
 
     /**
-     * PAY-004: 프로젝트 완료 확인 후 정산 요청
-     * 의뢰인이 프로젝트 완료 버튼을 누르면 호출 (마이페이지 또는 프로젝트 상세)
-     *
+     * PAY-004: 의뢰인이 프로젝트 완료 버튼 클릭 시 호출
      * POST /payment/{id}/settle
      */
     @PostMapping("/{id}/settle")
@@ -107,9 +113,7 @@ public class PaymentController {
     // ===================== PAY-005: 환불 요청 =====================
 
     /**
-     * PAY-005: 환불 요청
-     * 프로젝트 시작 전(PAID 상태)에만 전액 환불 가능
-     *
+     * PAY-005: 환불 요청 (PAID 상태에서만 가능)
      * POST /payment/{id}/refund
      */
     @PostMapping("/{id}/refund")
@@ -127,9 +131,7 @@ public class PaymentController {
 
     /**
      * PAY-006: 결제/정산 내역 페이지
-     * 의뢰인 → 결제 내역, 전문가 → 정산 내역 구분 렌더링
-     *
-     * GET /payment/my
+     * 의뢰인 → 결제 내역 / 전문가 → 정산 내역
      */
     @GetMapping("/my")
     public String myPayments(HttpSession session, Model model) {
@@ -137,26 +139,20 @@ public class PaymentController {
         Member sessionUser = (Member) session.getAttribute("sessionUser");
 
         if (sessionUser.isExpert()) {
-            List<PaymentResponse> payments = paymentService.getExpertPayments(sessionUser.getId());
-            model.addAttribute("payments", payments);
+            model.addAttribute("payments", paymentService.getExpertPayments(sessionUser.getId()));
             model.addAttribute("isExpert", true);
         } else {
-            List<PaymentResponse> payments = paymentService.getClientPayments(sessionUser.getId());
-            model.addAttribute("payments", payments);
+            model.addAttribute("payments", paymentService.getClientPayments(sessionUser.getId()));
             model.addAttribute("isExpert", false);
         }
 
-        // templates/payment/my.mustache
         return "payment/my";
     }
 
-    // ===================== 타 도메인 연동용 (JSON) =====================
+    // ===================== 타 도메인 연동용 =====================
 
     /**
      * 프로젝트 ID로 결제 단건 조회 (JSON)
-     * 팀장(ProjectController), 보조E(마이페이지) 등에서 호출 가능
-     *
-     * GET /payment/project/{projectId}
      */
     @GetMapping("/project/{projectId}")
     @ResponseBody

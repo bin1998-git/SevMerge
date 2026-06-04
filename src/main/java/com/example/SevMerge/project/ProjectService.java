@@ -28,6 +28,32 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    // 진행중인 프로젝트 개수 조회 (관리자용)
+    @Transactional(readOnly = true)
+    public Long getActiveProjectsCount() {
+        log.info("진행중인 프로젝트 개수 조회 서비스 시작");
+        return projectRepository.countActiveProjects();
+    }
+
+    // 완료한 프로젝트 조회
+    public long getDoneProjectsCount() {
+        log.info("완료된 프로젝트 개수 조회 서비스 시작");
+        Long count = projectRepository.doneProjects();
+        return count == null ? 0L : count;
+    }
+
+    // 이번달에 완료한 프로젝트 개수 조회
+    public long getMonthDoneProjectsCount() {
+        log.info("이번 달에 완료된 프로젝트 개수 조회 서비스 시작");
+        Long count = projectRepository.monthDoneProjects();
+        return count == null ? 0L : count;
+    }
+
+
+
+
+
+
     // 프로젝트 상세조회 서비스
     public ProjectResponeDTO.DetailDTO findProjectById(Long id) {
         log.info("project 상세 서비스 시작");

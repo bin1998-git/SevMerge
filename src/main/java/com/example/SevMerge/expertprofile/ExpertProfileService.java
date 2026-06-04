@@ -56,6 +56,9 @@ public class ExpertProfileService {
   public ExpertProfileResponse getByMemberId(Long memberId) {
     ExpertProfile profile = expertProfileRepository.findByMemberId(memberId)
         .orElseThrow(() -> new NotFoundException("전문가 프로필을 찾을 수 없습니다."));
+
+
+
     return ExpertProfileResponse.from(profile);
   }
 

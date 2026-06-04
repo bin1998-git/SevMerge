@@ -39,7 +39,7 @@
     <div class="detail-inner">
 
         <div class="detail-nav">
-            <a href="/projects">프로젝트</a>
+            <a href="/projects/list">프로젝트</a>
             <span>›</span>
             <span>{{project.title}}</span>
         </div>
@@ -61,7 +61,7 @@
 
         {{#isOwner}}
         <div class="detail-actions">
-            <a href="/projects/{{project.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+            <a href="/projects/{{project.id}}/update-form" class="btn btn-outline btn-sm">수정</a>
             <form action="/projects/{{project.id}}/delete" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-sm btn-danger">삭제</button>
             </form>
@@ -72,7 +72,7 @@
             <div>
                 <div class="detail-description">{{project.description}}</div>
                 <div class="detail-footer">
-                    <a href="/projects" class="btn btn-outline">← 목록으로</a>
+                   <a href="/projects/list" class="btn btn-outline">← 목록으로</a>
                 </div>
             </div>
             <div class="info-card">
