@@ -52,8 +52,8 @@
             <div class="form-group">
                 <label class="form-label">대표 이미지</label>
                 <div class="img-preview" id="imgPreview">🖼️</div>
-                <input type="text" name="imageUrl" class="form-input" placeholder="이미지 URL을 입력하세요 (예: https://...)" />
-                <span class="form-hint">이미지 URL을 입력하면 미리보기가 표시됩니다.</span>
+                <input type="file" name="imageFile" class="form-input" accept="image/*" />
+                <span class="form-hint">이미지 파일을 업로드하세요.</span>
             </div>
 
             <div class="form-group">
@@ -72,10 +72,14 @@
 </section>
 
 <script>
-    document.querySelector('input[name="imageUrl"]').addEventListener('input', function() {
+    document.querySelector('input[name="imageFile"]').addEventListener('change', function() {
         const preview = document.getElementById('imgPreview');
-        if (this.value) {
-            preview.innerHTML = '<img src="' + this.value + '" alt="미리보기" onerror="this.parentElement.innerHTML=\'🖼️\'" />';
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = '<img src="' + e.target.result + '" alt="미리보기" />';
+            };
+            reader.readAsDataURL(this.files[0]);
         } else {
             preview.innerHTML = '🖼️';
         }

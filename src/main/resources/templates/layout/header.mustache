@@ -645,7 +645,13 @@
             <a href="/experts">전문가</a>
             <a href="/boards">게시판</a>
             {{#isLoggedIn}}
+                <!-- 관리자가 아닐때만 마이페이지 노출 -->
+                {{^isAdmin}}
                 <a href="/mypage">마이페이지</a>
+                {{/isAdmin}}
+                {{#isExpert}}
+                    <a href="/portfolios">포트폴리오</a>
+                {{/isExpert}}
             {{/isLoggedIn}}
 
             <!-- 관리자 페이지 -->

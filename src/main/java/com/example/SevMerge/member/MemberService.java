@@ -33,12 +33,22 @@ public class MemberService {
     private final HttpSession session;
 
 
-    // application.yml에 등록된 카카오 환경 변수 가져오기
+    // 카카오 환경 변수
     @Value("${oauth.kakao.client-id}")
     private String kakaoClientId;
 
     @Value("${oauth.kakao.client-secret}")
     private String kakaoClientSecret;
+
+    // 구글 환경 변수
+    @Value("${oauth.google.client-id}")
+    private String googleClientId;
+
+    @Value("${oauth.google.client-secret}")
+    private String googleClientSecret;
+
+    @Value("${oauth.google.redirect-uri}")
+    private String googleRedirectUri;
 
     /**
      * 회원 전체 조회 기능
@@ -51,19 +61,6 @@ public class MemberService {
         return members.stream()
                 .map(MemberResponse::from)
                 .toList();
-    }
-
-    // 이번 달 가입한 신규 회원 수 조회 기능
-    @Transactional(readOnly = true)
-    public long getNewMemberCountThisMonth() {
-        return memberRepository.countNewMembersThisMonth();
-    }
-
-    // 승인 대기 전문가 조회 기능
-    public long getPendingExpertCount() {
-        log.info("승인 대기 전문가 수 조회 서비스 시작");
-        Long count = memberRepository.pendingProjectsCount();
-        return count == null ? 0L : count;
     }
 
     //회원가입
@@ -155,6 +152,19 @@ public class MemberService {
                 .stream().map(MemberResponse::from).toList();
     }
 
+    // 이번 달 가입한 신규 회원 수 조회 기능
+    @Transactional(readOnly = true)
+    public long getNewMemberCountThisMonth() {
+        return memberRepository.countNewMembersThisMonth();
+    }
+
+    // 승인 대기 전문가 조회 기능
+    public long getPendingExpertCount() {
+        log.info("승인 대기 전문가 수 조회 서비스 시작");
+        Long count = memberRepository.pendingProjectsCount();
+        return count == null ? 0L : count;
+    }
+
     @Transactional
     public void approveExpert(Long memberId) {
         Member member = findMemberById(memberId);
@@ -181,8 +191,11 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<MemberResponse> searchMembers(String keyword) {
-        return memberRepository.searchByKeyword(keyword)
-                .stream().map(MemberResponse::from).toList();
+        List<Member> members = memberRepository.searchByKeyword(keyword);
+
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 
     //유틸
@@ -336,5 +349,55 @@ public class MemberService {
         }
 
         return savedMember;
+    }
+
+    // ===================== 구글 WebClient 방식 =====================
+
+    /**
+     * 구글 인가 코드 → 액세스 토큰 → 사용자 정보 조회
+     */
+    public MemberResponse.GoogleProfile getGoogleProfile(String code) {
+        // 1. 액세스 토큰 발급
+        RestTemplate rt1 = new RestTemplate();
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.add("Content-Type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("code",          code);
+        params.add("client_id",     googleClientId);
+        params.add("client_secret", googleClientSecret);
+        params.add("redirect_uri",  googleRedirectUri);
+        params.add("grant_type",    "authorization_code");
+
+        HttpEntity<MultiValueMap<String, String>> req1 = new HttpEntity<>(params, headers1);
+        ResponseEntity<MemberResponse.GoogleToken> tokenRes = rt1.exchange(
+                "https://oauth2.googleapis.com/token",
+                HttpMethod.POST,
+                req1,
+                MemberResponse.GoogleToken.class
+        );
+        String accessToken = tokenRes.getBody().getAccessToken();
+
+        // 2. 사용자 정보 조회
+        RestTemplate rt2 = new RestTemplate();
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.add("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<Void> req2 = new HttpEntity<>(headers2);
+        ResponseEntity<MemberResponse.GoogleProfile> profileRes = rt2.exchange(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                HttpMethod.GET,
+                req2,
+                MemberResponse.GoogleProfile.class
+        );
+        return profileRes.getBody();
+    }
+
+    /**
+     * 구글 sub(고유 ID)로 기존 회원 조회 (없으면 null)
+     */
+    @Transactional(readOnly = true)
+    public Member findGoogleMember(String googleId) {
+        return memberRepository.findByProviderAndProviderId("google", googleId).orElse(null);
     }
 }

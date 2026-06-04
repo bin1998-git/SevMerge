@@ -6,13 +6,21 @@ import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+//@Transactional(readOnly = true)
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
@@ -44,7 +52,18 @@ public class PortfolioService {
 
 
 
-    public void save(PortfolioRequest.SaveDTO saveDTO) {
+    public void save(PortfolioRequest.SaveDTO saveDTO) throws IOException {
+        saveDTO.validate();
+
+        if (saveDTO.getImageFile() != null && !saveDTO.getImageFile().isEmpty()) {
+            // UUID 파일 고유값 이름으로 만들기
+            String fileName = UUID.randomUUID() + "_" + saveDTO.getImageFile().getOriginalFilename();
+
+            Path path = Paths.get("uploads/portfolios/" + fileName); // 파일을 저장할 경로 객체 만듬
+            Files.createDirectories(path.getParent()); // 폴더가 없으면 자동으로 생성
+            Files.write(path,saveDTO.getImageFile().getBytes()); // 파일 내용을 바이트로 읽어서 지정한 경로에 써라
+            saveDTO.setImageUrl("/uploads/portfolios/" + fileName); // save할때 DB에 경로 추가
+        }
 
         Portfolio newPortfolio = Portfolio
                 .builder()
@@ -54,6 +73,7 @@ public class PortfolioService {
                 .description(saveDTO.getDescription())
                 .imageUrl(saveDTO.getImageUrl())
                 .projectUrl(saveDTO.getProjectUrl())
+                .isActive(true)
                 .build();
 
         portfolioRepository.save(newPortfolio);

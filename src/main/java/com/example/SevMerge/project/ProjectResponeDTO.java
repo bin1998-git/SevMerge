@@ -13,6 +13,8 @@ public class ProjectResponeDTO {
     @NoArgsConstructor
     public static class ListDTO {
         private Long id;
+        private Long memberId;
+        private Long selectedExpertId;
         private String memberName;
         private String title;
         private String categoryName;
@@ -31,6 +33,7 @@ public class ProjectResponeDTO {
 
         public ListDTO(Project project) {
             this.id = project.getId();
+            this.memberId = project.getMember().getId();
             this.memberName = project.getMember().getName();
             this.title = project.getTitle();
             this.categoryName = project.getCategory().name();

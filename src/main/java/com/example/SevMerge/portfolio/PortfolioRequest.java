@@ -3,6 +3,7 @@ package com.example.SevMerge.portfolio;
 import com.example.SevMerge.core.exception.BadRequestException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PortfolioRequest {
 
@@ -15,6 +16,7 @@ public class PortfolioRequest {
         private String description; // 설명
         private String imageUrl; // 이미지 링크
         private String projectUrl; // 프로젝트 링크
+        private MultipartFile imageFile; // 이미지 파일
 
         public void validate () {
 
@@ -23,12 +25,6 @@ public class PortfolioRequest {
             }
             if(description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
-            }
-            if(imageUrl == null || imageUrl.trim().isEmpty()) {
-                throw new BadRequestException("이미지를 올려주세요.");
-            }
-            if(projectUrl == null || projectUrl.trim().isEmpty()) {
-                throw new BadRequestException("프로젝트를 올려 주세요.");
             }
 
         }

@@ -31,6 +31,7 @@ public class MemberResponse {
                 .createdAt(member.getCreatedAt())
                 .build();
     }
+
     public boolean isAdmin() {
         return this.role == Role.ADMIN;
     }
@@ -38,6 +39,7 @@ public class MemberResponse {
     public boolean isExpert() {
         return this.role == Role.EXPERT;
     }
+
     /**
      * 액세스 토큰 응답 정보
      */
@@ -83,5 +85,28 @@ public class MemberResponse {
         }
     }
 
+    /**
+     * 구글 액세스 토큰 응답
+     */
+    @Data
+    @NoArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public static class GoogleToken {
+        private String accessToken;
+        private String tokenType;
+        private Integer expiresIn;
+        private String scope;
+    }
 
+    /**
+     * 구글 사용자 정보 응답 (userinfo v3)
+     */
+    @Data
+    @NoArgsConstructor
+    public static class GoogleProfile {
+        private String sub;    // 구글 고유 ID
+        private String name;
+        private String email;
+        private String picture;
+    }
 }
