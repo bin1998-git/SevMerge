@@ -2,6 +2,7 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewRepository;
@@ -34,6 +35,7 @@ public class MemberController {
     private final BoardService boardService;
     private final BidService bidService;
     private final ReviewRepository reviewRepository;
+    private final PortfolioService portfolioService;
 
     // 회원가입
     @GetMapping("/join")
