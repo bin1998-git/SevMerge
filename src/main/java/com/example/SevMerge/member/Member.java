@@ -56,6 +56,11 @@ public class Member {
     @Column(nullable = false, updatable = false)
     private Timestamp createdAt;
 
+    // 소프트 삭제 추가
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
     //연관관계
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
@@ -89,6 +94,7 @@ public class Member {
         this.phone = phone;
         this.role = (role != null) ? role : Role.CLIENT;
         this.status = (status != null) ? status : Status.ACTIVE;
+        this.isDeleted = false; // 소프트삭제
     }
 
     // 기존 편의 메서드 (유지)
@@ -143,4 +149,10 @@ public class Member {
     public boolean isClient() {
         return this.role == Role.CLIENT;
     }
+
+    //소프트삭제
+    public void withdraw() {
+        this.isDeleted = true;
+    }
+
 }
