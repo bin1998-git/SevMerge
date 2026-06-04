@@ -43,8 +43,8 @@
 
         <div class="save-header">
             <h1 class="save-title">리뷰 작성</h1>
-            {{#isExpert}}<p class="save-desc">함께 작업한 의뢰인에 대한 솔직한 리뷰를 남겨주세요.</p>{{/isExpert}}
-            {{^isExpert}}<p class="save-desc">함께 작업한 전문가에 대한 솔직한 리뷰를 남겨주세요.</p>{{/isExpert}}
+            <p class="save-desc">솔직한 리뷰를 남겨주세요.</p>
+
 
         </div>
 
@@ -52,15 +52,15 @@
         <div class="preview-box">
             <div class="preview-avatar">👨‍💻</div>
             <div class="preview-info">
-                <div class="label">리뷰 대상 {{#isExpert}}의뢰인{{/isExpert}} {{^isExpert}}전문가{{/isExpert}}</div>
-                <div class="name">{{member.name}}</div>
-                <div class="sub">{{expertProfile.career}} · 프로젝트: {{!project.title}}</div>
+                <div class="label">리뷰 대상 {{#targeter.isExpert}}전문가{{/targeter.isExpert}}{{^target.isExpert}}의뢰인{{/target.isExpert}}</div>
+                <div class="name">{{targeter.name}}</div>
             </div>
         </div>
 
         <form class="save-form" action="/reviews/save" method="POST">
 
-            <input type="hidden" name="expertProfileId" value="{{expertProfile.id}}" />
+            <input type="hidden" name = "reviewerId" value="{{reviewer.id}}" />
+            <input type="hidden" name = "targetId" value="{{targeter.id}}" />
             <input type="hidden" name="projectId" value="{{!project.id}}" />
             <input type="hidden" name="rating" id="ratingInput" value="0" />
 
@@ -84,7 +84,7 @@
             </div>
 
             <div class="form-btns">
-                <a href="/experts/{{targetId}}" class="btn btn-outline">취소</a>
+                <a href="/mypage" class="btn btn-outline">취소</a>
                 <button type="submit" class="btn btn-primary btn-lg">리뷰 등록</button>
             </div>
 
