@@ -11,4 +11,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio,Long> {
         SELECT po FROM Portfolio po JOIN FETCH po.expertProfile WHERE po.expertProfile.member.id= :expertId AND isActive=true
 """)
     List<PortfolioResponse.ListDTO> findByExpertIdIsActive(Long expertId);
+
 }
+
+
+
+
+
+

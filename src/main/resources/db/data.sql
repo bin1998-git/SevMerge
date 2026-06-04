@@ -9,6 +9,9 @@ VALUES ('expert02@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnp
 
 INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
 VALUES ('admin@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '최관리', '010-0000-0000', 'ADMIN', 'ACTIVE', NOW());
+
+
+
 -- Board 샘플데이터
 -- 1번 샘플 (자유게시판): 프리랜서 전문가의 제안서 작성 노하우 공유
 INSERT INTO board_tb (board_type, title, content, view_count, is_active, member_id, created_at)
@@ -27,6 +30,7 @@ INSERT INTO board_tb (board_type, title, content, view_count, is_active, member_
 VALUES ('NOTICE', '[안내] 안심 대금 에스크로 수수료 정산 방식 변경 공지',
         '안녕하세요. SevMerge 팀입니다. 투명하고 공정한 외주 생태계를 위해 에스크로 안전 결제 시스템을 통한 전문가 정산 프로세스가 고도화되었습니다. 상세한 수수료 계산 방식(10%)은 결제 가이드를 참고해 주세요.',
         310, true, 3, NOW());
+
 
 -- Project 샘플데이터
 -- 1번 샘플: 중고 부품 거래 매칭 웹 및 앱 구축 (category: DEVELOPMENT, project_status: RECRUITING)

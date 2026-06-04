@@ -67,22 +67,22 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-card-label">전체 회원</div>
-                <div class="stat-card-val">{{stats.memberCount}}</div>
-                <div class="stat-card-sub">이번 달 <span class="up">+{{stats.newMemberCount}}</span></div>
+                <div class="stat-card-val">{{stats.size}}</div>
+                <div class="stat-card-sub">이번 달 <span class="up">+{{newMemberCount}}</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-label">전체 프로젝트</div>
-                <div class="stat-card-val">{{stats.projectCount}}</div>
-                <div class="stat-card-sub">진행 중 {{stats.activeProjectCount}}개</div>
+                <div class="stat-card-val">{{projectCount}}</div>
+                <div class="stat-card-sub">진행 중 {{activeProjectCount}}개</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-label">완료 프로젝트</div>
-                <div class="stat-card-val">{{stats.completedCount}}</div>
-                <div class="stat-card-sub">이번 달 <span class="up">+{{stats.newCompletedCount}}</span></div>
+                <div class="stat-card-val">{{completedCount}}</div>
+                <div class="stat-card-sub">이번 달 <span class="up">+{{newCompletedCount}}</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-label">승인 대기 전문가</div>
-                <div class="stat-card-val">{{stats.pendingExpertCount}}</div>
+                <div class="stat-card-val">{{pendingExpertCount}}</div>
                 <div class="stat-card-sub"><a href="/admin/experts" style="color:#2563eb; font-weight:700;">승인하러 가기 →</a></div>
             </div>
         </div>

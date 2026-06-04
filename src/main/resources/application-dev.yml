@@ -52,6 +52,10 @@ server:
       max-file-size: 10MB
       max-request-size: 20MB
 
+toss:
+  client-key: ${TOSS_CLIENT_KEY}
+  secret-key: ${TOSS_SECRET_KEY}
+
 logging:
   level:
     root: INFO

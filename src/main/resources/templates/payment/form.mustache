@@ -45,7 +45,7 @@
             </div>
             <div class="info-row">
                 <span class="info-label">주문번호</span>
-                <span class="info-value">{{merchantUid}}</span>
+                <span class="info-value">{{orderId}}</span>
             </div>
 
             <hr class="divider" />
@@ -56,48 +56,29 @@
             </div>
             <p class="fee-note">※ 플랫폼 수수료 10% 포함 · 에스크로 방식으로 안전하게 보관됩니다</p>
 
-            <button class="pay-btn" id="payBtn">포트원으로 결제하기</button>
+            <button class="pay-btn" id="payBtn">토스페이먼츠로 결제하기</button>
             <a href="javascript:history.back()" class="btn-outline">← 돌아가기</a>
 
-            <p class="pay-notice">결제는 포트원(iamport)을 통해 안전하게 처리됩니다.<br>결제 완료 후 프로젝트가 자동으로 시작됩니다.</p>
+            <p class="pay-notice">결제는 토스페이먼츠를 통해 안전하게 처리됩니다.<br>결제 완료 후 프로젝트가 자동으로 시작됩니다.</p>
         </div>
     </div>
 </section>
 
-<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script src="https://js.tosspayments.com/v1/payment"></script>
 <script>
-    IMP.init('imp00000000'); // 발급받은 가맹점 식별코드로 교체
+    const clientKey = '{{clientKey}}';
+    const tossPayments = TossPayments(clientKey);
 
     document.getElementById('payBtn').addEventListener('click', function () {
-        IMP.request_pay({
-            pg: 'html5_inicis',
-            pay_method: 'card',
-            merchant_uid: '{{merchantUid}}',
-            name: '프로젝트 #{{projectId}} 결제',
+        tossPayments.requestPayment('카드', {
             amount: {{amount}},
-            buyer_id: '{{clientId}}'
-        }, function (rsp) {
-            if (rsp.success) {
-                fetch('/payment/confirm', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        impUid: rsp.imp_uid,
-                        merchantUid: rsp.merchant_uid,
-                        paidAmount: rsp.paid_amount,
-                        expertId: {{expertId}},
-                        payMethod: rsp.pay_method
-                    })
-                })
-                .then(res => res.json())
-                .then(() => {
-                    alert('결제가 완료되었습니다.');
-                    location.href = '/payment/my';
-                })
-                .catch(() => alert('결제 처리 중 오류가 발생했습니다.'));
-            } else {
-                alert('결제 실패: ' + rsp.error_msg);
-            }
+            orderId: '{{orderId}}',
+            orderName: '프로젝트 #{{projectId}} 결제',
+            customerName: '의뢰인',
+            successUrl: window.location.origin
+                        + '/payment/success'
+                        + '?expertId={{expertId}}',
+            failUrl: window.location.origin + '/payment/fail',
         });
     });
 </script>

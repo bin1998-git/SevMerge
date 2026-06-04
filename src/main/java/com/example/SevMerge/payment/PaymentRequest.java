@@ -13,7 +13,6 @@ public class PaymentRequest {
 
     /**
      * PAY-001: 결제 페이지 요청 DTO
-     * 낙찰 처리 후 결제 페이지 진입 시 사용 (팀장 BidController → /payment/form 리다이렉트)
      */
     @Data
     public static class PayRequest {
@@ -30,28 +29,28 @@ public class PaymentRequest {
     }
 
     /**
-     * PAY-003: 포트원 결제 완료 확인 DTO
-     * 포트원 SDK 결제 후 프론트에서 서버로 전달하는 데이터
+     * PAY-003: 토스페이먼츠 결제 승인 DTO
+     * 토스 JS SDK 결제 완료 후 successUrl 쿼리파라미터로 전달되는 값
      *
-     * merchantUid 형식: "sev-project-{projectId}"
+     * orderId 형식: "sev-project-{projectId}"
      */
     @Data
-    public static class ConfirmRequest {
+    public static class TossConfirmRequest {
 
-        @NotBlank(message = "imp_uid는 필수입니다.")
-        private String impUid;          // 포트원 결제 고유번호
+        @NotBlank(message = "paymentKey는 필수입니다.")
+        private String paymentKey;   // 토스 결제 고유키
 
-        @NotBlank(message = "merchant_uid는 필수입니다.")
-        private String merchantUid;     // 주문번호: "sev-project-{projectId}"
+        @NotBlank(message = "orderId는 필수입니다.")
+        private String orderId;      // 주문번호: "sev-project-{projectId}"
 
         @NotNull(message = "결제 금액은 필수입니다.")
         @Positive(message = "결제 금액은 0보다 커야 합니다.")
-        private Integer paidAmount;
+        private Integer amount;
 
         @NotNull(message = "전문가 ID는 필수입니다.")
         private Long expertId;
 
-        private String payMethod;       // 결제 수단 (card, kakaopay 등)
+        private String method;       // 결제 수단 (카드, 간편결제 등)
     }
 
     /**
@@ -59,6 +58,6 @@ public class PaymentRequest {
      */
     @Data
     public static class RefundRequest {
-        private String reason;          // 환불 사유 (선택)
+        private String reason;       // 환불 사유 (선택)
     }
 }

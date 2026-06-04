@@ -57,26 +57,34 @@
         <!-- 프로필 카드 -->
         <div class="profile-card">
             <div class="profile-avatar">👤</div>
-            <div class="profile-name">{{member.name}}</div>
-            <div class="profile-email">{{member.email}}</div>
-            {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
-            <div class="profile-stats">
-                {{^member.isExpert}}
-                    <div class="profile-stat">
-                        <div class="profile-stat-val">0</div>
-                        <div class="profile-stat-lbl">프로젝트</div>
-                    </div>
-                {{/member.isExpert}}
-                {{#member.isExpert}}
-                <div class="profile-stat">
-                    <div class="profile-stat-val">0</div>
-                    <div class="profile-stat-lbl">제안서</div>
+
+            <div class="profile-info">
+                <div class="profile-name">{{member.name}}</div>
+                <div class="profile-email">{{member.email}}</div>
+                {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
+                <div class="profile-stats">
+                    {{^member.isExpert}}
+                        <div class="profile-stat">
+                            <div class="profile-stat-val">{{projectCount}}</div>
+                            <div class="profile-stat-lbl">프로젝트</div>
+                        </div>
+                    {{/member.isExpert}}
+                    {{#member.isExpert}}
+                        <div class="profile-stat">
+                            <div class="profile-stat-val">{{bidCount}}</div>
+                            <div class="profile-stat-lbl">제안서</div>
+                        </div>
+                    {{/member.isExpert}}
                 </div>
-                {{/member.isExpert}}
             </div>
+
+            <!-- 버튼 영역 -->
             <div class="profile-btns">
+                {{#member.isExpert}}
+                    <a href="/portfolios/save" class="profile-btn profile-btn-outline">📁 포트폴리오</a>
+                {{/member.isExpert}}
                 {{^member.isCertified}}
-                <a href="/expert-profile/form" class="profile-btn profile-btn-primary">⭐ 인증 전문가 신청</a>
+                    <a href="/expert-profile/form" class="profile-btn profile-btn-primary">⭐ 인증 전문가 신청</a>
                 {{/member.isCertified}}
                 <a href="/logout" class="profile-btn profile-btn-danger">로그아웃</a>
             </div>
@@ -88,72 +96,101 @@
                 {{^member.isExpert}}
                     <a href="/mypage?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>
                 {{/member.isExpert}}
+
                 {{#member.isExpert}}
-                        <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
+                    <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
+                    <a href="/mypage?tab=portfolio" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내 포트폴리오</a>
                 {{/member.isExpert}}
                 <a href="/mypage?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
                 <a href="/mypage?tab=reviews" class="mypage-tab {{#isReview}}active{{/isReview}}">리뷰</a>
-                <a href="/mypage/update" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
+                <a href="/mypage?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
             </div>
 
             {{! 내 프로젝트 }}
             {{#isProjects}}
-            <div class="my-list">
-                {{#projects}}
-                <a href="/projects/{{id}}" class="my-item">
-                    <div class="my-item-body">
-                        <span class="my-item-cat">{{categoryName}}</span>
-                        <div class="my-item-title">{{title}}</div>
-                        <div class="my-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
-                    </div>
-                    <div class="my-item-right">
-                        <div class="my-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
-                        <span class="my-item-status {{#isOpen}}status-open{{/isOpen}}{{^isOpen}}status-closed{{/isOpen}}">
-                            {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
-                        </span>
-                    </div>
-                </a>
-                {{/projects}}
-                {{^projects}}<div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
-            </div>
+                <div class="my-list">
+                    {{#projects}}
+                        <div class="my-item">
+                            <div class="my-item-body">
+                                <span class="my-item-cat">{{categoryName}}</span>
+                                {{#isOpen}}
+                                    <a href="/bid/list?projectId={{id}}" style="text-decoration:none; color:inherit;">
+                                    <div class="my-item-title">{{title}}</div>
+                                    </a>
+                                {{/isOpen}}
+                                {{^isOpen}}
+                                    <a href="/projects/{{id}}/detail" style="text-decoration:none; color:inherit;">
+                                        <div class="my-item-title">{{title}}</div>
+                                    </a>
+                                {{/isOpen}}
+                                <div class="my-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
+                            </div>
+                            <div class="my-item-right">
+                                <div class="my-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
+                                <span class="my-item-status {{#isOpen}}status-open{{/isOpen}}{{^isOpen}}status-closed{{/isOpen}}">
+                                {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
+                                </span>
+                            </div>
+                        </div>
+                    {{/projects}}
+                    {{^projects}}<div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
+                </div>
             {{/isProjects}}
 
             {{! 내 제안서 }}
             {{#isBids}}
-            <div class="my-list">
-                {{#bids}}
-                <a href="/projects/{{project.id}}" class="my-item">
-                    <div class="my-item-body">
-                        <span class="my-item-cat">{{project.categoryName}}</span>
-                        <div class="my-item-title">{{project.title}}</div>
-                        <div class="my-item-meta">제안일 {{createdAt}}</div>
-                    </div>
-                    <div class="my-item-right">
-                        <div class="my-item-price">{{price}}만원</div>
-                        <span class="my-item-status {{#isSelected}}status-done{{/isSelected}}{{^isSelected}}status-wait{{/isSelected}}">
+                <div class="my-list">
+                    {{#bids}}
+                        <div class="my-item">
+                            <a href="/projects/{{projectId}}" class="my-item-body" style="text-decoration:none; color:inherit;">
+                                <div class="my-item-title">{{projectTitle}}</div>
+                                <div class="my-item-meta">제안일 {{createdAt}}</div>
+                            </a>
+                            <div class="my-item-right">
+                                <div class="my-item-price">{{proposedPrice}}만원</div>
+                                <span class="my-item-status {{#isSelected}}status-done{{/isSelected}}{{^isSelected}}status-wait{{/isSelected}}">
                             {{#isSelected}}낙찰{{/isSelected}}{{^isSelected}}대기중{{/isSelected}}
                         </span>
-                    </div>
-                </a>
-                {{/bids}}
-                {{^bids}}<div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
-            </div>
+                                {{#isSelected}}
+                                    <a href="/reviews/save?memberId={{project.memberId}}" class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
+                                {{/isSelected}}
+                            </div>
+                        </div>
+                    {{/bids}}
+                    {{^bids}}<div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
+                </div>
             {{/isBids}}
+
+            {{! 내 포트폴리오 }}
+            {{#isPortfolio}}
+                <div class="my-list">
+                    {{#portfolios}}
+                        <a href="/portfolios/{{id}}" class="my-item">
+                            <div class="my-item-body">
+                                <div class="my-item-title">{{title}}</div>
+                                <div class="my-item-meta">{{description}}</div>
+                                <div class="my-item-meta">{{createdAt}}</div>
+                            </div>
+                        </a>
+                    {{/portfolios}}
+                    {{^portfolios}}<div class="empty-state">등록한 포트폴리오가 없습니다.</div>{{/portfolios}}
+                </div>
+            {{/isPortfolio}}
 
             {{! 내 게시글 }}
             {{#isBoards}}
-            <div class="my-list">
-                {{#boards}}
-                <a href="/boards/{{id}}" class="my-item">
-                    <div class="my-item-body">
-                        <span class="my-item-cat">{{boardType}}</span>
-                        <div class="my-item-title">{{title}}</div>
-                        <div class="my-item-meta">{{createdAt}} · 조회 0</div>
-                    </div>
-                </a>
-                {{/boards}}
-                {{^boards}}<div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
-            </div>
+                <div class="my-list">
+                    {{#boards}}
+                        <a href="/boards/{{id}}" class="my-item">
+                            <div class="my-item-body">
+                                <span class="my-item-cat">{{boardType}}</span>
+                                <div class="my-item-title">{{title}}</div>
+                                <div class="my-item-meta">{{createdAt}} · 조회 {{viewCount}}</div>
+                            </div>
+                        </a>
+                    {{/boards}}
+                    {{^boards}}<div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
+                </div>
             {{/isBoards}}
 
             {{! 내 리뷰 }}
@@ -163,8 +200,12 @@
                         <a href="/reviews/{{id}}" class="my-item">
                             <div class="my-item-body">
                                 <span class="my-item-cat">리뷰</span>
-                                <div class="my-item-title">{{expertProfile.member.name}} 전문가</div>
-                                <div class="my-item-meta">{{createdAt}} · ★ {{countStar}}</div>
+                                <div class="my-item-title">{{member.name}} 님의 리뷰</div>
+                                <div class="my-item-meta">{{content}}</div>
+                                <div class="my-item-meta">{{createdAt}}</div>
+                            </div>
+                            <div class="my-item-right">
+                                <span class="my-item-status status-done">★ {{countStart}}</span>
                             </div>
                         </a>
                     {{/reviews}}
@@ -174,27 +215,27 @@
 
             {{! 정보 수정 }}
             {{#isEdit}}
-            <form class="edit-form" action="/mypage/update" method="POST">
-                <div class="form-group">
-                    <label class="form-label">이름</label>
-                    <input type="text" name="name" class="form-input" value="{{member.name}}" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">이메일</label>
-                    <input type="email" name="email" class="form-input" value="{{member.email}}" disabled />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">새 비밀번호</label>
-                    <input type="password" name="newPassword" class="form-input" placeholder="변경할 경우만 입력" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">새 비밀번호 확인</label>
-                    <input type="password" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력" />
-                </div>
-                <div class="form-btns">
-                    <button type="submit" class="btn btn-primary">수정완료</button>
-                </div>
-            </form>
+                <form class="edit-form" action="/mypage/update" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">이름</label>
+                        <input type="text" name="name" class="form-input" value="{{member.name}}" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">이메일</label>
+                        <input type="email" class="form-input" value="{{member.email}}" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">새 비밀번호</label>
+                        <input type="password" name="newPassword" class="form-input" placeholder="변경할 경우만 입력" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">새 비밀번호 확인</label>
+                        <input type="password" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력" />
+                    </div>
+                    <div class="form-btns">
+                        <button type="submit" class="btn btn-primary">수정완료</button>
+                    </div>
+                </form>
             {{/isEdit}}
         </div>
 
