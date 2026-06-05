@@ -26,28 +26,37 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
     private final ExpertProfileService expertProfileService;
 
+
+    // 리스트
     @GetMapping("/portfolios")
     public String showPortfolios(HttpSession session,
                                  Model model) {
 
-        ExpertProfile expert = (ExpertProfile) session.getAttribute(Define.SESSION_USER);
+        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(member.getId());
+        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(member.getId());
 
-        List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expert.getMember().getId());
         model.addAttribute("portfolios", portfolios);
+        model.addAttribute("expertProfile", expertProfile);
+        model.addAttribute("portfolioCount",portfolios.isEmpty() ? 0 : portfolios.get(0).getPortfolioCount());
+        model.addAttribute("isOwner", true);
+
         return "portfolio/portfolio-list";
     }
+
 
     @GetMapping("/portfolios/{portfolioId}")
     public String detailPortfolio(@PathVariable(name = "portfolioId") Long portfolioId,
                                   HttpSession session,
                                   Model model) {
 
-        ExpertProfile expert = (ExpertProfile) session.getAttribute(Define.SESSION_USER);
+        Member expert = (Member) session.getAttribute(Define.SESSION_USER);
 
         PortfolioResponse.DetailDTO detailPortfolio = portfolioService.findPortfolio(portfolioId);
 
         model.addAttribute("expert", expert);
         model.addAttribute("portfolio", detailPortfolio);
+        model.addAttribute("isOwner",expert != null && expert.getId().equals(detailPortfolio.getExpertId()));
 
         return "portfolio/portfolio-detail";
     }
@@ -67,31 +76,25 @@ public class PortfolioController {
     @PostMapping("/portfolios/save")
     public String savePortfolios(PortfolioRequest.SaveDTO saveDTO) {
 
-        try {
             portfolioService.save(saveDTO);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         return "redirect:/portfolios";
     }
 
 
-
-
     @GetMapping("/portfolios/{portfolioId}/edit")
-    public String updatePortfoliosPage(@PathVariable(name = "portfolioId") Long portfolioId , Model model) {
+    public String updatePortfoliosPage(@PathVariable(name = "portfolioId") Long portfolioId, Model model) {
 
         PortfolioResponse.UpdateDTO portfolio = portfolioService.updatePage(portfolioId);
 
-        model.addAttribute("portfolio",portfolio);
+        model.addAttribute("portfolio", portfolio);
         return "portfolio/portfolio-update";
     }
 
-    @PostMapping("/portfolios/{portfolioId}/update" )
-    public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId,PortfolioRequest.UpdateDTO updateDTO) {
+    @PostMapping("/portfolios/{portfolioId}/update")
+    public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, PortfolioRequest.UpdateDTO updateDTO) {
 
-        portfolioService.update(portfolioId,updateDTO);
+        portfolioService.update(portfolioId, updateDTO);
 
         return "redirect:/portfolios";
     }

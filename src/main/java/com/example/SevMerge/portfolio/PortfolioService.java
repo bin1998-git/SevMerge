@@ -20,25 +20,31 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-//@Transactional(readOnly = true)
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
     private final ExpertProfileRepository expertProfileRepository;
 
+
+    // 포트폴리오 리스트
     public List<PortfolioResponse.ListDTO> findByMemberId(Long expertId) {
 
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
                 () -> new NotFoundException("전문가를 찾을 수 없습니다.")
         );
         // 전문가 아이디로 찾아 해당 전문가 포트 폴리오
-        return portfolioRepository.findByExpertIdIsActive(expertEntity.getId());
+        List<Portfolio> portfolios = portfolioRepository.findByExpertIdIsActive(expertEntity.getId());
+
+        Long count = portfolioRepository.countPortfolioByMemberId(expertEntity.getId());
+
+        return portfolios.stream().map(portfolio -> new PortfolioResponse.ListDTO(portfolio,count)).toList();
     }
 
 
 
-
+    // 포트폴리오 아이디로 포트플리오 찾고 포트폴리오 DetailDTO 반환
+    @Transactional
     public PortfolioResponse.DetailDTO findPortfolio(Long portfolioId) {
 
         Portfolio portfolioEntity = portfolioRepository.findById(portfolioId).orElseThrow(
@@ -51,24 +57,15 @@ public class PortfolioService {
 
 
 
+    @Transactional
+    public void save(PortfolioRequest.SaveDTO saveDTO)  {
 
-    public void save(PortfolioRequest.SaveDTO saveDTO) throws IOException {
         saveDTO.validate();
-
-        if (saveDTO.getImageFile() != null && !saveDTO.getImageFile().isEmpty()) {
-            // UUID 파일 고유값 이름으로 만들기
-            String fileName = UUID.randomUUID() + "_" + saveDTO.getImageFile().getOriginalFilename();
-
-            Path path = Paths.get("uploads/portfolios/" + fileName); // 파일을 저장할 경로 객체 만듬
-            Files.createDirectories(path.getParent()); // 폴더가 없으면 자동으로 생성
-            Files.write(path,saveDTO.getImageFile().getBytes()); // 파일 내용을 바이트로 읽어서 지정한 경로에 써라
-            saveDTO.setImageUrl("/uploads/portfolios/" + fileName); // save할때 DB에 경로 추가
-        }
-
+        System.out.println("saveDTO: "+saveDTO);
         Portfolio newPortfolio = Portfolio
                 .builder()
                 .expertProfile(expertProfileRepository
-                        .findById(saveDTO.getExpertId()).orElseThrow(() -> new BadRequestException("전문가를 찾지못했습니다.")))
+                        .findByMemberId(saveDTO.getExpertId()).orElseThrow(() -> new BadRequestException("전문가를 찾지못했습니다.")))
                 .title(saveDTO.getTitle())
                 .description(saveDTO.getDescription())
                 .imageUrl(saveDTO.getImageUrl())
