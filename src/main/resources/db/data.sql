@@ -40,7 +40,7 @@ VALUES (1, '스타트업 전용 중고 부품 거래 매칭 플랫폼 구축', '
 
 INSERT INTO project_tb (member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, view_count, is_deleted, created_at)
 VALUES (4, '제조업 불량품 검출용 AI...', 'APP',
-        '공장 라인...', 8000000, 15000000, DATE_ADD(NOW(), INTERVAL 30 DAY), 'ALL', 'OPEN', 0, false, NOW());
+        '공장 라인...', 8000000, 15000000, DATE_ADD(NOW(), INTERVAL 30 DAY), 'CERTIFIED_ONLY', 'OPEN', 0, false, NOW());
 
 INSERT INTO project_tb (member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, view_count, is_deleted, created_at)
 VALUES (1, '기업 리브랜딩...', 'APP',

@@ -42,6 +42,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
         """)
     Long monthDoneProjects();
 
+    // 입찰조회
+    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.bidFilter = :bidFilter AND p.isDeleted = false ORDER BY p.createdAt DESC")
+    List<Project> findByBidFilter(@Param("bidFilter") BidFilter bidFilter);
+
 
     // 프로젝트 카테고리별 조회
     @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.category = :category AND p.isDeleted = false ORDER BY p.createdAt DESC")

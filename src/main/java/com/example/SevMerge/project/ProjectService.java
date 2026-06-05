@@ -99,6 +99,16 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    // 입찰 필터 조회
+    public List<ProjectResponeDTO.ListDTO> findByBidFilter(String bidFilter) {
+        log.info("findByBidFilter 서비스 시작 - bidFilter: {}", bidFilter);
+        List<Project> projectList = projectRepository.findByBidFilter(BidFilter.valueOf(bidFilter));
+        return projectList.stream()
+                .map(ProjectResponeDTO.ListDTO::new)
+                .collect(Collectors.toList());
+
+    }
+
     // 키워드 검색
     public List<ProjectResponeDTO.ListDTO> findByKeyword(String keyword) {
         log.info("project 키워드 검색 서비스 시작");
@@ -122,8 +132,12 @@ public class ProjectService {
                 .budgetMax(req.getBudgetMax())
                 .deadline(Timestamp.valueOf(req.getDeadline() + " 00:00:00"))
                 .build();
+        log.info("deadline 값: {}", req.getDeadline());
         projectRepository.save(project);
     }
+
+
+
 
     // 프로젝트 수정
     @Transactional

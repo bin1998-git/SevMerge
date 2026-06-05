@@ -45,6 +45,7 @@ public class ProjectController {
                        @RequestParam(required = false) String keyword,
                        @RequestParam(required = false) String category,
                        @RequestParam(required = false) String statusFilter,
+                       @RequestParam(required = false) String bidFilter,
                        HttpSession session) {
         log.info("project 목록 조회 요청 - category: {}, statusFilter: {}", category, statusFilter);
 
@@ -52,19 +53,22 @@ public class ProjectController {
 
         Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
 
+        log.info("bidFilter 값: {}", bidFilter);
+        log.info("keyword: {}, category: {}, statusFilter: {}", keyword, category, statusFilter);
+
+
         // 조건문 분기 처리 ( 낙찰 완료 조건 추가)
         if (keyword != null && !keyword.isBlank()) {
             projects = projectService.findByKeyword(keyword);
         } else if (statusFilter != null && "CLOSED".equals(statusFilter)) {
-            // 낙찰완료 건만 조회
-            // (서비스단에 이 메서드가 없다면 생성하시거나 동적 쿼리를 쓰셔야 합니다!)
             projects = projectService.findByStatusClosed();
+        } else if (bidFilter != null && !bidFilter.isBlank()) {  // ← 이 부분이 있나요?
+            projects = projectService.findByBidFilter(bidFilter);
         } else if (category != null && !category.isBlank()) {
             projects = projectService.findByCategory(category);
         } else {
             projects = projectService.findAllProjects();
         }
-
         if (sessionUser != null) {
             model.addAttribute("sessionUser", sessionUser);
         }
@@ -75,7 +79,7 @@ public class ProjectController {
 
         // 3. 카테고리 및 필터 탭 활성화 로직 업데이트
         // 다른 필터나 검색어가 없고, 낙찰완료 필터가 아닐떄 활성화
-        model.addAttribute("isAll", category == null && keyword == null && statusFilter == null);
+        model.addAttribute("isAll", category == null && keyword == null && statusFilter == null && bidFilter == null);
 
         // 낙찰완료건
         model.addAttribute("isClosedFilter", "CLOSED".equals(statusFilter));
@@ -86,6 +90,7 @@ public class ProjectController {
         model.addAttribute("isVideo", "VIDEO".equals(category));
         model.addAttribute("isEtc", "ETC".equals(category));
 
+        log.info("bidFilter 값: {}", bidFilter);
         return "project/project-list";
     }
     // 프로젝트 상세조회(id)
@@ -139,7 +144,19 @@ public class ProjectController {
     @GetMapping("/projects/search")
     public String search(@RequestParam String keyword, Model model) {
         log.info("키워드별 검색 요청");
-        model.addAttribute("projects", projectService.findByKeyword(keyword));
+        List<ProjectResponeDTO.ListDTO> projects = projectService.findByKeyword(keyword);
+        model.addAttribute("projects", projects);
+        model.addAttribute("totalCount", projects.size());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("isAll", false);
+        model.addAttribute("isWeb", false);
+        model.addAttribute("isApp", false);
+        model.addAttribute("isUiux", false);
+        model.addAttribute("isData", false);
+        model.addAttribute("isVideo", false);
+        model.addAttribute("isEtc", false);
+        model.addAttribute("isClosedFilter", false);
+        model.addAttribute("isCertifiedOnly", false);
         return "project/project-list";
     }
 
