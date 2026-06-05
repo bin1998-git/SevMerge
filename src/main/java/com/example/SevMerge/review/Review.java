@@ -11,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 // 의뢰인도 전무가를 평가 할수있고 전문가도 의뢰인 평가
 
@@ -53,4 +54,5 @@ public class Review {
     public void softDelete() {
         this.isDelete = true;
     }
+
 }

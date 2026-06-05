@@ -102,19 +102,14 @@ public class ReviewService {
 
     }
 
-    public Long findByMemberId(Long memberId) {
-
-        Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("사용자를 찾을 수 없습니다.")
-        );
-
-        return member.getId();
-    }
-
-    public List<ReviewResponse.ReviewListDTO> findMyReviews(Long memberId) {
-        return reviewRepository.findMyReviews(memberId)
+    public List<ReviewResponse.ReviewListDTO> findMyReviews(Long targetId) {
+        return reviewRepository.findMyReviews(targetId)
                 .stream()
                 .map(ReviewResponse.ReviewListDTO::new)
                 .toList();
+    }
+
+    public Double avgRating(Long targetId) {
+        return reviewRepository.avgRating(targetId);
     }
 }

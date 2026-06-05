@@ -1,6 +1,9 @@
 package com.example.SevMerge.expertprofile;
 
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.review.Review;
+import com.example.SevMerge.review.ReviewResponse;
+import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * ExpertProfile 뷰 컨트롤러 (Mustache 렌더링 전용)
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ExpertProfileViewController {
 
     private final ExpertProfileService expertProfileService;
+    private final ReviewService reviewService;
 
     /**
      * 전문가 목록 페이지
@@ -51,6 +57,10 @@ public class ExpertProfileViewController {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
+        List<ReviewResponse.ReviewListDTO> reviews = reviewService.findMyReviews(memberId);
+
+        model.addAttribute("avgRating", String.format("%.1f", reviewService.avgRating(memberId)));
+        model.addAttribute("reviews",reviews);
         model.addAttribute("isOwner", isOwner);
 
         return "expertProfile/expertProfile-detail";
