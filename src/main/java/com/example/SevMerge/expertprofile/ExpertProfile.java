@@ -36,6 +36,9 @@ public class ExpertProfile {
 
     private String speciality;
 
+    @Column(nullable = true)
+    private String githubUrl;
+
     @Column(nullable = false, precision = 3, scale = 2, columnDefinition = "DECIMAL(3,2) DEFAULT 0.00")
     private BigDecimal avgRating;
 
