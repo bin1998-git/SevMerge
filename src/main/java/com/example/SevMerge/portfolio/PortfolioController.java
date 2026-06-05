@@ -7,6 +7,7 @@ import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
     private final ExpertProfileService expertProfileService;
-
+    private final MemberService memberService;
 
     // 리스트
     @GetMapping("/portfolios")
@@ -35,11 +36,12 @@ public class PortfolioController {
         Member member = (Member) session.getAttribute(Define.SESSION_USER);
         List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId);
         ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId);
+        Member memberEntity = memberService.findMemberById(expertId);
 
         model.addAttribute("portfolios", portfolios);
         model.addAttribute("expertProfile", expertProfile);
         model.addAttribute("portfolioCount",portfolios.isEmpty() ? 0 : portfolios.get(0).getPortfolioCount());
-        model.addAttribute("isOwner", true);
+        model.addAttribute("isOwner", member != null && member.getId().equals(expertId));
 
         return "portfolio/portfolio-list";
     }
@@ -92,20 +94,22 @@ public class PortfolioController {
     }
 
     @PostMapping("/portfolios/{portfolioId}/update")
-    public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, PortfolioRequest.UpdateDTO updateDTO) {
+    public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,
+    @RequestParam(name = "expertId") Long expertId
+    ) {
 
         portfolioService.update(portfolioId, updateDTO);
 
-        return "redirect:/portfolios";
+        return "redirect:/portfolios?expertId=" + expertId;
     }
 
 
     @PostMapping("/portfolios/{portfolioId}/delete")
-    public String deletePortfolios(@PathVariable(name = "portfolioId") Long portfolioId) {
+    public String deletePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, @RequestParam(name = "expertId") Long expertId) {
 
         portfolioService.delete(portfolioId);
 
-        return "redirect:/portfolios";
+        return "redirect:/portfolios?expertId=" + expertId;
     }
 
 }

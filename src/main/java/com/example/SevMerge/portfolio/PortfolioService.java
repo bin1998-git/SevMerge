@@ -77,7 +77,7 @@ public class PortfolioService {
 
     }
 
-
+    @Transactional
     public PortfolioResponse.UpdateDTO updatePage(Long portfolioId) {
 
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
