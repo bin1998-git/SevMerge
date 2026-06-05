@@ -11,14 +11,20 @@ public class ReviewResponse {
     public static class ReviewListDTO {
         private Long id;
         private String targetName;
+        private String reviewerName;
         private String content;
+        private String star;
+        private Integer countStar;
         private Timestamp createdAt;
 
         public ReviewListDTO(Review review) {
             this.id = review.getId();
             this.targetName = review.getTargeter().getName();
+            this.reviewerName = review.getReviewer().getName();
             this.content = review.getContent();
             this.createdAt = review.getCreatedAt();
+            this.countStar = review.getCountStar();
+            this.star = ("★".repeat(review.getCountStar()) + "☆".repeat(5-review.getCountStar()));
         }
     }
 

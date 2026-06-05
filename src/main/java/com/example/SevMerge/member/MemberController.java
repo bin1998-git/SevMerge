@@ -104,7 +104,7 @@ public class MemberController {
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {
-            model.addAttribute("reviews", reviewRepository.findMyReviews(loginMember.getId()));
+            model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
             model.addAttribute("bids", bidService.findMyBids(loginMember));
         } else if (tab.equals("edit")) {

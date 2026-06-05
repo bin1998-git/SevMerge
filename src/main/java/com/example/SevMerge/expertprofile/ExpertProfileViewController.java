@@ -3,6 +3,7 @@ package com.example.SevMerge.expertprofile;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.portfolio.PortfolioResponse;
 import com.example.SevMerge.portfolio.PortfolioService;
+import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewResponse;
 import com.example.SevMerge.review.ReviewService;
@@ -35,6 +36,7 @@ public class ExpertProfileViewController {
     private final ExpertProfileService expertProfileService;
     private final PortfolioService portfolioService;
     private final ReviewService reviewService;
+    private final ProjectService projectService;
 
     /**
      * 전문가 목록 페이지
@@ -44,6 +46,7 @@ public class ExpertProfileViewController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("expertProfiles", expertProfileService.getAll());
+        model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         return "expertProfile/expertProfile-list";
     }
 
@@ -62,10 +65,10 @@ public class ExpertProfileViewController {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
-        List<ReviewResponse.ReviewListDTO> reviews = reviewService.findMyReviews(memberId);
 
         model.addAttribute("avgRating", String.format("%.1f", reviewService.avgRating(memberId)));
-        model.addAttribute("reviews",reviews);
+        model.addAttribute("reviews",reviewService.findMyReviews(memberId));
+        model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         model.addAttribute("isOwner", isOwner);
 
         return "expertProfile/expertProfile-detail";
