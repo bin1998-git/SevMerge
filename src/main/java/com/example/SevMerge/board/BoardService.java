@@ -109,7 +109,7 @@ public class BoardService {
             throw new UnauthorizedException("삭제 권한이 없습니다.");
         }
 
-        boardEntity.setIsActive(false);
+        boardEntity.softDelete();
 
     }
 }

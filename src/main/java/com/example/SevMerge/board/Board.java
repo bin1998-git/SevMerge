@@ -58,4 +58,8 @@ public class Board {
         this.content = updateBoardDTO.getContent();
     }
 
+    public void softDelete() {
+        this.isActive = false;
+    }
+
 }
