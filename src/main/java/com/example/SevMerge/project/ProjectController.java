@@ -1,5 +1,6 @@
 package com.example.SevMerge.project;
 
+import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final BidService bidService;
 
     // 프로젝트 등록 폼
     @GetMapping("/projects/save-form")
@@ -95,12 +97,14 @@ public class ProjectController {
     }
     // 프로젝트 상세조회(id)
     @GetMapping("/projects/{id}/detail")
-    public String detail(@PathVariable Long id, Model model, HttpSession session) {
+    public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
+        projectService.increase(id);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
         model.addAttribute("project", project);
         // 로그인한 사용자가 프로젝트 작성자인지 확인
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(project.getMemberId());
+        model.addAttribute("bidCount",bidService.findByProjectId(id,sessionUser).size());
         model.addAttribute("isOwner", isOwner);
         return "project/project-detail";
     }

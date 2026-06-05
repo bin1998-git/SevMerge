@@ -180,4 +180,9 @@ public class ProjectService {
         }
         project.delete();
     }
+
+    @Transactional
+    public void increase(Long id) {
+        projectRepository.increaseCount(id);
+    }
 }
