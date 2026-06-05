@@ -44,10 +44,13 @@ public class ProjectController {
     public String list(Model model,
                        @RequestParam(required = false) String keyword,
                        @RequestParam(required = false) String category,
-                       @RequestParam(required = false) String statusFilter) {
+                       @RequestParam(required = false) String statusFilter,
+                       HttpSession session) {
         log.info("project 목록 조회 요청 - category: {}, statusFilter: {}", category, statusFilter);
 
         List<ProjectResponeDTO.ListDTO> projects;
+
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
 
         // 조건문 분기 처리 ( 낙찰 완료 조건 추가)
         if (keyword != null && !keyword.isBlank()) {
@@ -60,6 +63,10 @@ public class ProjectController {
             projects = projectService.findByCategory(category);
         } else {
             projects = projectService.findAllProjects();
+        }
+
+        if (sessionUser != null) {
+            model.addAttribute("sessionUser", sessionUser);
         }
 
         model.addAttribute("projects", projects);
