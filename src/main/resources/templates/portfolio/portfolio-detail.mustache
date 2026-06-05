@@ -70,6 +70,7 @@
                     <div class="owner-btns">
                         <a href="/portfolios/{{portfolio.id}}/edit" class="btn btn-outline btn-sm">수정</a>
                         <form action="/portfolios/{{portfolio.id}}/delete" method="POST" style="display:inline;">
+                            <input type="hidden" name="expertId" value="{{portfolio.expertId}}" />
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                         </form>
                     </div>

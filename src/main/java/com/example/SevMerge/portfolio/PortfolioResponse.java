@@ -67,6 +67,7 @@ public class PortfolioResponse {
         private String description;
         private String imageUrl;
         private String projectUrl;
+        private Long expertId; // 전문가의멤버의 아이디
 
         public UpdateDTO(Portfolio portfolio) {
             this.id = portfolio.getId();
@@ -74,6 +75,7 @@ public class PortfolioResponse {
             this.description = portfolio.getDescription();
             this.imageUrl = portfolio.getImageUrl();
             this.projectUrl = portfolio.getProjectUrl();
+            this.expertId = portfolio.getExpertProfile().getMember().getId();
         }
     }
 }
