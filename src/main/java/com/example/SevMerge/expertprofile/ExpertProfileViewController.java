@@ -3,6 +3,10 @@ package com.example.SevMerge.expertprofile;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.portfolio.PortfolioResponse;
 import com.example.SevMerge.portfolio.PortfolioService;
+import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.review.Review;
+import com.example.SevMerge.review.ReviewResponse;
+import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * ExpertProfile 뷰 컨트롤러 (Mustache 렌더링 전용)
@@ -29,6 +35,8 @@ public class ExpertProfileViewController {
 
     private final ExpertProfileService expertProfileService;
     private final PortfolioService portfolioService;
+    private final ReviewService reviewService;
+    private final ProjectService projectService;
 
     /**
      * 전문가 목록 페이지
@@ -38,6 +46,7 @@ public class ExpertProfileViewController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("expertProfiles", expertProfileService.getAll());
+        model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         return "expertProfile/expertProfile-list";
     }
 
@@ -56,8 +65,12 @@ public class ExpertProfileViewController {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
+
+        model.addAttribute("avgRating", String.format("%.1f", reviewService.avgRating(memberId)));
+        model.addAttribute("reviews",reviewService.findMyReviews(memberId));
+        model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         model.addAttribute("isOwner", isOwner);
-        System.out.println(profile);
+
         return "expertProfile/expertProfile-detail";
     }
 

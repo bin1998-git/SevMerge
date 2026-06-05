@@ -112,4 +112,9 @@ public class BoardService {
         boardEntity.softDelete();
 
     }
+
+    @Transactional
+    public void increaseViewCount(Long boardId) {
+        boardRepository.increaseViewCount(boardId);
+    }
 }

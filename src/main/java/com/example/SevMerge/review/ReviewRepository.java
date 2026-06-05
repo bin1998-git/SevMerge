@@ -16,13 +16,13 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
     // Repository
     @Query("SELECT r FROM Review r JOIN FETCH r.reviewer WHERE r.targeter.id = :memberId")
     List<Review> findMyReviews(@Param("memberId") Long memberId);
-//
-//    // 평균값 계산
-//    @Query("""
-//        SELECT AVG(r.countStar) FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
-//    """)
-//     Optional<BigDecimal> avgRating(@Param("expertId") Long expertId);
-//
+
+    // 평균값 계산
+    @Query("""
+        SELECT AVG(r.countStar) FROM Review r WHERE r.targeter.id = :targetId
+    """)
+     Double avgRating(@Param("targetId") Long targetId);
+
 //
 //    // 리뷰 카운트 레파지토리
 //    @Query("""

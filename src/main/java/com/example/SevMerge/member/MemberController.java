@@ -2,6 +2,7 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
@@ -75,7 +76,7 @@ public class MemberController {
     @GetMapping("/mypage")
     public String mypage(@RequestParam(required = false) String tab,
                          HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute("sessionUser");
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
         if (loginMember == null) {
             return "redirect:/login";
@@ -103,7 +104,7 @@ public class MemberController {
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {
-            model.addAttribute("reviews", reviewRepository.findMyReviews(loginMember.getId()));
+            model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
         } else if (tab.equals("bids")) {
             model.addAttribute("bids", bidService.findMyBids(loginMember));
         } else if (tab.equals("edit")) {
@@ -119,7 +120,7 @@ public class MemberController {
     // 회원 정보 수정 페이지 이동 (GET)
     @GetMapping("/mypage/update") //
     public String updateMemberPage(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute("sessionUser");
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) {
             return "redirect:/login";
         }
@@ -140,7 +141,7 @@ public class MemberController {
         memberService.updateMyInfo(loginMember.getId(), request);
 
         Member updatedMember = memberService.findMemberById(loginMember.getId());
-        session.setAttribute("sessionUser", updatedMember);
+        session.setAttribute(Define.SESSION_USER, updatedMember);
 
         log.info("회원 정보 수정 완료 - memberId={}", loginMember.getId());
         return "redirect:/mypage";
@@ -215,7 +216,7 @@ public class MemberController {
         Member existing = memberService.findGoogleMember(googleId);
 
         if (existing != null) {
-            session.setAttribute("sessionUser", existing);
+            session.setAttribute(Define.SESSION_USER, existing);
             log.info("구글 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
         }
@@ -224,7 +225,7 @@ public class MemberController {
         session.setAttribute("googleId",       googleId);
         session.setAttribute("googleNickname", nickname);
         session.setAttribute("googleEmail",    email);
-        return "redirect:/kakao-role";
+        return "redirect:/social-role";
     }
 
     // 카카오 콜백: 기존 회원이면 바로 로그인, 신규면 역할 선택 화면으로
@@ -240,7 +241,7 @@ public class MemberController {
 
         if (existing != null) {
             // 기존 회원 → 바로 로그인
-            session.setAttribute("sessionUser", existing);
+            session.setAttribute(Define.SESSION_USER, existing);
             log.info("카카오 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
         }
@@ -248,22 +249,22 @@ public class MemberController {
         // 신규 회원 → 카카오 정보 잠깐 세션에 보관하고 역할 선택 화면으로
         session.setAttribute("kakaoId", kakaoId);
         session.setAttribute("kakaoNickname", nickname);
-        return "redirect:/kakao-role";
+        return "redirect:/social-role";
     }
 
     // 역할 선택 화면
-    @GetMapping("/kakao-role")
-    public String kakaoRoleForm(HttpSession session) {
+    @GetMapping("/social-role")
+    public String socialRoleForm(HttpSession session) {
         // 카카오 ID도 없고 구글 ID도 세션에 없으면 비정상 접근으로 차단
         if (session.getAttribute("kakaoId") == null && session.getAttribute("googleId") == null) {
             return "redirect:/login";
         }
-        return "member/kakao-role";
+        return "member/social-role";
     }
 
     // 3. 역할 선택 후 가입 처리 (카카오 + 구글 통합 분기 완료)
-    @PostMapping("/kakao-join")
-    public String kakaoJoin(@RequestParam String role, HttpSession session) {
+    @PostMapping("/social-join")
+    public String socialJoin(@RequestParam String role, HttpSession session) {
         Long kakaoId = (Long) session.getAttribute("kakaoId");
         String googleId = (String) session.getAttribute("googleId");
 
@@ -296,7 +297,7 @@ public class MemberController {
         }
         if (member != null) {
             Member freshMember = memberService.findMemberById(member.getId());
-            session.setAttribute("sessionUser", freshMember);
+            session.setAttribute(Define.SESSION_USER, freshMember);
             log.info("소셜 회원가입 최종 완료 -> 온전한 세션 주입 완료 - memberId={}", freshMember.getId());
         }
 

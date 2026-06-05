@@ -33,4 +33,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         """)
     Long pendingProjectsCount();
 
+    // 소프트삭제
+    Optional<Member> findByEmailAndIsDeletedFalse(String email);
+
 }

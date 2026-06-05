@@ -32,8 +32,6 @@ public class MemberService {
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
-//    문자 메세지 보내는 기능 DI
-//    private final SolApiService solApiService;
 
 
     // 카카오 환경 변수
@@ -66,10 +64,13 @@ public class MemberService {
                 .toList();
     }
 
+
     //회원가입
     @Transactional
     public void join(MemberRequest.Join request) {
 
+        log.info("세션에서 꺼낸 verified_email: {}", session.getAttribute("verified_email"));
+        log.info("요청 이메일: {}", request.getEmail());
         String verifiedEmail = (String) session.getAttribute("verified_email");
         if (verifiedEmail == null || !verifiedEmail.equals(request.getEmail())) {
             throw new BadRequestException("이메일 인증이 완료되지 않았습니다.");
@@ -116,8 +117,8 @@ public class MemberService {
     //로그인 / 로그아웃
     @Transactional(readOnly = true)
     public void login(MemberRequest.Login request, HttpSession session) {
-        Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword()))
             throw new BadRequestException("비밀번호가 올바르지 않습니다.");
@@ -131,6 +132,18 @@ public class MemberService {
 
     public void logout(HttpSession session) {
         session.invalidate();
+    }
+
+
+    // 소프트삭제 메서드
+    @Transactional
+    public void withdrawMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        //엔티티 메서드를 호출해 상태만 true 변경.
+        member.withdraw();
+        log.info("회원 탈퇴 완료 (Dirty Checking으로 DB 반영) - memberId={}", memberId);
     }
 
     // 마이페이지
@@ -199,9 +212,10 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<MemberResponse> searchMembers(String keyword) {
-        List<Member> members = memberRepository.searchByKeyword(keyword);
-
-        return members.stream()
+        //  탈퇴하지 않은 유저만 필터링 추가
+        return memberRepository.searchByKeyword(keyword)
+                .stream()
+                .filter(m -> !m.isDeleted())
                 .map(MemberResponse::from)
                 .toList();
     }
@@ -209,8 +223,14 @@ public class MemberService {
     //유틸
     @Transactional(readOnly = true) //단독수행
     public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+
+        // 탈퇴자 조회시 예외 처리
+        if (member.isDeleted()) {
+            throw new NotFoundException("탈퇴한 회원입니다.");
+        }
+        return member;
     }
 
     // --------------------------------------------------------------------------------------
@@ -261,9 +281,7 @@ public class MemberService {
                 request2,
                 MemberResponse.KakaoProfile.class
         );
-        MemberResponse.KakaoProfile kakaoProfile = response2.getBody();
-        return kakaoProfile;
-
+        return response2.getBody();
     }
 
     // 3단계.
@@ -279,7 +297,12 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member findKakaoMember(Long kakaoId) {
         String kakaoUserKey = String.valueOf(kakaoId);
-        return memberRepository.findByEmail(kakaoUserKey).orElse(null);
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(kakaoUserKey).orElse(null);
+
+        if (member != null && member.isDeleted()) {
+            return null;
+        }
+        return member;
     }
 
     // 카카오 신규 회원 가입 (역할 선택 후 호출)
@@ -287,8 +310,8 @@ public class MemberService {
     public Member registerKakaoMember(Long kakaoId, String nickname, String selectedRole) {
         String kakaoUserKey = String.valueOf(kakaoId);
 
-        // 이미 가입돼 있으면 그대로 반환 (중복 방지)
-        Member existing = memberRepository.findByEmail(kakaoUserKey).orElse(null);
+
+        Member existing = findKakaoMember(kakaoId);
         if (existing != null) return existing;
 
         Role role = "EXPERT".equals(selectedRole) ? Role.EXPERT : Role.CLIENT;
@@ -371,11 +394,11 @@ public class MemberService {
         headers1.add("Content-Type", "application/x-www-form-urlencoded");
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("code",          code);
-        params.add("client_id",     googleClientId);
+        params.add("code", code);
+        params.add("client_id", googleClientId);
         params.add("client_secret", googleClientSecret);
-        params.add("redirect_uri",  googleRedirectUri);
-        params.add("grant_type",    "authorization_code");
+        params.add("redirect_uri", googleRedirectUri);
+        params.add("grant_type", "authorization_code");
 
         HttpEntity<MultiValueMap<String, String>> req1 = new HttpEntity<>(params, headers1);
         ResponseEntity<MemberResponse.GoogleToken> tokenRes = rt1.exchange(
@@ -406,6 +429,11 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public Member findGoogleMember(String googleId) {
-        return memberRepository.findByProviderAndProviderId("google", googleId).orElse(null);
+        Member member = memberRepository.findByProviderAndProviderId("google", googleId).orElse(null);
+
+        if (member != null && member.isDeleted()) {
+            return null;
+        }
+        return member;
     }
 }

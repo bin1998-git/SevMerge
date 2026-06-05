@@ -59,20 +59,20 @@
                             {{#expertProfile.member.isCertified}}<span class="cert-badge">⭐ 인증 전문가</span>{{/expertProfile.member.isCertified}}
                         </div>
                         <div class="profile-career">{{expertProfile.career}} · 경력 0년</div>
-                        <div class="profile-stars">★★★★★ <span>0 (0개 리뷰)</span></div>
+                        <div class="profile-stars">★ <span>{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
                     </div>
                 </div>
                 <div class="profile-stats">
-                    <div class="profile-stat"><div class="profile-stat-val">0</div><div class="profile-stat-lbl">완료 프로젝트</div></div>
-                    <div class="profile-stat"><div class="profile-stat-val">0</div><div class="profile-stat-lbl">평균 평점</div></div>
-                    <div class="profile-stat"><div class="profile-stat-val">0</div><div class="profile-stat-lbl">리뷰 수</div></div>
+                    <div class="profile-stat"><div class="profile-stat-val">{{doneProject}}</div><div class="profile-stat-lbl">완료 프로젝트</div></div>
+                    <div class="profile-stat"><div class="profile-stat-val">{{avgRating}}</div><div class="profile-stat-lbl">평균 평점</div></div>
+                    <div class="profile-stat"><div class="profile-stat-val">{{reviews.size}}</div><div class="profile-stat-lbl">리뷰 수</div></div>
                 </div>
             </div>
 
             <!-- 자기소개 -->
             <div class="section-card">
                 <div class="section-card-title">자기소개</div>
-                <div class="introduce-text">...</div>
+                <div class="introduce-text">{{expertProfile.intro}}</div>
             </div>
 
             <!-- 기술 스택 -->
@@ -95,16 +95,15 @@
 
             <!-- 리뷰 -->
             <div class="section-card">
-                <div class="section-card-title">리뷰 (0)</div>
+                <div class="section-card-title">리뷰 ({{reviews.size}})</div>
                 <div class="review-list">
                     {{#reviews}}
                     <div class="review-item">
                         <div class="review-header">
-                            <span class="review-author">{{memberName}}</span>
-                            <span class="review-stars">★★★★★</span>
+                            <span class="review-author">{{reviewerName}}</span>
+                            <span class="review-stars">{{star}}</span>
                         </div>
                         <div class="review-content">{{content}}</div>
-                        <div class="review-date">{{createdAt}}</div>
                     </div>
                     {{/reviews}}
                     {{^reviews}}<div class="empty-review">아직 리뷰가 없습니다.</div>{{/reviews}}

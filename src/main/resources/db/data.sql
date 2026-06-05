@@ -1,14 +1,14 @@
-INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('client01@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '김의뢰', '010-1234-5678', 'CLIENT', 'ACTIVE', NOW());
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+VALUES ('client01@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '김의뢰', '010-1234-5678', 'CLIENT', 'ACTIVE', false,NOW());
 
-INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('expert01@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '홍길동', '010-9876-5432', 'EXPERT', 'ACTIVE', NOW());
+INSERT INTO member_tb (email, password, name, phone, role, status,is_deleted, created_at)
+VALUES ('expert01@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '홍길동', '010-9876-5432', 'EXPERT', 'ACTIVE',false, NOW());
 
-INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('expert02@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '김디자', '010-5555-4444', 'EXPERT', 'ACTIVE', NOW());
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+VALUES ('expert02@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '김디자', '010-5555-4444', 'EXPERT', 'ACTIVE',false, NOW());
 
-INSERT INTO member_tb (email, password, name, phone, role, status, created_at)
-VALUES ('admin@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '최관리', '010-0000-0000', 'ADMIN', 'ACTIVE', NOW());
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+VALUES ('admin@sevmerge.com', '$2b$10$6om5ZhIXnA0qfyQwh7Y5xefzlXoacZzVMQEjBnpWskmVB/zWkhpJ2', '최관리', '010-0000-0000', 'ADMIN', 'ACTIVE', false,NOW());
 
 
 
@@ -40,7 +40,7 @@ VALUES (1, '스타트업 전용 중고 부품 거래 매칭 플랫폼 구축', '
 
 INSERT INTO project_tb (member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, view_count, is_deleted, created_at)
 VALUES (4, '제조업 불량품 검출용 AI...', 'APP',
-        '공장 라인...', 8000000, 15000000, DATE_ADD(NOW(), INTERVAL 30 DAY), 'ALL', 'OPEN', 0, false, NOW());
+        '공장 라인...', 8000000, 15000000, DATE_ADD(NOW(), INTERVAL 30 DAY), 'CERTIFIED_ONLY', 'OPEN', 0, false, NOW());
 
 INSERT INTO project_tb (member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, view_count, is_deleted, created_at)
 VALUES (1, '기업 리브랜딩...', 'APP',
@@ -104,7 +104,7 @@ INSERT INTO bid_tb (project_id, expert_id, cover_letter, approach, estimated_day
 -- [1번 게시글: '역제안서 작성 팁' 글에 달린 전문가들의 소통 댓글]
 
 -- 1. 다른 프리랜서 개발자의 공감 댓글 (member_id: 3)
-INSERT INTO comment_tb (board_id, member_id, content, created_at)
+INSERT  INTO comment_tb (board_id, member_id, content, created_at)
 VALUES (1, 3, '오... 기능명세서 초안을 역으로 제안하는 방식은 생각 못 해봤는데 진짜 좋은 팁이네요. 다음 입찰 때 바로 써먹어 보겠습니다!', NOW());
 
 -- 2. 주니어 프리랜서의 추가 질문 댓글 (member_id: 4)

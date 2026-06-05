@@ -72,6 +72,7 @@ public class BoardController {
                                   Model model, HttpSession session) {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        boardService.increaseViewCount(boardId);
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         Long boardOwner = board.getMemberId();
         List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);

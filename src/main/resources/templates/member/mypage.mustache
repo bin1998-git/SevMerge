@@ -213,12 +213,12 @@
                         <a href="/reviews/{{id}}" class="my-item">
                             <div class="my-item-body">
                                 <span class="my-item-cat">리뷰</span>
-                                <div class="my-item-title">{{member.name}} 님이 받은 리뷰</div>
+                                <div class="my-item-title">{{reviewerName}}</div>
                                 <div class="my-item-meta">{{content}}</div>
                                 <div class="my-item-meta">{{createdAt}}</div>
                             </div>
                             <div class="my-item-right">
-                                <span class="my-item-status status-done">★ 0</span>
+                                <span class="my-item-status status-done">★{{countStar}}</span>
                             </div>
                         </a>
                     {{/reviews}}
