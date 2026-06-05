@@ -57,6 +57,19 @@ public class ExpertProfileViewController {
     }
 
     /**
+     * 전문가 대시보드
+     * GET /experts/dashboard
+     * → templates/expert-dashboard.mustache
+     */
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null) return "redirect:/login";
+        if (!sessionUser.isExpert()) return "redirect:/";
+        return "expert-dashboard";
+    }
+
+    /**
      * 내 프로필 등록/수정 폼
      * GET /experts/my/form
      * → templates/expertProfile/expertProfile-form.mustache
