@@ -160,6 +160,17 @@ public class ProjectController {
         return "project/project-list";
     }
 
+    @PostMapping("/projects/{id}/done")
+    public String done(@PathVariable Long id, HttpSession session) {
+        log.info("project 검토 확인 요청");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) {
+            return "redirect:/login";
+        }
+        projectService.doneProject(id, sessionUser);
+        return "redirect:/mypage?tab=projects";
+    }
+
     // 프로젝트 삭제
     @PostMapping("/projects/{id}/delete")
     public String delete(@PathVariable Long id, HttpSession session) {

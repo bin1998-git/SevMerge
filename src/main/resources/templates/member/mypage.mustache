@@ -133,10 +133,20 @@
                                 {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
                              </span>
                                 {{! 마감된 프로젝트에만 리뷰 버튼 }}
-                                {{^isOpen}}
-                                    <a href="/reviews/save?targetId={{selectedExpertId}}" class="btn btn-primary"
-                                    style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
-                                {{/isOpen}}
+                               {{#isClosed}}
+                                   <form action="/projects/{{id}}/done" method="POST">
+                                       <button type="submit" class="btn btn-primary"
+                                           style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
+                                           검토확인
+                                       </button>
+                                   </form>
+                               {{/isClosed}}
+                               {{#isDone}}
+                                   <a href="/reviews/save?targetId={{selectedExpertId}}" class="btn btn-primary"
+                                       style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
+                                       리뷰 작성
+                                   </a>
+                               {{/isDone}}
                             </div>
                         </div>
                     {{/projects}}
