@@ -1,7 +1,6 @@
 package com.example.SevMerge.board;
 
 
-import com.example.SevMerge.comment.Comment;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
 import lombok.Builder;

@@ -68,6 +68,9 @@
 
     .admin-header {
         margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
     }
 
     .admin-title {
@@ -128,7 +131,7 @@
 
     .admin-table-head {
         display: grid;
-        grid-template-columns: 60px 1fr 100px 100px 80px 80px;
+        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
         gap: 12px;
         padding: 12px 22px;
         background: #f8f9fc;
@@ -141,7 +144,7 @@
 
     .admin-table-row {
         display: grid;
-        grid-template-columns: 60px 1fr 100px 100px 80px 80px;
+        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
         gap: 12px;
         padding: 15px 22px;
         border-bottom: 1px solid #f3f4f8;
@@ -162,33 +165,15 @@
         font-weight: 500;
     }
 
-    .cell-title {
+    .cell-name {
         font-weight: 700;
         color: #1c1e26;
     }
 
-    .cell-title a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .cell-title a:hover {
-        color: #2563eb;
-    }
-
-    .cell-category {
-        font-size: 11px;
-        font-weight: 700;
-        color: #2563eb;
-        background: #eff6ff;
-        padding: 3px 9px;
-        border-radius: 5px;
-        display: inline-block;
-        margin-top: 4px;
-    }
-
-    .cell-author {
-        color: #6b7280;
+    .cell-email {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 2px;
     }
 
     .cell-date {
@@ -196,21 +181,33 @@
         font-size: 12px;
     }
 
-    .status-open {
+    .role-admin {
         font-size: 11px;
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
         padding: 3px 10px;
         border-radius: 20px;
         font-weight: 700;
         display: inline-block;
     }
 
-    .status-closed {
+    .role-member {
         font-size: 11px;
-        background: #f3f4f8;
-        color: #9ca3af;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .status-active {
+        font-size: 11px;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
         padding: 3px 10px;
         border-radius: 20px;
         font-weight: 700;
@@ -270,8 +267,8 @@
         <div class="sidebar-label">관리자</div>
         <a href="/admin" class="sidebar-link"><span class="sidebar-icon">📊</span> 대시보드</a>
         <div class="sidebar-label">관리</div>
-        <a href="/admin/members" class="sidebar-link"><span class="sidebar-icon">👥</span> 회원 관리</a>
-        <a href="/admin/projects" class="sidebar-link active"><span class="sidebar-icon">📋</span> 프로젝트 관리</a>
+        <a href="/admin/members" class="sidebar-link active"><span class="sidebar-icon">👥</span> 회원 관리</a>
+        <a href="/admin/projects" class="sidebar-link"><span class="sidebar-icon">📋</span> 프로젝트 관리</a>
         <a href="/admin/boards" class="sidebar-link"><span class="sidebar-icon">📑</span> 게시판 관리</a>
         <a href="/admin/experts" class="sidebar-link"><span class="sidebar-icon">⭐</span> 전문가 승인</a>
     </aside>
@@ -279,51 +276,46 @@
     <main class="admin-content">
 
         <div class="admin-header">
-            <h1 class="admin-title">프로젝트 관리</h1>
-            <p class="admin-desc">등록된 전체 프로젝트를 관리합니다.</p>
+            <div>
+                <h1 class="admin-title">게시판 관리</h1>
+                <p class="admin-desc">전체 게시판 목록을 관리합니다.</p>
+            </div>
         </div>
 
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="프로젝트명으로 검색..." value="{{keyword}}"/>
-            <button class="search-btn">검색</button>
-        </div>
+        <form action="/admin/boards" method="get" class="search-bar">
+            <input type="text" class="search-input" name="keyword" placeholder="제목이나 내용을 입력..." value="{{keyword}}"/>
+            <button type="submit" class="search-btn">검색</button>
+        </form>
+
 
         <div class="admin-table-wrap">
             <div class="admin-table-head">
-                <span>No</span><span>프로젝트명</span><span>등록자</span><span>등록일</span><span>상태</span><span>관리</span>
+                <span>No</span><span>제목</span><span>내용</span><span>이름</span><span>관리</span>
             </div>
-
-            {{#projects}}
+            {{#boards}}
                 <div class="admin-table-row">
+                    <!-- 1. 글 번호 -->
                     <span class="cell-id">{{id}}</span>
-                    <div class="cell-title">
-                        <a href="/projects/{{id}}">{{title}}</a>
-                        <div><span class="cell-category">{{categoryName}}</span></div>
-                    </div>
-                    <span class="cell-author">{{member.name}}</span>
+
+                    <!-- 2. 제목 -->
+                    <div class="cell-title" style="font-weight: 500;">{{title}}</div>
+
+                    <!-- 3. 내용 (말줄임 표시 등을 위해 클래스 부여) -->
+                    <span class="cell-content" style="color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{content}}</span>
+
+                    <!-- 4. 작성일 -->
                     <span class="cell-date">{{createdAt}}</span>
-                    <span>
-                    {{#isOpen}}<span class="status-open">모집중</span>{{/isOpen}}
-                        {{^isOpen}}<span class="status-closed">마감</span>{{/isOpen}}
-                </span>
-                    <form action="/admin/projects/{{id}}/delete" method="POST">
+
+                    <!-- 5. 작성자 이름 또는 이메일 -->
+                    <span class="cell-author">{{authorName}}</span>
+
+                    <!-- 6. 관리 액션 (삭제 버튼) -->
+                    <form action="/admin/boards/{{id}}/delete" method="POST" onsubmit="return confirm('정말 이 게시글을 삭제하시겠습니까?');">
                         <button type="submit" class="del-btn">삭제</button>
                     </form>
                 </div>
-            {{/projects}}
-
+            {{/boards}}
         </div>
-
-        <div class="paging">
-            {{#paging}}
-                {{#hasPrev}}<a href="/admin/projects?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
-                {{#pageList}}
-                    <a href="/admin/projects?page={{num}}" class="page-btn {{#isCurrent}}
-                    active{{/isCurrent}}">{{num}}</a>{{/pageList}}
-                {{#hasNext}}<a href="/admin/projects?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
-            {{/paging}}
-        </div>
-
     </main>
 </div>
 

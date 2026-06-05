@@ -4,13 +4,11 @@ import com.example.SevMerge.comment.CommentResponse;
 import com.example.SevMerge.comment.CommentService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.MemberResponse;
 import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -31,7 +28,7 @@ public class BoardController {
     // todo: 추후 메인 페이지 요청하는 곳 생성되면 삭제예정
     @GetMapping("/")
     public String mainPage(Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
         if (sessionUser != null && sessionUser.getRole() == Role.ADMIN) {
             model.addAttribute("isAdmin", true);
@@ -152,5 +149,12 @@ public class BoardController {
 
         boardService.deleteBoard(boardId,sessionMember.getId());
         return "redirect:/boards";
+    }
+
+    // 관리자 게시판 관리
+    @GetMapping("/admin/boards")
+    public String AdminBoards() {
+
+        return "admin/admin-board";
     }
 }
