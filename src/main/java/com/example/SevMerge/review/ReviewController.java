@@ -66,75 +66,47 @@ public class ReviewController {
 
         reviewService.save(reviewDTO,sessionMember);
 
-        return "redirect:/mypage";
+        return "redirect:/mypage/tab?=reviews";
     }
 
-//    // 리뷰목록 화면
-//    @GetMapping("/reviews")
-//    public String reviewList(Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page,HttpSession session) {
-//
-//
-//        Member sessionMember =(Member) session.getAttribute("sessionUser");
-//
-//        ReviewResponse.ReviewListPageDTO reviewListPageDTO = reviewService.reviewsListPage(expertId,page,sessionMember);
-//
-//        model.addAttribute("expertProfile",reviewListPageDTO.getExpertProfile());
-//        model.addAttribute("reviews",reviewListPageDTO.getReviews());
-//        model.addAttribute("paging",reviewListPageDTO.getPaging());
-//
-//        return "review/review-list";
-//    }
-//
-//
-//    // 리뷰상세 화면 해당전문가 누적 별점 , 리뷰목록 공개 기능
-//    @GetMapping("/reviews/{id}" )
-//    public String reviewDetail(@PathVariable(name = "id") Long id,Model model){
-//
-//        ReviewResponse.ReviewDetailDTO review = reviewService.detail(id);
-//
-//        model.addAttribute("review",review);
-//
-//        return "review/review-detail";
-//    }
-//
-//
-//    // 리뷰 수정 화면
-//    @GetMapping("/reviews/{id}/edit")
-//    public String editReviewForm(@PathVariable(name = "id") Long reviewid, Model model){
-//
-//
-//        ReviewResponse.UpdateDTO reviewEntity = reviewService.updatePage(reviewid);
-//
-//
-//        model.addAttribute("review",reviewEntity);
-//
-//        return "review/review-update";
-//    }
-//
-//
-//    // 리뷰 수정 기능
-//    @PostMapping("/reviews/{id}/update")
-//    public String updateReview(@PathVariable(name = "id") Long reviewId, ReviewRequest.UpdateRequestDTO updateRequestDTO) {
-//
-//        reviewService.updateReview(updateRequestDTO,reviewId);
-//
-//        return "redirect:/reviews/" + reviewId;
-//
-//    }
-//
-//
-//    // 리뷰 삭제 기능
-//    @PostMapping("/reviews/{id}/delete")
-//    public String deleteReview(@PathVariable(name = "id") Long reviewId) {
-//
-//        Long expertId = reviewService.deleteReview(reviewId);
-//        // 삭제후 해당 전문가 리뷰 목록으로 돌아간다
-//        return "redirect:/reviews?expertId=" + expertId;
-//
-//    }
-//
-//
-//
-//    //별점 집계및 뱃지갱신
+    // 리뷰상세 화면
+    @GetMapping("/reviews/{reviewId}")
+    public String reviewDetail(@PathVariable(name = "reviewId") Long reviewId,Model model){
+
+        ReviewResponse.ReviewDetailDTO review = reviewService.detail(reviewId);
+
+        model.addAttribute("review",review);
+
+        return "review/review-detail";
+    }
+
+    // 리뷰 수정 화면
+    @GetMapping("/reviews/{reviewId}/edit")
+    public String editReviewForm(@PathVariable(name = "reviewId") Long reviewId, Model model){
+
+        return "review/review-update";
+    }
+
+
+    // 리뷰 수정 기능
+    @PostMapping("/reviews/{reviewId}/update")
+    public String updateReview(@PathVariable(name = "reviewId") Long reviewId, ReviewRequest.UpdateRequestDTO updateRequestDTO) {
+
+        reviewService.updateReview(updateRequestDTO,reviewId);
+
+        return "redirect:/mypage/tab?=reviews";
+
+    }
+
+    // 리뷰 삭제 기능
+    @PostMapping("/reviews/{reviewId}/delete")
+    public String deleteReview(@PathVariable(name = "reviewId") Long reviewId) {
+
+        reviewService.deleteReview(reviewId);
+        // 삭제후 해당 전문가 리뷰 목록으로 돌아간다
+        return "redirect:/reviews?expertId=";
+
+    }
+
 
 }

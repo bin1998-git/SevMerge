@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -40,5 +41,16 @@ public class Review {
 
     private String content; // 리뷰 내용
 
+    @ColumnDefault("false")
+    private boolean isDelete = false;
 
+
+    public void update(ReviewRequest.UpdateRequestDTO updateDTO) {
+        this.content = updateDTO.getContent();
+        this.countStar = updateDTO.getRating();
+    }
+
+    public void softDelete() {
+        this.isDelete = true;
+    }
 }

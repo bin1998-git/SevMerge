@@ -19,7 +19,7 @@ public class SessionInterceptor implements HandlerInterceptor {
                 Object sessionUser = session.getAttribute("sessionUser");
                 if (sessionUser != null) {
                     modelAndView.addObject("isLoggedIn", true);
-                    // modelAndView.addObject("sessionUser", sessionUser);// <- (expose-session-attributes와 중복)
+                    modelAndView.addObject("sessionUser", sessionUser);// <- (expose-session-attributes와 중복)
                 } else {
                     modelAndView.addObject("isLoggedIn", false);
                 }

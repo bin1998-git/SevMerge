@@ -40,6 +40,12 @@ public class ReviewRequest {
         private Integer rating; // 별점
         private String content; // 내용
 
+        public void validate() {
+            if(content == null || content.trim().isEmpty()) {
+                throw new BadRequestException("본문 내용 입력은 필수입니다.");
+            }
+        }
+
     }
 
     // 전문가 가 유저에게 리뷰달기
@@ -51,8 +57,6 @@ public class ReviewRequest {
         private Long memberId; // 유저 Id
         private String content;
         private Integer rating;
-
-
     }
 
 

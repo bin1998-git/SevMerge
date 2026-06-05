@@ -23,11 +23,13 @@ public class BidController {
 
     // 제안서 작성폼
     @GetMapping("/bid/save-form")
-    public String saveForm(@RequestParam Long projectId, Model model) {
+    public String saveForm(@RequestParam Long projectId, Model model, HttpSession session) {
         log.info("제안서 등록 폼 요청");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
+        if (!sessionUser.isExpert()) return "redirect:/projects/" + projectId + "/detail";
         model.addAttribute("projectId", projectId);
         model.addAttribute("project", projectService.findProjectById(projectId));
-
         return "bid/bid-save";
     }
 
@@ -35,9 +37,10 @@ public class BidController {
     @PostMapping("/bid/save")
     public String save(BidRequestDTO.SaveDTO req, HttpSession session) {
         log.info("제안서 등록 요청");
-        req.validate();
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
+        req.validate();
         bidService.saveBid(req, sessionUser);
         return "redirect:/projects/" + req.getProjectId() + "/detail";
 
