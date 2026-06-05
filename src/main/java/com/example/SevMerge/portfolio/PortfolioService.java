@@ -100,14 +100,12 @@ public class PortfolioService {
 
     }
 
-
+    @Transactional
     public void delete(Long portfolioId) {
 
        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
-
-        portfolioRepository.deleteById(portfolio.getId());
-
+       portfolio.delete();
     }
 }

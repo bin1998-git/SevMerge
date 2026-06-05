@@ -1,8 +1,11 @@
 package com.example.SevMerge.expertprofile;
 
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.portfolio.PortfolioResponse;
+import com.example.SevMerge.portfolio.PortfolioService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  * GET /experts/{id}     - 전문가 프로필 상세 페이지
  * GET /experts/my/form  - 내 프로필 등록/수정 폼
  */
+@Slf4j
 @Controller
 @RequestMapping("/experts")
 @RequiredArgsConstructor
 public class ExpertProfileViewController {
 
     private final ExpertProfileService expertProfileService;
+    private final PortfolioService portfolioService;
 
     /**
      * 전문가 목록 페이지
@@ -52,7 +57,7 @@ public class ExpertProfileViewController {
         Member sessionUser = (Member) session.getAttribute("sessionUser");
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
         model.addAttribute("isOwner", isOwner);
-
+        System.out.println(profile);
         return "expertProfile/expertProfile-detail";
     }
 

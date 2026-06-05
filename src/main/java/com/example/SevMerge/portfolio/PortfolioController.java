@@ -30,11 +30,11 @@ public class PortfolioController {
     // 리스트
     @GetMapping("/portfolios")
     public String showPortfolios(HttpSession session,
-                                 Model model) {
+                                 Model model,@RequestParam("expertId") Long expertId) {
 
         Member member = (Member) session.getAttribute(Define.SESSION_USER);
-        List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(member.getId());
-        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(member.getId());
+        List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId);
+        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId);
 
         model.addAttribute("portfolios", portfolios);
         model.addAttribute("expertProfile", expertProfile);
@@ -78,7 +78,7 @@ public class PortfolioController {
 
             portfolioService.save(saveDTO);
 
-        return "redirect:/portfolios";
+        return "redirect:/portfolios?expertId=" + saveDTO.getExpertId() ;
     }
 
 

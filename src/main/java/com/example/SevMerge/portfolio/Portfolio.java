@@ -35,6 +35,9 @@ public class Portfolio {
     @ColumnDefault("true")
     private boolean isActive; // 소프트 삭제
 
-
+    // 소프트 삭제
+    public void delete() {
+        this.isActive = false;
+    }
 
 }
