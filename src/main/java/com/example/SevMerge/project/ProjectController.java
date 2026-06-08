@@ -163,15 +163,6 @@ public class ProjectController {
         return "redirect:/mypage?tab=projects";
     }
 
-    // 프로젝트 삭제
-    @PostMapping("/projects/{id}/delete")
-    public String delete(@PathVariable Long id, HttpSession session) {
-        log.info("project 삭제 요청");
-        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
-        projectService.deleteProject(id,sessionUser);
-        return "redirect:/projects/list";
-    }
-
 
 
 }
