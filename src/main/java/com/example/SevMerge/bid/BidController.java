@@ -37,6 +37,7 @@ public class BidController {
     @PostMapping("/bid/save")
     public String save(BidRequestDTO.SaveDTO req, HttpSession session) {
         log.info("제안서 등록 요청");
+        log.info("제안서 등록 요청 - projectId: {}, coverLetter: {}", req.getProjectId(), req.getCoverLetter());
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
@@ -62,14 +63,18 @@ public class BidController {
     public String myList(Model model, HttpSession session) {
         log.info("내 제안서 목록 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
         model.addAttribute("bids", bidService.findMyBids(sessionUser));
-        return "bid/bid-my-list";
+        return "redirect:/mypage?tab=bids";
     }
 
-    // 제안서 수정 폼
     @GetMapping("/bid/{id}/update-form")
-    public String updateForm(@PathVariable Long id, Model model) {
+    public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
         log.info("제안서 수정 폼 요청");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
+        BidResponseDTO.DetailDTO bid = bidService.findBidById(id, sessionUser);
+        model.addAttribute("bid", bid);
         return "bid/bid-update";
     }
 
