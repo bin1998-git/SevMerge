@@ -72,8 +72,13 @@ public class Bid {
         this.status = BidStatus.SELECTED;
     }
 
+    public void fail() {
+        this.status = BidStatus.REJECTED;
+    }
     // 소프트 딜리트 삭제 메서드
+
     public void delete() {
         this.isDeleted = true;
     }
+
 }

@@ -173,20 +173,33 @@ public class BidService {
         // 제안서 상태를 select로 변경
         bid.select();
 
+        // 한 프로젝트의 대기중인 제안서 전부 탈락 처리
+        List<Bid> otherBids = bidRepository.findByProjectId(bid.getProject().getId());
+        for (Bid other : otherBids) {
+            if (!other.getId().equals(bid.getId()) && other.getStatus() == BidStatus.PENDING) {
+                other.fail(); // 엔티티에 상태를 FAIL/REJECTED로 바꾸는 메서드가 있다고 가정
+            }
+        }
+
         // 프로젝트 상태 CLOSED 변경
         bid.getProject().updateStatus(ProjectStatus.CLOSED);
     }
 
 
 
-    public BidResponseDTO.DetailDTO findBidById(Long id, Member sessionUser) {
+    public BidResponseDTO.DetailDTO findBidById(Long id, Member session) {
         log.info("제안서 상세 조회 서비스 시작");
         Bid bid = bidRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 제안서입니다"));
 
-        if (!bid.getExpert().getId().equals(sessionUser.getId())) {
-            throw new ForbiddenException("조회 권한이 없습니다");
+        // 글쓴 본인, 프로젝트를 올린 의뢰인이 통과
+        boolean isWriter = bid.getExpert().getId().equals(session.getId());
+        boolean Owner = bid.getProject().getMember().getId().equals(session.getId());
+
+        if (!isWriter && !Owner) {
+            throw new ForbiddenException("해당 제안서를 조회할 권한이 없습니다");
         }
+
         return new BidResponseDTO.DetailDTO(bid);
     }
 }

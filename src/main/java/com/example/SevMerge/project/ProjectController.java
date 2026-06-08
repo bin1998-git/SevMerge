@@ -32,7 +32,6 @@ public class ProjectController {
     public String save(ProjectRequestDTO.SaveDTO req, HttpSession session) {
         log.info("project 등록 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) return "redirect:/login";
         req.validate();
         projectService.saveProject(req, sessionUser);
         return "redirect:/projects";
