@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -110,7 +111,26 @@ public class BoardService {
         }
 
         boardEntity.softDelete();
+    }
 
+    // 관리자 게시판 관리 >> 전체 게시판 조회
+    public List<BoardResponse.ListDTO> getAdminBoardsByType(BoardType boardType) {
+        // 리포지토리 쿼리 메소드 호출
+        List<Board> boards = boardRepository.findAllByBoardTypeIsActive(boardType);
+
+        // 엔티티 리스트를 DTO리스트로 변환해서 반환
+        return boards.stream()
+                .map(board -> new BoardResponse.ListDTO(board))
+                .collect(Collectors.toList());
+    }
+
+    // 관리자 전용 삭제기능
+    @Transactional
+    public void deleteBoardByAdmin(Long boardId) {
+        Board boardEntity = boardRepository.findByIdWithMember(boardId).orElseThrow(
+                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
+        );
+        boardEntity.softDelete();
     }
 
     @Transactional
@@ -118,3 +138,4 @@ public class BoardService {
         boardRepository.increaseViewCount(boardId);
     }
 }
+

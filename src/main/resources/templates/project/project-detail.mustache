@@ -17,7 +17,6 @@
     .detail-body { display: grid; grid-template-columns: 1fr 280px; gap: 40px; align-items: start; }
     .detail-content { font-size: 15px; color: #374151; line-height: 1.9; white-space: pre-wrap; margin-bottom: 32px; }
     .detail-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid #eaecf4; }
-    /* 사이드 정보 카드 */
     .info-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; position: sticky; top: 80px; }
     .info-card-title { font-size: 14px; font-weight: 900; color: #1c1e26; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #f3f4f8; }
     .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f8f9fc; font-size: 13px; }
@@ -39,7 +38,7 @@
     <div class="detail-inner">
 
         <div class="detail-nav">
-            <a href="/projects/list">프로젝트</a>
+            <a href="/projects">프로젝트</a>
             <span>›</span>
             <span>{{project.title}}</span>
         </div>
@@ -61,10 +60,8 @@
 
         {{#isOwner}}
         <div class="detail-actions">
-            <a href="/projects/{{project.id}}/update-form" class="btn btn-outline btn-sm">수정</a>
-            <form action="/projects/{{project.id}}/delete" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-sm btn-danger">삭제</button>
-            </form>
+            <a href="/projects/{{project.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+            <button onclick="deleteProject({{project.id}})" class="btn btn-sm btn-danger">삭제</button>
         </div>
         {{/isOwner}}
 
@@ -72,7 +69,7 @@
             <div>
                 <div class="detail-description">{{project.description}}</div>
                 <div class="detail-footer">
-                   <a href="/projects/list" class="btn btn-outline">← 목록으로</a>
+                    <a href="/projects" class="btn btn-outline">← 목록으로</a>
                 </div>
             </div>
             <div class="info-card">
@@ -91,19 +88,32 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">입찰 수</span>
-                    <span class="info-value">{{project.bidCount}}개</span>
+                    <span class="info-value">{{bidCount}}개</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">인증 전문가</span>
                     <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
                 </div>
                 {{^isOwner}}
-                <a href="/bid/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
+                <a href="/bids/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
                 {{/isOwner}}
             </div>
         </div>
 
     </div>
 </section>
+
+<script>
+function deleteProject(id) {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    fetch('/projects/' + id, {
+        method: 'DELETE'
+    }).then(res => {
+        if (res.ok) {
+            window.location.href = '/projects';
+        }
+    });
+}
+</script>
 
 {{> layout/footer}}

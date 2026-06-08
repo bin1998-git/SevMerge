@@ -5,7 +5,6 @@ import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
-import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;

@@ -1,6 +1,7 @@
 package com.example.SevMerge.expertprofile;
 
 import com.example.SevMerge.core.util.ApiResponse;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -21,10 +22,10 @@ public class ExpertProfileController {
    */
   @PostMapping
   public ResponseEntity<ApiResponse<ExpertProfileResponse>> save(
-      @RequestBody @Valid ExpertProfileRequest.SaveRequest req,
-      HttpSession session) {
+          @RequestBody @Valid ExpertProfileRequest.SaveRequest req,
+          HttpSession session) {
 
-    Member sessionUser = (Member) session.getAttribute("sessionUser");
+    Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
     ExpertProfileResponse response = expertProfileService.save(sessionUser, req);
     return ResponseEntity.ok(ApiResponse.ok(response));
   }
@@ -50,7 +51,7 @@ public class ExpertProfileController {
       @RequestBody @Valid ExpertProfileRequest.SaveRequest req,
       HttpSession session) {
 
-    Member sessionUser = (Member) session.getAttribute("sessionUser");
+    Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
     ExpertProfileResponse response = expertProfileService.update(sessionUser.getId(), req);
     return ResponseEntity.ok(ApiResponse.ok(response));
   }

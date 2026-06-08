@@ -2,6 +2,7 @@ package com.example.SevMerge.project;
 
 import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.bid.BidStatus;
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
@@ -152,6 +153,22 @@ public class ProjectService {
         project.update(req);
     }
 
+    // 낙찰된 프로젝트 검토확인 서비스
+    @Transactional
+    public void doneProject(Long id, Member session) {
+        log.info("project 검토확인 서비스 시작");
+        Project project = projectRepository.findByProjectId(id).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 프로젝트 입니다"));
+        if (!project.getMember().getId().equals(session.getId())) {
+            throw new ForbiddenException("검토확인 권한이 없습니다");
+        }
+        if (project.getProjectStatus() != ProjectStatus.CLOSED) {
+            throw new BadRequestException("낙찰 완료된 프로젝트만 검토확인 가능합니다");
+        }
+        project.updateStatus(ProjectStatus.DONE);
+    }
+
+
     // 프로젝트 삭제
     @Transactional
     public void deleteProject(Long id, Member sessionMember) {
@@ -162,5 +179,10 @@ public class ProjectService {
             throw new ForbiddenException("삭제 권한이 없습니다");
         }
         project.delete();
+    }
+
+    @Transactional
+    public void increase(Long id) {
+        projectRepository.increaseCount(id);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.w3c.dom.ls.LSInput;
 
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class BoardController {
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
         model.addAttribute("isOwner",sessionMember!=null && boardOwner.equals(sessionMember.getId()));
+        model.addAttribute("isAdmin", sessionMember != null && sessionMember.getRole() == Role.ADMIN);
         return "board/board-detail";
     }
 
@@ -147,15 +149,39 @@ public class BoardController {
     public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
                               HttpSession session) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-
         boardService.deleteBoard(boardId,sessionMember.getId());
         return "redirect:/boards";
     }
 
     // 관리자 게시판 관리
     @GetMapping("/admin/boards")
-    public String AdminBoards() {
+    public String AdminBoards(@RequestParam(defaultValue = "FREE") String boardType, Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        // 관리자가 로그인하면 상단바에 마이페이지가 아닌 관리자가 뜨게 만들기
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+
+        BoardType type = BoardType.valueOf(boardType.toUpperCase());
+        List<BoardResponse.ListDTO> adminBoards = boardService.getAdminBoardsByType(type);
+
+        model.addAttribute("boards", adminBoards);
+        model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
+        model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
+        model.addAttribute("isInquiry", boardType.equalsIgnoreCase("INQUIRY"));
+        model.addAttribute("boardType", boardType);
 
         return "admin/admin-board";
+    }
+
+    // 관리자 게시판삭제
+    @PostMapping("/admin/boards/{boardId}/delete")
+    public String deleteBoardByAdmin(@PathVariable(name = "boardId") Long boardId, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return  "redirect:/admin/boards";
+        }
+
+        boardService.deleteBoardByAdmin(boardId);
+        return "redirect:/admin/boards";
     }
 }

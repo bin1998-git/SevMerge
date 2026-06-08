@@ -111,10 +111,22 @@
                                 <div class="my-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
                                 <span class="my-item-status {{#isOpen}}status-open{{/isOpen}}{{^isOpen}}status-closed{{/isOpen}}">
                                 {{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}
-                                </span>
-                                {{^isOpen}}
-                                    <a href="/reviews/save?targetId={{selectedExpertId}}" class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
-                                {{/isOpen}}
+                             </span>
+                                {{! 마감된 프로젝트에만 리뷰 버튼 }}
+                               {{#isClosed}}
+                                   <form action="/projects/{{id}}/done" method="POST">
+                                       <button type="submit" class="btn btn-primary"
+                                           style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
+                                           검토확인
+                                       </button>
+                                   </form>
+                               {{/isClosed}}
+                               {{#isDone}}
+                                   <a href="/reviews/save?targetId={{selectedExpertId}}" class="btn btn-primary"
+                                       style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
+                                       리뷰 작성
+                                   </a>
+                               {{/isDone}}
                             </div>
                         </div>
                     {{/projects}}
@@ -122,15 +134,16 @@
                 </div>
             {{/isProjects}}
 
-            {{! 내 제안서 }}
-            {{#isBids}}
-                <div class="my-list">
-                    {{#bids}}
-                        <div class="my-item">
-                            <a href="/projects/{{projectId}}" class="my-item-body" style="text-decoration:none; color:inherit;">
-                                <div class="my-item-title">{{projectTitle}}</div>
-                                <div class="my-item-meta">제안일 {{createdAt}}</div>
-                            </a>
+           {{! 내 제안서 }}
+           {{#isBids}}
+               <div class="my-list">
+                   {{#bids}}
+                       <div class="my-item">
+                           <a href="/projects/{{projectId}}/detail" class="my-item-body"
+                              style="text-decoration:none; color:inherit;">
+                               <div class="my-item-title">{{projectTitle}}</div>
+                               <div class="my-item-meta">제안일 {{createdAt}}</div>
+                           </a>
                             <div class="my-item-right">
                                 <div class="my-item-price">{{proposedPrice}}만원</div>
                                 <span class="my-item-status {{#isSelected}}status-done{{/isSelected}}{{^isSelected}}status-wait{{/isSelected}}">
@@ -223,6 +236,7 @@
                 </form>
             {{/isEdit}}
         </div>
+
     </div>
 </section>
 

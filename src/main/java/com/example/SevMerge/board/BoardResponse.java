@@ -1,5 +1,6 @@
 package com.example.SevMerge.board;
 
+import com.example.SevMerge.core.util.MyDateUtil;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -12,16 +13,22 @@ public class BoardResponse {
         private String title;
         private String boardType;
         private String memberName;
-        private Timestamp createdAt;
+        private String createdAt;
         private Integer viewCount;
+        private String content;
+
 
         public ListDTO(Board board) {
             this.id = board.getId();
             this.title = board.getTitle();
             this.boardType = board.getBoardType().name();
             this.memberName = board.getMember().getName();
-            this.createdAt = board.getCreatedAt();
             this.viewCount = board.getViewCount();
+            this.content = board.getContent();
+
+            if (board.getCreatedAt() != null) {
+                this.createdAt = MyDateUtil.timestampFormat(board.getCreatedAt());
+            }
         }
     }
 

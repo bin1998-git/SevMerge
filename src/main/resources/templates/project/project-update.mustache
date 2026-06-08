@@ -32,16 +32,16 @@
             <p class="save-desc">프로젝트 정보를 수정합니다.</p>
         </div>
 
-            <form class="save-form" action="/projects/{{project.id}}/update" method="POST">
+        <form class="save-form" id="update-form">
 
             <div class="form-group">
                 <label class="form-label">프로젝트 제목</label>
-                <input type="text" name="title" class="form-input" value="{{project.title}}" maxlength="100" />
+                <input type="text" name="title" id="title" class="form-input" value="{{project.title}}" maxlength="100" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">카테고리</label>
-                <select name="category" class="form-select">
+                <select name="category" id="category" class="form-select">
                     <option value="WEB" {{#isWeb}}selected{{/isWeb}}>웹개발</option>
                     <option value="APP" {{#isApp}}selected{{/isApp}}>앱개발</option>
                     <option value="UI_UX" {{#isUiux}}selected{{/isUiux}}>UI/UX</option>
@@ -53,28 +53,28 @@
 
             <div class="form-group">
                 <label class="form-label">프로젝트 내용</label>
-                <textarea name="description" class="form-textarea">{{project.description}}</textarea>
+                <textarea name="description" id="description" class="form-textarea">{{project.description}}</textarea>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">최소 예산 (만원)</label>
-                    <input type="number" name="budgetMin" class="form-input" value="{{project.budgetMin}}" min="0" />
+                    <input type="number" name="budgetMin" id="budgetMin" class="form-input" value="{{project.budgetMin}}" min="0" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">최대 예산 (만원)</label>
-                    <input type="number" name="budgetMax" class="form-input" value="{{project.budgetMax}}" min="0" />
+                    <input type="number" name="budgetMax" id="budgetMax" class="form-input" value="{{project.budgetMax}}" min="0" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">마감 기한</label>
-                <input type="date" name="deadline" class="form-input" value="{{project.deadlineDate}}" />
+                <input type="date" name="deadline" id="deadline" class="form-input" value="{{project.deadlineDate}}" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">인증 전문가 설정</label>
-                <select name="bidFilter" class="form-select">
+                <select name="bidFilter" id="bidFilter" class="form-select">
                     <option value="ALL" {{^project.isCertifiedOnly}}selected{{/project.isCertifiedOnly}}>전체 수신</option>
                     <option value="CERTIFIED_ONLY" {{#project.isCertifiedOnly}}selected{{/project.isCertifiedOnly}}>인증 전문가만</option>
                     <option value="GENERAL_ONLY">일반 전문가만</option>
@@ -82,12 +82,54 @@
             </div>
 
             <div class="form-btns">
-                <a href="/projects/{{project.id}}/detail" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary btn-lg">수정완료</button>
+                <a href="/projects/{{project.id}}" class="btn btn-outline">취소</a>
+                <button type="button" class="btn btn-primary btn-lg" onclick="btnUpdate({{project.id}})">수정완료</button>
             </div>
 
         </form>
     </div>
 </section>
+
+<script>
+    function btnUpdate(id) {
+        // 1. 데이터 수집
+        const data = {
+            title: document.getElementById('title').value,
+            category: document.getElementById('category').value,
+            description: document.getElementById('description').value,
+            budgetMin: document.getElementById('budgetMin').value,
+            budgetMax: document.getElementById('budgetMax').value,
+            deadline: document.getElementById('deadline').value,
+            bidFilter: document.getElementById('bidFilter').value
+        };
+
+        // 데이터 검증 (단순 빈값 체크)
+        if (!data.title.trim() || !data.category || !data.description.trim()) {
+            alert('필수 항목을 입력해주세요.');
+            return;
+        }
+
+        // 2. 비동기 PUT 요청
+        fetch(`/projects/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify(data) // JSON 문자열로 변환하여 전송
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('프로젝트가 성공적으로 수정되었습니다.');
+                location.href = `/projects/${id}`; // 수정 완료 후 상세페이지로 이동
+            } else {
+                alert('수정에 실패했습니다. 입력값을 확인해주세요.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('네트워크 오류가 발생했습니다.');
+        });
+    }
+</script>
 
 {{> layout/footer}}
