@@ -49,11 +49,11 @@ VALUES (1, '기업 리브랜딩...', 'APP',
 
 -- Bid 더미데이터
 INSERT INTO bid_tb (project_id, expert_id, cover_letter, approach, estimated_days, proposed_price, status, is_deleted, created_at) VALUES
-(1, 1, '웹 개발 5년 경력자입니다. 최선을 다하겠습니다.', 'React + Spring Boot로 개발하겠습니다.', 30, 2500000, 'PENDING', false, NOW()),
-(1, 2, '쇼핑몰 개발 다수 경험 있습니다.', 'Vue.js + Node.js로 개발하겠습니다.', 25, 2800000, 'PENDING', false, NOW()),
+(1, 2, '웹 개발 5년 경력자입니다. 최선을 다하겠습니다.', 'React + Spring Boot로 개발하겠습니다.', 30, 2500000, 'PENDING', false, NOW()),
+(1, 3, '쇼핑몰 개발 다수 경험 있습니다.', 'Vue.js + Node.js로 개발하겠습니다.', 25, 2800000, 'PENDING', false, NOW()),
 (2, 2, '앱 개발 전문가입니다.', 'Flutter + Firebase로 개발하겠습니다.', 60, 8000000, 'PENDING', false, NOW()),
-(3, 3, 'UI/UX 디자인 전문입니다.', '피그마로 작업하겠습니다.', 14, 1500000, 'PENDING', false, NOW()),
-(3, 4, '데이터 분석 전문가입니다.', 'Python + Tableau로 개발하겠습니다.', 21, 3500000, 'PENDING', false, NOW());
+(2, 3, 'UI/UX 디자인 전문입니다.', '피그마로 작업하겠습니다.', 14, 1500000, 'PENDING', false, NOW()),
+(3, 3, '데이터 분석 전문가입니다.', 'Python + Tableau로 개발하겠습니다.', 21, 3500000, 'PENDING', false, NOW());
 
 -- ChatRoom 샘플데이터
 -- [1번 채팅방]: 1번 프로젝트('스타트업 중고 부품 거래 플랫폼 구축')를 두고

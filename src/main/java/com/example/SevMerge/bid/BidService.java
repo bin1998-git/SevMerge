@@ -113,8 +113,9 @@ public class BidService {
         Bid bid = bidRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("존재하지 않는 제안서입니다"));
 
+
         // 내가 낸 제안서인지 확인
-        if (bid.getExpert().getId().equals(session.getId())) {
+        if (!bid.getExpert().getId().equals(session.getId())) {
             throw new ForbiddenException("제안서 수정 권한이 없습니다");
         }
         // 제안서 확인 체크
@@ -177,4 +178,15 @@ public class BidService {
     }
 
 
+
+    public BidResponseDTO.DetailDTO findBidById(Long id, Member sessionUser) {
+        log.info("제안서 상세 조회 서비스 시작");
+        Bid bid = bidRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 제안서입니다"));
+
+        if (!bid.getExpert().getId().equals(sessionUser.getId())) {
+            throw new ForbiddenException("조회 권한이 없습니다");
+        }
+        return new BidResponseDTO.DetailDTO(bid);
+    }
 }

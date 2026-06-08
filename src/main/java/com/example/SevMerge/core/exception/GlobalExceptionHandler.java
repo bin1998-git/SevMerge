@@ -47,7 +47,13 @@ public class GlobalExceptionHandler {
         log.warn("=== 403 Forbidden ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
+
+
+
         String message = e.getMessage().replace("'", "\\'");
+
+
+
         return """
                 <script>
                     alert('%s');
