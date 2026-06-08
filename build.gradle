@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
 
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-crypto'
 
     // 웹 소캣 통신 라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

@@ -12,12 +12,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -73,7 +71,7 @@ public class MemberController {
     }
 
     // 마이페이지
-    @GetMapping("/mypage")
+    @GetMapping("/my-pages")
     public String mypage(@RequestParam(required = false) String tab,
                          HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
@@ -129,22 +127,16 @@ public class MemberController {
         return "member/update-form";
     }
 
-    // 회원 정보 수정 처리 (POST)
-    @PostMapping("/mypage/update")
-    public String updateMember(MemberRequest.Update request, HttpSession session) {
-        Member loginMember = (Member) session.getAttribute("sessionUser");
-        if (loginMember == null) {
-            return "redirect:/login";
-        }
+    // 회원 정보 수정 처리 (PUT)
+    @PutMapping("/my-pages")
+    @ResponseBody
+    public ResponseEntity<?> updateMember(@RequestBody MemberRequest.Update request, HttpSession session) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
 
-        // 1. DB 회원 정보 수정 요청
         memberService.updateMyInfo(loginMember.getId(), request);
-
-        Member updatedMember = memberService.findMemberById(loginMember.getId());
-        session.setAttribute(Define.SESSION_USER, updatedMember);
-
-        log.info("회원 정보 수정 완료 - memberId={}", loginMember.getId());
-        return "redirect:/mypage";
+        session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
+        return ResponseEntity.ok().body("정보 변경 완료");
     }
 
     // 회원 목록
@@ -173,11 +165,12 @@ public class MemberController {
         return "admin/admin-member";
     }
 
-    @PostMapping("/admin/members/{id}/delete")
-    public String deleteMember(@PathVariable Long id, Model model) {
+    // 탈퇴처리 DELETE 전환
+    @DeleteMapping("/admin/members/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteMember(@PathVariable Long id) {
         memberService.suspendMember(id);
-        model.addAttribute("isAdmin", true);
-        return "redirect:/admin/members";
+        return ResponseEntity.ok().body("제재 처리가 성공했습니다.");
     }
 
     // 관리자 - 전문가 승인
@@ -188,18 +181,18 @@ public class MemberController {
         return "admin/admin-expert";
     }
 
-    @PostMapping("/admin/experts/{id}/approve")
-    public String approveExpert(@PathVariable Long id, Model model) {
-        memberService.approveExpert(id);
-        model.addAttribute("isAdmin", true);
-        return "redirect:/admin/experts";
-    }
-
-    @PostMapping("/admin/experts/{id}/reject")
-    public String rejectExpert(@PathVariable Long id,  Model model) {
-        memberService.rejectExpert(id);
-        model.addAttribute("isAdmin", true);
-        return "redirect:/admin/experts";
+    // 전문가 승인/거절 상태 제어 PATCH 전환
+    @PatchMapping("/admin/experts/{id}/status")
+    @ResponseBody
+    public ResponseEntity<?> updateExpertStatus(@PathVariable Long id, @RequestParam String action) {
+        if ("approve".equals(action)) {
+            memberService.approveExpert(id);
+            return ResponseEntity.ok().body("승인 완료");
+        } else if ("reject".equals(action)) {
+            memberService.rejectExpert(id);
+            return ResponseEntity.ok().body("반려 완료");
+        }
+        return ResponseEntity.badRequest().body("잘못된 명령입니다.");
     }
 
     // --------------------------------------------------------------------
@@ -221,7 +214,7 @@ public class MemberController {
             return "redirect:/";
         }
 
-        // 신규 회원 → 세션에 임시 보관 후 역할 선택 화면으로
+        // 신규 회원 -> 세션에 임시 보관 후 역할 선택 화면으로
         session.setAttribute("googleId",       googleId);
         session.setAttribute("googleNickname", nickname);
         session.setAttribute("googleEmail",    email);
@@ -240,13 +233,13 @@ public class MemberController {
         Member existing = memberService.findKakaoMember(kakaoId);
 
         if (existing != null) {
-            // 기존 회원 → 바로 로그인
+            // 기존 회원 -> 바로 로그인
             session.setAttribute(Define.SESSION_USER, existing);
             log.info("카카오 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
         }
 
-        // 신규 회원 → 카카오 정보 잠깐 세션에 보관하고 역할 선택 화면으로
+        // 신규 회원 -> 카카오 정보 잠깐 세션에 보관하고 역할 선택 화면으로
         session.setAttribute("kakaoId", kakaoId);
         session.setAttribute("kakaoNickname", nickname);
         return "redirect:/social-role";
@@ -255,7 +248,7 @@ public class MemberController {
     // 역할 선택 화면
     @GetMapping("/social-role")
     public String socialRoleForm(HttpSession session) {
-        // 카카오 ID도 없고 구글 ID도 세션에 없으면 비정상 접근으로 차단
+        // 카카오 ID도 없고 구글 ID도 세션에 없으면 차단
         if (session.getAttribute("kakaoId") == null && session.getAttribute("googleId") == null) {
             return "redirect:/login";
         }
@@ -268,7 +261,7 @@ public class MemberController {
         Long kakaoId = (Long) session.getAttribute("kakaoId");
         String googleId = (String) session.getAttribute("googleId");
 
-        // 둘 다 세션에 없으면 가입 불가 처리
+        // 둘 다 세션에 없으면 가입 불가
         if (kakaoId == null && googleId == null) {
             return "redirect:/login";
         }
@@ -276,7 +269,7 @@ public class MemberController {
         Member member = null;
 
         if (kakaoId != null) {
-            // 카카오 가입 처리 로직
+            // 카카오 가입 처리
             String nickname = (String) session.getAttribute("kakaoNickname");
             member = memberService.registerKakaoMember(kakaoId, nickname, role);
 
@@ -284,7 +277,7 @@ public class MemberController {
             session.removeAttribute("kakaoNickname");
             log.info("카카오 소셜 가입 완료 - memberId={}", member.getId());
         } else if (googleId != null) {
-            // 구글 가입 처리 로직 (이전 답변에서 드린 CustomSuccessHandler가 세팅한 값을 꺼냅니다)
+            // 구글 가입 처리 로직 (CustomSuccessHandler에서 세팅한 값을 꺼냄)
             String nickname = (String) session.getAttribute("googleNickname");
             String email = (String) session.getAttribute("googleEmail");
 
@@ -301,7 +294,72 @@ public class MemberController {
             log.info("소셜 회원가입 최종 완료 -> 온전한 세션 주입 완료 - memberId={}", freshMember.getId());
         }
 
-        // 로그인 세션 장착 후 메인화면 이동
         return "redirect:/";
+    }
+
+
+    // 전문가 추가정보 입력 화면
+    @GetMapping("/social-expert-form")
+    public String socialExpertForm(HttpSession session, Model model) {
+        Long kakaoId = (Long) session.getAttribute("kakaoId");
+        String googleId = (String) session.getAttribute("googleId");
+
+        // 소셜 인증 안 거치고 직접 들어오면 차단
+        if (kakaoId == null && googleId == null) {
+            return "redirect:/login";
+        }
+
+        if (kakaoId != null) {
+            // 카카오: 닉네임 자동 채움, 이메일은 직접 입력
+            model.addAttribute("name", session.getAttribute("kakaoNickname"));
+            model.addAttribute("email", "");
+            model.addAttribute("emailReadonly", false);
+        } else {
+            // 구글: 이름·이메일 자동 채움, 이메일 읽기전용
+            model.addAttribute("name", session.getAttribute("googleNickname"));
+            model.addAttribute("email", session.getAttribute("googleEmail"));
+            model.addAttribute("emailReadonly", true);
+        }
+
+        return "member/expert-join";
+    }
+
+    // 전문가 추가정보 제출 -> PENDING 가입 (세션 주입 X = 로그인 안 됨)
+    @PostMapping("/social-expert-join")
+    public String socialExpertJoin(MemberRequest.ExpertJoin request, HttpSession session) {
+        Long kakaoId = (Long) session.getAttribute("kakaoId");
+        String googleId = (String) session.getAttribute("googleId");
+
+        if (kakaoId == null && googleId == null) {
+            return "redirect:/login";
+        }
+
+        if (kakaoId != null) {
+            String nickname = (String) session.getAttribute("kakaoNickname");
+            memberService.registerKakaoExpert(kakaoId, nickname, request);
+
+            session.removeAttribute("kakaoId");
+            session.removeAttribute("kakaoNickname");
+            log.info("카카오 전문가 가입(PENDING) 완료");
+        } else {
+            String nickname = (String) session.getAttribute("googleNickname");
+            String email = (String) session.getAttribute("googleEmail");
+            request.setEmail(email);  // disabled로 안 넘어온 이메일을 세션에서 보충
+            memberService.registerGoogleExpert(googleId, nickname, email, request);
+
+            session.removeAttribute("googleId");
+            session.removeAttribute("googleNickname");
+            session.removeAttribute("googleEmail");
+            log.info("구글 전문가 가입(PENDING) 완료");
+        }
+
+        // 전문가는 세션에 안 넣고 승인 대기 안내 화면으로 보냄
+        return "redirect:/social-pending";
+    }
+
+    // 승인 대기 안내 화면
+    @GetMapping("/social-pending")
+    public String socialPending() {
+        return "member/expert-pending";
     }
 }

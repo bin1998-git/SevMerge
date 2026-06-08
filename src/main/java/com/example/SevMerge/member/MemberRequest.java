@@ -15,6 +15,15 @@ public class MemberRequest {
     }
 
     @Data
+    public static class ExpertJoin {
+        private String name;
+        private String email;
+        private String intro;
+        private String career;
+        private String githubUrl;
+    }
+
+    @Data
     public static class Login {
         private String email;
         private String password;

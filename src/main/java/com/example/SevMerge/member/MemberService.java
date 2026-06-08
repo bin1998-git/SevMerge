@@ -4,7 +4,6 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
-import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,13 +117,16 @@ public class MemberService {
     @Transactional(readOnly = true)
     public void login(MemberRequest.Login request, HttpSession session) {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword()))
             throw new BadRequestException("비밀번호가 올바르지 않습니다.");
 
         if (member.getStatus() == Status.SUSPENDED)
             throw new BadRequestException("정지된 계정입니다.");
+
+        if (member.getStatus() == Status.PENDING)
+            throw new BadRequestException("관리자 승인 대기 중인 계정입니다. 승인 후 로그인할 수 있습니다.");
 
         session.setAttribute("sessionUser", member);
         log.info("로그인 성공 - memberId={}", member.getId());
@@ -139,7 +141,7 @@ public class MemberService {
     @Transactional
     public void withdrawMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
         //엔티티 메서드를 호출해 상태만 true 변경.
         member.withdraw();
@@ -286,7 +288,7 @@ public class MemberService {
 
     // 3단계.
     // 카카오 콜백 1단계: 프로필만 받아서 기존 회원인지 확인
-    // 기존 회원 → Member 반환 / 신규 → null 반환(가입은 역할 선택 후)
+    // 기존 회원 -> Member 반환 / 신규 -> null 반환(가입은 역할 선택 후)
     @Transactional(readOnly = true)
     public MemberResponse.KakaoProfile getKakaoProfile(String code) {
         MemberResponse.OAuthToken oAuthToken = getKakaoAccessToken(code);
@@ -305,17 +307,14 @@ public class MemberService {
         return member;
     }
 
-    // 카카오 신규 회원 가입 (역할 선택 후 호출)
+    // 카카오 신규 의뢰인 회원가입 전용
     @Transactional
     public Member registerKakaoMember(Long kakaoId, String nickname, String selectedRole) {
         String kakaoUserKey = String.valueOf(kakaoId);
 
-
         Member existing = findKakaoMember(kakaoId);
         if (existing != null) return existing;
 
-        Role role = "EXPERT".equals(selectedRole) ? Role.EXPERT : Role.CLIENT;
-        Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
         String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
 
         Member newMember = Member.builder()
@@ -323,22 +322,11 @@ public class MemberService {
                 .password(dummyPassword)
                 .name(nickname)
                 .phone("010-0000-0000")
-                .role(role)
-                .status(status)
+                .role(Role.CLIENT)
+                .status(Status.ACTIVE)
                 .build();
-        Member savedMember = memberRepository.save(newMember);
+        return memberRepository.save(newMember);
 
-        if (role == Role.EXPERT) {
-            expertProfileRepository.save(ExpertProfile.builder()
-                    .member(savedMember)
-                    .profileImage("default.png")
-                    .avgRating(BigDecimal.ZERO)
-                    .totalReviews(0)
-                    .isCertified(false)
-                    .build());
-            log.info("카카오 전문가 가입 완료 - memberId={}", savedMember.getId());
-        }
-        return savedMember;
     }
 
     /**
@@ -347,10 +335,8 @@ public class MemberService {
     @Transactional
     public Member registerGoogleMember(String googleId, String nickname, String email, String selectedRole) {
 
-        // 1. 역할(Role) 및 상태(Status) 결정
-        Role role = "EXPERT".equals(selectedRole) ? Role.EXPERT : Role.CLIENT;
-        Status status = (role == Role.EXPERT) ? Status.PENDING : Status.ACTIVE;
-
+        Member existing = findGoogleMember(googleId);
+        if (existing != null) return existing;
         // 소셜 로그인은 비밀번호가 없으므로 암호화된 임의의 UUID 비밀번호 부여
         String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
 
@@ -359,27 +345,87 @@ public class MemberService {
                 .email(email)
                 .password(dummyPassword)
                 .name(nickname)
-                .phone("") // 전화번호는 빈 값 처리 (이후 정보수정에서 입력 가능)
-                .role(role)
-                .status(status)
+                .phone("") // 전화번호 빈 값 처리 (이후 정보수정에서 입력 가능)
+                .role(Role.CLIENT)
+                .status(Status.ACTIVE)
                 .provider("google")
                 .providerId(googleId)
                 .build();
 
-        Member savedMember = memberRepository.save(newMember);
+        return memberRepository.save(newMember);
 
-        // 3. 전문가(EXPERT)를 선택한 경우에만 전문가 프로필 데이터 생성
-        if (role == Role.EXPERT) {
-            expertProfileRepository.save(ExpertProfile.builder()
-                    .member(savedMember)
-                    .profileImage("default.png")
-                    .avgRating(java.math.BigDecimal.valueOf(0.00))
-                    .totalReviews(0)
-                    .isCertified(false)
-                    .build());
+    }
+
+    // 카카오 전문가 가입
+    @Transactional
+    public Member registerKakaoExpert(Long kakaoId, String nickname, MemberRequest.ExpertJoin req) {
+        String kakaoUserKey = String.valueOf(kakaoId);
+
+        Member existing = findKakaoMember(kakaoId);
+        if (existing != null) return existing;
+
+        if (req.getEmail() == null || req.getEmail().isBlank()) {
+            throw new BadRequestException("연락 가능한 이메일을 입력해 주세요.");
         }
 
-        return savedMember;
+        String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
+        Member newMember = Member.builder()
+                .email(kakaoUserKey)                          // 로그인 식별자는 고유ID 유지
+                .password(dummyPassword)
+                .name(req.getName() != null ? req.getName() : nickname)  // 화면에서 수정한 이름
+                .phone("010-0000-0000")
+                .role(Role.EXPERT)
+                .status(Status.PENDING)
+                .build();
+        Member saved = memberRepository.save(newMember);
+
+        saveExpertProfile(saved, req);
+        log.info("카카오 전문가 가입(PENDING) - memberId={}", saved.getId());
+        return saved;
+    }
+
+    // 구글 전문가 가입
+    @Transactional
+    public Member registerGoogleExpert(String googleId, String nickname, String email, MemberRequest.ExpertJoin req) {
+        Member existing = findGoogleMember(googleId);
+        if (existing != null) return existing;
+
+        if (memberRepository.existsByEmail(email)) {
+            throw new BadRequestException("이미 가입된 이메일입니다.");
+        }
+
+        String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
+        Member newMember = Member.builder()
+                .email(email)                                 // 구글은 이메일이 로그인 식별자
+                .password(dummyPassword)
+                .name(req.getName() != null ? req.getName() : nickname)
+                .phone("")
+                .role(Role.EXPERT)
+                .status(Status.PENDING)
+                .provider("google")
+                .providerId(googleId)
+                .build();
+        Member saved = memberRepository.save(newMember);
+
+        saveExpertProfile(saved, req);
+        log.info("구글 전문가 가입(PENDING) - memberId={}", saved.getId());
+        return saved;
+    }
+
+    // 전문가 프로필 저장
+    private void saveExpertProfile(Member member, MemberRequest.ExpertJoin req) {
+        expertProfileRepository.save(ExpertProfile.builder()
+                .member(member)
+                .profileImage("default.png")
+                .intro(req.getIntro())
+                .career(req.getCareer())
+                .githubUrl(req.getGithubUrl())
+                .contactEmail(req.getEmail())
+                .speciality("")
+                .avgRating(BigDecimal.ZERO)
+                .totalReviews(0)
+                .isCertified(false)
+                .build());
     }
 
     // ===================== 구글 WebClient 방식 =====================
