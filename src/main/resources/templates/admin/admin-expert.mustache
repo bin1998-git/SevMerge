@@ -44,7 +44,6 @@
 </style>
 
 <div class="admin-wrap">
-
     <aside class="admin-sidebar">
         <div class="sidebar-label">관리자</div>
         <a href="/admin" class="sidebar-link"><span class="sidebar-icon">📊</span> 대시보드</a>
@@ -56,7 +55,6 @@
     </aside>
 
     <main class="admin-content">
-
         <div class="admin-header">
             <h1 class="admin-title">전문가 승인 관리</h1>
             <p class="admin-desc">인증 전문가 신청을 검토하고 승인 또는 거절합니다.</p>
@@ -70,55 +68,74 @@
         </div>
 
         <div class="expert-list">
-
             {{#experts}}
-            <div class="expert-card">
-                <div class="expert-avatar">👨‍💻</div>
-                <div class="expert-body">
-                    <div class="expert-name-wrap">
-                        <span class="expert-name">{{name}}</span>
-                        {{#isPending}}<span class="status-pending">대기중</span>{{/isPending}}
-                        {{#isApproved}}<span class="status-approved">⭐ 승인완료</span>{{/isApproved}}
-                        {{#isRejected}}<span class="status-rejected">거절</span>{{/isRejected}}
+                <div class="expert-card">
+                    <div class="expert-avatar">👨‍💻</div>
+                    <div class="expert-body">
+                        <div class="expert-name-wrap">
+                            <span class="expert-name">{{name}}</span>
+                            {{#isPending}}<span class="status-pending">대기중</span>{{/isPending}}
+                            {{#isApproved}}<span class="status-approved">⭐ 승인완료</span>{{/isApproved}}
+                            {{#isRejected}}<span class="status-rejected">거절</span>{{/isRejected}}
+                        </div>
+                        <div class="expert-email">{{email}}</div>
+                        <div class="expert-info-row">
+                            <span>💼 {{career}}</span>
+                            <span>📅 경력 {{experienceYears}}년</span>
+                            <span>📝 신청일 {{appliedAt}}</span>
+                        </div>
+                        {{#portfolioUrl}}
+                            <a href="{{portfolioUrl}}" target="_blank" class="expert-portfolio">🔗 포트폴리오 보기</a>
+                        {{/portfolioUrl}}
                     </div>
-                    <div class="expert-email">{{email}}</div>
-                    <div class="expert-info-row">
-                        <span>💼 {{career}}</span>
-                        <span>📅 경력 {{experienceYears}}년</span>
-                        <span>📝 신청일 {{appliedAt}}</span>
-                    </div>
-                    {{#portfolioUrl}}
-                    <a href="{{portfolioUrl}}" target="_blank" class="expert-portfolio">🔗 포트폴리오 보기</a>
-                    {{/portfolioUrl}}
+                    {{#isPending}}
+                        <div class="expert-actions">
+                            <button type="button" class="approve-btn" onclick="updateExpertStatus({{id}}, 'approve')">승인</button>
+                            <button type="button" class="reject-btn" onclick="updateExpertStatus({{id}}, 'reject')">거절</button>
+                        </div>
+                    {{/isPending}}
                 </div>
-                {{#isPending}}
-                <div class="expert-actions">
-                    <form action="/admin/experts/{{id}}/approve" method="POST">
-                        <button type="submit" class="approve-btn">승인</button>
-                    </form>
-                    <form action="/admin/experts/{{id}}/reject" method="POST">
-                        <button type="submit" class="reject-btn">거절</button>
-                    </form>
-                </div>
-                {{/isPending}}
-            </div>
             {{/experts}}
 
             {{^experts}}
-            <div class="empty-state">신청 내역이 없습니다.</div>
+                <div class="empty-state">신청 내역이 없습니다.</div>
             {{/experts}}
-
         </div>
 
         <div class="paging">
             {{#paging}}
-            {{#hasPrev}}<a href="/admin/experts?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
-            {{#pageList}}<a href="/admin/experts?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
-            {{#hasNext}}<a href="/admin/experts?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
+                {{#hasPrev}}<a href="/admin/experts?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
+                {{#pageList}}<a href="/admin/experts?page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
+                {{#hasNext}}<a href="/admin/experts?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
             {{/paging}}
         </div>
-
     </main>
 </div>
 
+<script>
+    function updateExpertStatus(id, action) {
+        const actionMessage = action === 'approve' ? '승인' : '거절';
+        if (!confirm(`해당 전문가 신청을 ${actionMessage}하시겠습니까?`)) {
+            return;
+        }
+
+        // URI에 행위 동사를 제거하고 상태 수정을 위한 PATCH 요청 송신
+        fetch(`/admin/experts/${id}/status?action=${action}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert(`전문가 신청이 ${actionMessage}되었습니다.`);
+                location.reload();
+            } else {
+                alert("처리 중 문제가 발생했습니다.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("통신 오류가 발생했습니다.");
+        });
+    }
+</script>
 {{> layout/footer}}

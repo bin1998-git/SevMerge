@@ -3,14 +3,12 @@
 <style>
     .mypage-section { padding: 52px 28px 80px; }
     .mypage-inner { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
-    /* 프로필 카드 */
     .profile-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 24px 32px; display: flex; align-items: center; gap: 32px; text-align: left; position: static; }
-.profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; margin: 0; }
+    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; margin: 0; }
     .profile-name { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 4px; }
     .profile-email { font-size: 13px; color: #9ca3af; margin-bottom: 14px; }
     .profile-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; margin-bottom: 20px; }
-    ..profile-stats { display: flex; gap: 20px; margin-bottom: 0; }
-.profile-start { background: #f8f9fc; border-radius: 10px; padding: 12px; min-width: 80px; }
+    .profile-stats { display: flex; gap: 20px; margin-bottom: 0; }
     .profile-stat-val { font-size: 20px; font-weight: 900; color: #2563eb; }
     .profile-stat-lbl { font-size: 11px; color: #9ca3af; margin-top: 2px; }
     .profile-btns { display: flex; flex-direction: row; gap: 8px; margin-left: auto; }
@@ -18,12 +16,10 @@
     .profile-btn-primary { background: #2563eb; color: #fff; }
     .profile-btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
     .profile-btn-danger { background: #fff3f3; color: #ef4444; border: 1.5px solid #fecaca; }
-    /* 탭 콘텐츠 */
     .mypage-tabs { display: flex; gap: 0; border-bottom: 2px solid #eaecf4; margin-bottom: 24px; }
     .mypage-tab { padding: 11px 20px; font-size: 14px; font-weight: 700; color: #9ca3af; border-bottom: 3px solid transparent; margin-bottom: -2px; text-decoration: none; transition: all .15s; }
     .mypage-tab:hover { color: #1c1e26; }
     .mypage-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
-    /* 프로젝트 목록 */
     .my-list { display: flex; flex-direction: column; gap: 12px; }
     .my-item { background: #fff; border: 1.5px solid #eaecf4; border-radius: 12px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; transition: border-color .15s; }
     .my-item:hover { border-color: #bfdbfe; }
@@ -39,7 +35,6 @@
     .status-wait { background: #f3f4f8; color: #9ca3af; }
     .status-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
     .empty-state { text-align: center; padding: 60px 0; font-size: 15px; color: #c4c9d9; }
-    /* 정보 수정 폼 */
     .edit-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 18px; }
     .form-group { display: flex; flex-direction: column; gap: 7px; }
     .form-label { font-size: 13px; font-weight: 700; color: #374151; }
@@ -53,16 +48,12 @@
 
 <section class="mypage-section">
     <div class="mypage-inner">
-
-        <!-- 프로필 카드 -->
         <div class="profile-card">
             <div class="profile-avatar">👤</div>
-
             <div class="profile-info">
                 <div class="profile-name">{{member.name}}</div>
                 <div class="profile-email">{{member.email}}</div>
-                {{#member.isCertified}}
-                    <div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
+                {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
                 <div class="profile-stats">
                     {{^member.isExpert}}
                         <div class="profile-stat">
@@ -78,34 +69,23 @@
                     {{/member.isExpert}}
                 </div>
             </div>
-
-            <!-- 버튼 영역 -->
             <div class="profile-btns">
-                {{#member.isExpert}}
-                    <a href="/portfolios/save" class="profile-btn profile-btn-outline">📁 포트폴리오</a>
-                {{/member.isExpert}}
-                {{^member.isCertified}}
-                    <a href="/expert-profile/form" class="profile-btn profile-btn-primary">⭐ 인증 전문가 신청</a>
-                {{/member.isCertified}}
+                {{#member.isExpert}}<a href="/portfolios/save" class="profile-btn profile-btn-outline">📁 포트폴리오</a>{{/member.isExpert}}
+                {{^member.isCertified}}<a href="/expert-profile/form" class="profile-btn profile-btn-primary">⭐ 인증 전문가 신청</a>{{/member.isCertified}}
                 <a href="/logout" class="profile-btn profile-btn-danger">로그아웃</a>
             </div>
         </div>
 
-        <!-- 탭 콘텐츠 -->
         <div>
             <div class="mypage-tabs">
-                {{^member.isExpert}}
-                    <a href="/mypage?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>
-                {{/member.isExpert}}
-
+                {{^member.isExpert}}<a href="/my-pages?tab=projects" class="mypage-tab {{#isProjects}}active{{/isProjects}}">내 프로젝트</a>{{/member.isExpert}}
                 {{#member.isExpert}}
-                    <a href="/mypage?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
-                    <a href="/mypage?tab=portfolios" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내
-                        포트폴리오</a>
+                    <a href="/my-pages?tab=bids" class="mypage-tab {{#isBids}}active{{/isBids}}">내 제안서</a>
+                    <a href="/my-pages?tab=portfolios" class="mypage-tab {{#isPortfolio}}active{{/isPortfolio}}">내 포트폴리오</a>
                 {{/member.isExpert}}
-                <a href="/mypage?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
-                <a href="/mypage?tab=reviews" class="mypage-tab {{#isReview}}active{{/isReview}}">리뷰</a>
-                <a href="/mypage?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
+                <a href="/my-pages?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
+                <a href="/my-pages?tab=reviews" class="mypage-tab {{#isReview}}active{{/isReview}}">리뷰</a>
+                <a href="/my-pages?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
             </div>
 
             {{! 내 프로젝트 }}
@@ -150,8 +130,7 @@
                             </div>
                         </div>
                     {{/projects}}
-                    {{^projects}}
-                        <div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
+                    {{^projects}}<div class="empty-state">등록한 프로젝트가 없습니다.</div>{{/projects}}
                 </div>
             {{/isProjects}}
 
@@ -168,17 +147,15 @@
                             <div class="my-item-right">
                                 <div class="my-item-price">{{proposedPrice}}만원</div>
                                 <span class="my-item-status {{#isSelected}}status-done{{/isSelected}}{{^isSelected}}status-wait{{/isSelected}}">
-                            {{#isSelected}}낙찰{{/isSelected}}{{^isSelected}}대기중{{/isSelected}}
-                        </span>
+                                {{#isSelected}}낙찰{{/isSelected}}{{^isSelected}}대기중{{/isSelected}}
+                                </span>
                                 {{#isSelected}}
-                                    <a href="/reviews/save?targetId={{memberId}}" class="btn btn-primary"
-                                    style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
+                                    <a href="/reviews/save?targetId={{memberId}}" class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">리뷰 작성</a>
                                 {{/isSelected}}
                             </div>
                         </div>
                     {{/bids}}
-                    {{^bids}}
-                        <div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
+                    {{^bids}}<div class="empty-state">제출한 제안서가 없습니다.</div>{{/bids}}
                 </div>
             {{/isBids}}
 
@@ -194,8 +171,7 @@
                             </div>
                         </a>
                     {{/portfolios}}
-                    {{^portfolios}}
-                        <div class="empty-state">등록한 포트폴리오가 없습니다.</div>{{/portfolios}}
+                    {{^portfolios}}<div class="empty-state">등록한 포트폴리오가 없습니다.</div>{{/portfolios}}
                 </div>
             {{/isPortfolio}}
 
@@ -211,8 +187,7 @@
                             </div>
                         </a>
                     {{/boards}}
-                    {{^boards}}
-                        <div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
+                    {{^boards}}<div class="empty-state">작성한 게시글이 없습니다.</div>{{/boards}}
                 </div>
             {{/isBoards}}
 
@@ -232,18 +207,16 @@
                             </div>
                         </a>
                     {{/reviews}}
-                    {{^reviews}}
-                        <div class="empty-state">작성한 리뷰가 없습니다.</div>
-                    {{/reviews}}
+                    {{^reviews}}<div class="empty-state">작성한 리뷰가 없습니다.</div>{{/reviews}}
                 </div>
             {{/isReviews}}
 
-            {{! 정보 수정 }}
+            {{! 정보 수정 구역 }}
             {{#isEdit}}
-                <form class="edit-form" action="/mypage/update" method="POST">
+                <form class="edit-form" id="editForm">
                     <div class="form-group">
                         <label class="form-label">이름</label>
-                        <input type="text" name="name" class="form-input" value="{{member.name}}"/>
+                        <input type="text" id="updateName" name="name" class="form-input" value="{{member.name}}"/>
                     </div>
                     <div class="form-group">
                         <label class="form-label">이메일</label>
@@ -251,14 +224,14 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">새 비밀번호</label>
-                        <input type="password" name="newPassword" class="form-input" placeholder="변경할 경우만 입력"/>
+                        <input type="password" id="updatePassword" name="newPassword" class="form-input" placeholder="변경할 경우만 입력"/>
                     </div>
                     <div class="form-group">
                         <label class="form-label">새 비밀번호 확인</label>
-                        <input type="password" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력"/>
+                        <input type="password" id="updatePasswordConfirm" name="newPasswordConfirm" class="form-input" placeholder="변경할 경우만 입력"/>
                     </div>
                     <div class="form-btns">
-                        <button type="submit" class="btn btn-primary">수정완료</button>
+                        <button type="button" class="btn btn-primary" onclick="updateMyInfo()">수정완료</button>
                     </div>
                 </form>
             {{/isEdit}}
@@ -267,4 +240,47 @@
     </div>
 </section>
 
-{{> layout/footer}}
+{{#isEdit}}
+    <script>
+        function updateMyInfo() {
+            const nameVal = document.getElementById("updateName").value;
+            const passwordVal = document.getElementById("updatePassword").value;
+            const confirmVal = document.getElementById("updatePasswordConfirm").value;
+
+            if (!nameVal.trim()) {
+                alert("이름을 입력해 주세요.");
+                return;
+            }
+            if (passwordVal !== confirmVal) {
+                alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                return;
+            }
+
+            const updateData = {
+                name: nameVal,
+                newPassword: passwordVal,
+                newPasswordConfirm: confirmVal
+            };
+
+            // PUT 방식의 JSON 비동기 통신 요청
+            fetch('/my-pages', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("회원 정보 수정이 완료되었습니다.");
+                    window.location.href = "/my-pages?tab=edit";
+                } else {
+                    alert("회원 정보 수정에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("통신 중 오류가 발생했습니다.");
+            });
+        }
+    </script>
+{{/isEdit}}
+{{pre layout/footer}}
