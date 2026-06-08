@@ -1,5 +1,6 @@
 package com.example.SevMerge.expertprofile;
 
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.portfolio.PortfolioResponse;
 import com.example.SevMerge.portfolio.PortfolioService;
@@ -7,6 +8,7 @@ import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewResponse;
 import com.example.SevMerge.review.ReviewService;
+import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +46,12 @@ public class ExpertProfileViewController {
      * → templates/expertProfile/expertProfile-list.mustache
      */
     @GetMapping
-    public String list(Model model) {
+    public String list(HttpSession session ,Model model) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("expertProfiles", expertProfileService.getAll());
         model.addAttribute("doneProject",projectService.getDoneProjectsCount());
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+
         return "expertProfile/expertProfile-list";
     }
 
@@ -70,6 +75,7 @@ public class ExpertProfileViewController {
         model.addAttribute("reviews",reviewService.findMyReviews(memberId));
         model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
 
         return "expertProfile/expertProfile-detail";
     }

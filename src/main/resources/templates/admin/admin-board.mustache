@@ -129,11 +129,15 @@
         overflow: hidden;
     }
 
-    .admin-table-head {
-        display: grid;
-        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
+    /* 상단 헤더와 하단 로우의 전체 틀 FlexBox 설정 */
+    .admin-table-head, .admin-table-row {
+        display: flex;
+        align-items: center;
         gap: 12px;
         padding: 12px 22px;
+    }
+
+    .admin-table-head {
         background: #f8f9fc;
         border-bottom: 1px solid #eaecf4;
         font-size: 11px;
@@ -143,14 +147,64 @@
     }
 
     .admin-table-row {
-        display: grid;
-        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
-        gap: 12px;
         padding: 15px 22px;
         border-bottom: 1px solid #f3f4f8;
-        align-items: center;
         font-size: 13px;
     }
+
+    /* 1. 상단 헤더와 하단 데이터 줄 전체 틀 */
+    .admin-table-head, .admin-table-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 15px 22px !important;
+    }
+
+    .admin-table-head {
+        background: #f8f9fc !important;
+        border-bottom: 1px solid #eaecf4 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #9ca3af !important;
+        letter-spacing: .5px !important;
+    }
+
+    .admin-table-row {
+        border-bottom: 1px solid #f3f4f8 !important;
+        font-size: 13px !important;
+        background: #fff !important;
+    }
+
+
+    /* 2. 상하단 태그 종류 상관없이 순서대로 정중앙 배치 */
+
+    /* [1번째 칸] No (번호) - 무조건 60px 고정 후 정중앙 */
+    .admin-table-head > *:nth-child(1),
+    .cell-id {
+        width: 60px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    /* [2번째 칸] 제목 - 남은 여백 다 차지하고 무조건 정중앙 + 말줄임 */
+    .admin-table-head > *:nth-child(2),
+    .cell-title {
+        flex: 1 !important;
+        min-width: 0 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* [3번째 칸] 날짜 - 무조건 150px 고정 후 정중앙 */
+    .admin-table-head > *:nth-child(3),
+    .cell-date {
+        width: 150px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
 
     .admin-table-row:last-child {
         border-bottom: none;
@@ -277,42 +331,38 @@
 
         <div class="admin-header">
             <div>
-                <h1 class="admin-title">게시판 관리</h1>
+                <h1 class="admin-title">자유 게시판 관리</h1>
                 <p class="admin-desc">전체 게시판 목록을 관리합니다.</p>
             </div>
         </div>
 
         <form action="/admin/boards" method="get" class="search-bar">
-            <input type="text" class="search-input" name="keyword" placeholder="제목이나 내용을 입력..." value="{{keyword}}"/>
+            <input type="text" class="search-input" name="keyword" placeholder="제목 또는 이름으로 검색..." value=""/>
             <button type="submit" class="search-btn">검색</button>
         </form>
 
 
+
         <div class="admin-table-wrap">
             <div class="admin-table-head">
-                <span>No</span><span>제목</span><span>내용</span><span>이름</span><span>관리</span>
+                <span>No</span><span>제목</span><span>날짜</span>
             </div>
+
             {{#boards}}
                 <div class="admin-table-row">
                     <!-- 1. 글 번호 -->
                     <span class="cell-id">{{id}}</span>
 
                     <!-- 2. 제목 -->
-                    <div class="cell-title" style="font-weight: 500;">{{title}}</div>
+                    <a href="/boards/{{id}}" class="cell-title" style="font-weight: 500; text-decoration: none; color: inherit;">
+                        {{title}}
+                    </a>
 
-                    <!-- 3. 내용 (말줄임 표시 등을 위해 클래스 부여) -->
-                    <span class="cell-content" style="color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{content}}</span>
 
                     <!-- 4. 작성일 -->
                     <span class="cell-date">{{createdAt}}</span>
 
-                    <!-- 5. 작성자 이름 또는 이메일 -->
-                    <span class="cell-author">{{authorName}}</span>
 
-                    <!-- 6. 관리 액션 (삭제 버튼) -->
-                    <form action="/admin/boards/{{id}}/delete" method="POST" onsubmit="return confirm('정말 이 게시글을 삭제하시겠습니까?');">
-                        <button type="submit" class="del-btn">삭제</button>
-                    </form>
                 </div>
             {{/boards}}
         </div>
