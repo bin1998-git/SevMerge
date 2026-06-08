@@ -25,7 +25,6 @@ public class BidController {
         log.info("제안서 등록 폼 요청 - projectId: {}", projectId);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
-        // 인터셉터가 로그인/전문가 여부는 걸러주지만, 예외적인 튕구기 흐름만 컨트롤러가 방어
         if (!sessionUser.isExpert()) {
             return "redirect:/projects/" + projectId + "/detail";
         }
@@ -35,13 +34,14 @@ public class BidController {
         return "bid/bid-save";
     }
 
-    // 2. 제안서 등록 (Form submit 방식 유지)
+    // 2. 제안서 등록
     @PostMapping("/bid/save")
     public String save(BidRequestDTO.SaveDTO req, HttpSession session) {
         log.info("제안서 등록 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
-        req.validate(); // DTO 유효성 검사
+        // 유효성 검사
+        req.validate();
         bidService.saveBid(req, sessionUser);
 
         return "redirect:/projects/" + req.getProjectId() + "/detail";
@@ -87,7 +87,7 @@ public class BidController {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
         req.validate();
-        bidService.updateBid(id, req, sessionUser); // 서비스에서 본인 글인지 대조할 예정
+        bidService.updateBid(id, req, sessionUser);
         return ResponseEntity.ok().build();
     }
 
@@ -102,7 +102,7 @@ public class BidController {
         return ResponseEntity.ok().build();
     }
 
-    // 8. 낙찰 처리 (의뢰인이 선택 - 상태 변경이 일어나므로 비동기 처리 권장)
+    // 8. 낙찰 처리 (의뢰인이 선택)
     @PostMapping("/bid/{id}/select")
     @ResponseBody
     public ResponseEntity<?> select(@PathVariable Long id, HttpSession session) {
