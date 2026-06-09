@@ -172,7 +172,7 @@ public class ProjectController {
         log.info("project 검토 확인 요청");
 
         projectService.doneProject(id, null);
-        return "redirect:/mypage?tab=projects";
+        return "redirect:/my-pages?tab=projects";
     }
 
 

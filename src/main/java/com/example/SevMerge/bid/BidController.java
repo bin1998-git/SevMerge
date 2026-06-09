@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class BidController {
         if (!sessionUser.isExpert()) {
             return "redirect:/projects/" + projectId;
         }
+
         model.addAttribute("projectId", projectId);
         model.addAttribute("project", projectService.findProjectById(projectId));
         return "bid/bid-save";
@@ -53,9 +56,14 @@ public class BidController {
     public String list(Model model, @RequestParam Long projectId, HttpSession session) {
         log.info("의뢰인의 제안서 목록 조회 요청 - projectId: {}", projectId);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser != null) {
+            model.addAttribute("sessionUser", sessionUser);
+        }
         model.addAttribute("bids", bidService.findByProjectId(projectId, sessionUser));
         model.addAttribute("projectId", projectId);
         model.addAttribute("projects", projectService.findProjectById(projectId));
+
+
         return "bid/bid-list";
     }
 
@@ -71,6 +79,7 @@ public class BidController {
     public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
         log.info("제안서 수정 폼 요청 - bidId: {}", id);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
         BidResponseDTO.DetailDTO bid = bidService.findBidById(id, sessionUser);
         model.addAttribute("bid", bid);
         return "bid/bid-update";
@@ -84,6 +93,7 @@ public class BidController {
                                     HttpSession session) {
         log.info("제안서 수정 요청 - bidId: {}", id);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
         req.validate();
         bidService.updateBid(id, req, sessionUser);
         return ResponseEntity.ok().build();
@@ -95,6 +105,7 @@ public class BidController {
     public ResponseEntity<?> delete(@PathVariable Long id, HttpSession session) {
         log.info("제안서 취소 요청 - bidId: {}", id);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
         bidService.deleteBid(id, sessionUser);
         return ResponseEntity.ok().build();
     }
@@ -105,6 +116,7 @@ public class BidController {
     public ResponseEntity<?> select(@PathVariable Long id, HttpSession session) {
         log.info("의뢰인의 제안서 낙찰 처리 요청 - bidId: {}", id);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
         bidService.selectBid(id, sessionUser);
         return ResponseEntity.ok().build();
     }

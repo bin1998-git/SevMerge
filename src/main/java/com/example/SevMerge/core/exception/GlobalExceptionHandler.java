@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
         return """
                 <script>
                     alert('%s');
-                    location.href='/login-form';
+                    location.href='/login';
                 </script>
                 """.formatted(message);
     }
