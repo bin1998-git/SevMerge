@@ -34,7 +34,7 @@
         </div>
 
         {{! action에 게시글 id 포함 — 컨트롤러에서 board.id 넘겨줘야 함 }}
-        <form class="save-form" action="/boards/{{board.id}}/edit" method="POST">
+        <form class="save-form" action="/admin/notices/{{board.id}}/update" method="POST">
 
             <div class="form-group">
                 <label class="form-label">제목</label>
@@ -59,7 +59,7 @@
 
             <div class="form-btns">
                 {{#isAdmin}}
-                <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
+                    <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
                 {{/isAdmin}}
                 {{^isAdmin}}
                     <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>

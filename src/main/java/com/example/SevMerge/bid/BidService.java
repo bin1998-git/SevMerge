@@ -76,7 +76,7 @@ public class BidService {
     public List<BidResponseDTO.ListDTO> findByProjectId(Long projectId, Member session) {
         log.info("제안서 조회 서비스 시작");
         // 의뢰인 여부 체크
-        if (!session.isClient()) {
+        if (!session.isClient() && !session.isAdmin()) {
             throw new ForbiddenException("의뢰인만 제안서 목록을 조회할 수 있습니다.");
         }
         List<Bid> bidList = bidRepository.findByProjectId(projectId);

@@ -636,31 +636,47 @@
 </head>
 <body>
 
+
 <!-- NAV -->
 <header class="nav">
     <div class="nav-inner">
         <a href="/" class="nav-logo">Sev<span>Merge</span></a>
+
         <nav class="nav-links">
-            <a href="/projects/list">프로젝트</a>
-            <a href="/experts">전문가</a>
-            <a href="/boards">게시판</a>
-
-            {{#isLoggedIn}}
-                <!-- 관리자가 아닐때만 마이페이지 노출 -->
-                {{^isAdmin}}
-                <a href="/mypage">마이페이지</a>
-
-                {{/isAdmin}}
-                {{#isExpert}}
-                    <a href="/portfolios">포트폴리오</a>
-                {{/isExpert}}
-            {{/isLoggedIn}}
-
-            <!-- 관리자 페이지 -->
+            <!-- 1. 관리자 전용 메뉴 -->
             {{#isAdmin}}
-                <a href="/admin">관리자</a>
+                <a href="/admin/main" class="admin-main-item">대시보드</a>
+                <a href="/admin/members" class="admin-main-item">회원 관리</a>
+                <a href="/admin/projects" class="admin-main-item">프로젝트 관리</a>
+
+
+                <div class="admin-dropdown-container" style="position: relative; display: inline-block;">
+                    <span class="admin-dropdown-trigger" style="cursor: pointer;">게시판 관리</span>
+                    <div class="nav-submenu">
+                        <a href="/admin/boards" class="submenu-link">자유게시판</a>
+                        <a href="/admin/notices" class="submenu-link">공지사항</a>
+                    </div>
+                </div>
+
+                <a href="/admin/expert" class="admin-main-item">전문가 승인</a>
+            {{/isAdmin}}
+
+            <!-- 2. 기존 일반 회원용 메뉴 -->
+            {{^isAdmin}}
+                <a href="/projects/list">프로젝트</a>
+                <a href="/experts">전문가</a>
+                <a href="/boards">게시판</a>
+
+                {{#isLoggedIn}}
+                    <a href="/mypage">마이페이지</a>
+                    {{#isExpert}}
+                        <a href="/portfolios">포트폴리오</a>
+                    {{/isExpert}}
+                {{/isLoggedIn}}
             {{/isAdmin}}
         </nav>
+
+        <!-- 우측 사용자 상태 바 -->
         <div class="nav-actions">
             {{#isLoggedIn}}
                 <span class="nav-username">{{sessionUser.name}}님</span>
@@ -673,3 +689,127 @@
         </div>
     </div>
 </header>
+
+<style>
+    .admin-dropdown-trigger {
+        font-size: inherit;
+        font-weight: inherit;
+        color: inherit;
+        transition: color 0.15s;
+    }
+
+    .admin-dropdown-container:hover .nav-submenu,
+    .nav-submenu.active {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .nav-submenu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ffffff;
+        min-width: 140px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        padding: 4px 0;
+        z-index: 9999;
+    }
+
+    .nav-submenu .submenu-link {
+        position: relative !important;
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 10px 0 !important;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280 !important; /* 평소 기본 회색 */
+        background-color: transparent !important;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.1s;
+        text-align: center !important;
+        border-left: none !important;
+    }
+
+    .nav-submenu .submenu-link.active-link {
+        color: #2563eb !important;
+        background-color: #eff6ff !important;
+    }
+    .nav-submenu .submenu-link.active-link::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #2563eb;
+    }
+
+    .nav-submenu .submenu-link:hover {
+        color: #2563eb !important;
+        background-color: #eff6ff !important;
+    }
+
+    .nav-submenu .submenu-link:hover::before {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 4px !important;
+        background-color: #2563eb !important;
+    }
+
+    .nav-submenu:hover .submenu-link.active-link:not(:hover) {
+        background-color: transparent !important;
+        color: #6b7280 !important;
+    }
+    .nav-submenu:hover .submenu-link.active-link:not(:hover)::before {
+        display: none !important;
+    }
+</style>
+
+{{#isAdmin}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentPath = window.location.pathname;
+
+            if (currentPath.startsWith("/admin")) {
+                const adminItems = document.querySelectorAll(".nav-links > .admin-main-item");
+                adminItems.forEach(function (link) {
+                    if (link.getAttribute("href") === currentPath) {
+                        link.setAttribute("style", "color: #2563eb !important; font-weight: bold !important;");
+                    }
+                });
+
+                const submenuLinks = document.querySelectorAll(".nav-submenu .submenu-link");
+                submenuLinks.forEach(function (link) {
+                    const linkHref = link.getAttribute("href");
+
+                    const isBoardMatch = linkHref.includes("boards") && (currentPath.includes("board") || currentPath.includes("boards"));
+                    const isNoticeMatch = linkHref.includes("notices") && (currentPath.includes("notice") || currentPath.includes("notices"));
+
+                    if (isBoardMatch || isNoticeMatch) {
+                        link.classList.add("active-link");
+
+                        const parentSubmenu = link.closest(".nav-submenu");
+                        if (parentSubmenu) {
+                            const parentContainer = parentSubmenu.closest(".admin-dropdown-container");
+                            if (parentContainer) {
+                                const trigger = parentContainer.querySelector(".admin-dropdown-trigger");
+                                if (trigger) {
+                                    trigger.setAttribute("style", "color: #2563eb !important; font-weight: bold !important;");
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+{{/isAdmin}}

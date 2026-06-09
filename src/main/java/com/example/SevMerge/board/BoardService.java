@@ -114,11 +114,16 @@ public class BoardService {
     }
 
     // 관리자 게시판 관리 >> 전체 게시판 조회
-    public List<BoardResponse.ListDTO> getAdminBoardsByType(BoardType boardType) {
+    public List<BoardResponse.ListDTO> getAdminBoardsByType(BoardType boardType, String keyword) {
         // 리포지토리 쿼리 메소드 호출
-        List<Board> boards = boardRepository.findAllByBoardTypeIsActive(boardType);
+        List<Board> boards;
 
-        // 엔티티 리스트를 DTO리스트로 변환해서 반환
+        if (keyword == null || keyword.trim().isEmpty()) {
+            boards = boardRepository.findAllByBoardTypeIsActive(boardType);
+        } else {
+            boards = boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword);
+        }
+
         return boards.stream()
                 .map(board -> new BoardResponse.ListDTO(board))
                 .collect(Collectors.toList());
@@ -133,9 +138,25 @@ public class BoardService {
         boardEntity.softDelete();
     }
 
+    // 관리자 공지사항 수정
+    @Transactional
+    public void updateNotice(Long id, BoardRequest.UpdateBoardDTO updateDTO) {
+        // 수정할 게시글 조회
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
+        board.update(updateDTO);
+    }
+
+    // 공지사항 삭제
+    @Transactional
+    public void deleteNotice(Long id) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
+        boardRepository.delete(board);
+    }
+
     @Transactional
     public void increaseViewCount(Long boardId) {
         boardRepository.increaseViewCount(boardId);
     }
 }
-

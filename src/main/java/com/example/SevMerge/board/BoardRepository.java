@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -36,6 +37,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                 WHERE b.member.id = :memberId
             """)
     List<BoardResponse.ListDTO> findByMyBoard(@Param("memberId") Long memberId);
+
+    // 관리자 게시판 키워드 검색 조회
+    @Query("""
+                    select b from Board b join fetch b.member where b.boardType = :boardType and (b.title LIKE %:keyword% OR b.content LIKE %:keyword%)
+            """)
+    List<Board> findAllByBoardTypeAndKeyword(
+            @Param("boardType") BoardType boardType,
+            @Param("keyword") String keyword
+    );
 
     // 1:1 문의 게시글 조회
     @Query("""
