@@ -4,6 +4,7 @@ import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.portfolio.PortfolioResponse;
 import com.example.SevMerge.portfolio.PortfolioService;
+import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.Review;
 import com.example.SevMerge.review.ReviewResponse;
@@ -83,21 +84,54 @@ public class ExpertProfileViewController {
 
     /**
      * 전문가 대시보드
-     * GET /experts/dashboard
+     * GET /experts/dashboard?keyword=&category=
      * → templates/expertProfile/expert-dashboard.mustache
      */
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String dashboard(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            HttpSession session, Model model) {
+
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
         if (!sessionUser.isExpert()) return "redirect:/";
 
+        // 전문가 프로필 (없으면 빈 채로)
         try {
             ExpertProfileResponse profile = expertProfileService.getByMemberId(sessionUser.getId());
             model.addAttribute("expertProfile", profile);
         } catch (Exception e) {
-            // 프로필 미등록 상태일 수 있음 → 빈 채로 렌더링
+            // 프로필 미등록 상태일 수 있음
         }
+
+        // 프로젝트 목록 — keyword/category 조건에 따라 분기
+        List<ProjectResponeDTO.ListDTO> projects;
+        if (keyword != null && !keyword.isBlank()) {
+            projects = projectService.findByKeyword(keyword);
+        } else if (category != null && !category.isBlank()) {
+            projects = projectService.findByCategory(category);
+        } else {
+            projects = projectService.findAllProjects();
+        }
+
+        // 최신 6건만 대시보드 미니 그리드에 표시
+        List<ProjectResponeDTO.ListDTO> recentProjects = projects.stream()
+                .limit(6)
+                .collect(java.util.stream.Collectors.toList());
+
+        model.addAttribute("projects", recentProjects);
+        model.addAttribute("totalProjectCount", projects.size());
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+
+        // 카테고리 탭 활성화 플래그
+        model.addAttribute("isAll",   category == null && (keyword == null || keyword.isBlank()));
+        model.addAttribute("isWeb",   "WEB".equals(category));
+        model.addAttribute("isApp",   "APP".equals(category));
+        model.addAttribute("isUiux",  "UI_UX".equals(category));
+        model.addAttribute("isData",  "DATA".equals(category));
+        model.addAttribute("isVideo", "VIDEO".equals(category));
+        model.addAttribute("isEtc",   "ETC".equals(category));
 
         return "expertProfile/expert-dashboard";
     }

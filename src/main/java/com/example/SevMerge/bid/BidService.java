@@ -4,6 +4,8 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.payment.Payment;
+import com.example.SevMerge.payment.PaymentRepository;
 import com.example.SevMerge.project.BidFilter;
 import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
@@ -24,6 +26,7 @@ public class BidService {
 
     private final BidRepository bidRepository;
     private final ProjectRepository projectRepository;
+    private final PaymentRepository paymentRepository;
 
     // 제안서 작성
     @Transactional
@@ -95,6 +98,27 @@ public class BidService {
         List<Bid> bidList = bidRepository.findByExpertId(session.getId());
         return bidList.stream()
                 .map(BidResponseDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // 주문 목록 조회(전문가) — SELECTED 낙찰 건만 반환
+    public List<BidResponseDTO.OrderDTO> findMyOrders(Member session) {
+        log.info("내 주문 목록 조회 서비스 시작");
+        if (!session.isExpert()) {
+            throw new ForbiddenException("전문가만 주문 내역을 조회할 수 있습니다.");
+        }
+        List<Bid> selectedBids = bidRepository.findByExpertId(session.getId())
+                .stream()
+                .filter(b -> b.getStatus() == BidStatus.SELECTED)
+                .collect(Collectors.toList());
+
+        return selectedBids.stream()
+                .map(bid -> {
+                    Payment payment = paymentRepository
+                            .findByProjectId(bid.getProject().getId())
+                            .orElse(null);
+                    return new BidResponseDTO.OrderDTO(bid, payment);
+                })
                 .collect(Collectors.toList());
     }
 

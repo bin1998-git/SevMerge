@@ -37,7 +37,7 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
-    // 프로젝트 목록 조회
+    // 프로젝트 목록 조회 (client 용)
     @GetMapping("/projects")
     public String list(Model model,
                        @RequestParam(required = false) String keyword,

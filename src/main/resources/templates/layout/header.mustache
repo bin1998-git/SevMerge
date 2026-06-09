@@ -632,6 +632,29 @@
             font-size: 12px;
             color: #c4c9d9;
         }
+
+        /* ── 전문가 전용 탭 네비 ── */
+        .nav-links.expert-links {
+            flex: 1;
+            gap: 0;
+            justify-content: center;
+        }
+
+        .expert-nav-tab {
+            padding: 0 18px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: color .15s, border-color .15s;
+        }
+
+        .expert-nav-tab:hover { color: #1c1e26; border-color: #d1d5db; }
+        .expert-nav-tab.active { color: #2563eb; border-color: #2563eb; }
     </style>
 </head>
 <body>
@@ -639,8 +662,25 @@
 <!-- NAV -->
 <header class="nav">
     <div class="nav-inner">
-        {{#isExpert}}<a href="/experts/dashboard" class="nav-logo">Sev<span>Merge</span></a>{{/isExpert}}
-        {{^isExpert}}<a href="/" class="nav-logo">Sev<span>Merge</span></a>{{/isExpert}}
+        {{#isExpert}}
+        <!-- 전문가 전용 탭 네비 -->
+        <a href="/experts/dashboard" class="nav-logo">Sev<span>Merge</span></a>
+        <nav class="nav-links expert-links">
+            <a href="/bid/my-list"     class="expert-nav-tab">제안서 관리</a>
+            <a href="/bid/my-orders"   class="expert-nav-tab">주문 관리</a>
+            <a href="/payment/my"      class="expert-nav-tab">수익 &amp; 정산</a>
+            <a href="/reviews/my"      class="expert-nav-tab">평가 및 리뷰</a>
+            <a href="/experts/my/form" class="expert-nav-tab">프로필 수정</a>
+            <a href="/boards"          class="expert-nav-tab">게시판</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="nav-username">{{sessionUser.name}}님</span>
+            <a href="/logout" class="btn btn-outline">로그아웃</a>
+        </div>
+        {{/isExpert}}
+        {{^isExpert}}
+        <!-- 일반 네비 -->
+        <a href="/" class="nav-logo">Sev<span>Merge</span></a>
         <nav class="nav-links">
             <a href="/projects/list">프로젝트</a>
             <a href="/experts">전문가</a>
@@ -651,9 +691,6 @@
                 {{^isAdmin}}
                 <a href="/my-pages">마이페이지</a>
                 {{/isAdmin}}
-                {{#isExpert}}
-                    <a href="/portfolios">포트폴리오</a>
-                {{/isExpert}}
             {{/isLoggedIn}}
 
             <!-- 관리자 페이지 -->
@@ -671,5 +708,6 @@
                 <a href="/join" class="btn btn-primary">회원가입</a>
             {{/isLoggedIn}}
         </div>
+        {{/isExpert}}
     </div>
 </header>

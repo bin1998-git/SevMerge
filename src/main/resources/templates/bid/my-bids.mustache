@@ -1,0 +1,128 @@
+{{> layout/header}}
+
+<style>
+    /* ── 대시보드 탭 ── */
+    .dash-tabs-bar { background: #fff; border-bottom: 2px solid #eaecf4; position: sticky; top: 64px; z-index: 90; }
+    .dash-tabs-inner { max-width: 1200px; margin: 0 auto; padding: 0 28px; display: flex; }
+    .dash-tab { padding: 13px 20px; font-size: 13px; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: color .15s, border-color .15s; }
+    .dash-tab:hover { color: #1c1e26; border-color: #d1d5db; }
+    .dash-tab.active { color: #2563eb; border-color: #2563eb; }
+
+    /* ── 본문 ── */
+    .page-section { padding: 40px 28px 80px; }
+    .page-inner { max-width: 1200px; margin: 0 auto; }
+    .page-head { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .page-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; }
+    .page-count { font-size: 13px; color: #9ca3af; font-weight: 500; }
+
+    /* ── 테이블 ── */
+    .bid-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; }
+    .bid-table-head { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 110px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
+    .bid-row { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .bid-row:last-child { border-bottom: none; }
+    .bid-row:hover { background: #f8f9ff; }
+    .cell { font-size: 13px; color: #4b5563; }
+    .cell-title { font-weight: 700; color: #1c1e26; font-size: 14px; }
+    .cell-price { font-weight: 700; color: #1c1e26; }
+
+    /* ── 상태 뱃지 ── */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-pending  { background: #fef3c7; color: #92400e; }
+    .badge-selected { background: #d1fae5; color: #065f46; }
+    .badge-rejected { background: #f3f4f6; color: #6b7280; }
+
+    /* ── 버튼 ── */
+    .btn-cancel { padding: 6px 14px; background: #fff; border: 1.5px solid #fca5a5; color: #dc2626; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .btn-cancel:hover { background: #fef2f2; }
+    .btn-disabled { padding: 6px 14px; background: #f9fafb; border: 1.5px solid #e5e7eb; color: #d1d5db; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: not-allowed; }
+
+    /* ── 빈 상태 ── */
+    .empty-state { text-align: center; padding: 80px 0; }
+    .empty-icon { font-size: 36px; margin-bottom: 14px; }
+    .empty-msg { font-size: 14px; color: #c4c9d9; margin-bottom: 18px; }
+</style>
+
+<!-- 탭바 -->
+<div class="dash-tabs-bar">
+    <div class="dash-tabs-inner">
+        <a href="/experts/dashboard" class="dash-tab">대시보드</a>
+        <a href="/bid/my-list"       class="dash-tab active">제안서 관리</a>
+        <a href="/bid/my-orders"     class="dash-tab">주문 관리</a>
+        <a href="/payment/my"        class="dash-tab">수익 &amp; 정산</a>
+        <a href="/reviews/my"        class="dash-tab">평가 및 리뷰</a>
+        <a href="/experts/my/form"   class="dash-tab">프로필 수정</a>
+    </div>
+</div>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="page-head">
+            <h1 class="page-title">📋 제안서 관리</h1>
+            <span class="page-count">총 <strong>{{bidCount}}</strong>건</span>
+        </div>
+
+        <div class="bid-table">
+            <div class="bid-table-head">
+                <span>프로젝트</span>
+                <span>제안 금액</span>
+                <span>예상 기간</span>
+                <span>제안일</span>
+                <span>상태</span>
+                <span>관리</span>
+            </div>
+
+            {{#bids}}
+            <div class="bid-row">
+                <span class="cell cell-title">{{projectTitle}}</span>
+                <span class="cell cell-price">{{proposedPrice}}원</span>
+                <span class="cell">{{estimatedDays}}일</span>
+                <span class="cell">{{createdAt}}</span>
+                <span class="cell">
+                    {{#isPending}}<span class="badge badge-pending">검토중</span>{{/isPending}}
+                    {{#isSelected}}<span class="badge badge-selected">낙찰됨</span>{{/isSelected}}
+                    {{^isPending}}{{^isSelected}}<span class="badge badge-rejected">미선정</span>{{/isSelected}}{{/isPending}}
+                </span>
+                <span class="cell">
+                    {{#isPending}}
+                    <button class="btn-cancel" data-bid-id="{{id}}">취소</button>
+                    {{/isPending}}
+                    {{^isPending}}
+                    <span class="btn-disabled">취소불가</span>
+                    {{/isPending}}
+                </span>
+            </div>
+            {{/bids}}
+
+            {{^bids}}
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p class="empty-msg">아직 제출한 제안서가 없습니다.</p>
+                <a href="/projects/list" style="font-size:13px;color:#2563eb;font-weight:600;">프로젝트 둘러보기 →</a>
+            </div>
+            {{/bids}}
+        </div>
+
+    </div>
+</section>
+
+<script>
+document.querySelectorAll('.btn-cancel').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const bidId = this.dataset.bidId;
+        if (!confirm('제안서를 취소하시겠습니까? 취소 후 복구할 수 없습니다.')) return;
+        fetch(`/bid/${bidId}`, { method: 'DELETE' })
+            .then(res => {
+                if (res.ok) {
+                    alert('제안서가 취소되었습니다.');
+                    location.reload();
+                } else {
+                    alert('취소 처리 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(() => alert('서버와 통신 중 오류가 발생했습니다.'));
+    });
+});
+</script>
+
+{{> layout/footer}}

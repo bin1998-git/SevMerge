@@ -1,5 +1,7 @@
 package com.example.SevMerge.bid;
 
+import com.example.SevMerge.payment.Payment;
+import com.example.SevMerge.project.ProjectStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -76,6 +78,55 @@ public class BidResponseDTO {
             this.isSelected = bid.getStatus() == BidStatus.SELECTED;
             this.createdAt = bid.getCreatedAt();
 
+        }
+    }
+
+    // ── 주문 관리 (전문가 시점, SELECTED 낙찰 건) ──────────────────────────────
+    @Data
+    @NoArgsConstructor
+    public static class OrderDTO {
+        private Long id;
+        private Long projectId;
+        private String projectTitle;
+        private Long proposedPrice;
+        private Long estimatedDays;
+        private String projectStatus;
+        private boolean isInProgress;
+        private boolean isDone;
+        private Timestamp createdAt;
+        private PaymentInfo payment;
+
+        public OrderDTO(Bid bid, Payment paymentEntity) {
+            this.id = bid.getId();
+            this.projectId = bid.getProject().getId();
+            this.projectTitle = bid.getProject().getTitle();
+            this.proposedPrice = bid.getProposedPrice();
+            this.estimatedDays = bid.getEstimatedDays();
+            ProjectStatus ps = bid.getProject().getProjectStatus();
+            this.projectStatus = ps.name();
+            this.isInProgress = ps == ProjectStatus.IN_PROGRESS;
+            this.isDone = ps == ProjectStatus.DONE;
+            this.createdAt = bid.getCreatedAt();
+            this.payment = paymentEntity != null ? new PaymentInfo(paymentEntity) : new PaymentInfo();
+        }
+    }
+
+    // 결제 정보 (OrderDTO 내부용)
+    @Data
+    @NoArgsConstructor
+    public static class PaymentInfo {
+        private Integer amount;
+        private Integer platformFee;
+        private Integer netAmount;
+        private boolean isPaid;
+        private boolean isSettled;
+
+        public PaymentInfo(Payment p) {
+            this.amount = p.getAmount();
+            this.platformFee = p.getPlatformFee();
+            this.netAmount = p.getNetAmount();
+            this.isPaid = p.getStatus().name().equals("PAID");
+            this.isSettled = p.getStatus().name().equals("SETTLED");
         }
     }
 

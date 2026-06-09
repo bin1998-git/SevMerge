@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -63,7 +65,22 @@ public class BidController {
     @GetMapping("/bid/my-list")
     public String myList(Model model, HttpSession session) {
         log.info("전문가 본인의 제안서 목록 요청");
-        return "redirect:/mypage?tab=bids"; // 마이페이지 탭으로 이동시켜 통합 관리
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        List<BidResponseDTO.ListDTO> bids = bidService.findMyBids(sessionUser);
+        model.addAttribute("bids", bids);
+        model.addAttribute("bidCount", bids.size());
+        return "bid/my-bids";
+    }
+
+    // 4-1. 주문 관리 (전문가 — 낙찰된 건만)
+    @GetMapping("/bid/my-orders")
+    public String myOrders(Model model, HttpSession session) {
+        log.info("전문가 주문 관리 요청");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        List<BidResponseDTO.OrderDTO> orders = bidService.findMyOrders(sessionUser);
+        model.addAttribute("orders", orders);
+        model.addAttribute("orderCount", orders.size());
+        return "bid/my-orders";
     }
 
     // 5. 제안서 수정 폼
