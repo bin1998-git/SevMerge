@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -55,7 +57,11 @@ public class BidController {
 
         model.addAttribute("bids", bidService.findByProjectId(projectId, sessionUser));
         model.addAttribute("projectId", projectId);
-        model.addAttribute("project", projectService.findProjectById(projectId));
+        model.addAttribute("projects", projectService.findProjectById(projectId));
+
+        if (sessionUser != null) {
+            model.addAttribute("sessionUser", sessionUser);
+        }
         return "bid/bid-list";
     }
 
