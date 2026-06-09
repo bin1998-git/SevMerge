@@ -72,31 +72,64 @@
                     <a href="/projects" class="btn btn-outline">← 목록으로</a>
                 </div>
             </div>
-            <div class="info-card">
-                <div class="info-card-title">프로젝트 정보</div>
-                <div class="info-row">
-                    <span class="info-label">예산</span>
-                    <span class="info-value highlight">{{project.budgetMin}}~{{project.budgetMax}}만원</span>
+
+            <div style="position: sticky; top: 80px; display: flex; flex-direction: column; gap: 20px;">
+
+                <div class="info-card" style="position: static; padding: 24px;">
+                    <div class="info-card-title">프로젝트 정보</div>
+                    <div class="info-row">
+                        <span class="info-label">예산</span>
+                        <span class="info-value highlight">{{project.budgetMin}}~{{project.budgetMax}}만원</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">마감</span>
+                        <span class="info-value urgent">D-{{project.dDay}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">카테고리</span>
+                        <span class="info-value">{{project.categoryName}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">입찰 수</span>
+                        <span class="info-value">{{bidCount}}개</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">인증 전문가</span>
+                        <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
+                    </div>
+                    {{^isOwner}}
+                    <a href="/bids/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
+                    {{/isOwner}}
                 </div>
-                <div class="info-row">
-                    <span class="info-label">마감</span>
-                    <span class="info-value urgent">D-{{project.dDay}}</span>
+
+                {{#expertCard}}
+                <div class="info-card" style="position: static; padding: 24px; border-color: #2563eb;">
+                    <div class="info-card-title" style="color: #2563eb; border-bottom-color: #eff6ff; margin-bottom: 16px;">
+                        🏆 낙찰된 전문가 정보
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">이름</span>
+                        <span class="info-value">{{expertName}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">이메일</span>
+                        <span class="info-value" style="font-size: 12px; font-weight: 500; color: #4b5563;">{{expertEmail}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">작업명</span>
+                        <span class="info-value" style="max-width: 140px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{taskTitle}}">{{taskTitle}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">시작기간</span>
+                        <span class="info-value">{{startDate}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">마감기간</span>
+                        <span class="info-value">{{endDate}}</span>
+                    </div>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">카테고리</span>
-                    <span class="info-value">{{project.categoryName}}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">입찰 수</span>
-                    <span class="info-value">{{bidCount}}개</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">인증 전문가</span>
-                    <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
-                </div>
-                {{^isOwner}}
-                <a href="/bids/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
-                {{/isOwner}}
+                {{/expertCard}}
+
             </div>
         </div>
 

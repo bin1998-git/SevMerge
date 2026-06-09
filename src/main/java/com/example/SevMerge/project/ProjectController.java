@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Slf4j
@@ -110,6 +111,17 @@ public class ProjectController {
         }
         model.addAttribute("bidCount", bidCount);
         model.addAttribute("isOwner", isOwner);
+
+        // 낙찰된 전문가 카드
+        bidService.findSelectedBidByProjectId(id).ifPresent(bid -> {
+            model.addAttribute("expertCard", true);
+            model.addAttribute("expertName", bid.getExpert().getName());
+            model.addAttribute("expertEmail", bid.getExpert().getEmail());
+            model.addAttribute("taskTitle", project.getTitle());
+            model.addAttribute("startDate", bid.getCreatedAt().toString().substring(0, 10));
+            model.addAttribute("endDate", project.getDeadline().toString().substring(0, 10));
+
+        });
         return "project/project-detail";
     }
 
@@ -135,12 +147,12 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody ProjectRequestDTO.UpdateDTO req
-                                    ) {
+    ) {
         log.info("project 수정 요청");
 
         req.validate();
         // 세션유저 검증이 필요없음으로 null
-        projectService.updateProject(id,req,null);
+        projectService.updateProject(id, req, null);
         return ResponseEntity.ok().build();
     }
 
@@ -162,7 +174,6 @@ public class ProjectController {
         projectService.doneProject(id, null);
         return "redirect:/mypage?tab=projects";
     }
-
 
 
 }

@@ -25,6 +25,7 @@ public class BidResponseDTO {
         private String status;
         private boolean isPending;
         private boolean isSelected;
+        private boolean isRejected;
         private Timestamp createdAt;
 
         public ListDTO(Bid bid) {
@@ -42,6 +43,7 @@ public class BidResponseDTO {
             // 엔티티의 status를 기반으로 true / false 지정
             this.isPending = bid.getStatus() == BidStatus.PENDING;
             this.isSelected = bid.getStatus() == BidStatus.SELECTED;
+            this.isRejected = bid.getStatus() == BidStatus.REJECTED;
             this.createdAt = bid.getCreatedAt();
         }
     }

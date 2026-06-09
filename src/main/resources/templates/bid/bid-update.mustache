@@ -67,7 +67,7 @@
             </div>
 
             <div class="form-btns">
-                <a href="/mypage?tab=bids" class="btn btn-outline">취소</a>
+                <a href="/my-page?tab=bids" class="btn btn-outline">취소</a>
                 <button type="button" class="btn btn-primary btn-lg" onclick="updateBid()">수정완료</button>
             </div>
 
@@ -94,7 +94,7 @@ function updateBid() {
     }
 
     // 서버의 @PutMapping("/bid/{id}") 컨트롤러를 때립니다.
-    fetch(`/bid/${id}`, {
+    fetch(`/bids/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json; charset=utf-8"

@@ -81,4 +81,8 @@ public class Bid {
         this.isDeleted = true;
     }
 
+    // 제안서 거절
+    public void reject() {
+        this.status = BidStatus.REJECTED;
+    }
 }
