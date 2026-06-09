@@ -4,6 +4,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
+import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -188,30 +189,42 @@ public class MemberService {
         return count == null ? 0L : count;
     }
 
+    // 전문가 승인
     @Transactional
     public void approveExpert(Long memberId) {
         Member member = findMemberById(memberId);
         if (member.getRole() != Role.EXPERT || member.getStatus() != Status.PENDING)
             throw new BadRequestException("전문가 승인 처리가 불가능한 상태입니다.");
         member.approve();
+
+        expertProfileRepository.findByMemberId(memberId).ifPresent(profile -> {
+            profile.setCertified(true);
+        });
         log.info("전문가 승인 완료 - memberId={}", memberId);
     }
 
+    // 전문가 거절
     @Transactional
     public void rejectExpert(Long memberId) {
         Member member = findMemberById(memberId);
         if (member.getRole() != Role.EXPERT || member.getStatus() != Status.PENDING)
             throw new BadRequestException("전문가 승인 처리가 불가능한 상태입니다.");
         member.reject();
+
+        expertProfileRepository.findByMemberId(memberId).ifPresent(profile -> {
+            profile.setCertified(false);
+        });
         log.info("전문가 거부 처리 - memberId={}", memberId);
     }
 
+    // 회원 정지처리
     @Transactional
     public void suspendMember(Long memberId) {
         findMemberById(memberId).suspend();
         log.info("회원 정지 처리 - memberId={}", memberId);
     }
 
+    // 회원 검색
     @Transactional(readOnly = true)
     public List<MemberResponse> searchMembers(String keyword) {
         //  탈퇴하지 않은 유저만 필터링 추가
@@ -220,6 +233,61 @@ public class MemberService {
                 .filter(m -> !m.isDeleted())
                 .map(MemberResponse::from)
                 .toList();
+    }
+
+    // 대기중 전문가 목록 조회
+    @Transactional(readOnly = true)
+    public List<ExpertProfileResponse> getPendingExpertProfiles() {
+        List<Member> pendingMembers = memberRepository.findByRoleAndStatus(Role.EXPERT, Status.PENDING);
+        return pendingMembers.stream()
+                .map(member -> {
+                    ExpertProfile profile = expertProfileRepository.findByMemberId(member.getId()).orElse(null);
+                    if (profile == null) return null;
+                    return ExpertProfileResponse.from(profile);
+                })
+                .filter(java.util.Objects::nonNull) // 프로필이 혹시 없는 예외 케이스 제외
+                .toList();
+    }
+
+    // 전문가 승인 대기, 완료, 거절 상태 확인
+    @Transactional(readOnly = true)
+    public List<ExpertProfileResponse> getExpertProfilesByStatus(Status status) {
+
+        // 1. 리포지토리 메서드가 안 먹히니, 확실하게 안전한 기본 내장 findAll()로 전 유저를 다 가져옵니다.
+        List<Member> allMembers = memberRepository.findAll();
+
+        // 2. 결과를 담을 빈 상자 생성
+        List<ExpertProfileResponse> responseList = new java.util.ArrayList<>();
+
+        // 3. 전체 유저를 한 명씩 검사합니다 (for-each)
+        for (Member member : allMembers) {
+
+            // 4. 탈퇴하지 않은 유저 중, 권한이 EXPERT(전문가)이고 상태(Status)가 매개변수와 일치하는 사람만 필터링!
+            if (!member.isDeleted() && member.getRole() == Role.EXPERT && member.getStatus() == status) {
+
+                // 5. 조건에 맞다면 프로필을 조회합니다.
+                ExpertProfile profile = expertProfileRepository.findByMemberId(member.getId()).orElse(null);
+
+                if (profile != null) {
+                    // 프로필 데이터가 존재하면 정상 변환해서 삽입
+                    responseList.add(ExpertProfileResponse.from(profile));
+                } else {
+                    // 프로필 데이터 상자가 비어있다면 가상 상자를 빌드해서 무조건 이름이라도 나오게 방어 삽입!
+                    ExpertProfile dummyProfile = ExpertProfile.builder()
+                            .member(member)
+                            .profileImage("default.png")
+                            .intro("등록된 소개글이 없습니다.")
+                            .career("경력 정보 없음")
+                            .speciality("기술 분야 없음")
+                            .build();
+
+                    responseList.add(ExpertProfileResponse.from(dummyProfile));
+                }
+            }
+        }
+
+        // 6. 필터링이 완벽하게 끝난 리스트를 반환합니다.
+        return responseList;
     }
 
     //유틸
@@ -482,4 +550,6 @@ public class MemberService {
         }
         return member;
     }
+
+
 }
