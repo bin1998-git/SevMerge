@@ -63,6 +63,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 프로젝트 작성자 권한 체크
         registry.addInterceptor(projectInterceptor)
                 .addPathPatterns(
+                        "/projects/save-form",
+                        "/projects",
                         "/projects/{id}/edit", // 수정 폼
                         "/projects/{id}", // 수정 처리, 삭제 처리
                         "/projects/{id}/done" // 검토 확인
