@@ -31,6 +31,8 @@ public class ExpertProfileService {
         .intro(req.getIntro())
         .career(req.getCareer())
         .speciality(req.getSpeciality())
+        .githubUrl(req.getGithubUrl())
+        .contactEmail(req.getContactEmail())
         .avgRating(java.math.BigDecimal.ZERO)
         .totalReviews(0)
         .isCertified(false)
@@ -74,6 +76,8 @@ public class ExpertProfileService {
     profile.setIntro(req.getIntro());
     profile.setCareer(req.getCareer());
     profile.setSpeciality(req.getSpeciality());
+    profile.setGithubUrl(req.getGithubUrl());
+    profile.setContactEmail(req.getContactEmail());
 
     return ExpertProfileResponse.from(profile);
   }

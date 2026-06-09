@@ -1,6 +1,5 @@
 package com.example.SevMerge.expertprofile;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 public class ExpertProfileRequest {
@@ -11,13 +10,16 @@ public class ExpertProfileRequest {
   @Data
   public static class SaveRequest {
 
-    @NotBlank
-    private String profileImage;
+    private String profileImage;  // 폼에서 미전송 시 기존값 유지
 
     private String intro;
 
     private String career;
 
     private String speciality;
+
+    private String githubUrl;
+
+    private String contactEmail;
   }
 }

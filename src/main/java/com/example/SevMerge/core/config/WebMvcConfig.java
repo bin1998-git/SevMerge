@@ -2,6 +2,7 @@ package com.example.SevMerge.core.config;
 
 
 import com.example.SevMerge.core.interceptor.AdminInterceptor;
+import com.example.SevMerge.core.interceptor.BidInterceptor;
 import com.example.SevMerge.core.interceptor.LoginInterceptor;
 import com.example.SevMerge.core.interceptor.ProjectInterceptor;
 import com.example.SevMerge.core.interceptor.SessionInterceptor;
@@ -21,6 +22,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final AdminInterceptor adminInterceptor;
     private final SessionInterceptor sessionInterceptor;
     private final ProjectInterceptor projectInterceptor;
+    private final BidInterceptor bidInterceptor;
 
 
     @Override
@@ -30,9 +32,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(sessionInterceptor)
                 .addPathPatterns("/**");
 
+        // 전문가만 제안서 작성 가능
+        registry.addInterceptor(bidInterceptor)
+                .addPathPatterns("/bid/save-form", "/bid/save", "/bid/**");
+
         // 로그인 체크
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/users/**", "/my-pages", "/my-pages/**")
+                .addPathPatterns("/users/**", "/my-pages", "/my-pages/**", "/projects/save-form")
                 .excludePathPatterns(
                         "/",
                         "/login",

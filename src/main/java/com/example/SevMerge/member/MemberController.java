@@ -59,6 +59,10 @@ public class MemberController {
     public String login(MemberRequest.Login request, HttpSession session, Model model) {
         memberService.login(request, session);
 
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember != null && loginMember.getRole() == Role.EXPERT) {
+            return "redirect:/experts/dashboard";
+        }
         return "redirect:/";
     }
 

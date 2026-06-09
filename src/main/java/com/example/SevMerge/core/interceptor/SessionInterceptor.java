@@ -1,5 +1,6 @@
 package com.example.SevMerge.core.interceptor;
 
+import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,10 +19,15 @@ public class SessionInterceptor implements HandlerInterceptor {
             if (session != null) {
                 Object sessionUser = session.getAttribute("sessionUser");
                 if (sessionUser != null) {
+                    Member member = (Member) sessionUser;
                     modelAndView.addObject("isLoggedIn", true);
-                    modelAndView.addObject("sessionUser", sessionUser);// <- (expose-session-attributes와 중복)
+                    modelAndView.addObject("sessionUser", member);
+                    modelAndView.addObject("isExpert", member.isExpert());
+                    modelAndView.addObject("isAdmin", member.isAdmin());
                 } else {
                     modelAndView.addObject("isLoggedIn", false);
+                    modelAndView.addObject("isExpert", false);
+                    modelAndView.addObject("isAdmin", false);
                 }
             }
         }

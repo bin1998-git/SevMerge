@@ -25,7 +25,13 @@ public class PaymentResponse {
     private String status;
     private Timestamp paidAt;
 
+    // Mustache boolean 조건 ({{#isPaid}}, {{#isSettled}}, {{#isRefunded}})
+    private boolean isPaid;
+    private boolean isSettled;
+    private boolean isRefunded;
+
     public static PaymentResponse from(Payment payment) {
+        String statusName = payment.getStatus().name();
         return PaymentResponse.builder()
                 .id(payment.getId())
                 .projectId(payment.getProjectId())
@@ -36,8 +42,11 @@ public class PaymentResponse {
                 .netAmount(payment.getNetAmount())
                 .paymentKey(payment.getPaymentKey())
                 .method(payment.getMethod())
-                .status(payment.getStatus().name())
+                .status(statusName)
                 .paidAt(payment.getPaidAt())
+                .isPaid("PAID".equals(statusName))
+                .isSettled("SETTLED".equals(statusName))
+                .isRefunded("REFUNDED".equals(statusName))
                 .build();
     }
 }

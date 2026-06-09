@@ -50,6 +50,8 @@ public class PaymentController {
                               Model model) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null) return "redirect:/login";
+
         String orderId = "sev-project-" + projectId;
 
         model.addAttribute("projectId",  projectId);
@@ -78,6 +80,8 @@ public class PaymentController {
                                  HttpSession session) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null) return "redirect:/login";
+
         paymentService.confirmTossPayment(
                 sessionUser.getId(), paymentKey, orderId, amount, expertId, method);
         return "redirect:/payment/my";
@@ -106,6 +110,8 @@ public class PaymentController {
             HttpSession session) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null) return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
+
         PaymentResponse response = paymentService.settle(id, sessionUser.getId());
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
@@ -123,6 +129,8 @@ public class PaymentController {
             HttpSession session) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null) return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
+
         PaymentResponse response = paymentService.refund(id, sessionUser.getId());
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
@@ -137,6 +145,7 @@ public class PaymentController {
     public String myPayments(HttpSession session, Model model) {
 
         Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null) return "redirect:/login";
 
         if (sessionUser.isExpert()) {
             model.addAttribute("payments", paymentService.getExpertPayments(sessionUser.getId()));

@@ -42,7 +42,7 @@
             제출된 프로필은 관리자 검토 후 승인됩니다. 승인까지 최대 3 영업일이 소요될 수 있습니다.
         </div>
 
-        <form class="save-form" action="/expert-profile/save" method="POST">
+        <form class="save-form" action="/experts/my/form" method="POST">
 
             <div class="form-group">
                 <label class="form-label">직종 / 전문 분야 <span class="required">*</span></label>
@@ -59,31 +59,37 @@
                 </select>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">경력 연수 <span class="required">*</span></label>
-                    <input type="number" name="experienceYears" class="form-input" placeholder="예: 3" min="0" max="50" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">주요 기술 스택</label>
-                    <input type="text" name="skills" class="form-input" placeholder="예: Java, Spring Boot, React" />
-                </div>
+            <div class="form-group">
+                <label class="form-label">주요 기술 스택</label>
+                <input type="text" name="speciality" class="form-input"
+                       value="{{expertProfile.speciality}}"
+                       placeholder="예: Java, Spring Boot, React (콤마로 구분)" />
+                <span class="form-hint">콤마(,)로 구분하여 입력하세요.</span>
             </div>
 
             <div class="form-group">
                 <label class="form-label">자기소개 <span class="required">*</span></label>
-                <textarea name="introduce" class="form-textarea" placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 소개해주세요."></textarea>
+                <textarea name="intro" class="form-textarea" placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 소개해주세요.">{{expertProfile.intro}}</textarea>
             </div>
 
             <div class="form-group">
-                <label class="form-label">포트폴리오 URL</label>
-                <input type="url" name="portfolioUrl" class="form-input" placeholder="https://github.com/..." />
+                <label class="form-label">GitHub / 포트폴리오 URL</label>
+                <input type="url" name="githubUrl" class="form-input"
+                       value="{{expertProfile.githubUrl}}"
+                       placeholder="https://github.com/..." />
                 <span class="form-hint">GitHub, Notion, 개인 블로그 등 자유롭게 입력하세요.</span>
             </div>
 
+            <div class="form-group">
+                <label class="form-label">연락처 이메일</label>
+                <input type="email" name="contactEmail" class="form-input"
+                       value="{{expertProfile.contactEmail}}"
+                       placeholder="contact@example.com" />
+            </div>
+
             <div class="form-btns">
-                <a href="/mypage" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary btn-lg">신청서 제출</button>
+                <a href="/my-pages" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary btn-lg">{{#isUpdate}}수정 완료{{/isUpdate}}{{^isUpdate}}신청서 제출{{/isUpdate}}</button>
             </div>
 
         </form>

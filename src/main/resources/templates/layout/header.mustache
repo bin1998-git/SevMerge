@@ -639,7 +639,8 @@
 <!-- NAV -->
 <header class="nav">
     <div class="nav-inner">
-        <a href="/" class="nav-logo">Sev<span>Merge</span></a>
+        {{#isExpert}}<a href="/experts/dashboard" class="nav-logo">Sev<span>Merge</span></a>{{/isExpert}}
+        {{^isExpert}}<a href="/" class="nav-logo">Sev<span>Merge</span></a>{{/isExpert}}
         <nav class="nav-links">
             <a href="/projects/list">프로젝트</a>
             <a href="/experts">전문가</a>
