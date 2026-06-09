@@ -33,7 +33,7 @@ public class BidInterceptor implements HandlerInterceptor {
                 // URL에서 projectId 파라미터를 읽어와서 원래 보던 프로젝트 상세 페이지로 튕겨버림
                 String projectId = request.getParameter("projectId");
                 if (projectId != null) {
-                    response.sendRedirect("/projects/" + projectId + "/detail");
+                    response.sendRedirect("/projects/" + projectId);
                 } else {
                     response.sendRedirect("/projects"); // 프로젝트 ID가 없으면 그냥 목록으로
                 }
