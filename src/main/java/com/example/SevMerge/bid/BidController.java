@@ -63,7 +63,7 @@ public class BidController {
     @GetMapping("/bid/my-list")
     public String myList(Model model, HttpSession session) {
         log.info("전문가 본인의 제안서 목록 요청");
-        return "redirect:/mypage?tab=bids"; // 마이페이지 탭으로 이동시켜 통합 관리
+        return "redirect:/my-pages?tab=bids"; // 마이페이지 탭으로 이동시켜 통합 관리
     }
 
     // 5. 제안서 수정 폼
