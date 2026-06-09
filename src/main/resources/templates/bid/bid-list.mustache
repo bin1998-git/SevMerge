@@ -20,6 +20,7 @@
     .bid-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 22px 24px; display: flex; gap: 18px; align-items: flex-start; transition: border-color .2s; }
     .bid-card:hover { border-color: #bfdbfe; }
     .bid-card.selected { border-color: #2563eb; background: #f8f9ff; }
+    .bid-card.rejected { border-color: #fecaca; background: #fff5f5; opacity: 0.6; }
     .bid-avatar { width: 48px; height: 48px; border-radius: 14px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
     .bid-body { flex: 1; }
     .bid-name-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -30,9 +31,12 @@
     .bid-right { text-align: right; flex-shrink: 0; }
     .bid-price { font-size: 20px; font-weight: 900; color: #2563eb; margin-bottom: 10px; }
     .bid-date { font-size: 11px; color: #c4c9d9; margin-bottom: 14px; }
-    .select-btn { padding: 9px 18px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .select-btn { padding: 9px 18px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: block; margin-bottom: 8px; width: 100%; }
     .select-btn:hover { background: #1d4ed8; }
+    .reject-btn { padding: 9px 18px; background: #fff; color: #ef4444; border: 1.5px solid #fecaca; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: block; width: 100%; }
+    .reject-btn:hover { background: #fff5f5; }
     .selected-badge { font-size: 12px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .rejected-badge { font-size: 12px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .empty-state { text-align: center; padding: 60px 0; }
     .empty-msg { font-size: 15px; color: #c4c9d9; }
 </style>
@@ -67,18 +71,20 @@
 
         <div class="bid-list">
             {{#bids}}
-            <div class="bid-card {{#isSelected}}selected{{/isSelected}}">
+            <div class="bid-card {{#isSelected}}selected{{/isSelected}}{{#isRejected}}rejected{{/isRejected}}">
                 <div class="bid-avatar">👨‍💻</div>
                 <div class="bid-body">
                     <div class="bid-name-wrap">
                         <span class="bid-name">{{expertName}}</span>
-
                         {{#isPending}}
-                        <span class="cert-badge" style="background: #fff7ed; color: #ea580c; border-color: #ffedd5; margin-left: 8px;">⏳ 검토 대기중</span>
+                        <span class="cert-badge" style="background:#fff7ed; color:#ea580c; border-color:#ffedd5; margin-left:8px;">⏳ 검토 대기중</span>
                         {{/isPending}}
                         {{#isSelected}}
-                        <span class="cert-badge" style="background: #ecfdf5; color: #059669; border-color: #a7f3d0; margin-left: 8px;">🎉 최종 낙찰됨</span>
+                        <span class="cert-badge" style="background:#ecfdf5; color:#059669; border-color:#a7f3d0; margin-left:8px;">🎉 최종 낙찰됨</span>
                         {{/isSelected}}
+                        {{#isRejected}}
+                        <span class="cert-badge" style="background:#fff1f2; color:#e11d48; border-color:#fecdd3; margin-left:8px;">❌ 거절됨</span>
+                        {{/isRejected}}
                     </div>
                     <div class="bid-content">{{coverLetter}}</div>
                 </div>
@@ -90,8 +96,13 @@
                     <span class="selected-badge">✓ 낙찰 완료</span>
                     {{/isSelected}}
 
+                    {{#isRejected}}
+                    <span class="rejected-badge">✕ 거절됨</span>
+                    {{/isRejected}}
+
                     {{#isPending}}
                     <button type="button" class="select-btn" onclick="selectBid({{id}})">낙찰 선택</button>
+                    <button type="button" class="reject-btn" onclick="rejectBid({{id}})">거절</button>
                     {{/isPending}}
                 </div>
             </div>
@@ -108,28 +119,38 @@
 
 <script>
 function selectBid(bidId) {
-    if (!confirm("정말 이 전문가를 낙찰하시겠습니까? 낙찰 완료 후 프로젝트 모집이 자동으로 마감됩니다.")) {
-        return;
-    }
-
-    // 백엔드의 @PostMapping("/bid/{id}/select") 비동기 컨트롤러를 정확하게 타겟팅합니다.
-    fetch(`/bid/${bidId}/select`, {
+    if (!confirm("정말 이 전문가를 낙찰하시겠습니까? 낙찰 완료 후 프로젝트 모집이 자동으로 마감됩니다.")) return;
+    fetch(`/bids/${bidId}/select`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    })
-    .then(response => {
+        headers: { "Content-Type": "application/json" }
+    }).then(response => {
         if (response.ok) {
-            alert("🎉 낙찰 처리가 성공적으로 완료되었습니다!");
-            location.href = "/projects"; // 완료 후 프로젝트 목록 화면으로 안전하게 리다이렉션
+            alert("🎉 낙찰 처리가 완료되었습니다!");
+            location.href = "/projects";
         } else {
-            alert("낙찰 처리에 실패했습니다. 권한이 없거나 이미 마감된 프로젝트입니다.");
+            alert("낙찰 처리에 실패했습니다.");
         }
-    })
-    .catch(error => {
+    }).catch(error => {
         console.error("Error:", error);
-        alert("서버 및 네트워크 통신 중 오류가 발생했습니다.");
+        alert("서버 통신 중 오류가 발생했습니다.");
+    });
+}
+
+function rejectBid(bidId) {
+    if (!confirm("이 제안서를 거절하시겠습니까?")) return;
+    fetch(`/bids/${bidId}/reject`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    }).then(response => {
+        if (response.ok) {
+            alert("제안서가 거절되었습니다.");
+            location.reload();
+        } else {
+            alert("거절 처리에 실패했습니다.");
+        }
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("서버 통신 중 오류가 발생했습니다.");
     });
 }
 </script>

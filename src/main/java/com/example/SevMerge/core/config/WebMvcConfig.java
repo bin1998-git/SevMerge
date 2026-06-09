@@ -73,11 +73,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 전문가 제안서 (bid)
         registry.addInterceptor(bidInterceptor)
                 .addPathPatterns(
-                        "/bid/save-form",
-                        "/bid/save",
-                        "/bid/my-list",
-                        "/bid/{id}/update-form",
-                        "/bid/{id}"
+                        "/bids/save-form",
+                        "/bids",
+                        "/bids/my-list",
+                        "/bids/{id}/edit",
+                        "/bids/{id}"
 
                 ).excludePathPatterns(
                         "/bid/list",

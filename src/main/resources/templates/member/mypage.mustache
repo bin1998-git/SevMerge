@@ -96,12 +96,12 @@
                             <div class="my-item-body">
                                 <span class="my-item-cat">{{categoryName}}</span>
                                 {{#isOpen}}
-                                    <a href="/bid/list?projectId={{id}}" style="text-decoration:none; color:inherit;">
+                                    <a href="/bids?projectId={{id}}" style="text-decoration:none; color:inherit;">
                                     <div class="my-item-title">{{title}}</div>
                                     </a>
                                 {{/isOpen}}
                                 {{^isOpen}}
-                                    <a href="/projects/{{id}}/detail" style="text-decoration:none; color:inherit;">
+                                    <a href="/projects/{{id}}" style="text-decoration:none; color:inherit;">
                                         <div class="my-item-title">{{title}}</div>
                                     </a>
                                 {{/isOpen}}
@@ -139,7 +139,7 @@
                <div class="my-list">
                    {{#bids}}
                        <div class="my-item">
-                           <a href="/projects/{{projectId}}/detail" class="my-item-body"
+                           <a href="/projects/{{projectId}}" class="my-item-body"
                               style="text-decoration:none; color:inherit;">
                                <div class="my-item-title">{{projectTitle}}</div>
                                <div class="my-item-meta">제안일 {{createdAt}}</div>

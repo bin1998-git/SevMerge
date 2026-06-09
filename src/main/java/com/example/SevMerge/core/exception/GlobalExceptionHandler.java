@@ -3,6 +3,7 @@ package com.example.SevMerge.core.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -101,4 +102,11 @@ public class GlobalExceptionHandler {
         request.setAttribute("msg", "시스템 오류가 발생했습니다. 관리자에게 문의해주세요.");
         return "err/500";
     }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public String handelMethodNotSupported(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        log.warn("지원하지 않는 HTTP 메서드 요청: {}", request.getRequestURI());
+        return "redirect:/";
+    }
+
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -187,6 +188,7 @@ public class BidService {
 
 
 
+
     public BidResponseDTO.DetailDTO findBidById(Long id, Member session) {
         log.info("제안서 상세 조회 서비스 시작");
         Bid bid = bidRepository.findById(id).orElseThrow(
@@ -201,5 +203,33 @@ public class BidService {
         }
 
         return new BidResponseDTO.DetailDTO(bid);
+    }
+
+    // 제안서 거절
+    @Transactional
+    public void rejectBid(Long id, Member session) {
+        log.info("제안서 거절 서비스 시작");
+
+        Bid bid = bidRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 제안서 입니다"));
+
+        // 의뢰인 체크
+        if (!session.isClient()) {
+            throw new ForbiddenException("의뢰인만 제안서를 거절할 수 있습니다");
+        }
+
+        // 프로젝트를 의뢰한 사람인지 체크
+        if (!bid.getProject().getMember().getId().equals(session.getId())) {
+            throw new ForbiddenException("프로젝트를 제안한 의뢰인이 아닙니다");
+        }
+        // 처리가 된 제안서인지 체크
+        if (bid.getStatus() != BidStatus.PENDING) {
+            throw new BadRequestException("처리가 된 제안서 입니다");
+        }
+        bid.reject();
+    }
+
+    public Optional<Bid> findSelectedBidByProjectId(Long projectId) {
+        return bidRepository.findSelectedBidByProjectId(projectId, BidStatus.SELECTED);
     }
 }
