@@ -69,32 +69,36 @@
 
         <div class="expert-list">
             {{#experts}}
-                <div class="expert-card">
+                <div class="expert-card" id="expert-card-{{memberId}}">
                     <div class="expert-avatar">👨‍💻</div>
                     <div class="expert-body">
                         <div class="expert-name-wrap">
-                            <span class="expert-name">{{name}}</span>
-                            {{#isPending}}<span class="status-pending">대기중</span>{{/isPending}}
-                            {{#isApproved}}<span class="status-approved">⭐ 승인완료</span>{{/isApproved}}
-                            {{#isRejected}}<span class="status-rejected">거절</span>{{/isRejected}}
+                            <span class="expert-name">{{memberName}}</span>
+
+                            {{#isCertified}}<span class="status-approved">⭐ 인증 완료</span>{{/isCertified}}
+                            {{^isCertified}}<span class="status-pending">대기중</span>{{/isCertified}}
                         </div>
-                        <div class="expert-email">{{email}}</div>
+                        <div class="expert-email">{{#contactEmail}}📧 {{contactEmail}}{{/contactEmail}}</div>
+
                         <div class="expert-info-row">
-                            <span>💼 {{career}}</span>
-                            <span>📅 경력 {{experienceYears}}년</span>
-                            <span>📝 신청일 {{appliedAt}}</span>
+                            <span>💬 소개: {{intro}}</span>
                         </div>
-                        {{#portfolioUrl}}
-                            <a href="{{portfolioUrl}}" target="_blank" class="expert-portfolio">🔗 포트폴리오 보기</a>
-                        {{/portfolioUrl}}
+                        <div class="expert-info-row">
+                            <span>💼 경력: {{career}}</span>
+                            <span>🛠️ 기술: {{speciality}}</span>
+                        </div>
+
+                        {{#githubUrl}}
+                            <a href="{{githubUrl}}" target="_blank" class="expert-portfolio">🔗 GitHub 저장소 보기</a>
+                        {{/githubUrl}}
                     </div>
-                    {{#isPending}}
+
+                    {{^isCertified}}
                         <div class="expert-actions">
-                            <button type="button" class="approve-btn" onclick="updateExpertStatus({{id}}, 'approve')">승인</button>
-                            <button type="button" class="reject-btn" onclick="updateExpertStatus({{id}}, 'reject')">거절</button>
+                            <button type="button" class="approve-btn" onclick="updateExpertStatus({{memberId}}, 'approve')">승인</button>
+                            <button type="button" class="reject-btn" onclick="updateExpertStatus({{memberId}}, 'reject')">거절</button>
                         </div>
-                    {{/isPending}}
-                </div>
+                    {{/isCertified}} </div>
             {{/experts}}
 
             {{^experts}}
@@ -113,16 +117,16 @@
 </div>
 
 <script>
-    function updateExpertStatus(id, action) {
+    function updateExpertStatus(memberId, action) {
         const actionMessage = action === 'approve' ? '승인' : '거절';
         if (!confirm(`해당 전문가 신청을 ${actionMessage}하시겠습니까?`)) {
             return;
         }
 
-        // URI에 행위 동사를 제거하고 상태 수정을 위한 PATCH 요청 송신
-        fetch(`/admin/experts/${id}/status?action=${action}`, {
+        fetch(`/api/admin/experts/${memberId}/approval`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: action.toUpperCase() })
         })
         .then(response => {
             if (response.ok) {
@@ -139,3 +143,4 @@
     }
 </script>
 {{> layout/footer}}
+

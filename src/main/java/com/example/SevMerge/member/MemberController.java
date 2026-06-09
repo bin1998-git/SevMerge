@@ -176,27 +176,27 @@ public class MemberController {
         return ResponseEntity.ok().body("제재 처리가 성공했습니다.");
     }
 
-    // 관리자 - 전문가 승인
-    @GetMapping("/admin/experts")
-    public String adminExperts(Model model) {
-        model.addAttribute("experts", memberService.getPendingExperts());
-        model.addAttribute("isAdmin", true);
-        return "admin/admin-expert";
-    }
-
-    // 전문가 승인/거절 상태 제어 PATCH 전환
-    @PatchMapping("/admin/experts/{id}/status")
-    @ResponseBody
-    public ResponseEntity<?> updateExpertStatus(@PathVariable Long id, @RequestParam String action) {
-        if ("approve".equals(action)) {
-            memberService.approveExpert(id);
-            return ResponseEntity.ok().body("승인 완료");
-        } else if ("reject".equals(action)) {
-            memberService.rejectExpert(id);
-            return ResponseEntity.ok().body("반려 완료");
-        }
-        return ResponseEntity.badRequest().body("잘못된 명령입니다.");
-    }
+//    // 관리자 - 전문가 승인
+//    @GetMapping("/admin/experts")
+//    public String adminExperts(Model model) {
+//        model.addAttribute("experts", memberService.getPendingExperts());
+//        model.addAttribute("isAdmin", true);
+//        return "admin/admin-expert";
+//    }
+//
+//    // 전문가 승인/거절 상태 제어 PATCH 전환
+//    @PatchMapping("/admin/experts/{id}/status")
+//    @ResponseBody
+//    public ResponseEntity<?> updateExpertStatus(@PathVariable Long id, @RequestParam String action) {
+//        if ("approve".equals(action)) {
+//            memberService.approveExpert(id);
+//            return ResponseEntity.ok().body("승인 완료");
+//        } else if ("reject".equals(action)) {
+//            memberService.rejectExpert(id);
+//            return ResponseEntity.ok().body("반려 완료");
+//        }
+//        return ResponseEntity.badRequest().body("잘못된 명령입니다.");
+//    }
 
     // --------------------------------------------------------------------
 
