@@ -320,29 +320,59 @@
         position: relative !important;
     }
 
+    /* 1. 기본 서브메뉴 상태 (!important를 제거하여 .active가 정상 작동하도록 수정) */
     .sidebar-submenu {
-        display: none !important;
+        display: none; /* !important를 뺐습니다 */
         flex-direction: column !important;
         width: 100% !important;
         background: #f8f9ff !important;
     }
 
+    /* 2. [★수정] 화면 이동 후 .active 클래스가 붙었을 때 상시 노출 (flex로 유지) */
+    .sidebar-submenu.active {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-height: 500px !important;
+        height: auto !important;
+    }
+
+    /* 3. 호버했을 때도 똑같이 flex로 노출 (기존 유지) */
+    .sidebar-dropdown-group:hover .sidebar-submenu {
+        display: flex !important;
+    }
+
+    /* 4. [★수정] 현재 머물고 있는 서브 메뉴 글자 색상 및 배경 파란색 고정 */
+    .sidebar-submenu .submenu-link.selected {
+        color: #2563eb !important;
+        font-weight: bold !important;
+        background-color: #e0f2fe !important; /* 연한 파란색 배경 */
+        border-left-color: #2563eb !important; /* 왼쪽 바 색상 고정 */
+    }
+
+    /* 5. 서브메뉴가 열렸을 때 '게시판 관리' 주 메뉴 호버 스타일 (기존 유지) */
     .sidebar-dropdown-group:hover .dropdown-trigger {
         color: #2563eb !important;
         background: #eff6ff !important;
         border-left-color: #2563eb !important;
     }
 
-    .sidebar-dropdown-group:hover .sidebar-submenu {
-        display: flex !important;
+    /* 6. [★추가] 화면 이동 후 '게시판 관리' 주 메뉴도 파란색 스타일 유지 */
+    .sidebar-link.dropdown-trigger.active {
+        color: #2563eb !important;
+        background: #eff6ff !important;
+        border-left-color: #2563eb !important;
+        font-weight: bold !important;
     }
 
+    /* 7. 주변 링크 초기화 관련 (기존 유지) */
     .admin-sidebar:has(.sidebar-dropdown-group:hover) .sidebar-link.active {
         color: #6b7280 !important;
         background: transparent !important;
         border-left-color: transparent !important;
     }
 
+    /* 8. 기본 서브메뉴 링크 스타일 (기존 유지) */
     .submenu-link {
         display: flex !important;
         align-items: center !important;
@@ -355,11 +385,13 @@
         border-left: 3px solid transparent !important;
     }
 
+    /* 9. 서브메뉴 링크 호버 스타일 (기존 유지) */
     .submenu-link:hover {
         color: #2563eb !important;
         background: #eff6ff !important;
         border-left-color: #2563eb !important;
     }
+
 </style>
 
 <div class="admin-wrap">
@@ -367,20 +399,24 @@
 
 
     <main class="admin-content">
+
         <div class="admin-header">
             <div>
-                <h1 class="admin-title">자유 게시판 관리</h1>
-                <p class="admin-desc">전체 게시판 목록을 관리합니다.</p>
+                <h1 class="admin-title">공지사항 관리</h1>
+                <p class="admin-desc">전체 공지사항 목록을 관리합니다.</p>
             </div>
         </div>
-        <form action="/admin/boards" method="get" class="search-bar">
+
+        <form action="/admin/notices" method="get" class="search-bar">
             <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value=""/>
             <button type="submit" class="search-btn">검색</button>
         </form>
+
         <div class="admin-table-wrap">
             <div class="admin-table-head">
                 <span>No</span><span>제목</span><span>날짜</span>
             </div>
+
             {{#boards}}
                 <div class="admin-table-row">
                     <!-- 1. 글 번호 -->
@@ -396,6 +432,4 @@
         </div>
     </main>
 </div>
-
-
 {{> layout/footer}}

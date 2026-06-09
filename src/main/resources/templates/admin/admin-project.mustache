@@ -128,7 +128,7 @@
 
     .admin-table-head {
         display: grid;
-        grid-template-columns: 60px 1fr 100px 100px 80px 80px;
+        grid-template-columns: 60px 1fr 140px 200px 100px;
         gap: 12px;
         padding: 12px 22px;
         background: #f8f9fc;
@@ -139,9 +139,17 @@
         letter-spacing: .5px;
     }
 
+    .admin-table-head span {
+        text-align: center !important;
+    }
+
+    .admin-table-head span:nth-child(2) {
+        text-align: center !important;
+    }
+
     .admin-table-row {
         display: grid;
-        grid-template-columns: 60px 1fr 100px 100px 80px 80px;
+        grid-template-columns: 60px 1fr 140px 200px 100px;
         gap: 12px;
         padding: 15px 22px;
         border-bottom: 1px solid #f3f4f8;
@@ -160,6 +168,7 @@
     .cell-id {
         color: #c4c9d9;
         font-weight: 500;
+        text-align: center !important;
     }
 
     .cell-title {
@@ -189,11 +198,20 @@
 
     .cell-author {
         color: #6b7280;
+        text-align: center !important;
     }
 
     .cell-date {
         color: #9ca3af;
         font-size: 12px;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    .admin-table-row > span:nth-child(5) {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
     .status-open {
@@ -265,17 +283,6 @@
 </style>
 
 <div class="admin-wrap">
-
-    <aside class="admin-sidebar">
-        <div class="sidebar-label">관리자</div>
-        <a href="/admin" class="sidebar-link"><span class="sidebar-icon">📊</span> 대시보드</a>
-        <div class="sidebar-label">관리</div>
-        <a href="/admin/members" class="sidebar-link"><span class="sidebar-icon">👥</span> 회원 관리</a>
-        <a href="/admin/projects" class="sidebar-link active"><span class="sidebar-icon">📋</span> 프로젝트 관리</a>
-        <a href="/admin/boards" class="sidebar-link"><span class="sidebar-icon">📑</span> 게시판 관리</a>
-        <a href="/admin/experts" class="sidebar-link"><span class="sidebar-icon">⭐</span> 전문가 승인</a>
-    </aside>
-
     <main class="admin-content">
 
         <div class="admin-header">
@@ -283,35 +290,32 @@
             <p class="admin-desc">등록된 전체 프로젝트를 관리합니다.</p>
         </div>
 
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="프로젝트명으로 검색..." value="{{keyword}}"/>
-            <button class="search-btn">검색</button>
-        </div>
+        <form action="/admin/projects" method="GET" class="search-bar">
+
+            <input type="text" name="keyword" class="search-input" placeholder="프로젝트명으로 검색..." value="{{keyword}}"/>
+
+            <button type="submit" class="search-btn">검색</button>
+        </form>
 
         <div class="admin-table-wrap">
             <div class="admin-table-head">
-                <span>No</span><span>프로젝트명</span><span>등록자</span><span>등록일</span><span>상태</span><span>관리</span>
+                <span>No</span><span>프로젝트명</span><span>등록자</span><span>등록일</span><span>상태</span>
             </div>
-
             {{#projects}}
                 <div class="admin-table-row">
                     <span class="cell-id">{{id}}</span>
                     <div class="cell-title">
-                        <a href="/projects/{{id}}">{{title}}</a>
+                        <a href="/projects/{{id}}/detail">{{title}}</a>
                         <div><span class="cell-category">{{categoryName}}</span></div>
                     </div>
-                    <span class="cell-author">{{member.name}}</span>
+                    <span class="cell-author">{{memberName}}</span>
                     <span class="cell-date">{{createdAt}}</span>
                     <span>
-                    {{#isOpen}}<span class="status-open">모집중</span>{{/isOpen}}
-                        {{^isOpen}}<span class="status-closed">마감</span>{{/isOpen}}
-                </span>
-                    <form action="/admin/projects/{{id}}/delete" method="POST">
-                        <button type="submit" class="del-btn">삭제</button>
-                    </form>
+            <span class="status-open">{{projectStatus}}</span>
+        </span>
+
                 </div>
             {{/projects}}
-
         </div>
 
         <div class="paging">

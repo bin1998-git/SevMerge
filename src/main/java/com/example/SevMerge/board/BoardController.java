@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.w3c.dom.ls.LSInput;
 
 import java.util.List;
 
@@ -25,6 +24,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final CommentService commentService;
+    private final BoardRepository boardRepository;
 
     // todo: 추후 메인 페이지 요청하는 곳 생성되면 삭제예정
     @GetMapping("/")
@@ -37,7 +37,7 @@ public class BoardController {
             model.addAttribute("isAdmin", false);
         }
 
-            return "main";
+        return "main";
     }
 
     @GetMapping("/boards")
@@ -79,7 +79,7 @@ public class BoardController {
         List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
-        model.addAttribute("isOwner",sessionMember!=null && boardOwner.equals(sessionMember.getId()));
+        model.addAttribute("isOwner", sessionMember != null && boardOwner.equals(sessionMember.getId()));
         model.addAttribute("isAdmin", sessionMember != null && sessionMember.getRole() == Role.ADMIN);
         return "board/board-detail";
     }
@@ -107,8 +107,8 @@ public class BoardController {
         model.addAttribute("boardType", boardType);
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
-        model.addAttribute("isInquiry",boardType.equalsIgnoreCase("INQUIRY"));
-
+        model.addAttribute("isInquiry", boardType.equalsIgnoreCase("INQUIRY"));
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
         return "board/board-save";
     }
 
@@ -126,10 +126,13 @@ public class BoardController {
 
     @GetMapping("/boards/{boardId}/edit")
     public String updateBoardPage(@PathVariable(name = "boardId") Long boardId,
-                                  Model model) {
+                                  Model model,HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
-        model.addAttribute("board",board);
+        model.addAttribute("board", board);
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+
 
         return "board/board-update";
     }
@@ -141,7 +144,7 @@ public class BoardController {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
-        boardService.updateBoard(boardId,updateBoardDTO,sessionMember.getId());
+        boardService.updateBoard(boardId, updateBoardDTO, sessionMember.getId());
         return "redirect:/boards";
     }
 
@@ -149,25 +152,27 @@ public class BoardController {
     public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
                               HttpSession session) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        boardService.deleteBoard(boardId,sessionMember.getId());
+        boardService.deleteBoard(boardId, sessionMember.getId());
         return "redirect:/boards";
     }
 
-    // 관리자 게시판 관리
+    // 관리자 자유 게시판 관리
     @GetMapping("/admin/boards")
-    public String AdminBoards(@RequestParam(defaultValue = "FREE") String boardType, Model model, HttpSession session) {
+    public String AdminBoards(@RequestParam(defaultValue = "FREE") String boardType,
+                              @RequestParam(value = "keyword", required = false) String keyword, Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         // 관리자가 로그인하면 상단바에 마이페이지가 아닌 관리자가 뜨게 만들기
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
 
         BoardType type = BoardType.valueOf(boardType.toUpperCase());
-        List<BoardResponse.ListDTO> adminBoards = boardService.getAdminBoardsByType(type);
+        List<BoardResponse.ListDTO> adminBoards = boardService.getAdminBoardsByType(type, keyword);
 
         model.addAttribute("boards", adminBoards);
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
         model.addAttribute("isInquiry", boardType.equalsIgnoreCase("INQUIRY"));
         model.addAttribute("boardType", boardType);
+        model.addAttribute("keyword", keyword != null ? keyword : "");
 
         return "admin/admin-board";
     }
@@ -178,10 +183,63 @@ public class BoardController {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
-            return  "redirect:/admin/boards";
+            return "redirect:/admin/boards";
         }
 
         boardService.deleteBoardByAdmin(boardId);
         return "redirect:/admin/boards";
+    }
+
+    // 관리자 공지사항 관리
+    @GetMapping("/admin/notices")
+    public String adminNotices(@RequestParam(value = "keyword", required = false) String keyword,
+                               Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+
+        BoardType type = BoardType.NOTICE;
+
+        List<BoardResponse.ListDTO> adminNotices = boardService.getAdminBoardsByType(type, keyword);
+
+        model.addAttribute("boards", adminNotices);
+        model.addAttribute("isFree", false);
+        model.addAttribute("isNotice", true);
+        model.addAttribute("isInquiry", false);
+        model.addAttribute("boardType", "NOTICE");
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+
+        return "admin/admin-notices";
+    }
+
+    // 관리자 공지사항 수정화면 띄우기
+    @GetMapping("/admin/notices/{id}/update")
+    public String updateNoticeForm(@PathVariable("id") Long id, Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        boolean isAdmin = sessionUser != null && sessionUser.getRole() == Role.ADMIN;
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
+
+        model.addAttribute("board", board);
+        model.addAttribute("isNotice", true);
+        model.addAttribute("isFree", false);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "admin/admin-noticeupdate";
+    }
+
+    // 관리자 공지사항 수정처리
+    @PostMapping("/admin/notices/{id}/update")
+    public String updateNotice(@PathVariable("id") Long id,
+                               @RequestParam("title") String title,
+                               @RequestParam("content") String content) {
+        Board board = boardRepository.findById(id).orElseThrow(()
+                -> new IllegalArgumentException("해당 게시글이 없습니다. id =" + id));
+
+        board.setTitle(title);
+        board.setContent(content);
+        boardRepository.save(board);
+
+        return "redirect:/admin/notices";
     }
 }

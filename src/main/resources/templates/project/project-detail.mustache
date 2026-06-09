@@ -73,6 +73,13 @@
                 <div class="detail-description">{{project.description}}</div>
                 <div class="detail-footer">
                    <a href="/projects/list" class="btn btn-outline">← 목록으로</a>
+                    {{#isAdmin}}
+                        <form action="/admin/projects/{{project.id}}/delete" method="POST" onsubmit="return confirm('정말로 이 프로젝트를 삭제하시겠습니까?');" style="margin: 0;">
+                            <button type="submit" class="btn btn-danger" style="padding: 10px 16px; background-color: #ef4444; color: #ffffff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 100%; transition: background 0.15s;">
+                                삭제
+                            </button>
+                        </form>
+                    {{/isAdmin}}
                 </div>
             </div>
             <div class="info-card">

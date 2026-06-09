@@ -137,9 +137,6 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-
-
-
     // 프로젝트 수정
     @Transactional
     public void updateProject(Long id, ProjectRequestDTO.UpdateDTO req, Member sessionMember) {
@@ -168,7 +165,6 @@ public class ProjectService {
         project.updateStatus(ProjectStatus.DONE);
     }
 
-
     // 프로젝트 삭제
     @Transactional
     public void deleteProject(Long id, Member sessionMember) {
@@ -184,5 +180,23 @@ public class ProjectService {
     @Transactional
     public void increase(Long id) {
         projectRepository.increaseCount(id);
+    }
+
+    // 관리자 전용 프로젝트 키워드 검색
+    public List<ProjectResponeDTO.ListDTO> findAdminProjectsByKeyword(String keyword) {
+        log.info("관리자 전용 - 프로젝트 키워드 검색 서비스 시작 - 검색어 : [{}] ", keyword);
+
+        List<Project> projectList = projectRepository.findAdminProjectsByKeyword(keyword);
+
+        return  projectList.stream()
+                .map(ProjectResponeDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // 관리자 전용 삭제기능
+    @Transactional
+    public void deleteProjectByAdmin(Long id) {
+        log.info("관리자 프로젝트 소프트삭제 서비스 시작 - 대상 ID : {}", id);
+        projectRepository.deleteProjectByAdmin(id);
     }
 }
