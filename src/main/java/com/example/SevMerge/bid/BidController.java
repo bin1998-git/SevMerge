@@ -69,9 +69,25 @@ public class BidController {
 
     // 4. 내 제안서 목록 조회 (전문가)
     @GetMapping("/bids/my-list")
-    public String myList(HttpSession session) {
+    public String myList(Model model, HttpSession session) {
         log.info("전문가 본인의 제안서 목록 요청");
-        return "redirect:/my-pages?tab=bids";
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        List<BidResponseDTO.ListDTO> bids = bidService.findMyBids(sessionUser);
+        model.addAttribute("bids", bids);
+        model.addAttribute("bidCount", bids.size());
+        return "bid/my-bids";
+    }
+
+    // 4-1. 주문 관리 (전문가 — 낙찰된 건만)
+    @GetMapping("/bid/my-orders")
+    public String myOrders(Model model, HttpSession session) {
+        log.info("전문가 주문 관리 요청");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        List<BidResponseDTO.OrderDTO> orders = bidService.findMyOrders(sessionUser);
+        model.addAttribute("orders", orders);
+        model.addAttribute("orderCount", orders.size());
+        return "bid/my-orders";
+//        return "redirect:/my-pages?tab=bids";
     }
 
     // 5. 제안서 수정 폼

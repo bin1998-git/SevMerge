@@ -1,0 +1,197 @@
+{{> layout/header}}
+
+<style>
+    /* ── 탭바 ── */
+    .dash-tabs-bar { background: #fff; border-bottom: 2px solid #eaecf4; position: sticky; top: 64px; z-index: 90; }
+    .dash-tabs-inner { max-width: 1200px; margin: 0 auto; padding: 0 28px; display: flex; }
+    .dash-tab { padding: 13px 20px; font-size: 13px; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: color .15s, border-color .15s; }
+    .dash-tab:hover { color: #1c1e26; border-color: #d1d5db; }
+    .dash-tab.active { color: #2563eb; border-color: #2563eb; }
+
+    /* ── 본문 ── */
+    .page-section { padding: 40px 28px 80px; }
+    .page-inner { max-width: 1200px; margin: 0 auto; }
+
+    /* ── 요약 헤더 ── */
+    .review-summary { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 28px 32px; margin-bottom: 24px; display: flex; align-items: center; gap: 40px; }
+    .summary-score { text-align: center; }
+    .summary-num { font-size: 52px; font-weight: 900; color: #1c1e26; letter-spacing: -2px; line-height: 1; }
+    .summary-stars { font-size: 22px; color: #f59e0b; margin: 4px 0; }
+    .summary-count { font-size: 13px; color: #9ca3af; font-weight: 500; }
+    .summary-divider { width: 1px; height: 72px; background: #eaecf4; }
+    .summary-label { font-size: 14px; color: #6b7280; font-weight: 500; }
+    .summary-label strong { color: #1c1e26; font-weight: 800; }
+
+    /* ── 섹션 헤더 ── */
+    .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .section-title { font-size: 18px; font-weight: 800; color: #1c1e26; }
+
+    /* ── 리뷰 카드 ── */
+    .review-list { display: flex; flex-direction: column; gap: 16px; }
+    .review-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; }
+    .review-card-body { padding: 24px 28px; }
+    .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .reviewer-info { display: flex; align-items: center; gap: 12px; }
+    .reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .reviewer-name { font-size: 14px; font-weight: 700; color: #1c1e26; }
+    .reviewer-date { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+    .review-stars { font-size: 18px; color: #f59e0b; }
+    .review-content { font-size: 14px; color: #4b5563; line-height: 1.8; }
+
+    /* ── 댓글(답글) 영역 ── */
+    .reply-area { background: #f8f9fc; border-top: 1px solid #eaecf4; padding: 18px 28px; }
+    .reply-label { font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; }
+    .reply-form { display: flex; gap: 10px; }
+    .reply-input { flex: 1; padding: 10px 14px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 8px; font-size: 13px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .reply-input:focus { border-color: #2563eb; }
+    .reply-input::placeholder { color: #c4c9d9; }
+    .btn-reply { padding: 10px 18px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .15s; }
+    .btn-reply:hover { background: #1d4ed8; }
+
+    /* ── 빈 상태 ── */
+    .empty-box { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; text-align: center; padding: 80px 0; }
+    .empty-icon { font-size: 40px; margin-bottom: 14px; }
+    .empty-msg { font-size: 14px; color: #c4c9d9; margin-bottom: 6px; }
+    .empty-sub { font-size: 12px; color: #d1d5db; }
+</style>
+
+<!-- 탭바 -->
+<div class="dash-tabs-bar">
+    <div class="dash-tabs-inner">
+        <a href="/experts/dashboard" class="dash-tab">대시보드</a>
+        <a href="/bid/my-list"       class="dash-tab">제안서 관리</a>
+        <a href="/bid/my-orders"     class="dash-tab">주문 관리</a>
+        <a href="/payment/my"        class="dash-tab">수익 &amp; 정산</a>
+        <a href="/reviews/my"        class="dash-tab active">평가 및 리뷰</a>
+        <a href="/experts/my/form"   class="dash-tab">프로필 수정</a>
+    </div>
+</div>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <!-- 요약 통계 -->
+        <div class="review-summary">
+            <div class="summary-score">
+                <div class="summary-num">{{expertProfile.avgRating}}</div>
+                <div class="summary-stars">★★★★★</div>
+                <div class="summary-count">총 {{expertProfile.totalReviews}}개 리뷰</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div>
+                <div class="summary-label">전문가 <strong>{{sessionUser.name}}</strong>님이 받은 리뷰 목록입니다.</div>
+                <div class="summary-label" style="margin-top:6px;color:#9ca3af;font-size:13px;">성실한 프로젝트 수행이 높은 평점으로 이어집니다.</div>
+            </div>
+        </div>
+
+        <!-- 리뷰 목록 -->
+        <div class="section-head">
+            <h2 class="section-title">⭐ 받은 리뷰</h2>
+        </div>
+
+        <div class="review-list">
+
+            {{#reviews}}
+            <!-- 실제 데이터 반복 -->
+            <div class="review-card">
+                <div class="review-card-body">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👤</div>
+                            <div>
+                                <div class="reviewer-name">{{reviewerName}}</div>
+                                <div class="reviewer-date">{{createdAt}}</div>
+                            </div>
+                        </div>
+                        <div class="review-stars">{{star}}</div>
+                    </div>
+                    <p class="review-content">{{content}}</p>
+                </div>
+                <div class="reply-area">
+                    <div class="reply-label">💬 답글 남기기</div>
+                    <form action="/reviews/{{id}}/comments/save" method="POST" class="reply-form">
+                        <input type="text" name="comment" class="reply-input" placeholder="리뷰에 답글을 남겨보세요..." required />
+                        <button type="submit" class="btn-reply">답글 등록</button>
+                    </form>
+                </div>
+            </div>
+            {{/reviews}}
+
+            {{^reviews}}
+            <!-- ── 더미 데이터 (실제 데이터 연결 전 UI 확인용) ── -->
+
+            <div class="review-card">
+                <div class="review-card-body">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👤</div>
+                            <div>
+                                <div class="reviewer-name">김민준</div>
+                                <div class="reviewer-date">2026.05.30</div>
+                            </div>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                    </div>
+                    <p class="review-content">커뮤니케이션이 매우 원활하고 요구사항을 정확히 이해해 주셨습니다. 예상보다 빠른 납기에 결과물도 완벽했어요. 다음 프로젝트에도 꼭 다시 의뢰하고 싶습니다!</p>
+                </div>
+                <div class="reply-area">
+                    <div class="reply-label">💬 답글 남기기</div>
+                    <form action="/reviews/1/comments/save" method="POST" class="reply-form">
+                        <input type="text" name="comment" class="reply-input" placeholder="리뷰에 답글을 남겨보세요..." required />
+                        <button type="submit" class="btn-reply">답글 등록</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-card-body">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👤</div>
+                            <div>
+                                <div class="reviewer-name">이수현</div>
+                                <div class="reviewer-date">2026.05.15</div>
+                            </div>
+                        </div>
+                        <div class="review-stars">★★★★☆</div>
+                    </div>
+                    <p class="review-content">전반적으로 만족스러운 작업이었습니다. 중간에 기능 추가 요청이 있었는데 유연하게 대응해 주셔서 감사했어요. 다만 최종 납기가 약간 늦어진 점은 아쉬웠습니다.</p>
+                </div>
+                <div class="reply-area">
+                    <div class="reply-label">💬 답글 남기기</div>
+                    <form action="/reviews/2/comments/save" method="POST" class="reply-form">
+                        <input type="text" name="comment" class="reply-input" placeholder="리뷰에 답글을 남겨보세요..." required />
+                        <button type="submit" class="btn-reply">답글 등록</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <div class="review-card-body">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👤</div>
+                            <div>
+                                <div class="reviewer-name">박지호</div>
+                                <div class="reviewer-date">2026.04.20</div>
+                            </div>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                    </div>
+                    <p class="review-content">Spring Boot 마이그레이션을 완벽하게 처리해 주셨습니다. 기존 시스템의 복잡한 구조도 꼼꼼히 파악하시고 무중단 배포까지 완성해 주셨어요. 강력히 추천합니다.</p>
+                </div>
+                <div class="reply-area">
+                    <div class="reply-label">💬 답글 남기기</div>
+                    <form action="/reviews/3/comments/save" method="POST" class="reply-form">
+                        <input type="text" name="comment" class="reply-input" placeholder="리뷰에 답글을 남겨보세요..." required />
+                        <button type="submit" class="btn-reply">답글 등록</button>
+                    </form>
+                </div>
+            </div>
+            {{/reviews}}
+
+        </div>
+    </div>
+</section>
+
+{{> layout/footer}}
