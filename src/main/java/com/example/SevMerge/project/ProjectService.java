@@ -132,6 +132,8 @@ public class ProjectService {
                 .budgetMin(req.getBudgetMin())
                 .budgetMax(req.getBudgetMax())
                 .deadline(Timestamp.valueOf(req.getDeadline() + " 00:00:00"))
+                .projectStatus(ProjectStatus.OPEN)
+                .viewCount(0)
                 .build();
         log.info("deadline 값: {}", req.getDeadline());
         projectRepository.save(project);
