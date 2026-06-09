@@ -29,7 +29,7 @@ public class ProjectInterceptor implements HandlerInterceptor {
 
         // 1. 비로그인이면 ➡️ 로그인 폼으로 즉시 리다이렉트
         if (session == null || session.getAttribute(Define.SESSION_USER) == null) {
-            response.sendRedirect("/login-form");
+            response.sendRedirect("/login");
             return false;
         }
 

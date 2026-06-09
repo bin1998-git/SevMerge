@@ -1,6 +1,7 @@
 package com.example.SevMerge.core.config;
 
 
+import com.example.SevMerge.core.interceptor.*;
 import com.example.SevMerge.core.interceptor.AdminInterceptor;
 import com.example.SevMerge.core.interceptor.BidInterceptor;
 import com.example.SevMerge.core.interceptor.LoginInterceptor;
@@ -32,21 +33,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(sessionInterceptor)
                 .addPathPatterns("/**");
 
-        // 전문가만 제안서 작성 가능
-        registry.addInterceptor(bidInterceptor)
-                .addPathPatterns("/bid/save-form", "/bid/save", "/bid/**");
-
         // 로그인 체크
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/users/**", "/my-pages", "/my-pages/**", "/projects/save-form", "/messages/**")
                 .excludePathPatterns(
                         "/",
                         "/login",
-                        "/login-form",
-                        "/join-form",
+                        "/join",
                         "/logout",
                         "/projects/list",
                         "/projects/{id}/detail",
+                        "/google-redirect",    // 구글 로그인 통과
+                        "/kakao-redirect",     // 카카오 로그인 통과
+                        "/social-role",        // 소셜 가입 페이지 통과
                         "/css/**",
                         "/js/**",
                         "/images/**",
@@ -64,9 +63,25 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 프로젝트 작성자 권한 체크
         registry.addInterceptor(projectInterceptor)
                 .addPathPatterns(
+                        "/projects/save-form",
+                        "/projects",
                         "/projects/{id}/edit", // 수정 폼
                         "/projects/{id}", // 수정 처리, 삭제 처리
                         "/projects/{id}/done" // 검토 확인
+                );
+
+        // 전문가 제안서 (bid)
+        registry.addInterceptor(bidInterceptor)
+                .addPathPatterns(
+                        "/bid/save-form",
+                        "/bid/save",
+                        "/bid/my-list",
+                        "/bid/{id}/update-form",
+                        "/bid/{id}"
+
+                ).excludePathPatterns(
+                        "/bid/list",
+                        "/bid/{id}/select"
                 );
 
     }

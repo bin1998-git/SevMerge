@@ -211,7 +211,19 @@ public class MemberController {
 
         Member existing = memberService.findGoogleMember(googleId);
 
+
         if (existing != null) {
+            // 승인 대기 중인 전문가
+            if (existing.getStatus() == Status.PENDING) {
+                log.info("구글 PENDING 전문가 로그인 차단 - memberId={}", existing.getId());
+                return "redirect:/social-pending";
+            }
+            // 정지된 계정
+            if (existing.getStatus() == Status.SUSPENDED) {
+                log.info("구글 정지 계정 로그인 차단 - memberId={}", existing.getId());
+                return "redirect:/login";
+            }
+
             session.setAttribute(Define.SESSION_USER, existing);
             log.info("구글 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
@@ -236,13 +248,23 @@ public class MemberController {
         Member existing = memberService.findKakaoMember(kakaoId);
 
         if (existing != null) {
-            // 기존 회원 -> 바로 로그인
+            // 승인 대기 중인 전문가
+            if (existing.getStatus() == Status.PENDING) {
+                log.info("카카오 PENDING 전문가 로그인 차단 - memberId={}", existing.getId());
+                return "redirect:/social-pending";
+            }
+            // 정지된 계정
+            if (existing.getStatus() == Status.SUSPENDED) {
+                log.info("카카오 정지 계정 로그인 차단 - memberId={}", existing.getId());
+                return "redirect:/login";
+            }
+
             session.setAttribute(Define.SESSION_USER, existing);
             log.info("카카오 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
         }
 
-        // 신규 회원 -> 카카오 정보 잠깐 세션에 보관하고 역할 선택 화면으로
+        // 신규 회원 : 카카오 정보세션에서 잠깐 보관후 역할 선택 화면
         session.setAttribute("kakaoId", kakaoId);
         session.setAttribute("kakaoNickname", nickname);
         return "redirect:/social-role";
