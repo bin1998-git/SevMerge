@@ -60,14 +60,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/boards/save-form"
                         );
 
-        // 프로젝트 작성자 권한 체크
+        // 프로젝트 작성자 권한 체크 (목록/상세는 전문가도 볼 수 있어야 하므로 제외)
         registry.addInterceptor(projectInterceptor)
                 .addPathPatterns(
                         "/projects/save-form",
-                        "/projects",
                         "/projects/{id}/edit", // 수정 폼
-                        "/projects/{id}", // 수정 처리, 삭제 처리
-                        "/projects/{id}/done" // 검토 확인
+                        "/projects/{id}/done"  // 검토 확인
                 );
 
         // 전문가 제안서 (bid)
