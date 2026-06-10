@@ -136,7 +136,19 @@ public class BidController {
         return ResponseEntity.ok().build();
     }
 
-    // 9. 제안서 거절 (의뢰인이 거절 - JS 비동기)
+    // 9. 제안서 보류 처리
+    @PostMapping("/bids/{id}/hold")
+    @ResponseBody
+    public ResponseEntity<?> hold(@PathVariable Long id, HttpSession session) {
+        log.info("제안서 보류 서비스 시작");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        bidService.holdBid(id, sessionUser);
+        return ResponseEntity.ok().build();
+    }
+
+
+
+    // 10. 제안서 거절 (의뢰인이 거절 - JS 비동기)
     @DeleteMapping("/bids/{id}/reject")
     @ResponseBody
     public ResponseEntity<?> reject(@PathVariable Long id, HttpSession session) {

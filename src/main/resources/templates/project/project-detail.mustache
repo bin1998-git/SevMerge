@@ -6,6 +6,7 @@
     .detail-nav { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9ca3af; margin-bottom: 28px; }
     .detail-nav a { color: #9ca3af; text-decoration: none; transition: color 0.15s; }
     .detail-nav a:hover { color: #2563eb; }
+
     .detail-header { padding-bottom: 28px; border-bottom: 1.5px solid #f1f3f9; margin-bottom: 32px; }
     .detail-category { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-bottom: 16px; }
     .badge-certified { font-size: 10px; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 5px 10px; border-radius: 6px; margin-left: 6px; }
@@ -19,8 +20,7 @@
     .detail-body { display: grid; grid-template-columns: 1fr 300px; gap: 48px; align-items: start; }
     .detail-main-content { display: flex; flex-direction: column; }
     .detail-description { font-size: 16px; color: #374151; line-height: 1.9; white-space: pre-wrap; min-height: 150px; margin-bottom: 40px; }
-
-    .detail-footer { display: flex; justify-content: space-between; align-items: center; padding-bottom: 40px; border-bottom: 1.5px solid #f1f3f9; }
+    .detail-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 32px; border-top: 1.5px solid #f1f3f9; margin-top: 20px; }
 
     /* 사이드바 및 카드 컴포넌트 */
     .info-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02); }
@@ -43,11 +43,21 @@
     .btn-danger { background: #fff3f3; color: #ef4444; border: 1.5px solid #fecaca; }
     .btn-danger:hover { background: #ffeeec; }
 
-    /* 제안서 리스트 섹션 정렬 */
-    .bid-list-container { margin-top: 40px; }
-    .bid-list-title { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 24px; display: flex; align-items: center; gap: 6px; }
-    .bid-item-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 24px; display: flex; justify-content: space-between; align-items: stretch; transition: border-color 0.15s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01); }
-    .bid-item-card:hover { border-color: #cbd5e1; }
+    /* 제안서 대시보드형 스타일 업그레이드 */
+    .bid-list-container { margin-bottom: 50px; background: #fff; border: 1.5px solid #eef0f6; border-radius: 20px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.01); }
+    .bid-list-title { font-size: 19px; font-weight: 900; color: #1c1e26; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+    .bid-count-badge { background: #2563eb; color: #fff; font-size: 13px; padding: 2px 10px; border-radius: 12px; font-weight: 700; }
+
+    .bid-item-card { background: #fdfeff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 24px; display: flex; justify-content: space-between; align-items: stretch; transition: all 0.2s; position: relative; }
+    .bid-item-card:hover { border-color: #2563eb; box-shadow: 0 6px 16px rgba(37,99,235,0.04); transform: translateY(-1px); }
+
+    /* 가상 태그 및 스펙 디자인 추가 */
+    .expert-tag { font-size: 11px; background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+    .expert-rating { font-size: 12px; color: #f59e0b; font-weight: 700; display: inline-flex; align-items: center; gap: 2px; }
+    .price-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 18px; border-radius: 10px; text-align: right; margin-bottom: 12px; }
+
+    /* 추가된 보류 전용 오렌지 배지 스타일 */
+    .badge-hold { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 700; margin-left: 6px; }
 </style>
 
 <section class="detail-section">
@@ -86,7 +96,103 @@
         <div class="detail-body">
 
             <div class="detail-main-content">
-                <div class="detail-description">{{project.description}}</div>
+
+                {{#isOwner}}
+                    <div class="bid-list-container">
+                        <h2 class="bid-list-title">
+                            📄 접수된 전문가 제안서 목록
+                            <span class="bid-count-badge">{{bidCount}}건 도착</span>
+                        </h2>
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            {{#bids}}
+                                <div class="bid-item-card">
+                                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                        <div>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <span style="font-weight: 800; color: #1c1e26; font-size: 16px;">{{expert.name}} 전문가</span>
+                                                    <span class="expert-rating">⭐ 4.9</span>
+
+                                                    {{#isHold}}
+                                                        <span class="badge-hold">⏳ 보류 중</span>
+                                                    {{/isHold}}
+
+                                                    <div class="detail-meta-dot"></div>
+                                                    <span style="font-size: 12px; color: #9ca3af;">{{createdAt}}</span>
+                                                </div>
+                                                <div style="display: flex; gap: 4px;">
+                                                    <span class="expert-tag">경력인증</span>
+                                                    <span class="expert-tag">신원확인</span>
+                                                    <span class="expert-tag" style="background:#eef2ff; color:#4f46e5;">포트폴리오 📂</span>
+                                                </div>
+                                            </div>
+
+                                            <p style="font-size: 14px; color: #334155; line-height: 1.7; margin: 0 0 16px 0; white-space: pre-wrap; background: #fff; padding: 16px; border: 1px solid #f1f5f9; border-radius: 10px;">{{coverLetter}}</p>
+                                        </div>
+
+                                        {{#approach}}
+                                            <div style="background: #f8fafc; padding: 12px 166px; border-radius: 10px; border-left: 3px solid #cbd5e1;">
+                                                <span style="font-size: 13px; color: #334155; line-height: 1.6; display: block;">🎯 <strong>제시한 접근 방식:</strong> {{approach}}</span>
+                                            </div>
+                                        {{/approach}}
+                                    </div>
+
+                                    <div style="text-align: right; margin-left: 32px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; min-width: 140px; border-left: 1px dashed #e2e8f0; padding-left: 24px;">
+                                        <div class="price-box" style="width: 100%; box-sizing: border-box;">
+                                            <div style="font-size: 11px; color: #64748b; margin-bottom: 2px; font-weight: 500;">제안 금액</div>
+                                            <div style="font-size: 19px; font-weight: 900; color: #2563eb;">{{proposedPrice}} 만원</div>
+                                        </div>
+
+                                        {{^expertCard}}
+                                            <div style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
+                                                <button type="button" class="btn btn-outline btn-sm"
+                                                        style="width: 100%; border-color: #2563eb; color: #2563eb; font-weight: 700; background: #fff; padding: 10px 0;"
+                                                        onclick="selectBid({{id}}, {{project.id}})">
+                                                    선택 및 낙찰
+                                                </button>
+
+                                                {{^isHold}}
+                                                    <button type="button" class="btn btn-outline btn-sm"
+                                                            style="width: 100%; border-color: #cbd5e1; color: #475569; font-weight: 600; background: #fff; padding: 7px 0;"
+                                                            onclick="holdBid({{id}}, {{project.id}})">
+                                                        잠정 보류
+                                                    </button>
+                                                {{/isHold}}
+
+                                                {{#isHold}}
+                                                    <button type="button" class="btn btn-outline btn-sm"
+                                                            style="width: 100%; border-color: #fed7aa; color: #ea580c; font-weight: 600; background: #fff7ed; padding: 7px 0; cursor: default;" disabled>
+                                                        보류 처리됨
+                                                    </button>
+                                                {{/isHold}}
+                                            </div>
+                                        {{/expertCard}}
+
+                                        {{#expertCard}}
+                                            <div style="width: 100%; text-align: center; padding: 10px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #64748b; font-weight: 700;">
+                                                🔒 마감 종료
+                                            </div>
+                                        {{/expertCard}}
+                                    </div>
+                                </div>
+                            {{/bids}}
+
+                            {{^bids}}
+                                <div style="text-align: center; color: #9ca3af; padding: 56px 0; border: 2px dashed #e2e8f0; border-radius: 14px; font-size: 14px; background: #f8fafc;">
+                                    <div style="font-size: 24px; margin-bottom: 10px;">✉️</div>
+                                    현재 프로젝트에 등록된 전문가 제안서가 없습니다.
+                                </div>
+                            {{/bids}}
+                        </div>
+                    </div>
+                {{/isOwner}}
+
+                <div style="background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
+                    <h3 style="font-size: 16px; font-weight: 900; color: #1c1e26; margin: 0 0 20px 0; padding-bottom: 12px; border-bottom: 1px solid #f3f4f8;">📋 프로젝트 상세 요구사항</h3>
+                    <div class="detail-description">{{project.description}}</div>
+                </div>
+
                 <div class="detail-footer">
                     <a href="/projects" class="btn btn-outline">← 목록으로</a>
                     {{#isAdmin}}
@@ -97,65 +203,18 @@
                         </form>
                     {{/isAdmin}}
                 </div>
-
-                {{#isOwner}}
-                    <div class="bid-list-container">
-                        <h2 class="bid-list-title">📄 접수된 전문가 제안서 목록</h2>
-
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            {{#bids}}
-                                <div class="bid-item-card">
-                                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                                        <div>
-                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                                                <span style="font-weight: 800; color: #1c1e26; font-size: 15px;">{{expert.name}} 전문가</span>
-                                                <div class="detail-meta-dot"></div>
-                                                <span style="font-size: 12px; color: #9ca3af;">{{createdAt}}</span>
-                                            </div>
-                                            <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin: 0; white-space: pre-wrap;">{{coverLetter}}</p>
-                                        </div>
-
-                                        {{#approach}}
-                                            <div style="margin-top: 12px; background: #f8f9fc; padding: 10px 14px; border-radius: 8px;">
-                                                <span style="font-size: 13px; color: #475569; line-height: 1.5; display: block;">🎯 <strong>접근 방식:</strong> {{approach}}</span>
-                                            </div>
-                                        {{/approach}}
-                                    </div>
-
-                                    <div style="text-align: right; margin-left: 24px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; min-width: 110px;">
-                                        <div style="font-size: 17px; font-weight: 800; color: #2563eb;">{{proposedPrice}} 만원</div>
-
-                                        {{^project.isClosed}}
-                                            <button type="button" class="btn btn-outline btn-sm"
-                                                    style="width: 100%; border-color: #2563eb; color: #2563eb; font-weight: 700; background: #fff;"
-                                                    onclick="selectBid({{id}}, {{project.id}})">
-                                                낙찰하기
-                                            </button>
-                                        {{/project.isClosed}}
-                                    </div>
-                                </div>
-                            {{/bids}}
-
-                            {{^bids}}
-                                <div style="text-align: center; color: #9ca3af; padding: 48px 0; border: 1.5px dashed #eaecf4; border-radius: 14px; font-size: 14px; background: #fff;">
-                                    현재 도착한 전문가 제안서가 없습니다.
-                                </div>
-                            {{/bids}}
-                        </div>
-                    </div>
-                {{/isOwner}}
             </div>
 
             <div style="position: sticky; top: 100px; display: flex; flex-direction: column; gap: 20px;">
 
                 <div class="info-card">
-                    <div class="info-card-title">프로젝트 정보</div>
+                    <div class="info-card-title">프로젝트 요약 정보</div>
                     <div class="info-row">
-                        <span class="info-label">예산</span>
+                        <span class="info-label">예산 범위</span>
                         <span class="info-value highlight">{{project.budgetMin}}~{{project.budgetMax}}만원</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">마감</span>
+                        <span class="info-label">남은 기간</span>
                         <span class="info-value urgent">D-{{project.dDay}}</span>
                     </div>
                     <div class="info-row">
@@ -164,7 +223,7 @@
                     </div>
 
                     <div class="info-row">
-                        <span class="info-label">입찰 수</span>
+                        <span class="info-label">총 입찰 수</span>
                         {{#project.privateProject}}
                             {{#isOwner}}
                                 <span class="info-value" style="color: #2563eb;">{{bidCount}}개</span>
@@ -181,7 +240,7 @@
 
                     <div class="info-row">
                         <span class="info-label">인증 전문가</span>
-                        <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
+                        <span class="info-value">{{#project.isCertifiedOnly}}필수 요구{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}제한 없음{{/project.isCertifiedOnly}}</span>
                     </div>
                     {{^isOwner}}
                         <a href="/bids/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
@@ -234,7 +293,6 @@
         });
     }
 
-    // 🏆 컨트롤러의 @PostMapping("/bids/{id}/select") 스펙과 연동되는 낙찰 AJAX 함수 추가
     function selectBid(bidId, projectId) {
         if (!confirm('이 전문가를 낙찰하시겠습니까?')) return;
 
@@ -243,9 +301,27 @@
         }).then(res => {
             if (res.ok) {
                 alert('낙찰이 완료되었습니다!');
-                window.location.href = '/projects/' + projectId; // 성공 시 상세 페이지 갱신
+                window.location.href = '/projects/' + projectId;
             } else {
                 alert('낙찰 처리에 실패했습니다. 다시 시도해 주세요.');
+            }
+        }).catch(err => {
+            console.error('에러 발생:', err);
+            alert('네트워크 오류가 발생했습니다.');
+        });
+    }
+
+    function holdBid(bidId, projectId) {
+        if (!confirm('이 제안서를 잠정 보류 처리하시겠습니까?')) return;
+
+        fetch('/bids/' + bidId + '/hold', {
+            method: 'POST'
+        }).then(res => {
+            if (res.ok) {
+                alert('보류 처리가 완료되었습니다.');
+                window.location.href = '/projects/' + projectId;
+            } else {
+                alert('보류 처리에 실패했습니다. 다시 시도해 주세요.');
             }
         }).catch(err => {
             console.error('에러 발생:', err);

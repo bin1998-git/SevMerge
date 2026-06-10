@@ -101,40 +101,46 @@ public class ProjectController {
     // 프로젝트 상세조회(id)
     @GetMapping("/projects/{id}")
     public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
+        log.info("프로젝트 상세조회 요청 - projectId: {}", id);
         projectService.increase(id);
+
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
         model.addAttribute("project", project);
 
-        // 제안서 상세조회
+
+        // 일반 전문가도 빈 리스트나 전체 리스트를 안전하게 가져옵니다.
         List<Bid> bids = bidRepository.findByProjectId(id);
-        model.addAttribute("bids",bids);
-        model.addAttribute("bidCount", bids.size());
+        model.addAttribute("bids", bids);
 
         // 로그인한 사용자가 프로젝트 작성자인지 확인
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(project.getMemberId());
-
-        // 로그인한 의뢰인일 때만 입찰 수 조회
-        int bidCount = 0;
-        if (sessionUser != null && sessionUser.isClient()) {
-            bidCount = bidService.findByProjectId(id, sessionUser).size();
-        }
-        model.addAttribute("bidCount", bidCount);
         model.addAttribute("isOwner", isOwner);
 
-        // 낙찰된 전문가 카드
+        // 총 제안서 개수는 의뢰인이거나, 비공개 프로젝트가 아닐 때만 정확하게 전달합니다.
+        int bidCount = (bids != null) ? bids.size() : 0;
+        model.addAttribute("bidCount", bidCount);
+
+        // 낙찰된 전문가 카드 (CLOSED 상태일 때 안전하게 활성화)
         bidService.findSelectedBidByProjectId(id).ifPresent(bid -> {
             model.addAttribute("expertCard", true);
             model.addAttribute("expertName", bid.getExpert().getName());
             model.addAttribute("expertEmail", bid.getExpert().getEmail());
             model.addAttribute("taskTitle", project.getTitle());
-            model.addAttribute("startDate", bid.getCreatedAt().toString().substring(0, 10));
-            model.addAttribute("endDate", project.getDeadline().toString().substring(0, 10));
 
+            // 날짜 포맷팅 에러 완벽 방어
+            if (bid.getCreatedAt() != null) {
+                String startStr = bid.getCreatedAt().toString();
+                model.addAttribute("startDate", startStr.length() >= 10 ? startStr.substring(0, 10) : startStr);
+            }
+            if (project.getDeadline() != null) {
+                String deadlineStr = String.valueOf(project.getDeadline());
+                model.addAttribute("endDate", deadlineStr.length() >= 10 ? deadlineStr.substring(0, 10) : deadlineStr);
+            }
         });
+
         return "project/project-detail";
     }
-
     // 프로젝트 수정 폼
     @GetMapping("/projects/{id}/edit")
     public String updateForm(@PathVariable Long id, Model model) {
@@ -178,10 +184,14 @@ public class ProjectController {
 
     // 검토확인
     @PostMapping("/projects/{id}/done")
-    public String done(@PathVariable Long id) {
+    public String done(@PathVariable Long id, HttpSession session) {
         log.info("project 검토 확인 요청");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) {
+            return "redirect:/login";
+        }
 
-        projectService.doneProject(id, null);
+        projectService.doneProject(id, sessionUser);
         return "redirect:/my-pages?tab=projects";
     }
 
