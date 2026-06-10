@@ -12,28 +12,38 @@ import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message,Long> {
 
-    // 받은 메세지 조회
-//    @Query("""
-//           SELECT m FROM Message m JOIN FETCH m.sender WHERE m.receiver = :receiver AND m.isdeleted = false ORDER BY m.createdAt DESC
-//           """)
-//    List<Message> findReceivedMessages(@Param("receiver") Member receiver);
-
-    @Query(value = "SELECT m FROM Message m JOIN FETCH m.sender JOIN FETCH m.receiver WHERE m.receiver = :receiver AND m.isDeletedByReceiver = false",
-           countQuery = "SELECT COUNT(m) FROM Message m WHERE m.receiver = :receiver AND m.isDeletedByReceiver = false")
-    Page<Message> findAllReceivedMessagesByPages(@Param("receiver") Member receiver, Pageable pageable);
-
-    // 보낸 메세지 조회
-//    @Query("""
-//           SELECT m FROM Message m JOIN FETCH m.receiver WHERE m.sender = :sender AND m.isDeletedBySender = false ORDER BY m.createdAt DESC
-//           """)
-//    List<Message> findSentMessages(@Param("sender") Member sender);
-
-    @Query(value = "SELECT m FROM Message m JOIN FETCH m.sender JOIN FETCH m.receiver WHERE m.sender = :sender AND m.isDeletedBySender = false",
-            countQuery = "SELECT COUNT(m) FROM Message m WHERE m.sender = :sender AND m.isDeletedBySender = false")
-    Page<Message> findAllSentMessagesByPages(@Param("sender") Member sender, Pageable pageable);
-
     // 쪽지 상세조회
     @Query("SELECT m FROM Message m JOIN FETCH m.sender JOIN FETCH m.receiver LEFT JOIN FETCH m.project WHERE m.id = :id")
     Optional<Message> findByIdWithDetails(@Param("id") Long id);
+
+    // 쪽지 검색 기능
+    @Query(value = """
+           SELECT m FROM Message m JOIN FETCH m.sender JOIN FETCH m.receiver
+           WHERE m.receiver = :receiver AND m.isDeletedByReceiver = false
+           AND (:keyword IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+           """,
+           countQuery = """
+           SELECT COUNT(m) FROM Message m                                                                                                                                                                  \s
+           WHERE m.receiver = :receiver AND m.isDeletedByReceiver = false                                                                                                                                  \s
+           AND (:keyword IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+           """)
+    Page<Message> findAllReceivedMessagesByPages(@Param("receiver") Member receiver,
+                                                @Param("keyword") String keyword,
+                                                Pageable pageable);
+
+    @Query(value = """                                                                                                                                                                                       
+           SELECT m FROM Message m JOIN FETCH m.sender JOIN FETCH m.receiver
+           WHERE m.sender = :sender AND m.isDeletedBySender = false
+           AND (:keyword IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+           """,
+           countQuery = """                                                                                                                                                                                 
+           SELECT COUNT(m) FROM Message m
+           WHERE m.sender = :sender AND m.isDeletedBySender = false
+           AND (:keyword IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+           """)
+    Page<Message> findAllSentMessagesByPages(@Param("sender") Member sender,
+                                             @Param("keyword") String keyword,
+                                             Pageable pageable);
+
 
 }

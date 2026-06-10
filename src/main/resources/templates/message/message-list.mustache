@@ -31,6 +31,35 @@
     .empty-state { text-align: center; padding: 60px 0; }
     .empty-msg { font-size: 15px; color: #c4c9d9; }
     .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 7px; }
+    .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding: 11px 38px 11px 14px;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 9px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1c1e26;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 13px;
+        min-width: 116px;
+        cursor: pointer;
+        outline: none;
+        transition: border-color .15s;
+    }
+    .filter-select:hover, .filter-select:focus { border-color: #2563eb; }
+    .filter-search { flex: 1; min-width: 160px; padding: 11px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s; }
+    .filter-search:focus { border-color: #2563eb; }
+    .filter-search::placeholder { color: #c4c9d9; }
+    .btn-search { padding: 10px 22px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; transition: background .15s; }
+    .btn-search:hover { background: #1d4ed8; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 16px; }
+    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
 </style>
 
 <div class="page-header">
@@ -38,11 +67,26 @@
         <h1 class="page-title">쪽지함</h1>
         <p class="page-desc">프로젝트 관련 쪽지를 확인하세요.</p>
         <div class="board-tabs">
-            <a href="/messages?box=received" class="board-tab {{#isReceived}}active{{/isReceived}}">받은 쪽지함</a>
-            <a href="/messages?box=sent" class="board-tab {{#isSent}}active{{/isSent}}">보낸 쪽지함</a>
+            <a href="/messages?box=received&sort={{sort}}&keyword={{keyword}}" class="board-tab {{#isReceived}}active{{/isReceived}}">받은 쪽지함</a>
+            <a href="/messages?box=sent&sort={{sort}}&keyword={{keyword}}" class="board-tab {{#isSent}}active{{/isSent}}">보낸 쪽지함</a>
         </div>
     </div>
 </div>
+
+<section class="board-section" style="padding-bottom:0;">
+    <div class="board-inner">
+        <form action="/messages" method="GET" class="filter-bar">
+            <input type="hidden" name="box" value="{{box}}" />
+            <input type="hidden" name="page" value="1" />
+            <select name="sort" class="filter-select" onchange="this.form.submit()">
+                <option value="desc" {{^isSortAsc}}selected{{/isSortAsc}}>최신순</option>
+                <option value="asc" {{#isSortAsc}}selected{{/isSortAsc}}>오래된순</option>
+            </select>
+            <input type="text" name="keyword" class="filter-search" placeholder="제목으로 검색" value="{{keyword}}" />
+            <button type="submit" class="btn-search">검색</button>
+        </form>
+    </div>
+</section>
 
 <!-- 받은 쪽지함 -->
 {{#isReceived}}
@@ -82,6 +126,13 @@
             </div>
             {{/messages}}
         </div>
+
+        <div class="pagination">
+            {{#prevPage}}<a href="/messages?box={{box}}&sort={{sort}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+            {{#nextPage}}<a href="/messages?box={{box}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+        </div>
+
     </div>
 </section>
 {{/isReceived}}
@@ -121,6 +172,13 @@
             </div>
             {{/messages}}
         </div>
+
+        <div class="pagination">
+            {{#prevPage}}<a href="/messages?box={{box}}&sort={{sort}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+            {{#nextPage}}<a href="/messages?box={{box}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+        </div>
+
     </div>
 </section>
 {{/isSent}}

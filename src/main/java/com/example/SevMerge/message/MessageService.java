@@ -29,12 +29,17 @@ public class MessageService {
     private final BidRepository bidRepository;
 
     // 쪽지함 리스트 페이징 처리 조회
-    public Page<MessageResponse.ListDTO> findMessages(Member member, String box, int page) {
-        Pageable pageable = PageRequest.of(Math.max(0, page - 1), 10, Sort.by("createdAt").descending());
+    public Page<MessageResponse.ListDTO> findMessages(Member member, String box, int page, String sort, String keyword) {
+        Sort sortOrder = "asc".equalsIgnoreCase(sort)
+                ? Sort.by("createdAt").ascending()
+                : Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), 10, sortOrder);
+
+        String newKeyword = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
 
         Page<Message> messagePage = box.equals("sent")
-                ? messageRepository.findAllSentMessagesByPages(member, pageable)
-                : messageRepository.findAllReceivedMessagesByPages(member, pageable);
+                ? messageRepository.findAllSentMessagesByPages(member, newKeyword, pageable)
+                : messageRepository.findAllReceivedMessagesByPages(member, newKeyword, pageable);
 
         return messagePage.map(MessageResponse.ListDTO::new);
     }
@@ -95,6 +100,27 @@ public class MessageService {
                 .title(reqDTO.getTitle())
                 .content(reqDTO.getContent())
                 .build());
+    }
+
+    // 메세지 삭제 기능
+    @Transactional
+    public boolean deleteMessage(Long messageId, Member sessionMember) {
+        Message message = messageRepository.findByIdWithDetails(messageId)
+                .orElseThrow(() -> new NotFoundException("쪽지를 찾을 수 없습니다."));
+
+        boolean isSender = message.getSender().getId().equals(sessionMember.getId());
+        boolean isReceiver = message.getReceiver().getId().equals(sessionMember.getId());
+
+        if (!isSender && !isReceiver) {
+            throw new UnauthorizedException("본인의 메세지만 삭제할 수 있습니다.");
+        }
+
+        if (isSender) {
+            message.deleteBySender();
+        } else {
+            message.deleteByReceiver();
+        }
+        return isSender;
     }
 
 
