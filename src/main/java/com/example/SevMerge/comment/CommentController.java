@@ -8,12 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
+
 
     // 댓글 등록 기능 요청
     @PostMapping("/boards/{boardId}/comments/save")
@@ -33,12 +35,15 @@ public class CommentController {
 
     // 댓글 삭제 기능 요청
     @PostMapping("/comments/{id}/delete")
-    public String delete(@PathVariable(name = "id") Integer commentId,
-                         @RequestParam(name = "boardId") long boardId,
-                         HttpSession session) {
-        // 1. 인증검사 (인터셉터)
+    public String delete(@PathVariable(name = "id") Long commentId,
+                         HttpSession session,
+                         @RequestParam(name = "boardId") Long boardId) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        commentService.deleteComment(commentId,sessionMember.getId());
+        if (sessionMember == null) {
+            return "redirect:/login";
+        }
+
+        commentService.deleteComment(commentId, sessionMember.getId());
 
         return "redirect:/boards/" + boardId;
     }

@@ -9,6 +9,9 @@ import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+
 
     // 댓글 목록 조회
     public List<CommentResponse.ListDTO> findComments(Long boardId) {
@@ -47,16 +51,18 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(Integer commentId, long sessionMemberId) {
+    public void deleteComment(Long commentId, Long sessionUserId) { // Integer -> Long 변환
+        // 1. 댓글 조회 (Reply -> Comment)
         Comment commentEntity = commentRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException("해당 게시글을 찾을 수 없습니다."));
+                () -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다"));
 
-        // 인가처리
-        if (commentEntity.getMember().getId() != sessionMemberId) {
-            throw new ForbiddenException("댓글 삭제 권한이 없습니다.");
+        // 2. 인가 처리 (본인 확인)
+        // 객체 비교(!=) 대신 안전한 Long 타입 값 비교(!equals)를 사용했습니다.
+        if (!commentEntity.getMember().getId().equals(sessionUserId)) {
+            throw new IllegalArgumentException("댓글 삭제 권한이 없습니다");
         }
 
-        // 댓글 삭제
+        // 3. 댓글 진짜로 삭제 (DB에서 Hard Delete)
         commentRepository.delete(commentEntity);
     }
 }
