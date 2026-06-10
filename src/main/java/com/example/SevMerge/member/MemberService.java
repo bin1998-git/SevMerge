@@ -5,6 +5,7 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
+import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class MemberService {
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
+
+    //문자 발송
+    private final SolApiService solApiService;
 
 
     // 카카오 환경 변수
@@ -190,6 +194,24 @@ public class MemberService {
         return count == null ? 0L : count;
     }
 
+    // 상태 변경 문자 발송
+    private void sendStatusSms(Member member, String message) {
+        String phone = member.getPhone();
+        // 휴대폰 번호 없을때 건너뛰기
+        if (phone == null || phone.isBlank() || phone.equals("010-0000-0000")) {
+            log.info("휴대폰 번호 없음 - 문자 생략 memberId={}", member.getId());
+            return;
+        }
+        try {
+            String to = phone.replaceAll("-", "");  // 하이픈 제거
+            solApiService.sendSms(to, message);
+            log.info("상태 변경 문자 발송 완료 - memberId={}", member.getId());
+        } catch (Exception e) {
+            // 문자 실패가 승인/거절에 영향주지 않게 설정
+            log.warn("문자 발송 실패 (처리는 정상) - memberId={}, 사유={}", member.getId(), e.getMessage());
+        }
+    }
+
     // 전문가 승인
     @Transactional
     public void approveExpert(Long memberId) {
@@ -202,6 +224,8 @@ public class MemberService {
             profile.setCertified(true);
         });
         log.info("전문가 승인 완료 - memberId={}", memberId);
+        sendStatusSms(member,
+                "[Sev Merge] " + member.getName() + " 전문가님, 전문가 신청이 승인되었습니다. 지금 바로 활동을 시작해보세요!");
     }
 
     // 전문가 거절
@@ -216,7 +240,10 @@ public class MemberService {
             profile.setCertified(false);
         });
         log.info("전문가 거부 처리 - memberId={}", memberId);
+        sendStatusSms(member,
+                "[Sev Merge] " + member.getName() + " 전문가님, 전문가 신청이 거부되었습니다. 자세한 내용은 고객센터를 이용해주세요.");
     }
+
 
     // 회원 정지처리
     @Transactional
@@ -254,26 +281,19 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<ExpertProfileResponse> getExpertProfilesByStatus(Status status) {
 
-        // 1. 리포지토리 메서드가 안 먹히니, 확실하게 안전한 기본 내장 findAll()로 전 유저를 다 가져옵니다.
         List<Member> allMembers = memberRepository.findAll();
-
-        // 2. 결과를 담을 빈 상자 생성
         List<ExpertProfileResponse> responseList = new java.util.ArrayList<>();
 
-        // 3. 전체 유저를 한 명씩 검사합니다 (for-each)
         for (Member member : allMembers) {
-
-            // 4. 탈퇴하지 않은 유저 중, 권한이 EXPERT(전문가)이고 상태(Status)가 매개변수와 일치하는 사람만 필터링!
             if (!member.isDeleted() && member.getRole() == Role.EXPERT && member.getStatus() == status) {
 
-                // 5. 조건에 맞다면 프로필을 조회합니다.
                 ExpertProfile profile = expertProfileRepository.findByMemberId(member.getId()).orElse(null);
 
                 if (profile != null) {
-                    // 프로필 데이터가 존재하면 정상 변환해서 삽입
+
                     responseList.add(ExpertProfileResponse.from(profile));
                 } else {
-                    // 프로필 데이터 상자가 비어있다면 가상 상자를 빌드해서 무조건 이름이라도 나오게 방어 삽입!
+
                     ExpertProfile dummyProfile = ExpertProfile.builder()
                             .member(member)
                             .profileImage("default.png")
@@ -287,7 +307,6 @@ public class MemberService {
             }
         }
 
-        // 6. 필터링이 완벽하게 끝난 리스트를 반환합니다.
         return responseList;
     }
 
