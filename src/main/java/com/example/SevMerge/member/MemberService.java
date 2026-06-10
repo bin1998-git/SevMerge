@@ -5,6 +5,7 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
+import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class MemberService {
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
+
+    //문자 발송
+    private final SolApiService solApiService;
 
 
     // 카카오 환경 변수
@@ -190,6 +194,24 @@ public class MemberService {
         return count == null ? 0L : count;
     }
 
+    // 상태 변경 문자 발송
+    private void sendStatusSms(Member member, String message) {
+        String phone = member.getPhone();
+        // 휴대폰 번호 없을때 건너뛰기
+        if (phone == null || phone.isBlank() || phone.equals("010-0000-0000")) {
+            log.info("휴대폰 번호 없음 - 문자 생략 memberId={}", member.getId());
+            return;
+        }
+        try {
+            String to = phone.replaceAll("-", "");  // 하이픈 제거
+            solApiService.sendSms(to, message);
+            log.info("상태 변경 문자 발송 완료 - memberId={}", member.getId());
+        } catch (Exception e) {
+            // 문자 실패가 승인/거절에 영향주지 않게 설정
+            log.warn("문자 발송 실패 (처리는 정상) - memberId={}, 사유={}", member.getId(), e.getMessage());
+        }
+    }
+
     // 전문가 승인
     @Transactional
     public void approveExpert(Long memberId) {
@@ -202,6 +224,8 @@ public class MemberService {
             profile.setCertified(true);
         });
         log.info("전문가 승인 완료 - memberId={}", memberId);
+        sendStatusSms(member,
+                "[Sev Merge] " + member.getName() + " 전문가님, 전문가 신청이 승인되었습니다. 지금 바로 활동을 시작해보세요!");
     }
 
     // 전문가 거절
@@ -216,7 +240,10 @@ public class MemberService {
             profile.setCertified(false);
         });
         log.info("전문가 거부 처리 - memberId={}", memberId);
+        sendStatusSms(member,
+                "[Sev Merge] " + member.getName() + " 전문가님, 전문가 신청이 거부되었습니다. 자세한 내용은 고객센터를 이용해주세요.");
     }
+
 
     // 회원 정지처리
     @Transactional
