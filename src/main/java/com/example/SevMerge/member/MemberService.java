@@ -97,10 +97,11 @@ public class MemberService {
                     .avgRating(BigDecimal.ZERO)
                     .totalReviews(0)
                     .isCertified(false)
-                    // 프로필이미지 널값 방지
                     .profileImage("default.png")
-                    .intro("")
-                    .career("")
+                    .intro(request.getIntro())
+                    .career(request.getCareer())
+                    .githubUrl(request.getGithubUrl())
+                    .contactEmail(request.getEmail())   // 일반가입은 입력 이메일이 연락처
                     .speciality("")
                     .build());
             log.info("전문가 신청 완료 - memberId={}", member.getId());
