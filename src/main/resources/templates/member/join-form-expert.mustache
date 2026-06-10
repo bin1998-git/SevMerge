@@ -81,13 +81,14 @@
 
             <div class="form-group">
                 <label class="form-label">비밀번호 <span class="required">*</span></label>
-                <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" />
+                <input type="password" name="password" id="pwInput" class="form-input" placeholder="비밀번호를 입력하세요" />
                 <span class="form-hint">영문, 숫자 포함 8자 이상</span>
             </div>
 
             <div class="form-group">
                 <label class="form-label">비밀번호 확인 <span class="required">*</span></label>
-                <input type="password" name="passwordConfirm" class="form-input" placeholder="비밀번호를 다시 입력하세요" />
+                <input type="password" name="passwordConfirm" id="pwConfirmInput" class="form-input" placeholder="비밀번호를 다시 입력하세요" />
+                <span class="form-hint" id="pwMatchHint"></span>
             </div>
 
             <div class="form-group">
@@ -138,7 +139,7 @@
             {{/errorMessage}}
 
             <div class="divider"></div>
-            <button type="submit" class="submit-btn">전문가 회원가입</button>
+            <button type="submit" class="submit-btn">제출하고 승인 요청</button>
         </form>
 
         <div class="auth-footer">
@@ -150,23 +151,72 @@
 </section>
 
 <script>
-    // 전문가 약관 필수 동의 검증
-    document.getElementById("joinForm").addEventListener("submit", function (e) {
-        const allChecked = [...document.querySelectorAll(".term-check")].every(c => c.checked);
-        if (!allChecked) {
-            e.preventDefault();
-            alert("전문가 가입을 위해 필수 약관에 모두 동의해 주세요.");
-        }
-    });
-
-    // ===== 이메일 인증 =====
+    const form = document.getElementById("joinForm");
     const emailInput    = document.getElementById("emailInput");
     const sendCodeBtn   = document.getElementById("sendCodeBtn");
     const codeGroup     = document.getElementById("codeGroup");
     const codeInput     = document.getElementById("codeInput");
     const verifyCodeBtn = document.getElementById("verifyCodeBtn");
     const codeHint      = document.getElementById("codeHint");
+    const pwInput        = document.getElementById("pwInput");
+    const pwConfirmInput = document.getElementById("pwConfirmInput");
+    const pwMatchHint    = document.getElementById("pwMatchHint");
 
+    // 비밀번호 일치 실시간 확인
+    function checkPwMatch() {
+        if (pwConfirmInput.value === "") {
+            pwConfirmInput.style.borderColor = "#e2e5ef";
+            pwMatchHint.textContent = "";
+            return;
+        }
+        if (pwInput.value === pwConfirmInput.value) {
+            pwConfirmInput.style.borderColor = "#10b981";
+            pwMatchHint.textContent = "✓ 비밀번호가 일치합니다.";
+            pwMatchHint.style.color = "#10b981";
+        } else {
+            pwConfirmInput.style.borderColor = "#ef4444";
+            pwMatchHint.textContent = "✗ 비밀번호가 일치하지 않습니다.";
+            pwMatchHint.style.color = "#ef4444";
+        }
+    }
+    pwInput.addEventListener("input", checkPwMatch);
+    pwConfirmInput.addEventListener("input", checkPwMatch);
+
+    // 제출 시 필수값 + 비밀번호 + 약관 검증
+    form.addEventListener("submit", function (e) {
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
+        const pw = pwInput.value;
+        const pwConfirm = pwConfirmInput.value;
+        const phone = form.phone.value.trim();
+        const intro = form.intro.value.trim();
+        const career = form.career.value.trim();
+
+        if (!name || !email || !pw || !pwConfirm || !phone || !intro || !career) {
+            e.preventDefault();
+            alert("필수 항목을 모두 입력해 주세요.");
+            return;
+        }
+        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+        if (!pwRegex.test(pw)) {
+            e.preventDefault();
+            alert("비밀번호는 영문과 숫자를 포함해 8자 이상이어야 합니다.");
+            return;
+        }
+        if (pw !== pwConfirm) {
+            e.preventDefault();
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+        const allChecked = [...document.querySelectorAll(".term-check")].every(c => c.checked);
+        if (!allChecked) {
+            e.preventDefault();
+            alert("전문가 가입을 위해 필수 약관에 모두 동의해 주세요.");
+            return;
+        }
+    });
+
+    // ===== 이메일 인증 =====
     sendCodeBtn.addEventListener("click", async function () {
         const email = emailInput.value.trim();
         if (!email) { alert("이메일을 입력해주세요."); return; }

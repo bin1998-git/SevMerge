@@ -452,9 +452,6 @@ public class MemberService {
         Member existing = findKakaoMember(kakaoId);
         if (existing != null) return existing;
 
-        if (req.getEmail() == null || req.getEmail().isBlank()) {
-            throw new BadRequestException("연락 가능한 이메일을 입력해 주세요.");
-        }
 
         String dummyPassword = passwordEncoder.encode(java.util.UUID.randomUUID().toString());
         Member newMember = Member.builder()
