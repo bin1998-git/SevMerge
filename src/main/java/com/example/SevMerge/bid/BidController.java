@@ -79,7 +79,7 @@ public class BidController {
     }
 
     // 4-1. 주문 관리 (전문가 — 낙찰된 건만)
-    @GetMapping("/bid/my-orders")
+    @GetMapping("/bids/my-orders")
     public String myOrders(Model model, HttpSession session) {
         log.info("전문가 주문 관리 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);

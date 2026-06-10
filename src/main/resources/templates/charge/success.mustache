@@ -1,0 +1,26 @@
+{{> layout/header}}
+
+<style>
+    .result-section { padding: 80px 28px; text-align: center; }
+    .result-icon  { font-size: 56px; margin-bottom: 20px; }
+    .result-title { font-size: 24px; font-weight: 900; color: #1c1e26; margin-bottom: 8px; }
+    .result-amount { font-size: 32px; font-weight: 900; color: #2563eb; margin: 16px 0; }
+    .result-balance { font-size: 14px; color: #6b7280; margin-bottom: 36px; }
+    .result-balance strong { color: #1c1e26; font-weight: 700; }
+    .btn-wrap { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { padding: 13px 28px; background: #2563eb; color: #fff; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; }
+    .btn-outline  { padding: 13px 28px; background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; }
+</style>
+
+<section class="result-section">
+    <div class="result-icon">✅</div>
+    <h1 class="result-title">충전이 완료되었습니다!</h1>
+    <div class="result-amount">+{{amount}}원</div>
+    <p class="result-balance">현재 잔액 <strong>{{newBalance}}원</strong></p>
+    <div class="btn-wrap">
+        <a href="/payment/my"  class="btn-primary">결제 내역 보기</a>
+        <a href="/charge/form" class="btn-outline">추가 충전</a>
+    </div>
+</section>
+
+{{> layout/footer}}
