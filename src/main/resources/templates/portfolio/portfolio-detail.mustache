@@ -42,7 +42,7 @@
         <div class="portfolio-card">
             <div class="portfolio-img">
                 {{#portfolio.imageUrl}}
-                <img src="{{portfolio.imageUrl}}" alt="{{portfolio.title}}" />
+                <img src="{{portfolio.imageUrl}}" alt="{{portfolio.title}}" onerror="handleImageError(this)" />
                 {{/portfolio.imageUrl}}
                 {{^portfolio.imageUrl}}
                 🖼️
@@ -81,5 +81,13 @@
 
     </div>
 </section>
+<script>
+    function handleImageError(image) {
+        // 이미지를 감싸고 있는 부모 div를 찾아서
+        const container = image.parentElement;
+        // 엑스박스 뜬 <img> 태그를 지우고 이모지(🖼️)로 대체합니다.
+        container.innerHTML = '🖼️';
+    }
+</script>
 
 {{> layout/footer}}
