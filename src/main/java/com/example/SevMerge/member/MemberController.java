@@ -2,6 +2,7 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectService;
@@ -34,6 +35,7 @@ public class MemberController {
     private final BidService bidService;
     private final ReviewRepository reviewRepository;
     private final PortfolioService portfolioService;
+    private final ChargeService chargeService;
 
     // 회원가입
     @GetMapping("/join")
@@ -88,12 +90,16 @@ public class MemberController {
         }
 
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
-        model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
-        model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
-        model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
-        model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
-        model.addAttribute("isEdit", tab.equalsIgnoreCase("edit"));
-        model.addAttribute("isPortfolio",tab.equalsIgnoreCase("portfolios"));
+        model.addAttribute("isProjects",  tab.equalsIgnoreCase("projects"));
+        model.addAttribute("isBoards",    tab.equalsIgnoreCase("boards"));
+        model.addAttribute("isReviews",   tab.equalsIgnoreCase("reviews"));
+        model.addAttribute("isBids",      tab.equalsIgnoreCase("bids"));
+        model.addAttribute("isEdit",      tab.equalsIgnoreCase("edit"));
+        model.addAttribute("isPortfolio", tab.equalsIgnoreCase("portfolios"));
+        model.addAttribute("isWallet",    tab.equalsIgnoreCase("wallet"));
+
+        // 잔액은 탭과 무관하게 항상 주입 (프로필 카드 표시용)
+        model.addAttribute("balance", chargeService.getBalance(loginMember.getId()));
 
 
         model.addAttribute("projectCount", projectService.myProjects(loginMember).size());
