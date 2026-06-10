@@ -16,6 +16,7 @@ public class ProjectRequestDTO {
         private Integer budgetMin;
         private Integer budgetMax;
         private String deadline;
+        private Boolean isPrivate; // 비공개 입찰여부
         private String bidFilter;
 
         public void validate() {

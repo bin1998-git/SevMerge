@@ -132,6 +132,7 @@ public class ProjectService {
                 .budgetMin(req.getBudgetMin())
                 .budgetMax(req.getBudgetMax())
                 .deadline(Timestamp.valueOf(req.getDeadline() + " 00:00:00"))
+                .isPrivate(req.getIsPrivate() != null ? req.getIsPrivate() : false)
                 .projectStatus(ProjectStatus.OPEN)
                 .viewCount(0)
                 .build();
@@ -190,7 +191,7 @@ public class ProjectService {
 
         List<Project> projectList = projectRepository.findAdminProjectsByKeyword(keyword);
 
-        return  projectList.stream()
+        return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }

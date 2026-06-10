@@ -64,6 +64,11 @@ public class Project {
     @Builder.Default
     private boolean isDeleted = false;
 
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPrivate = false; // 비공개입찰여부
+
     @CreationTimestamp
     private Timestamp createdAt;
 

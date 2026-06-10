@@ -96,10 +96,23 @@
                         <span class="info-label">카테고리</span>
                         <span class="info-value">{{project.categoryName}}</span>
                     </div>
+
                     <div class="info-row">
                         <span class="info-label">입찰 수</span>
-                        <span class="info-value">{{bidCount}}개</span>
+                        {{#project.privateProject}}
+                            {{#isOwner}}
+                                <span class="info-value">{{bidCount}}개</span>
+                            {{/isOwner}}
+                            {{^isOwner}}
+                                <span class="info-value" style="color: #9ca3af; font-weight: 500;">🔒 비공개</span>
+                            {{/isOwner}}
+                        {{/project.privateProject}}
+
+                        {{^project.privateProject}}
+                            <span class="info-value">{{bidCount}}개</span>
+                        {{/project.privateProject}}
                     </div>
+
                     <div class="info-row">
                         <span class="info-label">인증 전문가</span>
                         <span class="info-value">{{#project.isCertifiedOnly}}필수{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}무관{{/project.isCertifiedOnly}}</span>
@@ -135,9 +148,7 @@
                         <span class="info-value">{{endDate}}</span>
                     </div>
                 </div>
-                {{/expertCard}}
-
-            </div>
+                {{/expertCard}} </div>
         </div>
 
     </div>
