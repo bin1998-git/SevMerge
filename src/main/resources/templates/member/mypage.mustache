@@ -45,23 +45,7 @@
     .btn-primary { background: #2563eb; color: #fff; }
     .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
 
-    /* 잔액 카드 */
-    .wallet-card { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 18px; padding: 32px 36px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
-    .wallet-left .wallet-label { font-size: 13px; font-weight: 600; opacity: .75; margin-bottom: 8px; }
-    .wallet-left .wallet-amount { font-size: 38px; font-weight: 900; letter-spacing: -.5px; }
-    .wallet-right { display: flex; flex-direction: column; gap: 10px; }
-    .wallet-btn { display: inline-block; padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; text-align: center; transition: background .15s; }
-    .wallet-btn-primary { background: #fff; color: #2563eb; }
-    .wallet-btn-primary:hover { background: #eff6ff; }
-    .wallet-btn-outline { background: rgba(255,255,255,.15); color: #fff; border: 1.5px solid rgba(255,255,255,.4); }
-    .wallet-btn-outline:hover { background: rgba(255,255,255,.25); }
 
-    .charge-history { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; overflow: hidden; margin-top: 20px; }
-    .charge-history-title { font-size: 15px; font-weight: 900; color: #1c1e26; padding: 18px 24px; border-bottom: 1px solid #eaecf4; }
-    .charge-notice { padding: 32px 24px; text-align: center; font-size: 14px; color: #9ca3af; }
-
-    /* 프로필 카드 잔액 뱃지 */
-    .balance-badge { font-size: 12px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-block; margin-left: 8px; vertical-align: middle; }
 </style>
 
 <section class="mypage-section">
@@ -69,10 +53,7 @@
         <div class="profile-card">
             <div class="profile-avatar">👤</div>
             <div class="profile-info">
-                <div class="profile-name">
-                    {{member.name}}
-                    <a href="/my-pages?tab=wallet" class="balance-badge">💰 {{balance}}원</a>
-                </div>
+                <div class="profile-name">{{member.name}}</div>
                 <div class="profile-email">{{member.email}}</div>
                 {{#member.isCertified}}<div class="profile-badge">⭐ 인증 전문가</div>{{/member.isCertified}}
                 <div class="profile-stats">
@@ -106,8 +87,7 @@
                 {{/member.isExpert}}
                 <a href="/my-pages?tab=boards" class="mypage-tab {{#isBoards}}active{{/isBoards}}">내 게시글</a>
                 <a href="/my-pages?tab=reviews" class="mypage-tab {{#isReviews}}active{{/isReviews}}">리뷰</a>
-                <a href="/my-pages?tab=wallet" class="mypage-tab {{#isWallet}}active{{/isWallet}}">💰 잔액 · 충전</a>
-                <a href="/my-pages?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
+<a href="/my-pages?tab=edit" class="mypage-tab {{#isEdit}}active{{/isEdit}}">정보 수정</a>
             </div>
 
             {{! 내 프로젝트 }}
@@ -232,27 +212,6 @@
                     {{^reviews}}<div class="empty-state">작성한 리뷰가 없습니다.</div>{{/reviews}}
                 </div>
             {{/isReviews}}
-
-            {{! 잔액 · 충전 }}
-            {{#isWallet}}
-                <div class="wallet-card">
-                    <div class="wallet-left">
-                        <div class="wallet-label">현재 잔액</div>
-                        <div class="wallet-amount">{{balance}}원</div>
-                    </div>
-                    <div class="wallet-right">
-                        <a href="/charge/form" class="wallet-btn wallet-btn-primary">+ 충전하기</a>
-                        <a href="/payment/my"  class="wallet-btn wallet-btn-outline">결제 내역 보기</a>
-                    </div>
-                </div>
-                <div class="charge-history">
-                    <div class="charge-history-title">충전 안내</div>
-                    <div class="charge-notice">
-                        TossPayments를 통해 카드 결제로 충전하실 수 있습니다.<br>
-                        충전한 잔액은 프로젝트 에스크로 계약 시 사용됩니다.
-                    </div>
-                </div>
-            {{/isWallet}}
 
             {{! 정보 수정 구역 }}
             {{#isEdit}}

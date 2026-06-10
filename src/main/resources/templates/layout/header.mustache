@@ -655,6 +655,13 @@
 
         .expert-nav-tab:hover { color: #1c1e26; border-color: #d1d5db; }
         .expert-nav-tab.active { color: #2563eb; border-color: #2563eb; }
+
+        /* 잔액 위젯 */
+        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; }
+        .nav-balance-label { font-size: 11px; font-weight: 600; color: #3b82f6; }
+        .nav-balance-amount { font-size: 14px; font-weight: 900; color: #1d4ed8; }
+        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; }
+        .nav-charge-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -675,6 +682,11 @@
             <a href="/boards"          class="expert-nav-tab">게시판</a>
         </nav>
         <div class="nav-actions">
+            <div class="nav-balance-wrap">
+                <span class="nav-balance-label">잔액</span>
+                <span class="nav-balance-amount">{{headerBalance}}원</span>
+                <a href="/charge/form" class="nav-charge-btn">충전</a>
+            </div>
             <span class="nav-username">{{sessionUser.name}}님</span>
             <a href="/logout" class="btn btn-outline">로그아웃</a>
         </div>
