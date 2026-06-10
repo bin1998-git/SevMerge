@@ -86,11 +86,14 @@
                        <span class="project-category">{{categoryName}}</span>
 
                        {{#isClosed}}
-                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 6px;">🔒 낙찰 완료</span>
+                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 6px;">🔒낙찰 완료</span>
                        {{/isClosed}}
                        {{^isClosed}}
                        <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 3px 9px; border-radius: 6px;">⚡ 모집 중</span>
                        {{/isClosed}}
+                       {{#privateProject}}
+                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 9px; border-radius: 6px;">🔒 비공개 입찰</span>
+                       {{/privateProject}}
 
                        {{#isCertifiedOnly}}
                        <span class="badge-certified">⭐ 인증 전문가만</span>
