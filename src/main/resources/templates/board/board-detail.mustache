@@ -297,12 +297,16 @@
             <div class="detail-actions"
                  style="margin-bottom: 0; padding-bottom: 2px; flex-shrink: 0; display: flex; gap: 8px; align-items: center;">
                 <!-- 1. 작성자 본인일 때만 뜨는 수정/삭제 -->
+                {{^isNotice}}
                 {{#isOwner}}
                     <a href="/boards/{{board.id}}/edit" class="btn btn-outline btn-sm">수정</a>
                 {{/isOwner}}
+                {{/isNotice}}
+                {{#isNotice}}
                 {{#isAdmin}}
-                    <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm" style="margin-right: 8px;">수정</a>
+                    <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm">수정</a>
                 {{/isAdmin}}
+                {{/isNotice}}
                 <!-- 관리자가 아닐 때만 일반 회원용 삭제 버튼 노출 -->
                 {{#isOwner}}
                     {{^isAdmin}}
@@ -315,6 +319,7 @@
                 {{/isOwner}}
 
                 <!-- 관리자일 때 무조건 노출되는 강제 삭제 버튼 -->
+
                 {{#isAdmin}}
                     <form action="/admin/boards/{{board.id}}/delete" method="POST"
                           onsubmit="return confirm('관리자 권한으로 이 게시글을 강제 삭제하시겠습니까?');" style="display:inline; margin: 0;">
@@ -374,8 +379,8 @@
                             {{#isOwner}}
                                 <div class="comment-actions">
                                     <button class="comment-btn">수정</button>
-                                    <form action="/boards/{{board.id}}/comments/{{id}}/delete" method="POST"
-                                          style="display:inline;">
+                                    <form action="/comments/{{id}}/delete" method="POST" style="display:inline;">
+                                        <input type="hidden" name="boardId" value="{{board.id}}">
                                         <button type="submit" class="comment-btn delete">삭제</button>
                                     </form>
                                 </div>

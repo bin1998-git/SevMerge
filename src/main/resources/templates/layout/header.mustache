@@ -712,7 +712,7 @@
                     </div>
                 </div>
 
-                <a href="/admin/expert" class="admin-main-item">전문가 승인</a>
+                <a href="/admin/experts" class="admin-main-item">전문가 승인</a>
             {{/isAdmin}}
 
             <!-- 2. 기존 일반 회원용 메뉴 -->
@@ -731,10 +731,6 @@
                 {{/isExpert}}
                 <a href="/messages">쪽지함</a>
             {{/isLoggedIn}}
-            {{/isAdmin}}
-            <!-- 관리자 페이지 -->
-            {{#isAdmin}}
-                <a href="/admin">관리자</a>
             {{/isAdmin}}
         </nav>
 

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,6 +82,8 @@ public class BoardController {
         model.addAttribute("comments", commentList);
         model.addAttribute("isOwner", sessionMember != null && boardOwner.equals(sessionMember.getId()));
         model.addAttribute("isAdmin", sessionMember != null && sessionMember.getRole() == Role.ADMIN);
+        boolean isNoticeBoard = "NOTICE".equals(board.getBoardType()) || "NOTICE".equals(String.valueOf(board.getBoardType()));
+        model.addAttribute("isNotice", isNoticeBoard);
         return "board/board-detail";
     }
 
@@ -188,58 +191,5 @@ public class BoardController {
 
         boardService.deleteBoardByAdmin(boardId);
         return "redirect:/admin/boards";
-    }
-
-    // 관리자 공지사항 관리
-    @GetMapping("/admin/notices")
-    public String adminNotices(@RequestParam(value = "keyword", required = false) String keyword,
-                               Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
-
-        BoardType type = BoardType.NOTICE;
-
-        List<BoardResponse.ListDTO> adminNotices = boardService.getAdminBoardsByType(type, keyword);
-
-        model.addAttribute("boards", adminNotices);
-        model.addAttribute("isFree", false);
-        model.addAttribute("isNotice", true);
-        model.addAttribute("isInquiry", false);
-        model.addAttribute("boardType", "NOTICE");
-        model.addAttribute("keyword", keyword != null ? keyword : "");
-
-        return "admin/admin-notices";
-    }
-
-    // 관리자 공지사항 수정화면 띄우기
-    @GetMapping("/admin/notices/{id}/update")
-    public String updateNoticeForm(@PathVariable("id") Long id, Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        boolean isAdmin = sessionUser != null && sessionUser.getRole() == Role.ADMIN;
-
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
-
-        model.addAttribute("board", board);
-        model.addAttribute("isNotice", true);
-        model.addAttribute("isFree", false);
-        model.addAttribute("isAdmin", isAdmin);
-
-        return "admin/admin-noticeupdate";
-    }
-
-    // 관리자 공지사항 수정처리
-    @PostMapping("/admin/notices/{id}/update")
-    public String updateNotice(@PathVariable("id") Long id,
-                               @RequestParam("title") String title,
-                               @RequestParam("content") String content) {
-        Board board = boardRepository.findById(id).orElseThrow(()
-                -> new IllegalArgumentException("해당 게시글이 없습니다. id =" + id));
-
-        board.setTitle(title);
-        board.setContent(content);
-        boardRepository.save(board);
-
-        return "redirect:/admin/notices";
     }
 }

@@ -114,23 +114,23 @@ INSERT INTO bid_tb (project_id, expert_id, cover_letter, approach, estimated_day
 -- [1번 게시글: '역제안서 작성 팁' 글에 달린 전문가들의 소통 댓글]
 
 -- 1. 다른 프리랜서 개발자의 공감 댓글 (member_id: 3)
-INSERT INTO comment_tb (board_id, member_id, content, created_at)
-VALUES (1, 3, '오... 기능명세서 초안을 역으로 제안하는 방식은 생각 못 해봤는데 진짜 좋은 팁이네요. 다음 입찰 때 바로 써먹어 보겠습니다!', NOW());
+INSERT INTO comment_tb (board_id, member_id, content, created_at, is_deleted)
+VALUES (1, 3, '오... 기능명세서 초안을 역으로 제안하는 방식은 생각 못 해봤는데 진짜 좋은 팁이네요. 다음 입찰 때 바로 써먹어 보겠습니다!', NOW(), false);
 
 -- 2. 주니어 프리랜서의 추가 질문 댓글 (member_id: 4)
-INSERT INTO comment_tb (board_id, member_id, content, created_at)
-VALUES (1, 4, '작성자님, 혹시 클라이언트가 요구사항을 아예 한 줄로만 적어둔 경우에도 이 방식이 통할까요? 기획 방향 잡기가 너무 어렵네요 ㅠㅠ', NOW());
+INSERT INTO comment_tb (board_id, member_id, content, created_at, is_deleted)
+VALUES (1, 4, '작성자님, 혹시 클라이언트가 요구사항을 아예 한 줄로만 적어둔 경우에도 이 방식이 통할까요? 기획 방향 잡기가 너무 어렵네요 ㅠㅠ', NOW(), false);
 
 
 -- [2번 게시글: '스타트업 MVP 앱 외주 비용 질문' 글에 달린 댓글들]
 
 -- 3. 베테랑 전문가의 견적 가이드 답변 댓글 (member_id: 2)
-INSERT INTO comment_tb (board_id, member_id, content, created_at)
-VALUES (2, 2, '채팅에 결제까지 포함된 크로스플랫폼 앱이라면 요구사항 정의서 퀄리티에 따라 다르겠지만 700만~900만 원 선이 가장 매칭률이 높을 것 같습니다. 500만 원은 조금 타이트해 보이네요.', NOW());
+INSERT INTO comment_tb (board_id, member_id, content, created_at, is_deleted)
+VALUES (2, 2, '채팅에 결제까지 포함된 크로스플랫폼 앱이라면 요구사항 정의서 퀄리티에 따라 다르겠지만 700만~900만 원 선이 가장 매칭률이 높을 것 같습니다. 500만 원은 조금 타이트해 보이네요.', NOW(), false);
 
 -- 4. 외주를 고민 중인 다른 의뢰인의 공감 댓글 (member_id: 1)
-INSERT INTO comment_tb (board_id, member_id, content, created_at)
-VALUES (2, 1, '저도 딱 글쓴이님과 똑같은 스펙으로 SevMerge에 프로젝트 등록하려고 조율 중이었는데, 먼저 질문해 주셔서 좋은 정보 얻고 갑니다!', NOW());
+INSERT INTO comment_tb (board_id, member_id, content, created_at, is_deleted)
+VALUES (2, 1, '저도 딱 글쓴이님과 똑같은 스펙으로 SevMerge에 프로젝트 등록하려고 조율 중이었는데, 먼저 질문해 주셔서 좋은 정보 얻고 갑니다!', NOW(), false);
 
 
 

@@ -5,7 +5,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.member.Member;
 import lombok.Data;
 
-public class    CommentRequest {
+public class CommentRequest {
     @Data
     public static class SaveDTO {
         private Long boardId; // 게시글 PK

@@ -127,28 +127,30 @@
         border-radius: 14px;
         border: 1.5px solid #eaecf4;
         overflow: hidden;
+        width: 100%;
     }
 
     .admin-table-head {
         display: grid;
-        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
-        gap: 12px;
-        padding: 12px 22px;
+        grid-template-columns: 0.6fr 2fr 2.5fr 1.8fr 1.2fr 1fr;
+        padding: 14px 22px;
         background: #f8f9fc;
         border-bottom: 1px solid #eaecf4;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         color: #9ca3af;
-        letter-spacing: .5px;
+        align-items: center;
+        justify-items: center;
     }
+
 
     .admin-table-row {
         display: grid;
-        grid-template-columns: 60px 1fr 160px 100px 100px 80px;
-        gap: 12px;
-        padding: 15px 22px;
+        grid-template-columns: 0.6fr 2fr 2.5fr 1.8fr 1.2fr 1fr;
+        padding: 18px 22px;
         border-bottom: 1px solid #f3f4f8;
         align-items: center;
+        justify-items: center;
         font-size: 13px;
     }
 
@@ -163,22 +165,55 @@
     .cell-id {
         color: #c4c9d9;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .admin-table-row > div:first-of-type {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
     }
 
     .cell-name {
         font-weight: 700;
         color: #1c1e26;
+        font-size: 14px;
+        text-align: center;
     }
 
-    .cell-email {
-        font-size: 12px;
-        color: #9ca3af;
-        margin-top: 2px;
+    .admin-table-row > form,
+    .admin-table-row > span:last-of-type,
+    .cell-action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .cell-date {
         color: #9ca3af;
-        font-size: 12px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        line-height: 1.4;
+    }
+
+    .admin-table-row > span:nth-of-type(4) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 
     .role-admin {
@@ -186,10 +221,12 @@
         background: #fef3c7;
         color: #b45309;
         border: 1px solid #fde68a;
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 700;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .role-member {
@@ -197,10 +234,12 @@
         background: #eff6ff;
         color: #2563eb;
         border: 1px solid #bfdbfe;
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 700;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .status-active {
@@ -208,13 +247,25 @@
         background: #ecfdf5;
         color: #059669;
         border: 1px solid #a7f3d0;
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 700;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .admin-table-row > form, .admin-table-row > span:last-of-type {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 
     .del-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         padding: 5px 12px;
         background: #fff3f3;
         color: #ef4444;
@@ -224,6 +275,9 @@
         font-weight: 700;
         cursor: pointer;
         font-family: inherit;
+        margin: 0 auto !important;
+        box-sizing: border-box;
+        transition: background 0.2s;
     }
 
     .del-btn:hover {
@@ -259,32 +313,52 @@
         border-color: #2563eb;
         color: #fff;
     }
+
+    .admin-table-row > span:last-of-type,
+    .admin-table-row > .cell-action,
+    .admin-table-row form {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .admin-table-row .del-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 5px 12px !important;
+        background: #fff3f3 !important;
+        color: #ef4444 !important;
+        border: 1px solid #fecaca !important;
+        border-radius: 6px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+    }
 </style>
 
 <div class="admin-wrap">
-
-
-
     <main class="admin-content">
-
         <div class="admin-header">
             <div>
                 <h1 class="admin-title">회원 관리</h1>
                 <p class="admin-desc">전체 회원 목록을 관리합니다.</p>
             </div>
         </div>
-
         <form action="/admin/members" method="get" class="search-bar">
             <input type="text" class="search-input" name="keyword" placeholder="이름 또는 이메일로 검색..." value="{{keyword}}"/>
             <button type="submit" class="search-btn">검색</button>
         </form>
-
-
         <div class="admin-table-wrap">
             <div class="admin-table-head">
                 <span>No</span><span>이름 / 이메일</span><span>이메일</span><span>가입일</span><span>권한</span><span>관리</span>
             </div>
-
             {{#members}}
                 <div class="admin-table-row">
                     <span class="cell-id">{{id}}</span>
@@ -308,14 +382,14 @@
                             {{/expert}}
                         {{/admin}}
                     </span>
-                    <form action="/admin/members/{{id}}/delete" method="POST">
+                    <form action="/admin/members/{{id}}/delete" method="POST" style="display:inline;"
+                          onsubmit="return confirm('정말로 이 회원을 삭제하시겠습니까?');">
                         <button type="submit" class="del-btn">삭제</button>
                     </form>
+
                 </div>
             {{/members}}
-
         </div>
-
         <div class="paging">
             {{#paging}}
                 {{#hasPrev}}<a href="/admin/members?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
@@ -325,8 +399,6 @@
                 {{#hasNext}}<a href="/admin/members?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
             {{/paging}}
         </div>
-
     </main>
 </div>
-
 {{> layout/footer}}

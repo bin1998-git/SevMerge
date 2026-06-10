@@ -17,7 +17,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByRoleAndStatus(Role role, Status status);
 
     // 이름 또는 이메일로 검색 (관리자용)
-    @Query("SELECT m FROM Member m WHERE m.name LIKE %:keyword% OR m.email LIKE %:keyword%")
+    @Query("SELECT m FROM Member m WHERE (m.name LIKE %:keyword% OR m.email LIKE %:keyword%) AND m.isDeleted = false")
     List<Member> searchByKeyword(@Param("keyword") String keyword);
 
     // 소셜 로그인 회원 조회 (provider + providerId 조합)
@@ -35,5 +35,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 소프트삭제
     Optional<Member> findByEmailAndIsDeletedFalse(String email);
+    List<Member> findAllByIsDeletedFalse();
 
 }
