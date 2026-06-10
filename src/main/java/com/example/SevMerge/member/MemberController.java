@@ -35,10 +35,21 @@ public class MemberController {
     private final ReviewRepository reviewRepository;
     private final PortfolioService portfolioService;
 
-    // 회원가입
+
+    // 일반 회원가입 - 역할 선택 화면
+    @GetMapping("/join-role")
+    public String joinRole() {
+        return "member/join-role";
+    }
+
+    // 회원가입 role에 따라 의뢰인/전문가 폼 나눔
     @GetMapping("/join")
-    public String joinForm() {
-        return "member/join-form";
+    public String joinForm(@RequestParam(required = false) String role, Model model) {
+        if ("EXPERT".equals(role)) {
+            return "member/join-form-expert";
+        }
+        // role 없거나 CLIENT면 의뢰인
+        return "member/join-form-client";
     }
 
     @PostMapping("/join")

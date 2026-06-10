@@ -1,0 +1,40 @@
+{{> layout/header}}
+
+<style>
+    .role-section { padding: 72px 28px 80px; }
+    .role-inner { max-width: 680px; margin: 0 auto; text-align: center; }
+    .role-title { font-size: 26px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .role-desc { font-size: 14px; color: #9ca3af; margin-bottom: 40px; }
+    .role-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .role-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 36px 24px; cursor: pointer; transition: all .15s; text-decoration: none; display: block; }
+    .role-card:hover { border-color: #2563eb; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(37,99,235,.1); }
+    .role-icon { font-size: 44px; margin-bottom: 16px; }
+    .role-name { font-size: 17px; font-weight: 800; color: #1c1e26; margin-bottom: 8px; }
+    .role-sub { font-size: 13px; color: #9ca3af; line-height: 1.6; }
+    .role-hint { margin-top: 28px; font-size: 13px; color: #c4c9d9; }
+</style>
+
+<section class="role-section">
+    <div class="role-inner">
+        <h1 class="role-title">SevMerge를 어떻게 이용하시겠어요?</h1>
+        <p class="role-desc">가입 유형을 선택해 주세요.</p>
+
+        <div class="role-cards">
+            <a href="/join?role=CLIENT" class="role-card">
+                <div class="role-icon">💼</div>
+                <div class="role-name">의뢰인으로 이용</div>
+                <div class="role-sub">프로젝트를 등록하고<br>전문가를 찾고 싶어요</div>
+            </a>
+
+            <a href="/join?role=EXPERT" class="role-card">
+                <div class="role-icon">👨‍💻</div>
+                <div class="role-name">전문가로 활동</div>
+                <div class="role-sub">프로젝트에 제안서를 보내고<br>수익을 창출하고 싶어요</div>
+            </a>
+        </div>
+
+        <p class="role-hint">유형을 선택하면 가입 화면으로 이동해요.</p>
+    </div>
+</section>
+
+{{> layout/footer}}

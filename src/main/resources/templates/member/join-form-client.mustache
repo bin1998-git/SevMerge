@@ -16,13 +16,6 @@
     .form-input::placeholder { color: #c4c9d9; }
     .form-input:focus { border-color: #2563eb; background: #fff; }
     .form-hint { font-size: 12px; color: #9ca3af; }
-    .role-wrap { display: flex; gap: 10px; }
-    .role-card { flex: 1; padding: 14px; border: 1.5px solid #e2e5ef; border-radius: 10px; cursor: pointer; text-align: center; transition: all .15s; }
-    .role-card input { display: none; }
-    .role-card:has(input:checked) { border-color: #2563eb; background: #eff6ff; }
-    .role-card .role-icon { font-size: 24px; margin-bottom: 6px; }
-    .role-card .role-name { font-size: 13px; font-weight: 700; color: #374151; }
-    .role-card .role-desc { font-size: 11px; color: #9ca3af; margin-top: 2px; }
     .divider { height: 1px; background: #f3f4f8; margin: 4px 0; }
     .submit-btn { padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 4px; }
     .submit-btn:hover { background: #1d4ed8; }
@@ -31,21 +24,11 @@
     .auth-footer a:hover { text-decoration: underline; }
     .email-verify-wrap { display: flex; gap: 8px; }
     .email-verify-wrap .form-input { flex: 1; }
-    .verify-btn {
-        padding: 0 18px;
-        background: #1c1e26;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        font-family: inherit;
-        white-space: nowrap;
-    }
+    .verify-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
     .verify-btn:hover { background: #2563eb; }
     .verify-btn:disabled { background: #c4c9d9; cursor: not-allowed; }
     .form-input:disabled { background: #f0f1f5; color: #9ca3af; cursor: not-allowed; }
+    .role-tag { display:inline-block; font-size:12px; font-weight:700; color:#2563eb; background:#eff6ff; border:1px solid #bfdbfe; padding:4px 12px; border-radius:20px; }
 </style>
 
 <section class="auth-section">
@@ -53,11 +36,12 @@
 
         <div class="auth-header">
             <div class="auth-logo">Sev<span>Merge</span></div>
-            <h1 class="auth-title">회원가입</h1>
-            <p class="auth-desc">SevMerge와 함께 시작하세요.</p>
+            <h1 class="auth-title">의뢰인 회원가입</h1>
+            <p class="auth-desc"><span class="role-tag">💼 의뢰인</span></p>
         </div>
 
         <form class="auth-form" action="/join" method="POST">
+            <input type="hidden" name="role" value="CLIENT" />
 
             <div class="form-group">
                 <label class="form-label">이름 <span class="required">*</span></label>
@@ -80,6 +64,7 @@
                 </div>
                 <span class="form-hint" id="codeHint"></span>
             </div>
+
             <div class="form-group">
                 <label class="form-label">비밀번호 <span class="required">*</span></label>
                 <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" />
@@ -96,48 +81,24 @@
                 <input type="tel" name="phone" class="form-input" placeholder="010-0000-0000" />
             </div>
 
-            <div class="form-group">
-                <label class="form-label">GitUrl <span class="required">*</span></label>
-                <input type="tel" name="GitUrl" class="form-input" placeholder="010-0000-0000" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">가입 유형 <span class="required">*</span></label>
-                <div class="role-wrap">
-                    <label class="role-card">
-                        <input type="radio" name="role" value="CLIENT" checked />
-                        <div class="role-icon">💼</div>
-                        <div class="role-name">의뢰인</div>
-                        <div class="role-desc">프로젝트를 등록하고<br>전문가를 찾아요</div>
-                    </label>
-                    <label class="role-card">
-                        <input type="radio" name="role" value="EXPERT" />
-                        <div class="role-icon">👨‍💻</div>
-                        <div class="role-name">전문가</div>
-                        <div class="role-desc">프로젝트에 제안서를<br>보내고 수주해요</div>
-                    </label>
-                </div>
-            </div>
-
-            {{! 유효성 오류 메시지 }}
             {{#errorMessage}}
-            <div style="background:#fff3f3; border:1px solid #fecaca; border-radius:8px; padding:12px 14px; font-size:13px; color:#ef4444; font-weight:600;">
-                {{errorMessage}}
-            </div>
+                <div style="background:#fff3f3; border:1px solid #fecaca; border-radius:8px; padding:12px 14px; font-size:13px; color:#ef4444; font-weight:600;">
+                    {{errorMessage}}
+                </div>
             {{/errorMessage}}
 
             <div class="divider"></div>
-
             <button type="submit" class="submit-btn">회원가입</button>
-
         </form>
 
         <div class="auth-footer">
+            전문가로 가입하시나요? <a href="/join?role=EXPERT">전문가 회원가입</a><br>
             이미 계정이 있으신가요? <a href="/login">로그인</a>
         </div>
 
     </div>
 </section>
+
 <script>
     const emailInput    = document.getElementById("emailInput");
     const sendCodeBtn   = document.getElementById("sendCodeBtn");
@@ -146,57 +107,33 @@
     const verifyCodeBtn = document.getElementById("verifyCodeBtn");
     const codeHint      = document.getElementById("codeHint");
 
-    // 1. 이메일 인증 코드 발송
     sendCodeBtn.addEventListener("click", async function () {
         const email = emailInput.value.trim();
-        if (!email) {
-            alert("이메일을 입력해주세요.");
-            return;
-        }
-
-        // 서버에 인증 코드 발송 요청
+        if (!email) { alert("이메일을 입력해주세요."); return; }
         const res = await fetch("/api/email/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: email })
         });
-
         if (res.ok) {
             alert("인증 코드가 발송되었습니다.");
-            // 인증 코드 입력칸 표시
             codeGroup.style.display = "flex";
             codeGroup.style.flexDirection = "column";
-        } else {
-            alert("발송에 실패했습니다. 다시 시도해주세요.");
-        }
+        } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
     });
 
-    // 2. 인증 코드 확인
     verifyCodeBtn.addEventListener("click", async function () {
         const email = emailInput.value.trim();
         const code  = codeInput.value.trim();
-        if (!code) {
-            alert("인증 코드를 입력해주세요.");
-            return;
-        }
-
-        // 서버에 인증 코드 검증 요청
+        if (!code) { alert("인증 코드를 입력해주세요."); return; }
         const res = await fetch("/api/email/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: email, code: code })
         });
-
         if (res.ok) {
-            // 인증 성공 처리
             codeHint.textContent = "✓ 인증이 완료되었습니다.";
             codeHint.style.color = "#10b981";
-
-            // 요구사항 2: 이메일 변경 불가 처리
             emailInput.readOnly = true;
-            sendCodeBtn.readOnly = true;
-
-            // 요구사항 3: 인증 코드 부분 수정 불가 처리
+            sendCodeBtn.disabled = true;
             codeInput.disabled = true;
             verifyCodeBtn.disabled = true;
         } else {
