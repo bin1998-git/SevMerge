@@ -41,4 +41,22 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     Optional<Bid> findSelectedBidByProjectId(@Param("projectId") Long projectId,
                                              @Param("status") BidStatus status);
 
+    // 클라이언트 입장에서 입찰한 전문가 조회 - 현재 쪽지 보낼사람 용도로 사용
+    @Query("""                                                                                                                                                                                                   
+           SELECT b FROM Bid b JOIN FETCH b.expert JOIN FETCH b.project
+           WHERE b.project.member.id = :memberId AND b.isDeleted = false
+           ORDER BY b.createdAt DESC
+           """)
+    List<Bid> findByProjectMemberId(@Param("memberId") Long memberId);
+
+    // 쪽지 전송 관계 검증 쿼리
+    @Query("""
+           SELECT COUNT(b) > 0 
+           FROM Bid b
+           WHERE b.isDeleted = false
+           AND(b.project.member.id = :memberId1 AND b.expert.id = :memberId2)
+           OR (b.project.member.id = :memberId2 AND b.expert.id = :memberId1)
+           """)
+    boolean existsBidRelation(@Param("memberId1") Long memberId1, @Param("memberId2") Long memberId2);
+
 }

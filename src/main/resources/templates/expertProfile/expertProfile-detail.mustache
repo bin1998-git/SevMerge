@@ -119,7 +119,7 @@
             <div class="info-row"><span class="info-label">완료 프로젝트</span><span class="info-value">0건</span></div>
             <div class="info-row"><span class="info-label">평균 평점</span><span class="info-value">0 / 5.0</span></div>
             {{^isOwner}}
-            <a href="/chat?memberId={{expertProfile.memberId}}" class="chat-btn">💬 채팅하기</a>
+            <a href="/messages/send?receiverId={{expertProfile.memberId}}" class="chat-btn">쪽지 보내기</a>
             {{/isOwner}}
         </div>
 

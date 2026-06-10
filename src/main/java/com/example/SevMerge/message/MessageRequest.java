@@ -5,7 +5,7 @@ import lombok.Data;
 public class MessageRequest {
 
     @Data
-    public static class SandDTO {
+    public static class SendDTO {
         private Long receiverId;
         private Long projectId;
         private String title;

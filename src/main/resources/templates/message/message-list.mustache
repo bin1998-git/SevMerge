@@ -13,6 +13,8 @@
     .board-inner { max-width: 1140px; margin: 0 auto; }
     .board-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .board-count { font-size: 14px; color: #9ca3af; font-weight: 500; }
+    .btn-write { display: inline-flex; align-items: center; padding: 9px 18px; background: #2563eb; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .btn-write:hover { background: #1d4ed8; }
     .board-count strong { color: #1c1e26; font-weight: 700; }
     .board-table { width: 100%; background: #fff; border-radius: 14px; border: 1.5px solid #eaecf4; overflow: hidden; margin-bottom: 12px; }
     .board-table-head { display: grid; grid-template-columns: 1fr 140px 100px 80px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
@@ -48,6 +50,7 @@
     <div class="board-inner">
         <div class="board-action">
             <span class="board-count">총 <strong>{{messageCount}}</strong>개의 쪽지</span>
+            <a href="/messages/send" class="btn-write">쪽지 보내기</a>
         </div>
 
         <div class="board-table">
@@ -89,6 +92,7 @@
     <div class="board-inner">
         <div class="board-action">
             <span class="board-count">총 <strong>{{messageCount}}</strong>개의 쪽지</span>
+            <a href="/messages/send" class="btn-write">쪽지 보내기</a>
         </div>
 
         <div class="board-table">

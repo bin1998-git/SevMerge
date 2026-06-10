@@ -13,20 +13,42 @@
     .form-label .required { color: #ef4444; margin-left: 2px; }
     .form-input { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; box-sizing: border-box; transition: border-color .15s; }
     .form-input:focus { border-color: #2563eb; }
-    .form-input:disabled { background: #f8f9fc; color: #9ca3af; cursor: not-allowed; }
     .form-textarea { resize: vertical; min-height: 140px; }
-    .receiver-info { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #f8f9fc; border-radius: 10px; border: 1.5px solid #eaecf4; }
-    .receiver-avatar { width: 36px; height: 36px; border-radius: 50%; background: #dbeafe; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #2563eb; flex-shrink: 0; }
-    .receiver-name { font-size: 14px; font-weight: 600; color: #1c1e26; }
-    .receiver-role { font-size: 12px; color: #9ca3af; }
-    .project-badge { display: inline-flex; align-items: center; gap: 6px; background: #f0f4ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+    .contact-select-wrap { position: relative; }
+    .contact-trigger { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #9ca3af; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; transition: border-color .15s; user-select: none; }
+    .contact-trigger.has-value { color: #1c1e26; }
+    .contact-trigger:hover, .contact-trigger.open { border-color: #2563eb; }
+    .contact-arrow { font-size: 11px; color: #9ca3af; transition: transform .15s; flex-shrink: 0; margin-left: 8px; }
+    .contact-trigger.open .contact-arrow { transform: rotate(180deg); }
+    .contact-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.09); z-index: 100; overflow: hidden; display: none; max-height: 280px; overflow-y: auto; }
+    .contact-dropdown.open { display: block; }
+    .contact-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f3f4f8; transition: background .1s; }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-item:hover { background: #f8f9ff; }
+    .contact-item-name { font-size: 14px; font-weight: 600; color: #1c1e26; display: flex; align-items: center; gap: 8px; }
+    .contact-item-project { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+    .badge-selected { font-size: 10px; background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 5px; font-weight: 700; }
+    .contact-empty { padding: 24px 16px; text-align: center; font-size: 13px; color: #c4c9d9; }
     .send-actions { padding: 20px 32px; border-top: 1px solid #f3f4f8; display: flex; gap: 10px; justify-content: flex-end; }
     .btn-sm { padding: 10px 22px; font-size: 13px; border-radius: 8px; }
-    .btn-cancel { background: #fff; color: #6b7280; border: 1.5px solid #e2e5ef; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-cancel { background: #fff; color: #6b7280; border: 1.5px solid #e2e5ef; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; font-family: inherit; }
     .btn-cancel:hover { background: #f8f9fc; }
+    .btn-primary { background: #2563eb; color: #fff; border: none; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-primary:hover { background: #1d4ed8; }
     .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #9ca3af; text-decoration: none; margin-bottom: 20px; font-weight: 500; }
     .back-link:hover { color: #2563eb; }
 </style>
+
+<div id="contacts-data" style="display:none;">
+    {{#contacts}}
+    <div class="contact-entry"
+         data-receiver-id="{{receiverId}}"
+         data-receiver-name="{{receiverName}}"
+         data-project-id="{{projectId}}"
+         data-project-title="{{projectTitle}}"
+         data-selected="{{selected}}"></div>
+    {{/contacts}}
+</div>
 
 <section class="send-section">
     <div class="send-inner">
@@ -40,37 +62,26 @@
             </div>
 
             <div class="send-body">
-                <form action="/messages/send" method="POST">
-                    <input type="hidden" name="receiverId" value="{{receiverId}}" />
-                    <input type="hidden" name="projectId" value="{{projectId}}" />
+                <form action="/messages/send" method="POST" id="send-form">
+                    <input type="hidden" name="receiverId" id="receiverId" />
+                    <input type="hidden" name="projectId" id="projectId" />
 
-                    <!-- 받는 사람 -->
                     <div class="form-group">
-                        <label class="form-label">받는 사람</label>
-                        <div class="receiver-info">
-                            <div class="receiver-avatar">{{receiverInitial}}</div>
-                            <div>
-                                <p class="receiver-name">{{receiverName}}</p>
-                                <p class="receiver-role">{{receiverRole}}</p>
+                        <label class="form-label">받는 사람 <span class="required">*</span></label>
+                        <div class="contact-select-wrap">
+                            <div class="contact-trigger" id="contact-trigger">
+                                <span id="contact-trigger-text">받는 사람을 선택하세요</span>
+                                <span class="contact-arrow">▼</span>
                             </div>
+                            <div class="contact-dropdown" id="contact-dropdown"></div>
                         </div>
                     </div>
 
-                    <!-- 관련 프로젝트 -->
-                    {{#projectTitle}}
-                    <div class="form-group">
-                        <label class="form-label">관련 프로젝트</label>
-                        <div class="project-badge">📁 {{projectTitle}}</div>
-                    </div>
-                    {{/projectTitle}}
-
-                    <!-- 제목 -->
                     <div class="form-group">
                         <label class="form-label">제목 <span class="required">*</span></label>
                         <input type="text" name="title" class="form-input" placeholder="쪽지 제목을 입력하세요." maxlength="100" required />
                     </div>
 
-                    <!-- 내용 -->
                     <div class="form-group">
                         <label class="form-label">내용 <span class="required">*</span></label>
                         <textarea name="content" class="form-input form-textarea" placeholder="쪽지 내용을 입력하세요." required></textarea>
@@ -86,5 +97,84 @@
 
     </div>
 </section>
+
+<script>
+(function () {
+    const contacts = Array.from(document.querySelectorAll('#contacts-data .contact-entry')).map(el => ({
+        receiverId: el.dataset.receiverId,
+        receiverName: el.dataset.receiverName,
+        projectId: el.dataset.projectId,
+        projectTitle: el.dataset.projectTitle,
+        selected: el.dataset.selected === 'true'
+    }));
+
+    const trigger = document.getElementById('contact-trigger');
+    const dropdown = document.getElementById('contact-dropdown');
+    const triggerText = document.getElementById('contact-trigger-text');
+    const receiverIdInput = document.getElementById('receiverId');
+    const projectIdInput = document.getElementById('projectId');
+
+    if (contacts.length === 0) {
+        dropdown.innerHTML = '<div class="contact-empty">연락 가능한 상대가 없습니다.<br>먼저 프로젝트 입찰을 진행해보세요.</div>';
+    } else {
+        dropdown.innerHTML = contacts.map((c, i) =>
+            '<div class="contact-item" data-index="' + i + '">' +
+                '<div class="contact-item-name">' +
+                    c.receiverName +
+                    (c.selected ? ' <span class="badge-selected">낙찰</span>' : '') +
+                '</div>' +
+                '<div class="contact-item-project">📁 ' + c.projectTitle + '</div>' +
+            '</div>'
+        ).join('');
+    }
+
+    function selectContact(c) {
+        receiverIdInput.value = c.receiverId;
+        projectIdInput.value = c.projectId;
+        triggerText.textContent = c.receiverName + ' · ' + c.projectTitle;
+        trigger.classList.add('has-value');
+        closeDropdown();
+    }
+
+    function closeDropdown() {
+        trigger.classList.remove('open');
+        dropdown.classList.remove('open');
+    }
+
+    dropdown.querySelectorAll('.contact-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            selectContact(contacts[+item.dataset.index]);
+        });
+    });
+
+    trigger.addEventListener('click', function () {
+        trigger.classList.toggle('open');
+        dropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+
+    var params = new URLSearchParams(window.location.search);
+    var preReceiverId = params.get('receiverId') || '';
+    var preProjectId = params.get('projectId') || '';
+    if (preReceiverId) {
+        var match = contacts.find(function (c) {
+            return c.receiverId === preReceiverId && (!preProjectId || c.projectId === preProjectId);
+        });
+        if (match) selectContact(match);
+    }
+
+    document.getElementById('send-form').addEventListener('submit', function (e) {
+        if (!receiverIdInput.value) {
+            e.preventDefault();
+            alert('받는 사람을 선택해주세요.');
+        }
+    });
+})();
+</script>
 
 {{> layout/footer}}
