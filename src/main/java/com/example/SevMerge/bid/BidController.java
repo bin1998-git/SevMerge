@@ -86,7 +86,7 @@ public class BidController {
         List<BidResponseDTO.OrderDTO> orders = bidService.findMyOrders(sessionUser);
         model.addAttribute("orders", orders);
         model.addAttribute("orderCount", orders.size());
-        return "redirect:/my-pages?tab=bids";
+        return "bid/my-orders";
     }
 
     // 5. 제안서 수정 폼
