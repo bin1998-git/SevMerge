@@ -683,13 +683,13 @@
             <a href="/messages"        class="expert-nav-tab">쪽지함</a>
         </nav>
         <div class="nav-actions">
+            <span class="nav-username">{{sessionUser.name}}님</span>
             <div class="nav-balance-wrap">
                 <span class="nav-balance-label">잔액</span>
                 <span class="nav-balance-amount">{{headerBalance}}원</span>
                 <a href="/charge/form" class="nav-charge-btn">충전</a>
+                <a href="/logout" class="btn btn-outline">로그아웃</a>
             </div>
-            <span class="nav-username">{{sessionUser.name}}님</span>
-            <a href="/logout" class="btn btn-outline">로그아웃</a>
         </div>
         {{/isExpert}}
         {{^isExpert}}
@@ -741,6 +741,13 @@
         <!-- 우측 사용자 상태 바 -->
         <div class="nav-actions">
             {{#isLoggedIn}}
+                {{^isAdmin}}
+                <div class="nav-balance-wrap">
+                    <span class="nav-balance-label">잔액</span>
+                    <span class="nav-balance-amount">{{headerBalance}}원</span>
+                    <a href="/charge/form" class="nav-charge-btn">충전</a>
+                </div>
+                {{/isAdmin}}
                 <span class="nav-username">{{sessionUser.name}}님</span>
                 <a href="/logout" class="btn btn-outline">로그아웃</a>
             {{/isLoggedIn}}

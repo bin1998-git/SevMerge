@@ -1,13 +1,6 @@
 {{> layout/header}}
 
 <style>
-    /* ── 대시보드 탭 ── */
-    .dash-tabs-bar { background: #fff; border-bottom: 2px solid #eaecf4; position: sticky; top: 64px; z-index: 90; }
-    .dash-tabs-inner { max-width: 1200px; margin: 0 auto; padding: 0 28px; display: flex; }
-    .dash-tab { padding: 13px 20px; font-size: 13px; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: color .15s, border-color .15s; }
-    .dash-tab:hover { color: #1c1e26; border-color: #d1d5db; }
-    .dash-tab.active { color: #2563eb; border-color: #2563eb; }
-
     /* ── 본문 ── */
     .page-section { padding: 40px 28px 80px; }
     .page-inner { max-width: 1200px; margin: 0 auto; }
@@ -41,18 +34,6 @@
     .empty-icon { font-size: 36px; margin-bottom: 14px; }
     .empty-msg { font-size: 14px; color: #c4c9d9; margin-bottom: 18px; }
 </style>
-
-<!-- 탭바 -->
-<div class="dash-tabs-bar">
-    <div class="dash-tabs-inner">
-        <a href="/experts/dashboard" class="dash-tab">대시보드</a>
-        <a href="/bids/my-list"       class="dash-tab active">제안서 관리</a>
-        <a href="/bids/my-orders"     class="dash-tab">주문 관리</a>
-        <a href="/payment/my"        class="dash-tab">수익 &amp; 정산</a>
-        <a href="/reviews/my"        class="dash-tab">평가 및 리뷰</a>
-        <a href="/experts/my/form"   class="dash-tab">프로필 수정</a>
-    </div>
-</div>
 
 <section class="page-section">
     <div class="page-inner">
@@ -111,7 +92,7 @@ document.querySelectorAll('.btn-cancel').forEach(btn => {
     btn.addEventListener('click', function () {
         const bidId = this.dataset.bidId;
         if (!confirm('제안서를 취소하시겠습니까? 취소 후 복구할 수 없습니다.')) return;
-        fetch(`/bid/${bidId}`, { method: 'DELETE' })
+        fetch(`/bids/${bidId}`, { method: 'DELETE' })
             .then(res => {
                 if (res.ok) {
                     alert('제안서가 취소되었습니다.');
