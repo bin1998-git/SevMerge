@@ -80,6 +80,8 @@ public class PortfolioService {
     @Transactional
     public PortfolioResponse.UpdateDTO updatePage(Long portfolioId) {
 
+
+
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
@@ -93,6 +95,8 @@ public class PortfolioService {
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
 
+        updateDTO.validate();
+
         portfolio.setDescription(updateDTO.getDescription());
         portfolio.setTitle(updateDTO.getTitle());
         portfolio.setImageUrl(updateDTO.getImageUrl());
@@ -102,7 +106,6 @@ public class PortfolioService {
 
     @Transactional
     public void delete(Long portfolioId) {
-
        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );

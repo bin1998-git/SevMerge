@@ -71,8 +71,12 @@ public class ReviewController {
 
     // 리뷰상세 화면
     @GetMapping("/reviews/{reviewId}")
-    public String reviewDetail(@PathVariable(name = "reviewId") Long reviewId,Model model){
+    public String reviewDetail(@PathVariable(name = "reviewId") Long reviewId,Model model, HttpSession session){
 
+        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        if(sessionMember == null){
+            return "redirect:/login";
+        }
         ReviewResponse.ReviewDetailDTO review = reviewService.detail(reviewId);
 
         model.addAttribute("review",review);
@@ -82,15 +86,24 @@ public class ReviewController {
 
     // 리뷰 수정 화면
     @GetMapping("/reviews/{reviewId}/edit")
-    public String editReviewForm(@PathVariable(name = "reviewId") Long reviewId, Model model){
+    public String editReviewForm(@PathVariable(name = "reviewId") Long reviewId, Model model , HttpSession session){
 
+        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        if(sessionMember == null){
+            return "redirect:/login";
+        }
         return "review/review-update";
     }
 
 
     // 리뷰 수정 기능
     @PostMapping("/reviews/{reviewId}/update")
-    public String updateReview(@PathVariable(name = "reviewId") Long reviewId, ReviewRequest.UpdateRequestDTO updateRequestDTO) {
+    public String updateReview(@PathVariable(name = "reviewId") Long reviewId, ReviewRequest.UpdateRequestDTO updateRequestDTO,HttpSession session) {
+
+        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        if(sessionMember == null){
+            return "redirect:/login";
+        }
 
         reviewService.updateReview(updateRequestDTO,reviewId);
 
@@ -100,8 +113,12 @@ public class ReviewController {
 
     // 리뷰 삭제 기능
     @PostMapping("/reviews/{reviewId}/delete")
-    public String deleteReview(@PathVariable(name = "reviewId") Long reviewId) {
+    public String deleteReview(@PathVariable(name = "reviewId") Long reviewId,HttpSession session) {
 
+        Member sessionMember = (Member) session.getAttribute("sessionUser");
+        if(sessionMember == null){
+            return "redirect:/login";
+        }
         reviewService.deleteReview(reviewId);
         // 삭제후 해당 전문가 리뷰 목록으로 돌아간다
         return "redirect:/reviews?expertId=";

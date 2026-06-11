@@ -34,7 +34,7 @@ public class PortfolioRequest {
     @NoArgsConstructor
     public static class UpdateDTO {
 
-        private Long id;
+        private Long id; // 포폴 아이디
         private String title;
         private String description;
         private String imageUrl;

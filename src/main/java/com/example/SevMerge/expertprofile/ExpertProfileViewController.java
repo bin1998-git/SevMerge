@@ -1,5 +1,6 @@
 package com.example.SevMerge.expertprofile;
 
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.portfolio.PortfolioResponse;
@@ -95,7 +96,9 @@ public class ExpertProfileViewController {
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
-        if (!sessionUser.isExpert()) return "redirect:/";
+        if (!sessionUser.isExpert()) {
+            throw new BadRequestException("전문가만 이용할수 있습니다.");
+        }
 
         // 전문가 프로필 (없으면 빈 채로)
         try {
