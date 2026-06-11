@@ -12,17 +12,10 @@
     .form-label { font-size: 13px; font-weight: 700; color: #374151; }
     .form-label .required { color: #ef4444; margin-left: 2px; }
     .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input::placeholder { color: #c4c9d9; }
     .form-input:focus { border-color: #2563eb; }
     .form-select { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; appearance: none; cursor: pointer; }
-    .form-select:focus { border-color: #2563eb; }
     .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 240px; line-height: 1.7; transition: border-color .15s; }
-    .form-textarea::placeholder { color: #c4c9d9; }
-    .form-textarea:focus { border-color: #2563eb; }
     .form-checkbox-wrap { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #f8f9fc; border-radius: 10px; border: 1.5px solid #e2e5ef; cursor: pointer; }
-    .form-checkbox-wrap input { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
-    .form-checkbox-label { font-size: 14px; font-weight: 600; color: #374151; }
-    .form-checkbox-desc { font-size: 12px; color: #9ca3af; margin-top: 2px; }
     .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
     .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
     .btn-primary { background: #2563eb; color: #fff; }
@@ -33,22 +26,20 @@
 
 <section class="save-section">
     <div class="save-inner">
-
         <div class="save-header">
             <h1 class="save-title">프로젝트 등록</h1>
             <p class="save-desc">프로젝트를 등록하면 전문가들이 직접 제안서를 보내드립니다.</p>
         </div>
 
         <form class="save-form" action="/projects" method="POST">
-
             <div class="form-group">
                 <label class="form-label">프로젝트 제목 <span class="required">*</span></label>
-                <input type="text" name="title" class="form-input" placeholder="프로젝트 제목을 입력하세요" maxlength="100" />
+                <input type="text" name="title" id="title" class="form-input" placeholder="프로젝트 제목을 입력하세요" maxlength="100" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">카테고리 <span class="required">*</span></label>
-                <select name="category" class="form-select">
+                <select name="category" id="category" class="form-select">
                     <option value="">카테고리 선택</option>
                     <option value="WEB">웹개발</option>
                     <option value="APP">앱개발</option>
@@ -61,58 +52,97 @@
 
             <div class="form-group">
                 <label class="form-label">프로젝트 내용 <span class="required">*</span></label>
-                <textarea name="description" class="form-textarea" placeholder="프로젝트 내용을 상세히 입력하세요&#10;&#10;- 원하는 기능&#10;- 참고 사이트&#10;- 기술 스택 등"></textarea>
+                <textarea name="description" id="description" class="form-textarea" placeholder="상세 내용을 입력하세요"></textarea>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">최소 예산 (만원)</label>
-                    <input type="number" name="budgetMin" class="form-input" placeholder="예: 100" min="0" />
+                    <input type="number" name="budgetMin" id="budgetMin" class="form-input" placeholder="예: 100" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">최대 예산 (만원)</label>
-                    <input type="number" name="budgetMax" class="form-input" placeholder="예: 300" min="0" />
+                    <input type="number" name="budgetMax" id="budgetMax" class="form-input" placeholder="예: 300" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">마감 기한</label>
-                <input type="date" name="deadline" class="form-input" />
+                <input type="date" name="deadline" id="deadline" class="form-input" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">인증 전문가 설정</label>
-                <label class="form-checkbox-wrap">
-                   <select name="bidFilter" class="form-select">
-                       <option value="ALL">전체 수신</option>
-                       <option value="CERTIFIED_ONLY">인증 전문가만</option>
-                       <option value="GENERAL_ONLY">일반 전문가만</option>
-                   </select>
-                    <div>
-                        <div class="form-checkbox-label">⭐ 인증 전문가만 수신</div>
-                        <div class="form-checkbox-desc">평점 4.5 이상의 인증 전문가의 제안서만 받습니다.</div>
-                    </div>
-                </label>
+                <select name="bidFilter" id="bidFilter" class="form-select">
+                    <option value="ALL">전체 수신</option>
+                    <option value="CERTIFIED_ONLY">인증 전문가만</option>
+                    <option value="GENERAL_ONLY">일반 전문가만</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <label class="form-label">보안 설정</label>
-                <label class="form-checkbox-wrap" style="cursor: pointer;">
-                    <input type="checkbox" name="isPrivate" value="true" />
-                    <div>
-                        <div class="form-checkbox-label">🔒비공개 입찰(블라인드) 적용하기</div>
-                        <div class="form-checkbox-desc">전문가들이 서로의 제안 가격과 내용을 볼수 없습니다.</div>
-                    </div>
+                <label class="form-checkbox-wrap">
+                    <input type="checkbox" name="isPrivate" id="isPrivate" value="true" />
+                    <span>🔒 비공개 입찰(블라인드) 적용하기</span>
                 </label>
             </div>
 
             <div class="form-btns">
                 <a href="/projects" class="btn btn-outline">취소</a>
+                <button type="button" class="btn btn-outline" onclick="saveDraft()" style="color: #2563eb;">임시저장</button>
                 <button type="submit" class="btn btn-primary btn-lg">프로젝트 등록</button>
             </div>
-
         </form>
     </div>
 </section>
+
+<script>
+    // 1. 페이지 진입 시 임시저장 데이터 자동 로드 확인
+    window.onload = function() {
+        fetch('/projects/draft')
+            .then(res => res.status === 200 ? res.json() : null)
+            .then(data => {
+                if (data) {
+                    if (confirm("임시저장된 프로젝트 내용이 있습니다. 불러오시겠습니까?")) {
+                        document.querySelector("#title").value = data.title || "";
+                        document.querySelector("#category").value = data.category || "";
+                        document.querySelector("#description").value = data.description || "";
+                        document.querySelector("#budgetMin").value = data.budgetMin || "";
+                        document.querySelector("#budgetMax").value = data.budgetMax || "";
+                        document.querySelector("#bidFilter").value = data.bidFilter || "ALL";
+                        if(data.deadline) document.querySelector("#deadline").value = data.deadline.substring(0, 10);
+                        alert("불러오기를 완료했습니다.");
+                    }
+                }
+            });
+    };
+
+    // 2. 임시저장 버튼 로직
+    function saveDraft() {
+        const data = {
+            title: document.querySelector("#title").value,
+            category: document.querySelector("#category").value,
+            description: document.querySelector("#description").value,
+            budgetMin: document.querySelector("#budgetMin").value,
+            budgetMax: document.querySelector("#budgetMax").value,
+            deadline: document.querySelector("#deadline").value,
+            bidFilter: document.querySelector("#bidFilter").value
+        };
+
+        fetch('/projects/draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(res => {
+            if (res.status === 200) alert("임시저장 되었습니다!");
+            else if (res.status === 401) {
+                alert("로그인이 필요합니다.");
+                location.href = "/login-form";
+            } else alert("저장에 실패했습니다.");
+        });
+    }
+</script>
 
 {{> layout/footer}}

@@ -53,7 +53,13 @@ INSERT INTO project_tb (member_id, title, category, description, budget_min, bud
 VALUES (1, '기업 리브랜딩을 위한 랜딩 페이지 및 UI/UX 디자인 고도화', 'APP',
         '기존 서비스의 웹 디자인 톤앤매너를 전면 수정하고 싶습니다. 반응형 웹 디자인을 지원해야 하며 신규 브랜드 로고(BI) 가이드라인을 제공해 드립니다.',
         2000000, 4000000, NOW(), 'ALL', 'OPEN', 0, false,false, NOW());
-
+INSERT INTO project_tb (
+    member_id, title, category, description, budget_min, budget_max,
+    deadline, bid_filter, project_status, view_count, is_deleted, is_private, created_at
+) VALUES (
+    1, '임시저장 중인 프로젝트 제목', 'WEB', '아직 작성 중인 내용입니다.',
+    0, 0, NOW(), 'ALL', 'DRAFT', 0, false, false, NOW()
+);
 
 
 -- Bid 더미데이터

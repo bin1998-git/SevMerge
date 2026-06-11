@@ -64,6 +64,16 @@ public class ProjectRequestDTO {
         }
     }
 
+    @Data
+    public static class DraftDTO {
+        private String title;
+        private String description;
+        private Integer budgetMin;
+        private Integer budgetMax;
+        private String deadline;
+        private String bidFilter;
+    }
+
 
 }
 
