@@ -16,7 +16,7 @@ public class CommentResponse {
         private Boolean isOwner; // 댓글 소유자 여부 (로그인유저랑 비교)
         private String createdAt; // 댓글 작성 시간
 
-        public ListDTO(Comment comment) {
+        public ListDTO(Comment comment, Long sessionUserId) {
             this.id = comment.getId();
             this.comment = comment.getContent();
 
@@ -29,7 +29,7 @@ public class CommentResponse {
             if (comment.getCreatedAt() != null) {
                 this.createdAt = MyDateUtil.timestampFormat(comment.getCreatedAt());
             }
-            this.isOwner = comment.isOwner(memberId);
+            this.isOwner = sessionUserId != null && this.memberId.equals(sessionUserId);
         }
     }
 }

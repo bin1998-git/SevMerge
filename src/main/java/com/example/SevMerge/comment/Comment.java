@@ -46,7 +46,15 @@ public class Comment {
         this.isDeleted = false;
     }
 
-    // 편의 메소드 추가
+    // 편의 메소드 댓글 수정
+    public void updateContent(String content) {
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("댓글 내용은 비어있을 수 없습니다.");
+        }
+        this.content = content;
+    }
+
+    // 편의 메소드 추가 소프트 삭제
     public void softDelete() {
         this.isDeleted = true;
     }
