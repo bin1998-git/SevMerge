@@ -81,7 +81,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 32px;
+            gap: 16px;
+            flex-wrap: nowrap;
+            overflow: hidden;
         }
 
         .nav-logo {
@@ -89,6 +91,8 @@
             font-weight: 900;
             color: #1c1e26;
             letter-spacing: -0.5px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .nav-logo span {
@@ -97,10 +101,12 @@
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 24px;
             font-size: 14px;
             color: #6b7280;
             font-weight: 500;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .nav-links a:hover {
@@ -110,7 +116,10 @@
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
 
         .nav-username {
@@ -638,7 +647,11 @@
             flex: 1;
             gap: 0;
             justify-content: center;
+            min-width: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
+        .nav-links.expert-links::-webkit-scrollbar { display: none; }
 
         .expert-nav-tab {
             padding: 0 18px;
@@ -657,10 +670,10 @@
         .expert-nav-tab.active { color: #2563eb; border-color: #2563eb; }
 
         /* 잔액 위젯 */
-        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; }
+        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; flex-shrink: 0; white-space: nowrap; }
         .nav-balance-label { font-size: 11px; font-weight: 600; color: #3b82f6; }
         .nav-balance-amount { font-size: 14px; font-weight: 900; color: #1d4ed8; }
-        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; }
+        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; white-space: nowrap; }
         .nav-charge-btn:hover { background: #1d4ed8; }
     </style>
 </head>

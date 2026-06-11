@@ -6,6 +6,7 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.payment.Payment;
 import com.example.SevMerge.payment.PaymentRepository;
+import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.project.BidFilter;
 import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
@@ -28,6 +29,7 @@ public class BidService {
     private final BidRepository bidRepository;
     private final ProjectRepository projectRepository;
     private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
 
     // 제안서 작성
     @Transactional
@@ -195,22 +197,25 @@ public class BidService {
             throw new ForbiddenException("낙찰처리 권한이 없습니다");
         }
 
-        // 제안서 상태를 select로 변경
+        // 제안서 상태를 SELECTED로 변경
         bid.select();
 
-
-
-        // 한 프로젝트의 대기중인 제안서 전부 탈락 처리
+        // 나머지 대기중인 제안서 전부 탈락 처리
         List<Bid> otherBids = bidRepository.findByProjectId(bid.getProject().getId());
         for (Bid other : otherBids) {
             if (!other.getId().equals(bid.getId()) &&
                     (other.getStatus() == BidStatus.PENDING || other.getStatus() == BidStatus.HOLD)) {
-                other.fail(); // 엔티티에 상태를 FAIL/REJECTED로 바꾸는 메서드가 있다고 가정
+                other.fail();
             }
         }
 
-        // 프로젝트 상태 CLOSED 변경
-        bid.getProject().updateStatus(ProjectStatus.CLOSED);
+        // 에스크로 생성: 잔액 체크 + 차감 + Payment(PAID) 저장 + 프로젝트 IN_PROGRESS 전환
+        paymentService.createEscrow(
+                session.getId(),
+                bid.getProject().getId(),
+                bid.getExpert().getId(),
+                bid.getProposedPrice().intValue()
+        );
     }
 
     // 제안서 보류처리
