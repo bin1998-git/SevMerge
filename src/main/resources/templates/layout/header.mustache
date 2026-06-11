@@ -655,6 +655,13 @@
 
         .expert-nav-tab:hover { color: #1c1e26; border-color: #d1d5db; }
         .expert-nav-tab.active { color: #2563eb; border-color: #2563eb; }
+
+        /* 잔액 위젯 */
+        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; }
+        .nav-balance-label { font-size: 11px; font-weight: 600; color: #3b82f6; }
+        .nav-balance-amount { font-size: 14px; font-weight: 900; color: #1d4ed8; }
+        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; }
+        .nav-charge-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -667,16 +674,22 @@
         <!-- 전문가 전용 탭 네비 -->
         <a href="/experts/dashboard" class="nav-logo">Sev<span>Merge</span></a>
         <nav class="nav-links expert-links">
-            <a href="/bid/my-list"     class="expert-nav-tab">제안서 관리</a>
-            <a href="/bid/my-orders"   class="expert-nav-tab">주문 관리</a>
+            <a href="/bids/my-list"     class="expert-nav-tab">제안서 관리</a>
+            <a href="/bids/my-orders"   class="expert-nav-tab">주문 관리</a>
             <a href="/payment/my"      class="expert-nav-tab">수익 &amp; 정산</a>
             <a href="/reviews/my"      class="expert-nav-tab">평가 및 리뷰</a>
             <a href="/experts/my/form" class="expert-nav-tab">프로필 수정</a>
             <a href="/boards"          class="expert-nav-tab">게시판</a>
+            <a href="/messages"        class="expert-nav-tab">쪽지함</a>
         </nav>
         <div class="nav-actions">
             <span class="nav-username">{{sessionUser.name}}님</span>
-            <a href="/logout" class="btn btn-outline">로그아웃</a>
+            <div class="nav-balance-wrap">
+                <span class="nav-balance-label">잔액</span>
+                <span class="nav-balance-amount">{{headerBalance}}원</span>
+                <a href="/charge/form" class="nav-charge-btn">충전</a>
+                <a href="/logout" class="btn btn-outline">로그아웃</a>
+            </div>
         </div>
         {{/isExpert}}
         {{^isExpert}}
@@ -699,7 +712,7 @@
                     </div>
                 </div>
 
-                <a href="/admin/expert" class="admin-main-item">전문가 승인</a>
+                <a href="/admin/experts" class="admin-main-item">전문가 승인</a>
             {{/isAdmin}}
 
             <!-- 2. 기존 일반 회원용 메뉴 -->
@@ -719,21 +732,24 @@
                 <a href="/messages">쪽지함</a>
             {{/isLoggedIn}}
             {{/isAdmin}}
-            <!-- 관리자 페이지 -->
-            {{#isAdmin}}
-                <a href="/admin">관리자</a>
-            {{/isAdmin}}
         </nav>
 
         <!-- 우측 사용자 상태 바 -->
         <div class="nav-actions">
             {{#isLoggedIn}}
+                {{^isAdmin}}
+                <div class="nav-balance-wrap">
+                    <span class="nav-balance-label">잔액</span>
+                    <span class="nav-balance-amount">{{headerBalance}}원</span>
+                    <a href="/charge/form" class="nav-charge-btn">충전</a>
+                </div>
+                {{/isAdmin}}
                 <span class="nav-username">{{sessionUser.name}}님</span>
                 <a href="/logout" class="btn btn-outline">로그아웃</a>
             {{/isLoggedIn}}
             {{^isLoggedIn}}
                 <a href="/login" class="btn btn-outline">로그인</a>
-                <a href="/join" class="btn btn-primary">회원가입</a>
+                <a href="/join-start" class="btn btn-primary">회원가입</a>
             {{/isLoggedIn}}
         </div>
         {{/isExpert}}

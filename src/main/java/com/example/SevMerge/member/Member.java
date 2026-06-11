@@ -61,6 +61,11 @@ public class Member {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    // 지갑 잔액 (충전 후 차감 방식)
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private Integer balance = 0;
+
     //연관관계
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
@@ -95,6 +100,7 @@ public class Member {
         this.role = (role != null) ? role : Role.CLIENT;
         this.status = (status != null) ? status : Status.ACTIVE;
         this.isDeleted = false; // 소프트삭제
+        this.balance = 0;
     }
 
     // 기존 편의 메서드 (유지)
@@ -153,6 +159,18 @@ public class Member {
     //소프트삭제
     public void withdraw() {
         this.isDeleted = true;
+    }
+
+    // ── 잔액 관련 ──
+    public void addBalance(int amount) {
+        this.balance += amount;
+    }
+
+    public void deductBalance(int amount) {
+        if (this.balance < amount) {
+            throw new IllegalStateException("잔액이 부족합니다.");
+        }
+        this.balance -= amount;
     }
 
 }

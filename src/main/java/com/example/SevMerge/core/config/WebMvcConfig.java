@@ -78,8 +78,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/bids/{id}"
 
                 ).excludePathPatterns(
-                        "/bid/list",
-                        "/bid/{id}/select"
+                        "/bids/list",
+                        "/bids/{id}/select"
                 );
 
     }

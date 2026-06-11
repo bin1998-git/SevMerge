@@ -198,16 +198,49 @@ public class BidService {
         // 제안서 상태를 select로 변경
         bid.select();
 
+
+
         // 한 프로젝트의 대기중인 제안서 전부 탈락 처리
         List<Bid> otherBids = bidRepository.findByProjectId(bid.getProject().getId());
         for (Bid other : otherBids) {
-            if (!other.getId().equals(bid.getId()) && other.getStatus() == BidStatus.PENDING) {
+            if (!other.getId().equals(bid.getId()) &&
+                    (other.getStatus() == BidStatus.PENDING || other.getStatus() == BidStatus.HOLD)) {
                 other.fail(); // 엔티티에 상태를 FAIL/REJECTED로 바꾸는 메서드가 있다고 가정
             }
         }
 
         // 프로젝트 상태 CLOSED 변경
         bid.getProject().updateStatus(ProjectStatus.CLOSED);
+    }
+
+    // 제안서 보류처리
+    @Transactional
+    public void holdBid(Long bidId, Member session) {
+        log.info("제안서 보류 서비스 시작 : bidId {}" + bidId);
+
+        // 의뢰인 체크
+        if (!session.isClient()) {
+            throw new ForbiddenException("보류 처리는 의뢰인만 가능합니다");
+        }
+
+        // 제안서 여부 체크
+        Bid bid = bidRepository.findById(bidId).orElseThrow(
+                () -> new NotFoundException("보류 처리할 제안서가 없습니다"));
+
+        // 프로젝트를 올린 의뢰인이 맞는지 체크
+        if (!bid.getProject().getMember().getId().equals(session.getId())) {
+            throw new ForbiddenException("보류 처리할 권한이 없습니다");
+        }
+
+        // 낙찰처리, 거절된 제안서인지 체크
+        if (bid.getStatus() != BidStatus.PENDING) {
+            throw new BadRequestException("대기 상태인 제안서만 보류처리가 가능합니다");
+        }
+
+        // 제안서 상태 HOLD변경
+        bid.hold();
+
+        log.info("제안서 보류 처리 완료 - bidId: {}", bidId);
     }
 
 

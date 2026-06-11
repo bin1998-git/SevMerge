@@ -1,14 +1,19 @@
 package com.example.SevMerge.admin;
 
+import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberResponse;
 import com.example.SevMerge.member.MemberService;
+import com.example.SevMerge.member.Role;
+import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +26,8 @@ public class AdminController {
 
     private final MemberService memberService;
     private final ProjectService projectService;
+    private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model) {
@@ -49,6 +56,60 @@ public class AdminController {
         return "admin/admin-main";
     }
 
+    // 관리자 공지사항 관리
+    @GetMapping("/admin/notices")
+    public String adminNotices(@RequestParam(value = "keyword", required = false) String keyword,
+                               Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+
+        BoardType type = BoardType.NOTICE;
+
+        List<BoardResponse.ListDTO> adminNotices = boardService.getAdminBoardsByType(type, keyword);
+
+        model.addAttribute("boards", adminNotices);
+        model.addAttribute("isFree", false);
+        model.addAttribute("isNotice", true);
+        model.addAttribute("isInquiry", false);
+        model.addAttribute("boardType", "NOTICE");
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+
+        return "admin/admin-notices";
+    }
+
+    // 관리자 공지사항 수정화면 띄우기
+    @GetMapping("/admin/notices/{id}/update")
+    public String updateNoticeForm(@PathVariable("id") Long id, Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        boolean isAdmin = sessionUser != null && sessionUser.getRole() == Role.ADMIN;
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
+
+        model.addAttribute("board", board);
+        model.addAttribute("isNotice", true);
+        model.addAttribute("isFree", false);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "admin/admin-noticeupdate";
+    }
+
+    // 관리자 공지사항 수정처리
+    @Transactional
+    @PostMapping("/admin/notices/{id}/update")
+    public String updateNotice(@PathVariable("id") Long id,
+                               @RequestParam("title") String title,
+                               @RequestParam("content") String content) {
+        Board board = boardRepository.findById(id).orElseThrow(()
+                -> new IllegalArgumentException("해당 게시글이 없습니다. id =" + id));
+
+        board.setTitle(title);
+        board.setContent(content);
+
+
+
+        return "redirect:/admin/notices";
+    }
 
     // 전문가 승인 관리 페이지
     @GetMapping("/admin/experts")

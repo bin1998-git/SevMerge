@@ -3,37 +3,70 @@
 <style>
     .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
     .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
+    .page-desc  { font-size: 14px; color: #9ca3af; }
+
     .pay-section { padding: 52px 28px 80px; }
-    .pay-inner { max-width: 560px; margin: 0 auto; }
+    .pay-inner   { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+    /* 잔액 카드 */
+    .balance-card { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 18px; padding: 28px 32px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+    .balance-left .balance-label  { font-size: 13px; font-weight: 600; opacity: .75; margin-bottom: 6px; }
+    .balance-left .balance-amount { font-size: 30px; font-weight: 900; letter-spacing: -.5px; }
+    .balance-right a { display: inline-block; padding: 8px 16px; background: rgba(255,255,255,.2); color: #fff; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; transition: background .15s; }
+    .balance-right a:hover { background: rgba(255,255,255,.35); }
+
+    /* 계약 정보 카드 */
     .pay-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 36px; }
     .pay-card-title { font-size: 16px; font-weight: 900; color: #1c1e26; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f8; }
     .info-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f8f9fc; font-size: 14px; }
     .info-row:last-of-type { border-bottom: none; }
     .info-label { color: #9ca3af; font-weight: 500; }
     .info-value { color: #1c1e26; font-weight: 700; }
-    .info-value.highlight { color: #2563eb; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+    .info-value.highlight { color: #2563eb; font-size: 22px; font-weight: 900; }
     .divider { border: none; border-top: 1.5px solid #f3f4f8; margin: 20px 0; }
     .fee-note { font-size: 12px; color: #c4c9d9; text-align: right; margin-top: -12px; margin-bottom: 24px; }
-    .pay-btn { display: block; width: 100%; padding: 16px; background: #2563eb; color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; text-align: center; }
-    .pay-btn:hover { background: #1d4ed8; }
+
+    /* 잔액 충분 */
+    .confirm-btn { display: block; width: 100%; padding: 16px; background: #2563eb; color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; text-align: center; }
+    .confirm-btn:hover { background: #1d4ed8; }
+
+    /* 잔액 부족 */
+    .shortage-box { background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+    .shortage-title { font-size: 14px; font-weight: 700; color: #dc2626; margin-bottom: 6px; }
+    .shortage-desc  { font-size: 13px; color: #6b7280; }
+    .shortage-amount { font-weight: 700; color: #dc2626; }
+    .charge-link { display: block; width: 100%; padding: 16px; background: #fff; border: 1.5px solid #2563eb; color: #2563eb; border-radius: 12px; font-size: 15px; font-weight: 700; text-align: center; text-decoration: none; transition: all .15s; box-sizing: border-box; }
+    .charge-link:hover { background: #eff6ff; }
+
     .pay-notice { font-size: 12px; color: #c4c9d9; text-align: center; margin-top: 14px; line-height: 1.8; }
-    .btn-outline { display: inline-block; margin-top: 16px; width: 100%; padding: 13px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 12px; font-size: 14px; font-weight: 600; color: #4b5563; text-align: center; text-decoration: none; transition: all .15s; }
-    .btn-outline:hover { border-color: #2563eb; color: #2563eb; }
+    .btn-outline { display: block; margin-top: 12px; padding: 13px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 12px; font-size: 14px; font-weight: 600; color: #4b5563; text-align: center; text-decoration: none; }
 </style>
 
 <div class="page-header">
     <div class="page-header-inner">
-        <h1 class="page-title">결제하기</h1>
-        <p class="page-desc">아래 내용을 확인 후 결제를 진행해주세요.</p>
+        <h1 class="page-title">에스크로 계약</h1>
+        <p class="page-desc">계약금이 잔액에서 차감되어 에스크로로 안전하게 보관됩니다.</p>
     </div>
 </div>
 
 <section class="pay-section">
     <div class="pay-inner">
+
+        <!-- 현재 잔액 -->
+        <div class="balance-card">
+            <div class="balance-left">
+                <div class="balance-label">현재 잔액</div>
+                <div class="balance-amount">{{balance}}원</div>
+            </div>
+            <div class="balance-right">
+                <a href="/charge/form">충전하기</a>
+            </div>
+        </div>
+
+        <!-- 계약 정보 -->
         <div class="pay-card">
-            <div class="pay-card-title">결제 정보 확인</div>
+            <div class="pay-card-title">계약 정보 확인</div>
 
             <div class="info-row">
                 <span class="info-label">프로젝트 번호</span>
@@ -41,46 +74,54 @@
             </div>
             <div class="info-row">
                 <span class="info-label">전문가 ID</span>
-                <span class="info-value">{{expertId}}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">주문번호</span>
-                <span class="info-value">{{orderId}}</span>
+                <span class="info-value">#{{expertId}}</span>
             </div>
 
             <hr class="divider" />
 
             <div class="info-row">
-                <span class="info-label">결제 금액</span>
+                <span class="info-label">계약 금액</span>
                 <span class="info-value highlight">{{amount}}원</span>
             </div>
-            <p class="fee-note">※ 플랫폼 수수료 10% 포함 · 에스크로 방식으로 안전하게 보관됩니다</p>
+            <div class="info-row">
+                <span class="info-label">플랫폼 수수료 (10%)</span>
+                <span class="info-value">{{platformFee}}원</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">전문가 수령 예정</span>
+                <span class="info-value">{{netAmount}}원</span>
+            </div>
+            <p class="fee-note">※ 프로젝트 완료 확인 후 전문가에게 지급됩니다</p>
 
-            <button class="pay-btn" id="payBtn">토스페이먼츠로 결제하기</button>
+            {{#balanceSufficient}}
+            <!-- 잔액 충분 -->
+            <form action="/payment/escrow" method="post">
+                <input type="hidden" name="projectId" value="{{projectId}}" />
+                <input type="hidden" name="expertId"  value="{{expertId}}" />
+                <input type="hidden" name="amount"    value="{{amount}}" />
+                <button type="submit" class="confirm-btn">잔액으로 계약하기 (에스크로 보관)</button>
+            </form>
+            {{/balanceSufficient}}
+
+            {{#balanceInsufficient}}
+            <!-- 잔액 부족 -->
+            <div class="shortage-box">
+                <div class="shortage-title">잔액이 부족합니다</div>
+                <div class="shortage-desc">
+                    <span class="shortage-amount">{{shortage}}원</span> 이상 충전이 필요합니다.
+                </div>
+            </div>
+            <a href="/charge/form" class="charge-link">충전하러 가기 →</a>
+            {{/balanceInsufficient}}
+
             <a href="javascript:history.back()" class="btn-outline">← 돌아가기</a>
-
-            <p class="pay-notice">결제는 토스페이먼츠를 통해 안전하게 처리됩니다.<br>결제 완료 후 프로젝트가 자동으로 시작됩니다.</p>
+            <p class="pay-notice">
+                계약금은 에스크로로 안전하게 보관됩니다.<br>
+                프로젝트 완료 확인 전까지 전문가에게 지급되지 않습니다.
+            </p>
         </div>
+
     </div>
 </section>
-
-<script src="https://js.tosspayments.com/v1/payment"></script>
-<script>
-    const clientKey = '{{clientKey}}';
-    const tossPayments = TossPayments(clientKey);
-
-    document.getElementById('payBtn').addEventListener('click', function () {
-        tossPayments.requestPayment('카드', {
-            amount: {{amount}},
-            orderId: '{{orderId}}',
-            orderName: '프로젝트 #{{projectId}} 결제',
-            customerName: '의뢰인',
-            successUrl: window.location.origin
-                        + '/payment/success'
-                        + '?expertId={{expertId}}',
-            failUrl: window.location.origin + '/payment/fail',
-        });
-    });
-</script>
 
 {{> layout/footer}}

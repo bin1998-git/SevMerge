@@ -3,6 +3,7 @@ package com.example.SevMerge.comment;
 import com.example.SevMerge.board.Board;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.sql.Timestamp;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "comment_tb")
@@ -34,11 +36,19 @@ public class Comment {
     @CreationTimestamp
     private Timestamp createdAt;
 
+    private boolean isDeleted = false;
+
     @Builder
     public Comment(Board board, Member member, String content) {
         this.board = board;
         this.member = member;
         this.content = content;
+        this.isDeleted = false;
+    }
+
+    // 편의 메소드 추가
+    public void softDelete() {
+        this.isDeleted = true;
     }
 
     /**

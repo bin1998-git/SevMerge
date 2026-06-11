@@ -35,15 +35,36 @@ public class MemberController {
     private final ReviewRepository reviewRepository;
     private final PortfolioService portfolioService;
 
-    // 회원가입
+    @GetMapping("/join-start")
+    public String joinStart(Model model) {
+        model.addAttribute("googleClientId", googleClientId);
+        return "member/join-start";
+    }
+
+    // 일반 회원가입 - 역할 선택 화면
+    @GetMapping("/join-role")
+    public String joinRole() {
+        return "member/join-role";
+    }
+
+    // 회원가입 role에 따라 의뢰인/전문가 폼 나눔
     @GetMapping("/join")
-    public String joinForm() {
-        return "member/join-form";
+    public String joinForm(@RequestParam(required = false) String role, Model model) {
+        if ("EXPERT".equals(role)) {
+            return "member/join-form-expert";
+        }
+        // role 없거나 CLIENT면 의뢰인
+        return "member/join-form-client";
     }
 
     @PostMapping("/join")
     public String join(MemberRequest.Join request) {
         memberService.join(request);
+
+
+        if (request.getRole() != null && "EXPERT".equalsIgnoreCase(request.getRole().toString())) {
+            return "redirect:/social-pending";
+        }
         return "redirect:/login";
     }
 
@@ -88,12 +109,12 @@ public class MemberController {
         }
 
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
-        model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
-        model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
-        model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
-        model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
-        model.addAttribute("isEdit", tab.equalsIgnoreCase("edit"));
-        model.addAttribute("isPortfolio",tab.equalsIgnoreCase("portfolios"));
+        model.addAttribute("isProjects",  tab.equalsIgnoreCase("projects"));
+        model.addAttribute("isBoards",    tab.equalsIgnoreCase("boards"));
+        model.addAttribute("isReviews",   tab.equalsIgnoreCase("reviews"));
+        model.addAttribute("isBids",      tab.equalsIgnoreCase("bids"));
+        model.addAttribute("isEdit",      tab.equalsIgnoreCase("edit"));
+        model.addAttribute("isPortfolio", tab.equalsIgnoreCase("portfolios"));
 
 
         model.addAttribute("projectCount", projectService.myProjects(loginMember).size());
@@ -168,6 +189,13 @@ public class MemberController {
         return "admin/admin-member";
     }
 
+    // 관리자 - 회원 삭제
+    @PostMapping("/admin/members/{id}/delete")
+    public String deleteMemberByAdmin(@PathVariable(name = "id") Long id) {
+        memberService.withdrawMember(id);
+        return "redirect:/admin/members";
+    }
+
     // 탈퇴처리 DELETE 전환
     @DeleteMapping("/admin/members/{id}")
     @ResponseBody
@@ -175,28 +203,6 @@ public class MemberController {
         memberService.suspendMember(id);
         return ResponseEntity.ok().body("제재 처리가 성공했습니다.");
     }
-
-//    // 관리자 - 전문가 승인
-//    @GetMapping("/admin/experts")
-//    public String adminExperts(Model model) {
-//        model.addAttribute("experts", memberService.getPendingExperts());
-//        model.addAttribute("isAdmin", true);
-//        return "admin/admin-expert";
-//    }
-//
-//    // 전문가 승인/거절 상태 제어 PATCH 전환
-//    @PatchMapping("/admin/experts/{id}/status")
-//    @ResponseBody
-//    public ResponseEntity<?> updateExpertStatus(@PathVariable Long id, @RequestParam String action) {
-//        if ("approve".equals(action)) {
-//            memberService.approveExpert(id);
-//            return ResponseEntity.ok().body("승인 완료");
-//        } else if ("reject".equals(action)) {
-//            memberService.rejectExpert(id);
-//            return ResponseEntity.ok().body("반려 완료");
-//        }
-//        return ResponseEntity.badRequest().body("잘못된 명령입니다.");
-//    }
 
     // --------------------------------------------------------------------
 

@@ -3,37 +3,66 @@
 <style>
     .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
     .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
-    .list-section { padding: 36px 28px 80px; }
-    .list-inner { max-width: 1140px; margin: 0 auto; }
-    .list-count { font-size: 14px; color: #9ca3af; font-weight: 500; margin-bottom: 20px; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
+    .page-desc  { font-size: 14px; color: #9ca3af; }
+
+    .balance-bar { background: #eff6ff; border-bottom: 1px solid #bfdbfe; padding: 16px 28px; }
+    .balance-bar-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .balance-bar-left  { font-size: 14px; color: #1d4ed8; font-weight: 600; }
+    .balance-bar-left strong { font-size: 20px; font-weight: 900; margin-left: 8px; }
+    .balance-bar-right a { font-size: 13px; font-weight: 700; color: #2563eb; text-decoration: none; padding: 7px 16px; border: 1.5px solid #2563eb; border-radius: 8px; }
+
+    .list-section  { padding: 36px 28px 80px; }
+    .list-inner    { max-width: 1140px; margin: 0 auto; }
+    .section-title { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 20px; }
+    .list-count    { font-size: 14px; color: #9ca3af; font-weight: 500; margin-bottom: 16px; }
     .list-count strong { color: #1c1e26; font-weight: 700; }
+
     .pay-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
-    .pay-table-head { display: grid; grid-template-columns: 80px 120px 130px 130px 130px 110px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
-    .pay-table-row { display: grid; grid-template-columns: 80px 120px 130px 130px 130px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .pay-table-head { display: grid; grid-template-columns: 70px 110px 130px 120px 120px 110px 110px; gap: 10px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
+    .pay-table-row  { display: grid; grid-template-columns: 70px 110px 130px 120px 120px 110px 110px; gap: 10px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
     .pay-table-row:last-child { border-bottom: none; }
     .pay-table-row:hover { background: #f8f9ff; }
-    .cell { font-size: 13px; color: #4b5563; }
-    .cell-id { font-weight: 700; color: #1c1e26; }
+    .cell        { font-size: 13px; color: #4b5563; }
+    .cell-id     { font-weight: 700; color: #1c1e26; }
     .cell-amount { font-weight: 700; color: #1c1e26; }
+
     .status-paid     { font-size: 11px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .status-settled  { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .status-refunded { font-size: 11px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
-    .empty-state { text-align: center; padding: 80px 0; }
-    .empty-msg { font-size: 15px; color: #c4c9d9; }
+
+    .settle-btn  { padding: 6px 14px; background: #059669; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .refund-btn  { padding: 6px 14px; background: #dc2626; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .settle-btn:hover { background: #047857; }
+    .refund-btn:hover { background: #b91c1c; }
+
+    .empty-state { text-align: center; padding: 60px 0; }
+    .empty-msg   { font-size: 15px; color: #c4c9d9; }
 </style>
 
 <div class="page-header">
     <div class="page-header-inner">
         {{#isExpert}}
-        <h1 class="page-title">정산 내역</h1>
-        <p class="page-desc">완료된 프로젝트의 정산 내역을 확인하세요.</p>
+        <h1 class="page-title">수익 &amp; 정산</h1>
+        <p class="page-desc">완료된 프로젝트의 정산 내역과 출금 가능 잔액을 확인하세요.</p>
         {{/isExpert}}
         {{^isExpert}}
         <h1 class="page-title">결제 내역</h1>
-        <p class="page-desc">진행한 프로젝트의 결제 내역을 확인하세요.</p>
+        <p class="page-desc">진행한 프로젝트의 에스크로 내역을 확인하세요.</p>
         {{/isExpert}}
+    </div>
+</div>
+
+<!-- 잔액 바 -->
+<div class="balance-bar">
+    <div class="balance-bar-inner">
+        <div class="balance-bar-left">
+            {{#isExpert}}수익 잔액{{/isExpert}}{{^isExpert}}잔액{{/isExpert}}
+            <strong>{{balance}}원</strong>
+        </div>
+        <div class="balance-bar-right">
+            {{^isExpert}}<a href="/charge/form">충전하기</a>{{/isExpert}}
+        </div>
     </div>
 </div>
 
@@ -43,12 +72,13 @@
         {{#payments}}
         <div class="pay-table">
             <div class="pay-table-head">
-                <span>결제 ID</span>
+                <span>ID</span>
                 <span>프로젝트</span>
-                <span>결제 금액</span>
+                <span>계약 금액</span>
                 <span>수수료</span>
                 <span>{{#isExpert}}수령액{{/isExpert}}{{^isExpert}}전문가 수령액{{/isExpert}}</span>
                 <span>상태</span>
+                <span>액션</span>
             </div>
             <div class="pay-table-row">
                 <span class="cell cell-id">#{{id}}</span>
@@ -57,9 +87,17 @@
                 <span class="cell">{{platformFee}}원</span>
                 <span class="cell">{{netAmount}}원</span>
                 <span class="cell">
-                    {{#isPaid}}<span class="status-paid">결제완료</span>{{/isPaid}}
+                    {{#isPaid}}<span class="status-paid">에스크로 보관</span>{{/isPaid}}
                     {{#isSettled}}<span class="status-settled">정산완료</span>{{/isSettled}}
                     {{#isRefunded}}<span class="status-refunded">환불완료</span>{{/isRefunded}}
+                </span>
+                <span class="cell">
+                    {{^isExpert}}
+                    {{#isPaid}}
+                    <button class="settle-btn" onclick="settle({{id}})">완료확인</button>
+                    <button class="refund-btn" onclick="refund({{id}})">환불</button>
+                    {{/isPaid}}
+                    {{/isExpert}}
                 </span>
             </div>
         </div>
@@ -72,7 +110,7 @@
                 <p class="empty-msg">정산 내역이 없습니다.</p>
                 {{/isExpert}}
                 {{^isExpert}}
-                <p class="empty-msg">결제 내역이 없습니다.</p>
+                <p class="empty-msg">에스크로 내역이 없습니다.</p>
                 {{/isExpert}}
             </div>
         </div>
@@ -80,5 +118,27 @@
 
     </div>
 </section>
+
+<script>
+    function settle(id) {
+        if (!confirm('프로젝트 완료를 확인하시겠습니까?\n전문가에게 대금이 지급됩니다.')) return;
+        fetch('/payment/' + id + '/settle', { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) { alert('정산이 완료되었습니다.'); location.reload(); }
+                else alert(d.message);
+            });
+    }
+
+    function refund(id) {
+        if (!confirm('환불을 요청하시겠습니까?\n계약금이 잔액으로 복구됩니다.')) return;
+        fetch('/payment/' + id + '/refund', { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) { alert('환불이 완료되었습니다.'); location.reload(); }
+                else alert(d.message);
+            });
+    }
+</script>
 
 {{> layout/footer}}

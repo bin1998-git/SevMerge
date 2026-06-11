@@ -12,6 +12,10 @@ public class MemberRequest {
         private String name;
         private String phone;
         private Role role;
+
+        private String intro;
+        private String career;
+        private String githubUrl;
     }
 
     @Data
