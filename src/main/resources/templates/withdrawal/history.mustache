@@ -1,0 +1,108 @@
+{{> layout/header}}
+
+<style>
+    /* ── 본문 ── */
+    .page-section { padding: 40px 28px 80px; }
+    .page-inner   { max-width: 1200px; margin: 0 auto; }
+    .page-head    { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .page-title   { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; }
+    .page-count   { font-size: 13px; color: #9ca3af; font-weight: 500; }
+
+    /* ── 잔액 요약 ── */
+    .balance-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+    .summary-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 20px 24px; }
+    .summary-label { font-size: 12px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
+    .summary-value { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; }
+    .summary-value.blue { color: #2563eb; }
+    .summary-value.red  { color: #dc2626; }
+
+    /* ── 테이블 ── */
+    .wd-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; }
+    .wd-table-head { display: grid; grid-template-columns: 80px 1fr 130px 130px 110px 110px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
+    .wd-row { display: grid; grid-template-columns: 80px 1fr 130px 130px 110px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .wd-row:last-child { border-bottom: none; }
+    .wd-row:hover { background: #f8f9ff; }
+    .cell { font-size: 13px; color: #4b5563; }
+    .cell-id     { font-weight: 700; color: #1c1e26; }
+    .cell-amount { font-weight: 700; color: #dc2626; }
+    .cell-account { font-size: 12px; }
+
+    /* ── 상태 뱃지 ── */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-pending   { background: #fef3c7; color: #92400e; }
+    .badge-completed { background: #d1fae5; color: #065f46; }
+    .badge-rejected  { background: #fef2f2; color: #dc2626; }
+
+    /* ── 빈 상태 ── */
+    .empty-state { text-align: center; padding: 80px 0; }
+    .empty-icon  { font-size: 36px; margin-bottom: 14px; }
+    .empty-msg   { font-size: 14px; color: #c4c9d9; margin-bottom: 18px; }
+
+    /* ── 상단 버튼 ── */
+    .btn-new-wd { padding: 9px 20px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-block; }
+    .btn-new-wd:hover { background: #1d4ed8; }
+</style>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="page-head">
+            <h1 class="page-title">💸 출금내역</h1>
+            <a href="/withdrawal/form" class="btn-new-wd">+ 출금 신청</a>
+        </div>
+
+        <!-- 요약 카드 -->
+        <div class="balance-summary">
+            <div class="summary-card">
+                <div class="summary-label">현재 잔액</div>
+                <div class="summary-value blue">{{balance}}원</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">총 출금 횟수</div>
+                <div class="summary-value">{{totalCount}}건</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">총 출금액</div>
+                <div class="summary-value red">{{totalAmount}}원</div>
+            </div>
+        </div>
+
+        <!-- 출금 내역 테이블 -->
+        <div class="wd-table">
+            <div class="wd-table-head">
+                <span>번호</span>
+                <span>은행 / 계좌</span>
+                <span>예금주</span>
+                <span>출금 금액</span>
+                <span>신청일</span>
+                <span>상태</span>
+            </div>
+
+            {{#withdrawals}}
+            <div class="wd-row">
+                <span class="cell cell-id">#{{id}}</span>
+                <span class="cell cell-account">{{bankName}}<br>{{accountNumber}}</span>
+                <span class="cell">{{accountHolder}}</span>
+                <span class="cell cell-amount">-{{amount}}원</span>
+                <span class="cell">{{createdAt}}</span>
+                <span class="cell">
+                    {{#isPending}}  <span class="badge badge-pending">처리중</span>  {{/isPending}}
+                    {{#isCompleted}}<span class="badge badge-completed">완료</span>{{/isCompleted}}
+                    {{#isRejected}} <span class="badge badge-rejected">반려</span>  {{/isRejected}}
+                </span>
+            </div>
+            {{/withdrawals}}
+
+            {{^withdrawals}}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p class="empty-msg">출금 내역이 없습니다.</p>
+                <a href="/withdrawal/form" style="font-size:13px;color:#2563eb;font-weight:600;">첫 출금 신청하기 →</a>
+            </div>
+            {{/withdrawals}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}
