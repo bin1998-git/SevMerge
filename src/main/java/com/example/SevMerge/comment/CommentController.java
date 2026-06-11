@@ -5,17 +5,16 @@ import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
-
 
     // 댓글 등록 기능 요청
     @PostMapping("/boards/{boardId}/comments/save")
@@ -33,7 +32,20 @@ public class CommentController {
         return "redirect:/boards/" + boardId;
     }
 
-    // 댓글 삭제 기능 요청
+    // 댓글 수정 기능
+    @PostMapping("/comments/{commentId}/update")
+    public String updateComment(@PathVariable(name = "commentId") Long commentId,
+                                @ModelAttribute CommentRequest.SaveDTO.UpdateDTO updateDTO, HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) {
+            return "redirect:/boards/" + commentId;
+        }
+
+        commentService.updateComment(commentId, updateDTO.getComment(), sessionMember.getId());
+        return "redirect:/boards/" + updateDTO.getBoardId();
+    }
+
+    // 댓글 삭제 기능
     @PostMapping("/comments/{id}/delete")
     public String delete(@PathVariable(name = "id") Long commentId,
                          HttpSession session,
