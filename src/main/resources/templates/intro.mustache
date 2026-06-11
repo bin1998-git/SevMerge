@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>코드요 — 당신의 아이디어를 코드로</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue:      #2563eb;
+            --blue-dark: #1d4ed8;
+            --blue-soft: #eff6ff;
+            --navy:      #1c1e26;
+            --gray:      #6b7280;
+            --gray-lt:   #9ca3af;
+            --border:    #eaecf4;
+            --white:     #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo',
+                         'Noto Sans KR', sans-serif;
+            background: #f8faff;
+            color: var(--navy);
+            line-height: 1.6;
+        }
+
+        /* ── 네브바 ── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 48px;
+        }
+        .nav-logo {
+            font-size: 22px; font-weight: 900; color: var(--navy);
+            text-decoration: none; letter-spacing: -0.5px;
+        }
+        .nav-logo span { color: var(--blue); }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a {
+            font-size: 14px; font-weight: 500; color: var(--gray);
+            text-decoration: none; transition: color .15s;
+        }
+        .nav-links a:hover { color: var(--navy); }
+        .nav-actions { display: flex; gap: 10px; }
+        .btn {
+            display: inline-block; padding: 9px 20px; border-radius: 8px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            text-decoration: none; transition: all .15s;
+        }
+        .btn-outline {
+            border: 1.5px solid var(--border); color: var(--navy); background: #fff;
+        }
+        .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+        .btn-primary { background: var(--blue); color: #fff; border: none; }
+        .btn-primary:hover { background: var(--blue-dark); }
+
+        /* ── 히어로 ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            background: linear-gradient(160deg, #f0f7ff 0%, #ffffff 50%, #f5f3ff 100%);
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+            width: 900px; height: 900px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(37,99,235,.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--blue-soft); border: 1px solid #bfdbfe;
+            border-radius: 999px; padding: 5px 16px;
+            font-size: 12px; font-weight: 700; color: var(--blue);
+            margin-bottom: 24px; letter-spacing: .3px;
+        }
+        .hero-title {
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 900; line-height: 1.15;
+            letter-spacing: -2px; color: var(--navy);
+            margin-bottom: 20px;
+        }
+        .hero-title .highlight { color: var(--blue); }
+        .hero-desc {
+            font-size: clamp(15px, 2vw, 18px);
+            color: var(--gray); max-width: 560px;
+            margin: 0 auto 40px; line-height: 1.8;
+        }
+        .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn-hero {
+            padding: 14px 32px; font-size: 16px; border-radius: 12px; font-weight: 800;
+        }
+        .hero-stats {
+            display: flex; gap: 48px; justify-content: center; flex-wrap: wrap;
+            margin-top: 72px; padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+        .stat-item { text-align: center; }
+        .stat-num {
+            font-size: 32px; font-weight: 900; color: var(--navy);
+            letter-spacing: -1px; display: block;
+        }
+        .stat-num span { color: var(--blue); }
+        .stat-label { font-size: 13px; color: var(--gray-lt); font-weight: 500; margin-top: 4px; }
+
+        /* ── 섹션 공통 ── */
+        section { padding: 100px 24px; }
+        .section-inner { max-width: 1100px; margin: 0 auto; }
+        .section-eyebrow {
+            font-size: 12px; font-weight: 700; color: var(--blue);
+            letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: clamp(26px, 4vw, 40px); font-weight: 900;
+            letter-spacing: -1px; color: var(--navy); margin-bottom: 14px;
+        }
+        .section-desc { font-size: 16px; color: var(--gray); max-width: 500px; line-height: 1.8; }
+
+        /* ── 서비스 소개 카드 ── */
+        .features { background: #fff; }
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+            margin-top: 56px;
+        }
+        .feature-card {
+            background: #f8faff; border: 1.5px solid var(--border);
+            border-radius: 20px; padding: 32px 28px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .feature-card:hover {
+            border-color: #bfdbfe;
+            box-shadow: 0 8px 32px rgba(37,99,235,.08);
+        }
+        .feature-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: var(--blue-soft); display: flex; align-items: center;
+            justify-content: center; font-size: 24px; margin-bottom: 18px;
+        }
+        .feature-name {
+            font-size: 17px; font-weight: 800; color: var(--navy);
+            margin-bottom: 10px; letter-spacing: -.3px;
+        }
+        .feature-desc { font-size: 14px; color: var(--gray); line-height: 1.75; }
+
+        /* ── 이용 방법 ── */
+        .how { background: linear-gradient(180deg, #f8faff 0%, #fff 100%); }
+        .how-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 60px 80px;
+            margin-top: 56px; align-items: center;
+        }
+        .how-steps { display: flex; flex-direction: column; gap: 32px; }
+        .how-step { display: flex; gap: 20px; align-items: flex-start; }
+        .step-num {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: var(--blue); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 900; flex-shrink: 0;
+        }
+        .step-title { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+        .step-desc { font-size: 14px; color: var(--gray); line-height: 1.7; }
+        .how-visual {
+            background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+            border: 1.5px solid var(--border); border-radius: 24px;
+            padding: 40px 32px; display: flex; flex-direction: column; gap: 14px;
+        }
+        .mock-card {
+            background: #fff; border-radius: 12px; padding: 16px 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        }
+        .mock-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+        .mock-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .mock-tag {
+            font-size: 11px; font-weight: 600;
+            background: var(--blue-soft); color: var(--blue);
+            border-radius: 6px; padding: 2px 8px;
+        }
+        .mock-tag.green { background: #d1fae5; color: #065f46; }
+        .mock-tag.purple { background: #ede9fe; color: #5b21b6; }
+        .mock-price { font-size: 15px; font-weight: 900; color: var(--blue); margin-top: 8px; }
+
+        /* ── 카테고리 ── */
+        .categories { background: var(--navy); }
+        .categories .section-title { color: #fff; }
+        .categories .section-desc { color: #9ca3af; }
+        .category-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+            margin-top: 48px;
+        }
+        .category-card {
+            background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+            border-radius: 16px; padding: 24px 20px;
+            text-align: center; transition: background .2s;
+            cursor: default;
+        }
+        .category-card:hover { background: rgba(37,99,235,.25); border-color: rgba(96,165,250,.4); }
+        .category-emoji { font-size: 28px; margin-bottom: 10px; display: block; }
+        .category-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .category-sub { font-size: 12px; color: #6b7280; }
+
+        /* ── 에스크로 신뢰 ── */
+        .trust { background: #fff; }
+        .trust-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+            margin-top: 56px;
+        }
+        .trust-card {
+            border: 1.5px solid var(--border); border-radius: 20px;
+            padding: 32px 28px; text-align: center;
+        }
+        .trust-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+        .trust-name { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+        .trust-desc { font-size: 14px; color: var(--gray); line-height: 1.75; }
+
+        /* ── CTA 배너 ── */
+        .cta-banner {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            padding: 100px 24px; text-align: center;
+        }
+        .cta-title {
+            font-size: clamp(28px, 5vw, 48px); font-weight: 900;
+            color: #fff; letter-spacing: -1.5px; margin-bottom: 16px;
+        }
+        .cta-desc { font-size: 17px; color: rgba(255,255,255,.8); margin-bottom: 40px; }
+        .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+        .btn-white { background: #fff; color: var(--blue); }
+        .btn-white:hover { background: #eff6ff; }
+        .btn-ghost {
+            background: transparent; color: #fff;
+            border: 2px solid rgba(255,255,255,.5);
+        }
+        .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,.1); }
+
+        /* ── 푸터 ── */
+        .footer {
+            background: var(--navy); padding: 48px 48px 32px;
+            display: flex; flex-direction: column; gap: 28px;
+        }
+        .footer-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
+        .footer-logo { font-size: 20px; font-weight: 900; color: #fff; }
+        .footer-logo span { color: var(--blue); }
+        .footer-tagline { font-size: 13px; color: #6b7280; margin-top: 6px; }
+        .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+        .footer-links a { font-size: 13px; color: #6b7280; text-decoration: none; transition: color .15s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,.08);
+            padding-top: 24px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+        }
+        .footer-copy { font-size: 12px; color: #4b5563; }
+
+        /* ── 반응형 ── */
+        @media (max-width: 900px) {
+            .nav { padding: 0 24px; }
+            .nav-links { display: none; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .how-grid { grid-template-columns: 1fr; }
+            .how-visual { display: none; }
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+            .trust-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 네브바 -->
+<nav class="nav">
+    <a href="/intro" class="nav-logo">코드<span>요</span></a>
+    <div class="nav-links">
+        <a href="#features">서비스 소개</a>
+        <a href="#how">이용 방법</a>
+        <a href="#categories">분야</a>
+        <a href="#trust">안전 결제</a>
+    </div>
+    <div class="nav-actions">
+        <a href="/login" class="btn btn-outline">로그인</a>
+        <a href="/join-role" class="btn btn-primary">회원가입</a>
+    </div>
+</nav>
+
+<!-- 히어로 -->
+<section class="hero">
+    <div class="hero-badge">🚀 IT 프리랜서 매칭 플랫폼</div>
+    <h1 class="hero-title">
+        아이디어를<br>
+        <span class="highlight">코드로</span> 만드는 곳
+    </h1>
+    <p class="hero-desc">
+        코드요는 의뢰인과 전문 개발자·디자이너를 연결하는 프리랜서 플랫폼입니다.<br>
+        프로젝트를 올리고, 최적의 전문가를 찾아보세요.
+    </p>
+    <div class="hero-cta">
+        <a href="/join-role" class="btn btn-primary btn-hero">무료로 시작하기 →</a>
+        <a href="/projects" class="btn btn-outline btn-hero">프로젝트 둘러보기</a>
+    </div>
+    <div class="hero-stats">
+        <div class="stat-item">
+            <span class="stat-num">1,200<span>+</span></span>
+            <div class="stat-label">등록 전문가</div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">3,800<span>+</span></span>
+            <div class="stat-label">완료 프로젝트</div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">98<span>%</span></span>
+            <div class="stat-label">의뢰인 만족도</div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">100<span>%</span></span>
+            <div class="stat-label">에스크로 안전 결제</div>
+        </div>
+    </div>
+</section>
+
+<!-- 서비스 소개 -->
+<section class="features" id="features">
+    <div class="section-inner">
+        <p class="section-eyebrow">Why 코드요</p>
+        <h2 class="section-title">왜 코드요인가요?</h2>
+        <p class="section-desc">단순한 매칭을 넘어, 프로젝트 완료까지 안전하게 함께합니다.</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-name">정확한 전문가 매칭</div>
+                <p class="feature-desc">웹·앱·디자인·데이터·영상 등 분야별 인증 전문가 풀에서 프로젝트에 딱 맞는 사람을 찾을 수 있습니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-name">에스크로 안전 결제</div>
+                <p class="feature-desc">의뢰인이 먼저 금액을 예치하고, 작업 완료 후 전문가에게 지급됩니다. 먹튀·미지급 걱정 없이 진행하세요.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <div class="feature-name">쪽지로 직접 소통</div>
+                <p class="feature-desc">플랫폼 내 쪽지 기능으로 의뢰인과 전문가가 자유롭게 소통하고 요구사항을 조율할 수 있습니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <div class="feature-name">투명한 제안서 시스템</div>
+                <p class="feature-desc">전문가가 프로젝트에 제안서를 제출하면 의뢰인이 금액·경력·포트폴리오를 비교해 낙찰할 수 있습니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <div class="feature-name">검증된 리뷰 시스템</div>
+                <p class="feature-desc">완료된 프로젝트에 대한 실제 리뷰만 작성 가능합니다. 진짜 후기로 신뢰할 수 있는 전문가를 선택하세요.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏅</div>
+                <div class="feature-name">인증 전문가 뱃지</div>
+                <p class="feature-desc">관리자 심사를 통과한 전문가에게 인증 뱃지가 부여됩니다. 높은 퀄리티의 전문가를 한눈에 확인하세요.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 이용 방법 -->
+<section class="how" id="how">
+    <div class="section-inner">
+        <p class="section-eyebrow">How It Works</p>
+        <h2 class="section-title">이렇게 사용하세요</h2>
+
+        <div class="how-grid">
+            <!-- 의뢰인 스텝 -->
+            <div>
+                <p style="font-size:14px;font-weight:700;color:var(--blue);margin-bottom:24px;">💼 의뢰인이라면</p>
+                <div class="how-steps">
+                    <div class="how-step">
+                        <div class="step-num">1</div>
+                        <div>
+                            <div class="step-title">프로젝트 등록</div>
+                            <p class="step-desc">원하는 작업 내용, 예산, 기간을 입력하고 프로젝트를 등록합니다. 카테고리별로 적합한 전문가에게 노출됩니다.</p>
+                        </div>
+                    </div>
+                    <div class="how-step">
+                        <div class="step-num">2</div>
+                        <div>
+                            <div class="step-title">제안서 검토 & 낙찰</div>
+                            <p class="step-desc">전문가들이 보낸 제안서를 비교하고, 가장 마음에 드는 전문가를 낙찰합니다.</p>
+                        </div>
+                    </div>
+                    <div class="how-step">
+                        <div class="step-num">3</div>
+                        <div>
+                            <div class="step-title">에스크로 결제 & 완료 승인</div>
+                            <p class="step-desc">잔액으로 에스크로를 생성하고, 작업 완료 후 최종 승인하면 전문가에게 자동 정산됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 전문가 스텝 -->
+            <div>
+                <p style="font-size:14px;font-weight:700;color:#7c3aed;margin-bottom:24px;">🧑‍💻 전문가라면</p>
+                <div class="how-steps">
+                    <div class="how-step">
+                        <div class="step-num" style="background:#7c3aed;">1</div>
+                        <div>
+                            <div class="step-title">프로필 등록 & 인증 신청</div>
+                            <p class="step-desc">기술 스택, 경력, 포트폴리오를 입력하고 인증 전문가 심사를 신청합니다.</p>
+                        </div>
+                    </div>
+                    <div class="how-step">
+                        <div class="step-num" style="background:#7c3aed;">2</div>
+                        <div>
+                            <div class="step-title">프로젝트 탐색 & 제안서 제출</div>
+                            <p class="step-desc">원하는 프로젝트에 제안 금액과 예상 기간을 담아 제안서를 제출합니다.</p>
+                        </div>
+                    </div>
+                    <div class="how-step">
+                        <div class="step-num" style="background:#7c3aed;">3</div>
+                        <div>
+                            <div class="step-title">작업 완료 & 수익 정산</div>
+                            <p class="step-desc">낙찰 후 작업을 완료하고 의뢰인의 승인을 받으면 수익이 잔액으로 정산됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 목업 카드 -->
+            <div class="how-visual" style="grid-column: 1 / -1; max-width: 540px; margin: 0 auto;">
+                <p style="font-size:12px;font-weight:700;color:var(--gray-lt);letter-spacing:.5px;margin-bottom:4px;">LIVE PROJECT</p>
+                <div class="mock-card">
+                    <div class="mock-title">React + Spring Boot 쇼핑몰 풀스택 개발</div>
+                    <div class="mock-tags">
+                        <span class="mock-tag">WEB</span>
+                        <span class="mock-tag">풀스택</span>
+                        <span class="mock-tag green">모집중</span>
+                    </div>
+                    <div class="mock-price">예산 300만원 · 30일</div>
+                </div>
+                <div class="mock-card">
+                    <div class="mock-title">iOS 헬스케어 앱 UI/UX + 개발</div>
+                    <div class="mock-tags">
+                        <span class="mock-tag">APP</span>
+                        <span class="mock-tag">iOS</span>
+                        <span class="mock-tag purple">낙찰완료</span>
+                    </div>
+                    <div class="mock-price">예산 500만원 · 60일</div>
+                </div>
+                <div class="mock-card">
+                    <div class="mock-title">브랜드 유튜브 채널 영상 편집 월정기</div>
+                    <div class="mock-tags">
+                        <span class="mock-tag">영상</span>
+                        <span class="mock-tag green">모집중</span>
+                    </div>
+                    <div class="mock-price">예산 80만원 · 매월</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 분야 -->
+<section class="categories" id="categories">
+    <div class="section-inner">
+        <p class="section-eyebrow" style="color:#60a5fa;">Categories</p>
+        <h2 class="section-title">어떤 분야든 찾을 수 있어요</h2>
+        <p class="section-desc">웹 개발부터 영상 편집까지, 다양한 분야의 전문가가 기다리고 있습니다.</p>
+
+        <div class="category-grid">
+            <div class="category-card">
+                <span class="category-emoji">🌐</span>
+                <div class="category-name">웹 개발</div>
+                <div class="category-sub">React · Vue · Spring · Node</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">📱</span>
+                <div class="category-name">앱 개발</div>
+                <div class="category-sub">iOS · Android · Flutter</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">🎨</span>
+                <div class="category-name">UI/UX 디자인</div>
+                <div class="category-sub">Figma · XD · 프로토타입</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">📊</span>
+                <div class="category-name">데이터 · AI</div>
+                <div class="category-sub">Python · ML · 분석 대시보드</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">🎬</span>
+                <div class="category-name">영상 편집</div>
+                <div class="category-sub">Premiere · After Effects</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">🔧</span>
+                <div class="category-name">DevOps · 인프라</div>
+                <div class="category-sub">AWS · Docker · CI/CD</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">🛡️</span>
+                <div class="category-name">보안 · QA</div>
+                <div class="category-sub">테스트 · 취약점 분석</div>
+            </div>
+            <div class="category-card">
+                <span class="category-emoji">✏️</span>
+                <div class="category-name">기타</div>
+                <div class="category-sub">워드프레스 · SEO · 크롤링</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 안전 결제 -->
+<section class="trust" id="trust">
+    <div class="section-inner">
+        <p class="section-eyebrow">Trust & Safety</p>
+        <h2 class="section-title">안심하고 거래하세요</h2>
+        <p class="section-desc">코드요는 의뢰인과 전문가 모두를 보호하는 안전한 거래 환경을 제공합니다.</p>
+
+        <div class="trust-grid">
+            <div class="trust-card">
+                <span class="trust-icon">🏦</span>
+                <div class="trust-name">에스크로 결제 시스템</div>
+                <p class="trust-desc">의뢰인이 예치한 금액은 작업 완료 승인 전까지 안전하게 보관됩니다. 일방적인 미지급은 불가능합니다.</p>
+            </div>
+            <div class="trust-card">
+                <span class="trust-icon">🔁</span>
+                <div class="trust-name">환불 보장</div>
+                <p class="trust-desc">작업 결과물이 마음에 들지 않으면 의뢰인이 직접 환불을 요청할 수 있습니다. 분쟁 발생 시 관리자가 개입합니다.</p>
+            </div>
+            <div class="trust-card">
+                <span class="trust-icon">✅</span>
+                <div class="trust-name">인증 전문가 심사</div>
+                <p class="trust-desc">전문가는 관리자의 심사를 통과해야 인증 뱃지를 받습니다. 검증된 전문가만이 인증 마크를 달 수 있습니다.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA 배너 -->
+<section class="cta-banner">
+    <div class="section-inner" style="text-align:center;">
+        <h2 class="cta-title">지금 바로 시작해보세요</h2>
+        <p class="cta-desc">무료로 가입하고 프로젝트를 등록하거나, 전문가로 활동을 시작하세요.</p>
+        <div class="cta-btns">
+            <a href="/join-role" class="btn btn-white btn-hero">의뢰인으로 시작</a>
+            <a href="/join?role=EXPERT" class="btn btn-ghost btn-hero">전문가로 등록</a>
+        </div>
+    </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="footer">
+    <div class="footer-top">
+        <div>
+            <div class="footer-logo">코드<span>요</span></div>
+            <div class="footer-tagline">당신의 아이디어를 코드로 만드는 플랫폼</div>
+        </div>
+        <div class="footer-links">
+            <a href="/intro">서비스 소개</a>
+            <a href="/projects">프로젝트</a>
+            <a href="/experts">전문가</a>
+            <a href="/boards">게시판</a>
+            <a href="/login">로그인</a>
+            <a href="/join-role">회원가입</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span class="footer-copy">© 2026 코드요. All rights reserved.</span>
+        <span class="footer-copy">고객문의: support@codeyo.kr</span>
+    </div>
+</footer>
+
+</body>
+</html>
