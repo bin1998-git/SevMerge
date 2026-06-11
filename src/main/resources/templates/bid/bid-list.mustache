@@ -119,16 +119,18 @@
 
 <script>
 function selectBid(bidId) {
-    if (!confirm("정말 이 전문가를 낙찰하시겠습니까? 낙찰 완료 후 프로젝트 모집이 자동으로 마감됩니다.")) return;
+    if (!confirm("정말 이 전문가를 낙찰하시겠습니까? 낙찰 완료 후 보유 잔액에서 계약금이 자동 차감됩니다.")) return;
     fetch(`/bids/${bidId}/select`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
     }).then(response => {
         if (response.ok) {
-            alert("🎉 낙찰 처리가 완료되었습니다!");
+            alert("🎉 낙찰 처리가 완료되었습니다!\n계약금이 에스크로로 이체되었습니다.");
             location.href = "/projects";
         } else {
-            alert("낙찰 처리에 실패했습니다.");
+            return response.json().then(data => {
+                alert("낙찰 처리 실패\n" + (data.message || "잠시 후 다시 시도해주세요."));
+            });
         }
     }).catch(error => {
         console.error("Error:", error);

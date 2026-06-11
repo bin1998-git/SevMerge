@@ -294,16 +294,18 @@
     }
 
     function selectBid(bidId, projectId) {
-        if (!confirm('이 전문가를 낙찰하시겠습니까?')) return;
+        if (!confirm('이 전문가를 낙찰하시겠습니까?\n보유 잔액에서 계약금이 자동 차감됩니다.')) return;
 
         fetch('/bids/' + bidId + '/select', {
             method: 'POST'
         }).then(res => {
             if (res.ok) {
-                alert('낙찰이 완료되었습니다!');
+                alert('🎉 낙찰이 완료되었습니다!\n계약금이 에스크로로 이체되었습니다.');
                 window.location.href = '/projects/' + projectId;
             } else {
-                alert('낙찰 처리에 실패했습니다. 다시 시도해 주세요.');
+                return res.json().then(data => {
+                    alert('낙찰 처리 실패\n' + (data.message || '잠시 후 다시 시도해주세요.'));
+                });
             }
         }).catch(err => {
             console.error('에러 발생:', err);
