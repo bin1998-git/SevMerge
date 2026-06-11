@@ -10,7 +10,14 @@
     .balance-bar-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
     .balance-bar-left  { font-size: 14px; color: #1d4ed8; font-weight: 600; }
     .balance-bar-left strong { font-size: 20px; font-weight: 900; margin-left: 8px; }
-    .balance-bar-right a { font-size: 13px; font-weight: 700; color: #2563eb; text-decoration: none; padding: 7px 16px; border: 1.5px solid #2563eb; border-radius: 8px; }
+    .balance-bar-right { display: flex; gap: 8px; align-items: center; }
+    .balance-bar-right a { font-size: 13px; font-weight: 700; text-decoration: none; padding: 7px 16px; border-radius: 8px; }
+    .btn-charge-bar { color: #2563eb; border: 1.5px solid #2563eb; background: #fff; }
+    .btn-charge-bar:hover { background: #eff6ff; }
+    .btn-withdraw-bar { color: #fff; background: #2563eb; border: 1.5px solid #2563eb; }
+    .btn-withdraw-bar:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    .btn-history-bar { color: #6b7280; border: 1.5px solid #d1d5db; background: #fff; }
+    .btn-history-bar:hover { border-color: #9ca3af; color: #374151; }
 
     .list-section  { padding: 36px 28px 80px; }
     .list-inner    { max-width: 1140px; margin: 0 auto; }
@@ -61,7 +68,12 @@
             <strong>{{balance}}원</strong>
         </div>
         <div class="balance-bar-right">
-            {{^isExpert}}<a href="/charge/form">충전하기</a>{{/isExpert}}
+            {{#isExpert}}
+            <a href="/charge/form"        class="btn-charge-bar">충전</a>
+            <a href="/withdrawal/form"    class="btn-withdraw-bar">출금</a>
+            <a href="/withdrawal/history" class="btn-history-bar">출금내역</a>
+            {{/isExpert}}
+            {{^isExpert}}<a href="/charge/form" class="btn-charge-bar">충전하기</a>{{/isExpert}}
         </div>
     </div>
 </div>
