@@ -66,6 +66,10 @@ public class Member {
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer balance = 0;
 
+    // 이미지
+    @Column(length = 500)
+    private String profileImage;
+
     //연관관계
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
@@ -171,6 +175,11 @@ public class Member {
             throw new IllegalStateException("잔액이 부족합니다.");
         }
         this.balance -= amount;
+    }
+
+    // 이미지 편의 메서드
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
 }

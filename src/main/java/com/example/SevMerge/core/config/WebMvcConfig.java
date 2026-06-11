@@ -7,13 +7,17 @@ import com.example.SevMerge.core.interceptor.BidInterceptor;
 import com.example.SevMerge.core.interceptor.LoginInterceptor;
 import com.example.SevMerge.core.interceptor.ProjectInterceptor;
 import com.example.SevMerge.core.interceptor.SessionInterceptor;
+import com.example.SevMerge.core.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.file.Paths;
 
 @Configuration
 @RequiredArgsConstructor
@@ -82,6 +86,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/bids/{id}/select"
                 );
 
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String externalPath = Paths.get(FileUtil.IMAGES_DIR).toString();
+        registry.addResourceHandler("/images/**")
+                // 추후 C:upload/
+                // C:\\upload
+                .addResourceLocations("file:"+externalPath);
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
