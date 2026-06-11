@@ -26,6 +26,13 @@ public class CommentRequest {
             }
         }
 
+        // 댓글 수정 전용 DTO
+        @Data
+        public static class UpdateDTO {
+            private String comment;
+            private Long boardId;
+        }
+
         // DTO를 엔티티로 변환
         public Comment toEntity(Member member, Board board) {
             return Comment.builder()

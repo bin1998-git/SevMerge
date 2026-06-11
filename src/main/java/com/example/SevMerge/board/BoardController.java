@@ -41,6 +41,11 @@ public class BoardController {
         return "main";
     }
 
+    @GetMapping("/intro")
+    public String introPage() {
+        return "intro";
+    }
+
     @GetMapping("/boards")
     public String showBoard(@RequestParam(defaultValue = "FREE") String boardType,
                             @RequestParam(defaultValue = "") String keyword,
@@ -77,7 +82,8 @@ public class BoardController {
         boardService.increaseViewCount(boardId);
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         Long boardOwner = board.getMemberId();
-        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId);
+        Long sessionUserId = (sessionMember != null) ? sessionMember.getId() : null;
+        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId,sessionUserId);
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
         model.addAttribute("isOwner", sessionMember != null && boardOwner.equals(sessionMember.getId()));

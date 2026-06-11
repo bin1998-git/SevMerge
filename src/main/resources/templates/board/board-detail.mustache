@@ -377,19 +377,54 @@
                                 </div>
                             </div>
                             {{#isOwner}}
-                                <div class="comment-actions">
-                                    <button class="comment-btn">수정</button>
+                                <div class="comment-actions" id="comment-actions-{{id}}">
+                                    <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
                                     <form action="/comments/{{id}}/delete" method="POST" style="display:inline;">
-                                        <input type="hidden" name="boardId" value="{{board.id}}">
+                                        <input type="hidden" name="boardId" value="{{boardId}}">
                                         <button type="submit" class="comment-btn delete">삭제</button>
                                     </form>
                                 </div>
                             {{/isOwner}}
                         </div>
-                        <div class="comment-content">{{comment}}</div>
+
+                        <!-- 💡 3. 댓글 내용 수정 -->
+                        <div class="comment-content">
+                            <div id="comment-text-{{id}}" style="display: block;">
+                                {{comment}}
+                            </div>
+
+                            <div id="comment-edit-form-{{id}}" style="display: none; width: 100%; margin-top: 10px;">
+                                <form action="/comments/{{id}}/update" method="POST" style="display: flex; align-items: center; width: 100%; gap: 10px;">
+                                    <input type="hidden" name="boardId" value="{{boardId}}">
+
+                                    <input type="text" name="comment" value="{{comment}}" required
+                                           style="flex: 1; padding: 6px 10px; border: 1px solid #007bff; border-radius: 4px; font-size: 14px;">
+
+                                    <button type="submit" class="comment-btn" style="background-color: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px;">수정완료</button>
+                                    <button type="button" class="comment-btn" onclick="toggleEdit('{{id}}')" style="background-color: #6c757d; color: white; border: none; padding: 6px 10px; border-radius: 4px;">취소</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 {{/comments}}
 
+                <script>
+                    function toggleEdit(commentId) {
+                        const textView = document.getElementById('comment-text-' + commentId);
+                        const editForm = document.getElementById('comment-edit-form-' + commentId);
+                        const actions = document.getElementById('comment-actions-' + commentId);
+
+                        if (editForm.style.display === 'none') {
+                            editForm.style.display = 'block';
+                            textView.style.display = 'none';
+                            if (actions) actions.style.display = 'none';
+                        } else {
+                            editForm.style.display = 'none';
+                            textView.style.display = 'block';
+                            if (actions) actions.style.display = 'block';
+                        }
+                    }
+                </script>
                 {{^comments}}
                     <div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</div>
                 {{/comments}}
@@ -399,5 +434,4 @@
 
     </div>
 </section>
-
 {{> layout/footer}}

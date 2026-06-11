@@ -2,16 +2,12 @@ package com.example.SevMerge.comment;
 
 import com.example.SevMerge.board.Board;
 import com.example.SevMerge.board.BoardRepository;
-import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.List;
 
@@ -25,12 +21,12 @@ public class CommentService {
 
 
     // 댓글 목록 조회
-    public List<CommentResponse.ListDTO> findComments(Long boardId) {
+    public List<CommentResponse.ListDTO> findComments(Long boardId, Long sessionUserId) {
 
         List<Comment> commentList = commentRepository.findByBoardIdWithMember(boardId);
 
         return commentList.stream()
-                .map(CommentResponse.ListDTO::new)
+                .map(comment -> new CommentResponse.ListDTO(comment,sessionUserId))
                 .toList();
     }
 
@@ -47,6 +43,19 @@ public class CommentService {
         Comment comment = saveDTO.toEntity(memberEntity, boardEntity);
         commentRepository.save(comment);
         return comment;
+    }
+
+    // 댓글 수정
+    @Transactional
+    public void updateComment(Long commentId, String newContent, Long sessionUserId) {
+        Comment commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("해당 댓글을 찾을 수 없습니다."));
+
+        if (!commentEntity.getMember().getId().equals(sessionUserId)) {
+            throw new IllegalArgumentException("댓글 수정 권한이 없습니다.");
+        }
+
+        commentEntity.updateContent(newContent);
     }
 
     // 댓글 삭제
