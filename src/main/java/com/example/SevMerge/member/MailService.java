@@ -5,11 +5,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService {
@@ -19,7 +20,7 @@ public class MailService {
 
     public void sendEmail(String email) {
         String code = MailUtil.generateRandomCode();
-
+        log.info("이메일 인증번호 생성 - email={}, code={}", email, code);
         MimeMessage emailMessage = javaMailSender.createMimeMessage();
 
         try {

@@ -16,6 +16,7 @@ public class MemberRequest {
         private String intro;
         private String career;
         private String githubUrl;
+        private String speciality;
     }
 
     @Data
@@ -25,6 +26,7 @@ public class MemberRequest {
         private String intro;
         private String career;
         private String githubUrl;
+        private String speciality;
     }
 
     @Data

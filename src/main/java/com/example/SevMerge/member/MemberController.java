@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -58,9 +59,9 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(MemberRequest.Join request) {
-        memberService.join(request);
-
+    public String join(MemberRequest.Join request,
+                       @RequestParam(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
+        memberService.join(request, profileImageFile);
 
         if (request.getRole() != null && "EXPERT".equalsIgnoreCase(request.getRole().toString())) {
             return "redirect:/social-pending";
@@ -239,6 +240,7 @@ public class MemberController {
         session.setAttribute("googleId",       googleId);
         session.setAttribute("googleNickname", nickname);
         session.setAttribute("googleEmail",    email);
+        session.setAttribute("googleImage",    profile.getPicture());
         return "redirect:/social-role";
     }
 
@@ -250,6 +252,7 @@ public class MemberController {
         MemberResponse.KakaoProfile profile = memberService.getKakaoProfile(code);
         Long kakaoId = profile.getId();
         String nickname = profile.getKakaoAccount().getProfile().getNickname() + "_" + kakaoId;
+        String image = profile.getKakaoAccount().getProfile().getProfileImageUrl();
 
         Member existing = memberService.findKakaoMember(kakaoId);
 
@@ -273,6 +276,7 @@ public class MemberController {
         // 신규 회원 : 카카오 정보세션에서 잠깐 보관후 역할 선택 화면
         session.setAttribute("kakaoId", kakaoId);
         session.setAttribute("kakaoNickname", nickname);
+        session.setAttribute("kakaoImage", image);
         return "redirect:/social-role";
     }
 
@@ -302,21 +306,25 @@ public class MemberController {
         if (kakaoId != null) {
             // 카카오 가입 처리
             String nickname = (String) session.getAttribute("kakaoNickname");
-            member = memberService.registerKakaoMember(kakaoId, nickname, role);
+            String image = (String) session.getAttribute("kakaoImage");
+            member = memberService.registerKakaoMember(kakaoId, nickname, image, role);
 
             session.removeAttribute("kakaoId");
             session.removeAttribute("kakaoNickname");
+            session.removeAttribute("kakaoImage");
             log.info("카카오 소셜 가입 완료 - memberId={}", member.getId());
         } else if (googleId != null) {
             // 구글 가입 처리 로직 (CustomSuccessHandler에서 세팅한 값을 꺼냄)
             String nickname = (String) session.getAttribute("googleNickname");
             String email = (String) session.getAttribute("googleEmail");
+            String image = (String) session.getAttribute("googleImage");
 
-            member = memberService.registerGoogleMember(googleId, nickname, email, role);
+            member = memberService.registerGoogleMember(googleId, nickname, email,image, role);
 
             session.removeAttribute("googleId");
             session.removeAttribute("googleNickname");
             session.removeAttribute("googleEmail");
+            session.removeAttribute("googleImage");
             log.info("구글 소셜 가입 완료 - memberId={}", member.getId());
         }
         if (member != null) {
@@ -367,20 +375,24 @@ public class MemberController {
 
         if (kakaoId != null) {
             String nickname = (String) session.getAttribute("kakaoNickname");
-            memberService.registerKakaoExpert(kakaoId, nickname, request);
+            String image = (String) session.getAttribute("kakaoImage");
+            memberService.registerKakaoExpert(kakaoId, nickname,image, request);
 
             session.removeAttribute("kakaoId");
             session.removeAttribute("kakaoNickname");
+            session.removeAttribute("kakaoImage");
             log.info("카카오 전문가 가입(PENDING) 완료");
         } else {
             String nickname = (String) session.getAttribute("googleNickname");
             String email = (String) session.getAttribute("googleEmail");
+            String image = (String) session.getAttribute("googleImage");
             request.setEmail(email);  // disabled로 안 넘어온 이메일을 세션에서 보충
-            memberService.registerGoogleExpert(googleId, nickname, email, request);
+            memberService.registerGoogleExpert(googleId, nickname, email, image, request);
 
             session.removeAttribute("googleId");
             session.removeAttribute("googleNickname");
             session.removeAttribute("googleEmail");
+            session.removeAttribute("googleImage");
             log.info("구글 전문가 가입(PENDING) 완료");
         }
 

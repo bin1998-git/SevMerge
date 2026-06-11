@@ -21,6 +21,14 @@
     .submit-btn { width: 100%; padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .submit-btn:hover { background: #1d4ed8; }
     .notice-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 16px; font-size: 13px; color: #b45309; line-height: 1.6; margin-bottom: 24px; }
+    .skill-input-wrap { display: flex; gap: 8px; }
+    .skill-input-wrap .form-input { flex: 1; }
+    .skill-add-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .skill-add-btn:hover { background: #2563eb; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .skill-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    .skill-tag button { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .skill-tag button:hover { color: #ef4444; }
     /* 약관 (일반 가입과 동일 톤) */
     .terms-box { display: flex; flex-direction: column; gap: 10px; background: #f8f9fc; border-radius: 10px; padding: 16px; margin-bottom: 24px; }
     .terms-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; }
@@ -85,6 +93,18 @@
                        placeholder="https://github.com/username" />
             </div>
 
+            <div class="form-group">
+                <label class="form-label">기술 스택 <span class="required">*</span></label>
+                <div class="skill-input-wrap">
+                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter" />
+                    <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
+                </div>
+                <div id="skillTags" class="skill-tags"></div>
+                <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요. 의뢰인이 이 키워드로 검색해요.</span>
+
+                <input type="hidden" name="speciality" id="specialityHidden" />
+            </div>
+
             <hr class="section-divider" />
             <div class="section-label">약관 동의</div>
             <div class="terms-box">
@@ -108,14 +128,68 @@
 </section>
 
 <script>
-    // 약관 필수 동의 검증 (일반 가입과 동일)
-    document.getElementById("expertForm").addEventListener("submit", function (e) {
-        const allChecked = [...document.querySelectorAll(".term-check")].every(c => c.checked);
-        if (!allChecked) {
-            e.preventDefault();
-            alert("전문가 가입을 위해 필수 약관에 모두 동의해 주세요.");
+    // ===== 기술 스택 태그 =====
+    const skillInput = document.getElementById("skillInput");
+    const skillAddBtn = document.getElementById("skillAddBtn");
+    const skillTags = document.getElementById("skillTags");
+    const specialityHidden = document.getElementById("specialityHidden");
+    let skills = [];
+
+    function renderSkills() {
+        skillTags.innerHTML = "";
+        skills.forEach((skill, idx) => {
+            const tag = document.createElement("span");
+            tag.className = "skill-tag";
+            tag.innerHTML = skill + ' <button type="button" data-idx="' + idx + '">×</button>';
+            skillTags.appendChild(tag);
+        });
+        specialityHidden.value = skills.join(",");  // 콤마로 합쳐 hidden에 저장
+    }
+
+    function addSkill() {
+        const val = skillInput.value.trim();
+        if (!val) return;
+        if (skills.includes(val)) {   // 중복 방지
+            skillInput.value = "";
+            return;
+        }
+        skills.push(val);
+        skillInput.value = "";
+        renderSkills();
+    }
+
+    skillAddBtn.addEventListener("click", addSkill);
+    skillInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();   // 엔터로 폼 제출되는 것 방지
+            addSkill();
         }
     });
+    // 칩 X 버튼 (이벤트 위임)
+    skillTags.addEventListener("click", function (e) {
+        if (e.target.tagName === "BUTTON") {
+            const idx = parseInt(e.target.dataset.idx);
+            skills.splice(idx, 1);
+            renderSkills();
+        }
+    });
+
+    // 약관 필수 동의 + 기술 스택 검증
+document.getElementById("expertForm").addEventListener("submit", function (e) {
+    // 기술 스택 최소 1개
+    if (skills.length === 0) {
+        e.preventDefault();
+        alert("기술 스택을 최소 1개 이상 입력해 주세요.");
+        return;
+    }
+    // 약관 동의
+    const allChecked = [...document.querySelectorAll(".term-check")].every(c => c.checked);
+    if (!allChecked) {
+        e.preventDefault();
+        alert("전문가 가입을 위해 필수 약관에 모두 동의해 주세요.");
+    }
+});
+
 </script>
 
 {{> layout/footer}}
