@@ -195,6 +195,37 @@ public class ProjectController {
         return "redirect:/my-pages?tab=projects";
     }
 
+
+    // 프로젝트 임시저장(비동기)
+    @PostMapping("/projects/draft")
+    @ResponseBody
+    public ResponseEntity<?> saveDraft(@RequestBody ProjectRequestDTO.UpdateDTO req, HttpSession session) {
+        log.info("프로젝트 임시저장 요청");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다");
+        }
+
+        Long draftId = projectService.saveDraft(sessionUser.getId(), req);
+        return ResponseEntity.ok(draftId);
+    }
+
+    // 임시저장 데이터 조회 (프로젝트 등록 시 호출)
+    @GetMapping("/projects/draft")
+    @ResponseBody
+    public ResponseEntity<?> getDraft(HttpSession session) {
+        log.info("project 임시저장 조회");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다");
+        }
+
+        ProjectResponeDTO.DetailDTO dto = projectService.getMyDraft(sessionUser.getId());
+        return ResponseEntity.ok(dto);
+    }
+
+
+
     // 관리자용 프로젝트 관리 목록전체조회
     @GetMapping("/admin/projects")
     public String adminProjects(@RequestParam(value = "keyword", required = false) String keyword, HttpSession session, Model model) {

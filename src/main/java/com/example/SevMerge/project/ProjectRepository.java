@@ -11,13 +11,19 @@ import java.util.Optional;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 
-    // 프로젝트 전체 조회(최신순 조회)
-    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted = false ORDER BY p.createdAt DESC")
+    // 프로젝트 전체 조회(최신순 조회, DRAFT 제외)
+    @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted = false AND p.projectStatus <> 'DRAFT' ORDER BY p.createdAt DESC")
     List<Project> findAllProjects();
 
+    @Query("SELECT p FROM Project p WHERE p.member.id = :memberId AND p.projectStatus = :status")
+    Optional<Project> findByMemberIdAndProjectStatus(@Param("memberId") Long memberId,
+                                                     @Param("status") ProjectStatus status);
     // 프로젝트 상세조회
     @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.id = :id AND p.isDeleted = false")
     Optional<Project> findByProjectId(@Param("id") Long id);
+
+
+
 
     // 진행중인 프로젝트 조회
     @Query("""
