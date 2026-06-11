@@ -46,6 +46,11 @@ public class BoardController {
         return "intro";
     }
 
+    @GetMapping("/exmain")
+    public String exmainPage() {
+        return "exmain";
+    }
+
     @GetMapping("/boards")
     public String showBoard(@RequestParam(defaultValue = "FREE") String boardType,
                             @RequestParam(defaultValue = "") String keyword,
