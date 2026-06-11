@@ -35,6 +35,11 @@ public class MemberController {
     private final ReviewRepository reviewRepository;
     private final PortfolioService portfolioService;
 
+    @GetMapping("/join-start")
+    public String joinStart(Model model) {
+        model.addAttribute("googleClientId", googleClientId);
+        return "member/join-start";
+    }
 
     // 일반 회원가입 - 역할 선택 화면
     @GetMapping("/join-role")
@@ -55,6 +60,11 @@ public class MemberController {
     @PostMapping("/join")
     public String join(MemberRequest.Join request) {
         memberService.join(request);
+
+
+        if (request.getRole() != null && "EXPERT".equalsIgnoreCase(request.getRole().toString())) {
+            return "redirect:/social-pending";
+        }
         return "redirect:/login";
     }
 

@@ -48,16 +48,20 @@
                 <input type="text" name="name" class="form-input" value="{{name}}" />
             </div>
 
-            <div class="form-group">
-                <label class="form-label">이메일 <span class="required">*</span></label>
-                {{#emailReadonly}}
-                    <input type="email" name="email" class="form-input" value="{{email}}" readonly disabled />
+
+
+            {{#emailReadonly}}
+                <div class="form-group">
+                    <label class="form-label">이메일 <span class="required">*</span></label>
+                    <input type="email" name="email" class="form-input" value="{{email}}" readonly />
                     <span class="form-hint">소셜 계정에서 가져온 이메일이에요.</span>
-                {{/emailReadonly}}
-                {{^emailReadonly}}
-                    <input type="email" name="email" class="form-input" value="{{email}}" placeholder="연락 가능한 이메일을 입력해 주세요" required />
-                {{/emailReadonly}}
-            </div>
+                </div>
+            {{/emailReadonly}}
+
+            {{^emailReadonly}}
+                <input type="hidden" name="email" value="" />
+            {{/emailReadonly}}
+
 
             <hr class="section-divider" />
             <div class="section-label">전문가 정보</div>

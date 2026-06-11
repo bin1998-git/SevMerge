@@ -1,0 +1,62 @@
+{{> layout/header}}
+
+<style>
+    .start-section { padding: 72px 28px 80px; }
+    .start-inner { max-width: 440px; margin: 0 auto; }
+    .start-header { text-align: center; margin-bottom: 36px; }
+    .start-logo { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 14px; }
+    .start-logo span { color: #2563eb; }
+    .start-title { font-size: 22px; font-weight: 900; color: #1c1e26; line-height: 1.4; letter-spacing: -0.5px; }
+    .start-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 32px; display: flex; flex-direction: column; gap: 12px; }
+    .start-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; font-family: inherit; cursor: pointer; border: none; box-sizing: border-box; }
+    .btn-kakao { background: #FEE500; color: #191600; }
+    .btn-kakao:hover { background: #f5dc00; }
+    .btn-google { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-google:hover { border-color: #c4c9d9; }
+    .btn-email { background: #2563eb; color: #fff; }
+    .btn-email:hover { background: #1d4ed8; }
+    .start-divider { display: flex; align-items: center; gap: 12px; margin: 6px 0; color: #c4c9d9; font-size: 13px; }
+    .start-divider::before, .start-divider::after { content: ""; flex: 1; height: 1px; background: #f3f4f8; }
+    .start-footer { text-align: center; margin-top: 22px; font-size: 14px; color: #9ca3af; }
+    .start-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .start-footer a:hover { text-decoration: underline; }
+</style>
+
+<section class="start-section">
+    <div class="start-inner">
+
+        <div class="start-header">
+            <div class="start-logo">Sev<span>Merge</span></div>
+            <h1 class="start-title">SevMerge와 함께<br>시작해 보세요!</h1>
+        </div>
+
+        <div class="start-card">
+            <!-- 카카오 -->
+            <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code"
+               class="start-btn btn-kakao">
+                <span style="font-size:18px;">💬</span> 카카오로 시작하기
+            </a>
+
+            <!-- 구글 -->
+            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
+            class="start-btn btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" />
+            Google로 시작하기
+            </a>
+
+            <div class="start-divider">또는</div>
+
+            <!-- 이메일 (일반 가입 역할 선택으로) -->
+            <a href="/join-role" class="start-btn btn-email">
+                ✉️ 이메일로 시작하기
+            </a>
+        </div>
+
+        <div class="start-footer">
+            이미 계정이 있으신가요? <a href="/login">로그인</a>
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}
