@@ -32,7 +32,7 @@ public class PortfolioService {
     private final ExpertProfileRepository expertProfileRepository;
 
 
-    // 포트폴리오 리스트
+    // 포트폴리오 리스트 페이징
     public List<PortfolioResponse.ListDTO> findByMemberId(Long expertId, int page) {
 
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
@@ -45,6 +45,13 @@ public class PortfolioService {
         return portfolioPage.stream().map(portfolio -> new PortfolioResponse.ListDTO(portfolio,count)).toList();
     }
 
+
+    // 포트폴리오 리스트
+    public List<Portfolio> findPortfolioList(Long memberId){
+
+       return portfolioRepository.findByMemberId(memberId);
+
+    }
 
 
     // 포트폴리오 아이디로 포트플리오 찾고 포트폴리오 DetailDTO 반환

@@ -133,7 +133,7 @@ public class MemberController {
             model.addAttribute("rawName", loginMember.getName());
             model.addAttribute("rawEmail", loginMember.getEmail());
         } else if(tab.equals("portfolios")) {
-            model.addAttribute("portfolios",portfolioService.findByMemberId(loginMember.getId()));
+            model.addAttribute("portfolios",portfolioService.findPortfolioList(loginMember.getId()));
         }
 
         return "member/mypage";

@@ -15,6 +15,10 @@ public interface PortfolioRepository extends JpaRepository<Portfolio,Long> {
 """)
     Page<Portfolio> findByExpertIdIsActive(@Param("expertId") Long expertId, Pageable pageable);
 
+    @Query("""
+        SELECT po FROM Portfolio po JOIN FETCH po.expertProfile WHERE po.expertProfile.member.id = :memberId
+""")
+    List<Portfolio> findByMemberId(@Param("memberId") Long memberId);
 
 @Query("""
     SELECT COUNT(po) FROM Portfolio po JOIN po.expertProfile WHERE po.expertProfile.member.id = :memberId AND po.isActive=true
