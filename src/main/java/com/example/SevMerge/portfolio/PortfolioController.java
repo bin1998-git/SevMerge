@@ -101,10 +101,6 @@ public class PortfolioController {
             return "redirect:/login";
         }
         PortfolioResponse.UpdateDTO portfolio = portfolioService.updatePage(portfolioId);
-        if(member.getId() != portfolio.getExpertId()){
-            throw new BadRequestException("수정권한이 없습니다.");
-        }
-
         model.addAttribute("portfolio", portfolio);
         return "portfolio/portfolio-update";
     }
