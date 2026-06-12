@@ -673,6 +673,11 @@
         .nav-balance-amount { font-size: 14px; font-weight: 900; color: #1d4ed8; }
         .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; white-space: nowrap; }
         .nav-charge-btn:hover { background: #1d4ed8; }
+        .nav-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; color: #6b7280; transition: background .15s,
+        color .15s; }
+        .nav-bell:hover { background: #eff6ff; color: #2563eb; }
+        .nav-bell svg { width: 21px; height: 21px; }
+        .nav-bell-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; background: #22c55e; border: 2px solid #fff; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -700,7 +705,16 @@
                 <span class="nav-balance-amount">{{headerBalance}}원</span>
                 <a href="/withdrawal/form" class="nav-charge-btn">출금</a>
             </div>
+            <a href="/notifications" class="nav-bell" aria-label="알림">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
+            </a>
             <a href="/logout" class="btn btn-outline">로그아웃</a>
+
         </div>
         {{/isExpert}}
         {{^isExpert}}
@@ -756,6 +770,15 @@
                         <a href="/charge/form" class="nav-charge-btn">충전</a>
                     </div>
                 {{/isAdmin}}
+                <span class="nav-username">{{sessionUser.name}}님</span>
+                <a href="/notifications" class="nav-bell" aria-label="알림">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
+                </a>
                 <a href="/logout" class="btn btn-outline">로그아웃</a>
 
             {{/isLoggedIn}}
