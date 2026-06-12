@@ -132,9 +132,7 @@ public class PortfolioController {
         if (sessionMember.getId() != expertId) {
             throw new BadRequestException("삭제 권한이 없습니다.");
         }
-
         portfolioService.delete(portfolioId);
-
         return "redirect:/portfolios?expertId=" + expertId;
     }
 

@@ -6,6 +6,7 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.portfolio.utile.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -70,10 +71,7 @@ public class PortfolioService {
     @Transactional
     public void save(PortfolioRequest.SaveDTO saveDTO)  {
 
-
-
         saveDTO.validate();
-
         System.out.println("saveDTO: "+saveDTO);
         Portfolio newPortfolio = Portfolio
                 .builder()
@@ -103,6 +101,9 @@ public class PortfolioService {
             throw new ForbiddenException("수정 권한이 없습니다.");
         }
 
+        if(!updateDTO.getImageUrl().isEmpty()){
+
+        }
 
         updateDTO.validate();
 
