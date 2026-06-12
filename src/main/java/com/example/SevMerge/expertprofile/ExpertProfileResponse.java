@@ -25,6 +25,12 @@ public class ExpertProfileResponse {
     private int totalReviews;
     private boolean isCertified;
 
+    // Mustache용 포맷 필드 — {{ratingDisplay}} 로 접근
+    public String getRatingDisplay() {
+        if (avgRating == null) return "0.0";
+        return String.format("%.1f", avgRating);
+    }
+
     public static ExpertProfileResponse from(ExpertProfile profile) {
         return ExpertProfileResponse.builder()
                 .id(profile.getId())

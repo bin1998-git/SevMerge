@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+  IcodeU logo — copy-paste HTML/CSS version.
+  Font-independent: the symbol & wordmark are built from CSS pixel grids.
+  The simplest route in real projects is to just <img src="assets/logo-primary.svg">.
+  This file shows the inline-markup version for when you can't ship an asset file.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IcodeU logo snippet</title>
+<style>
+  :root{
+    --brand-blue:#2D6BFF; --brand-ink:#0C1424; --brand-sky:#6BA0FF;
+    --brand-muted:#5A6B85; --brand-white:#FFFFFF;
+  }
+  body{margin:0;background:#EBEEF4;font-family:'Space Grotesk',system-ui,sans-serif;padding:40px;display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start}
+
+  /* ---- IcodeU pixel logo (set --cell to scale; everything derives from it) ---- */
+  .iu-logo{--cell:7px;--i:var(--brand-blue);--code:var(--brand-ink);--tag:var(--brand-muted);
+    display:inline-flex;flex-direction:column;align-items:center;gap:calc(var(--cell)*2.2)}
+  .iu-logo.dark{--i:var(--brand-sky);--code:#fff;--tag:rgba(255,255,255,.6)}
+  .iu-word{display:flex;gap:var(--cell);align-items:flex-start}
+  .iu-g{display:grid;grid-auto-rows:var(--cell)}
+  .iu-g i{display:block;width:var(--cell);height:var(--cell)}
+  .iu-tag{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    font-size:calc(var(--cell)*1.7);font-weight:500;letter-spacing:calc(var(--cell)*1.2);
+    padding-left:calc(var(--cell)*1.2);color:var(--tag)}
+  .dark-wrap{background:var(--brand-ink);border-radius:18px;padding:40px 48px}
+</style>
+</head>
+<body>
+
+<!--
+  Each letter is a CSS grid. A filled pixel = <i> with background; empty = <i> transparent.
+  Grid template columns = letter width. Rows below encode the 5x7 (and 5-wide) glyphs.
+  In practice prefer the <img src="assets/wordmark.svg"> — far less markup.
+-->
+<script>
+// tiny builder so the markup stays short & correct
+const G={
+  I:["#####","..#..","..#..","..#..","..#..","..#..","#####"],
+  U:["#...#","#...#","#...#","#...#","#...#","#...#",".###."],
+  c:[".....",".....",".###.","#....","#....","#....",".###."],
+  o:[".....",".....",".###.","#...#","#...#","#...#",".###."],
+  d:["....#","....#",".####","#...#","#...#","#...#",".####"],
+  e:[".....",".....",".###.","#...#","####.","#....",".###."],
+};
+function glyph(name,colorVar){
+  const rows=G[name],w=rows[0].length;
+  const g=document.createElement('div');
+  g.className='iu-g';g.style.gridTemplateColumns=`repeat(${w},var(--cell))`;
+  for(const row of rows)for(const ch of row){
+    const px=document.createElement('i');
+    if(ch==='#')px.style.background=`var(${colorVar})`;
+    g.appendChild(px);
+  }
+  return g;
+}
+function buildLogo(el){
+  const word=document.createElement('div');word.className='iu-word';
+  [['I','--i'],['c','--code'],['o','--code'],['d','--code'],['e','--code'],['U','--i']]
+    .forEach(([n,c])=>word.appendChild(glyph(n,c)));
+  const tag=document.createElement('div');tag.className='iu-tag';tag.textContent='DEV AGENCY';
+  el.append(word,tag);
+}
+window.__buildLogo = buildLogo;
+</script>
+
+<div style="background:#fff;border-radius:18px;padding:40px 48px">
+  <div class="iu-logo" style="--cell:8px"></div>
+</div>
+
+<div class="dark-wrap">
+  <div class="iu-logo dark" style="--cell:8px"></div>
+</div>
+
+<script>document.querySelectorAll('.iu-logo').forEach(window.__buildLogo);</script>
+</body>
+</html>

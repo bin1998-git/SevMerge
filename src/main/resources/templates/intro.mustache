@@ -36,11 +36,8 @@
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 48px;
         }
-        .nav-logo {
-            font-size: 22px; font-weight: 900; color: var(--navy);
-            text-decoration: none; letter-spacing: -0.5px;
-        }
-        .nav-logo span { color: var(--blue); }
+        .nav-logo { display: flex; align-items: center; text-decoration: none; }
+        .nav-logo img { display: block; height: 28px; width: auto; }
         .nav-links { display: flex; gap: 32px; align-items: center; }
         .nav-links a {
             font-size: 14px; font-weight: 500; color: var(--gray);
@@ -246,8 +243,7 @@
             display: flex; flex-direction: column; gap: 28px;
         }
         .footer-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
-        .footer-logo { font-size: 20px; font-weight: 900; color: #fff; }
-        .footer-logo span { color: var(--blue); }
+        .footer-logo img { display: block; height: 26px; width: auto; }
         .footer-tagline { font-size: 13px; color: #6b7280; margin-top: 6px; }
         .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
         .footer-links a { font-size: 13px; color: #6b7280; text-decoration: none; transition: color .15s; }
@@ -275,7 +271,7 @@
 
 <!-- 네브바 -->
 <nav class="nav">
-    <a href="/intro" class="nav-logo">코드<span>요</span></a>
+    <a href="/intro" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
     <div class="nav-links">
         <a href="#features">서비스 소개</a>
         <a href="#how">이용 방법</a>
@@ -557,7 +553,7 @@
 <footer class="footer">
     <div class="footer-top">
         <div>
-            <div class="footer-logo">코드<span>요</span></div>
+            <div class="footer-logo"><img src="/logo-horizontal-reversed.svg" alt="IcodeU"></div>
             <div class="footer-tagline">당신의 아이디어를 코드로 만드는 플랫폼</div>
         </div>
         <div class="footer-links">

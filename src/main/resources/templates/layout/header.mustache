@@ -87,16 +87,14 @@
         }
 
         .nav-logo {
-            font-size: 20px;
-            font-weight: 900;
-            color: #1c1e26;
-            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
             flex-shrink: 0;
-            white-space: nowrap;
         }
-
-        .nav-logo span {
-            color: #2563eb;
+        .nav-logo img {
+            display: block;
+            height: 30px;
+            width: auto;
         }
 
         .nav-links {
@@ -685,7 +683,7 @@
     <div class="nav-inner">
         {{#isExpert}}
         <!-- 전문가 전용 탭 네비 -->
-        <a href="/experts/dashboard" class="nav-logo">Sev<span>Merge</span></a>
+        <a href="/experts/dashboard" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
         <nav class="nav-links expert-links">
             <a href="/bids/my-list"     class="expert-nav-tab">제안서 관리</a>
             <a href="/bids/my-orders"   class="expert-nav-tab">주문 관리</a>
@@ -707,7 +705,7 @@
         {{/isExpert}}
         {{^isExpert}}
         <!-- 일반 네비 -->
-        <a href="/" class="nav-logo">Sev<span>Merge</span></a>
+        <a href="/" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
 
         <nav class="nav-links">
             <!-- 1. 관리자 전용 메뉴 -->
@@ -751,14 +749,15 @@
         <div class="nav-actions">
             {{#isLoggedIn}}
                 {{^isAdmin}}
-                <div class="nav-balance-wrap">
-                    <span class="nav-balance-label">잔액</span>
-                    <span class="nav-balance-amount">{{headerBalance}}원</span>
-                    <a href="/charge/form" class="nav-charge-btn">충전</a>
-                </div>
+                    <span class="nav-username">{{sessionUser.name}}님</span>
+                    <div class="nav-balance-wrap">
+                        <span class="nav-balance-label">잔액</span>
+                        <span class="nav-balance-amount">{{headerBalance}}원</span>
+                        <a href="/charge/form" class="nav-charge-btn">충전</a>
+                    </div>
+                    <a href="/logout" class="btn btn-outline">로그아웃</a>
                 {{/isAdmin}}
-                <span class="nav-username">{{sessionUser.name}}님</span>
-                <a href="/logout" class="btn btn-outline">로그아웃</a>
+
             {{/isLoggedIn}}
             {{^isLoggedIn}}
                 <a href="/login" class="btn btn-outline">로그인</a>
