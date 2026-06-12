@@ -109,29 +109,44 @@
 
 <script>
     function updateExpertStatus(memberId, action) {
-        const actionMessage = action === 'approve' ? '승인' : '거절';
-        if (!confirm(`해당 전문가 신청을 ${actionMessage}하시겠습니까?`)) {
+    const actionMessage = action === 'approve' ? '승인' : '거절';
+
+    let reason = null;
+    if (action === 'reject') {
+        reason = prompt("거절 사유를 입력해 주세요.\n(전문가에게 안내됩니다)");
+        if (reason === null) return;
+        if (reason.trim() === "") {
+            alert("거절 사유를 입력해 주세요.");
             return;
         }
-
-        fetch(`/api/admin/experts/${memberId}/approval`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: action.toUpperCase() })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert(`전문가 신청이 ${actionMessage}되었습니다.`);
-                location.reload();
-            } else {
-                alert("처리 중 문제가 발생했습니다.");
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("통신 오류가 발생했습니다.");
-        });
+    } else {
+        if (!confirm(`해당 전문가 신청을 ${actionMessage}하시겠습니까?`)) return;
     }
+
+    // body 구성: 거절일 때만 reason 포함
+    const body = { action: action.toUpperCase() };
+    if (action === 'reject') {
+        body.reason = reason;
+    }
+
+    fetch(`/api/admin/experts/${memberId}/approval`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert(`전문가 신청이 ${actionMessage}되었습니다.`);
+            location.reload();
+        } else {
+            alert("처리 중 문제가 발생했습니다.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("통신 오류가 발생했습니다.");
+    });
+}
 </script>
 {{> layout/footer}}
 
