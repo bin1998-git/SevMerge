@@ -3,9 +3,7 @@ package com.example.SevMerge.member;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.util.FileUtil;
-import com.example.SevMerge.expertprofile.ExpertProfile;
-import com.example.SevMerge.expertprofile.ExpertProfileRepository;
-import com.example.SevMerge.expertprofile.ExpertProfileResponse;
+import com.example.SevMerge.expertprofile.*;
 import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +34,7 @@ public class MemberService {
     private final ExpertProfileRepository expertProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
+    private final ExpertReviewLogRepository expertReviewLogRepository;
 
     //문자 발송
     private final SolApiService solApiService;
@@ -139,7 +138,7 @@ public class MemberService {
 
     //로그인 / 로그아웃
     @Transactional(readOnly = true)
-    public void login(MemberRequest.Login request, HttpSession session) {
+    public Member login(MemberRequest.Login request, HttpSession session) {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
@@ -152,8 +151,14 @@ public class MemberService {
         if (member.getStatus() == Status.PENDING)
             throw new BadRequestException("관리자 승인 대기 중인 계정입니다. 승인 후 로그인할 수 있습니다.");
 
+        // 거절자는 세션에 안 넣고 멤버만 반환 (컨트롤러가 안내 페이지로 보냄)
+        if (member.getStatus() == Status.REJECTED) {
+            return member;
+        }
+
         session.setAttribute("sessionUser", member);
         log.info("로그인 성공 - memberId={}", member.getId());
+        return member;
     }
 
     public void logout(HttpSession session) {
@@ -241,6 +246,13 @@ public class MemberService {
         expertProfileRepository.findByMemberId(memberId).ifPresent(profile -> {
             profile.setCertified(true);
         });
+
+        // 심사 승인 정보저장
+        expertReviewLogRepository.save(ExpertReviewLog.builder()
+                .member(member)
+                .result("APPROVED")
+                .reason(null)
+                .build());
         log.info("전문가 승인 완료 - memberId={}", memberId);
         sendStatusSms(member,
                 "[Sev Merge] " + member.getName() + " 전문가님, 전문가 신청이 승인되었습니다. 지금 바로 활동을 시작해보세요!");
@@ -248,7 +260,7 @@ public class MemberService {
 
     // 전문가 거절
     @Transactional
-    public void rejectExpert(Long memberId) {
+    public void rejectExpert(Long memberId, String reason) {
         Member member = findMemberById(memberId);
         if (member.getRole() != Role.EXPERT || member.getStatus() != Status.PENDING)
             throw new BadRequestException("전문가 승인 처리가 불가능한 상태입니다.");
@@ -257,9 +269,54 @@ public class MemberService {
         expertProfileRepository.findByMemberId(memberId).ifPresent(profile -> {
             profile.setCertified(false);
         });
+
+        //심사 거절 정보저장
+        expertReviewLogRepository.save(ExpertReviewLog.builder()
+                .member(member)
+                .result("REJECTED")
+                .reason(reason)
+                .build());
         log.info("전문가 거부 처리 - memberId={}", memberId);
         sendStatusSms(member,
                 "[Sev Merge] " + member.getName() + " 전문가님, 전문가 신청이 거부되었습니다. 자세한 내용은 고객센터를 이용해주세요.");
+    }
+
+    // 재신청용 기존 프로필 조회
+    @Transactional(readOnly = true)
+    public ExpertProfileResponse getExpertProfileForReapply(Long memberId) {
+        ExpertProfile profile = expertProfileRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new NotFoundException("전문가 프로필이 없습니다."));
+        return ExpertProfileResponse.from(profile);
+    }
+
+    // 거절된 전문가 재신청 (정보 업데이트 + REJECTED → PENDING)
+    @Transactional
+    public void reapplyExpert(Long memberId, MemberRequest.ExpertJoin request) {
+        Member member = findMemberById(memberId);
+        if (member.getRole() != Role.EXPERT || member.getStatus() != Status.REJECTED) {
+            throw new BadRequestException("재신청할 수 없는 상태입니다.");
+        }
+
+        // 전문가 정보 업데이트
+        ExpertProfile profile = expertProfileRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new NotFoundException("전문가 프로필이 없습니다."));
+        profile.setIntro(request.getIntro());
+        profile.setCareer(request.getCareer());
+        profile.setGithubUrl(request.getGithubUrl());
+        profile.setSpeciality(request.getSpeciality() != null ? request.getSpeciality() : "");
+
+        // 상태 되돌리기
+        member.reapply();
+        log.info("전문가 재신청 (정보 수정) - memberId={}", memberId);
+    }
+
+    // 최근 거절 사유 조회
+    @Transactional(readOnly = true)
+    public String getLatestRejectReason(Long memberId) {
+        return expertReviewLogRepository
+                .findLatestReject(memberId)
+                .map(ExpertReviewLog::getReason)
+                .orElse(null);
     }
 
 

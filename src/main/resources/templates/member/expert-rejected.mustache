@@ -1,0 +1,59 @@
+{{> layout/header}}
+
+<style>
+    .rejected-section { padding: 80px 28px; display: flex; justify-content: center; }
+    .rejected-card { max-width: 520px; width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 48px 40px; text-align: center; }
+    .rejected-icon { font-size: 56px; margin-bottom: 18px; }
+    .rejected-title { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .rejected-desc { font-size: 14px; color: #9ca3af; line-height: 1.7; margin-bottom: 24px; }
+    .reason-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 12px; padding: 18px 20px; text-align: left; margin-bottom: 28px; }
+    .reason-label { font-size: 12px; font-weight: 700; color: #ef4444; margin-bottom: 6px; }
+    .reason-text { font-size: 14px; color: #1c1e26; line-height: 1.6; word-break: break-all; }
+    .rejected-btns { display: flex; flex-direction: column; gap: 10px; }
+    .rejected-btn { padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; text-decoration: none; display: block; box-sizing: border-box; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-outline:hover { border-color: #2563eb; color: #2563eb; }
+    .rejected-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f3f4f8; }
+    .rejected-links a { font-size: 13px; color: #9ca3af; text-decoration: none; }
+    .rejected-links a:hover { color: #2563eb; text-decoration: underline; }
+</style>
+
+<section class="rejected-section">
+    <div class="rejected-card">
+        <div class="rejected-icon">😢</div>
+        <h1 class="rejected-title">전문가 신청이 거부되었습니다</h1>
+        <p class="rejected-desc">
+            아쉽게도 이번 전문가 신청이 승인되지 않았어요.<br>
+            아래 사유를 확인하고 보완해 다시 신청하실 수 있습니다.
+        </p>
+
+        {{#reason}}
+            <div class="reason-box">
+                <div class="reason-label">거절 사유</div>
+                <div class="reason-text">{{reason}}</div>
+            </div>
+        {{/reason}}
+        {{^reason}}
+            <div class="reason-box">
+                <div class="reason-label">거절 사유</div>
+                <div class="reason-text">별도 사유가 등록되지 않았습니다. 자세한 내용은 고객센터로 문의해 주세요.</div>
+            </div>
+        {{/reason}}
+
+        <div class="rejected-btns">
+            <a href="/expert-reapply-form" class="rejected-btn btn-primary">전문가로 다시 신청하기</a>
+            <a href="/" class="rejected-btn btn-outline">홈으로 가기</a>
+        </div>
+
+        <div class="rejected-links">
+            <a href="/login">로그인</a>
+            <a href="/join-role?role=CLIENT">의뢰인으로 전환</a>
+            <a href="/join-start">다른 방법으로 가입</a>
+            <a href="/boards">고객센터 문의</a>
+        </div>
+    </div>
+</section>
+
+{{> layout/footer}}
