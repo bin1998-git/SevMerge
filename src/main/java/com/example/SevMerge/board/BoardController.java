@@ -113,10 +113,11 @@ public class BoardController {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         boardService.increaseViewCount(boardId);
+        String sessionUserRole = (sessionMember != null && sessionMember.getRole() != null) ? sessionMember.getRole().name() : "GUEST";
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         Long boardOwner = board.getMemberId();
         Long sessionUserId = (sessionMember != null) ? sessionMember.getId() : null;
-        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId, sessionUserId);
+        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId,sessionUserId, sessionUserRole);
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
         model.addAttribute("isOwner", sessionMember != null && boardOwner.equals(sessionMember.getId()));

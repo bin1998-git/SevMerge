@@ -15,8 +15,9 @@ public class CommentResponse {
         private String memberName; // 댓글 작성자 이름
         private Boolean isOwner; // 댓글 소유자 여부 (로그인유저랑 비교)
         private String createdAt; // 댓글 작성 시간
+        private Long boardId;
 
-        public ListDTO(Comment comment, Long sessionUserId) {
+        public ListDTO(Comment comment, Long sessionUserId, String sessionUserRole) {
             this.id = comment.getId();
             this.comment = comment.getContent();
 
@@ -26,10 +27,17 @@ public class CommentResponse {
                 this.memberName = comment.getMember().getName();
             }
 
+            // 게시글 ID추출
+            if (comment.getBoard() != null) {
+                this.boardId = comment.getBoard().getId();
+            }
+
             if (comment.getCreatedAt() != null) {
                 this.createdAt = MyDateUtil.timestampFormat(comment.getCreatedAt());
             }
-            this.isOwner = sessionUserId != null && this.memberId.equals(sessionUserId);
+
+            this.isOwner = sessionUserId != null && this.memberId != null && this.memberId.equals(sessionUserId);
+
         }
     }
 }

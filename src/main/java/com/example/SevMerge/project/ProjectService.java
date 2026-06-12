@@ -7,12 +7,14 @@ import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectCustomRepository projectCustomRepository;
     private final BidRepository bidRepository;
     private final MemberRepository memberRepository;
 
@@ -71,6 +74,18 @@ public class ProjectService {
     public List<ProjectResponeDTO.ListDTO> findByCategory(String category) {
         log.info("project 카테고리별 조회 서비스 시작");
         List<Project> projectList = projectRepository.findByCategory(Category.valueOf(category));
+        return projectList.stream()
+                .map(ProjectResponeDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+
+
+    // 중복 체크
+    public List<ProjectResponeDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
+
+        List<Project> projectList = projectCustomRepository.findByFilters(keyword,category, statusFilter, bidFilter);
+
         return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
                 .collect(Collectors.toList());
