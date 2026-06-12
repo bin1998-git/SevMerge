@@ -6,6 +6,7 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.portfolio.utile.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -68,13 +69,22 @@ public class PortfolioService {
 
 
     @Transactional
-    public void save(PortfolioRequest.SaveDTO saveDTO)  {
+    public void save(PortfolioRequest.SaveDTO saveDTO,Long sessionUserId)  {
 
 
 
+        String newFileName = null;
         saveDTO.validate();
 
-        System.out.println("saveDTO: "+saveDTO);
+
+        if(saveDTO.getImageUrl() == null && saveDTO.getImageUrl().isEmpty()) {
+
+
+
+        }
+
+
+
         Portfolio newPortfolio = Portfolio
                 .builder()
                 .expertProfile(expertProfileRepository
@@ -95,6 +105,8 @@ public class PortfolioService {
     @Transactional
     public void update(Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,Long sessionUserId) {
 
+        String newImageFile = null; // 파일경로
+
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
@@ -103,12 +115,26 @@ public class PortfolioService {
             throw new ForbiddenException("수정 권한이 없습니다.");
         }
 
+        // 리퀘스트로 파일이 있을때
+        if(!updateDTO.getImageUrl().isEmpty() && updateDTO.getImageUrl() != null){
+            try {
+                if(!FileUtil.isImageFile(updateDTO.getImageUrl())){
+                    throw new BadRequestException("이미지 파일만 업로드 가능 합니다.");
+                }
+
+                 // 새이미지 로컬 폴더에 저장 (중복되지 않을 이미지 파일 이름을 리턴)
+                // 이미지 파일 경로 반환
+                newImageFile = FileUtil.saveFile(updateDTO.getImageUrl(),FileUtil.IMAGE_DIR);
+            }  catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         updateDTO.validate();
 
         portfolio.setDescription(updateDTO.getDescription());
         portfolio.setTitle(updateDTO.getTitle());
-        portfolio.setImageUrl(updateDTO.getImageUrl());
+        portfolio.setImageUrl(newImageFile); // 경로 업데이트
         portfolio.setProjectUrl(updateDTO.getProjectUrl());
 
     }

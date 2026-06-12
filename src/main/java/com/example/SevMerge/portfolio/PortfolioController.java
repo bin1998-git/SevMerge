@@ -87,7 +87,7 @@ public class PortfolioController {
         if (member.isExpert() == false) {
             throw new BadRequestException("전문가만 포트폴리오를 작성할수 있습니다.");
         }
-        portfolioService.save(saveDTO);
+        portfolioService.save(saveDTO,member.getId());
 
         return "redirect:/portfolios?expertId=" + saveDTO.getExpertId();
     }
