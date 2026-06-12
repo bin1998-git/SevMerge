@@ -14,7 +14,7 @@ public class PortfolioRequest {
         private Long expertId;
         private String title; // 제목
         private String description; // 설명
-        private String imageUrl; // 이미지 링크
+        private MultipartFile imageUrl; // 이미지 링크
         private String projectUrl; // 프로젝트 링크
 
         public void validate () {
@@ -37,7 +37,7 @@ public class PortfolioRequest {
         private Long id; // 포폴 아이디
         private String title;
         private String description;
-        private String imageUrl;
+        private MultipartFile imageUrl;
         private String projectUrl;
 
         public void validate () {

@@ -2,6 +2,7 @@ package com.example.SevMerge.portfolio;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
 import java.sql.Timestamp;
@@ -12,7 +13,7 @@ public class PortfolioResponse {
         private Long id;
         private String title;
         private String description;
-        private String imageUrl;
+        private MultipartFile imageUrl;
         private String expertName;
         private String createdAt;
         @Builder
@@ -37,7 +38,7 @@ public class PortfolioResponse {
         private String expertName;
         private Long expertId;
         private String projectUrl;
-        private String imageUrl;
+        private MultipartFile imageUrl;
         private Timestamp createdAt;
 
 
@@ -64,7 +65,7 @@ public class PortfolioResponse {
         private Long id;
         private String title;
         private String description;
-        private String imageUrl;
+        private MultipartFile imageUrl;
         private String projectUrl;
         private Long expertId; // 전문가의멤버의 아이디
 

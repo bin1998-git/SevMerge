@@ -93,6 +93,8 @@ public class PortfolioService {
     @Transactional
     public void update(Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,Long sessionUserId) {
 
+        String newImageFile = null;
+
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
@@ -101,8 +103,16 @@ public class PortfolioService {
             throw new ForbiddenException("수정 권한이 없습니다.");
         }
 
-        if(!updateDTO.getImageUrl().isEmpty()){
+        if(!updateDTO.getImageUrl().isEmpty() && updateDTO.getImageUrl() != null){
+            try {
+                if(!FileUtil.isImageFile(updateDTO.getImageUrl())){
+                    throw new BadRequestException("이미지 파일만 업로드 가능 합니다.");
+                }
 
+
+            } catch (BadRequestException e){
+                throw new BadRequestException("파일저장실패");
+            }
         }
 
         updateDTO.validate();

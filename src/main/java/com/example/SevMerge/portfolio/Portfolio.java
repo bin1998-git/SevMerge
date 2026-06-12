@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 
@@ -28,7 +29,7 @@ public class Portfolio {
     @Column(nullable = false)
     private String title; // 제목
     private String description; // 설명
-    private String imageUrl; // 이미지 경로
+    private MultipartFile imageUrl; // 이미지 경로
     private String projectUrl; // 프로젝트 링크
     @CreationTimestamp
     private Timestamp createdAt; // 작성일
