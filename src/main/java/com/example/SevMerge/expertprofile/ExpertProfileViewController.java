@@ -96,9 +96,7 @@ public class ExpertProfileViewController {
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
-        if (!sessionUser.isExpert()) {
-            throw new BadRequestException("전문가만 이용할수 있습니다.");
-        }
+        if (!sessionUser.isExpert()) return "redirect:/";
 
         // 전문가 프로필 (없으면 빈 채로)
         try {

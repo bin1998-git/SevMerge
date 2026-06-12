@@ -1,0 +1,38 @@
+<style>
+    .policy-hero { background:#fff; border-bottom:1px solid #eaecf4; padding:48px 28px 0; }
+    .policy-hero-inner { max-width:1140px; margin:0 auto; text-align:center; padding-bottom:36px; }
+    .policy-hero-inner h1 { font-size:32px; font-weight:900; color:#1c1e26; letter-spacing:-1px; margin-bottom:10px; }
+    .policy-hero-inner p { font-size:14px; color:#6b7280; margin-bottom:28px; }
+
+    .policy-tabs { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+
+    .policy-section { padding:48px 28px 80px; max-width:880px; margin:0 auto; }
+
+    .policy-doc { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; padding:40px; }
+    .policy-doc h2 { font-size:18px; font-weight:900; color:#1c1e26; margin-bottom:6px; }
+    .policy-doc .policy-updated { font-size:12px; color:#9ca3af; font-weight:600; margin-bottom:28px; }
+
+    .policy-article { margin-bottom:24px; }
+    .policy-article-title { font-size:14px; font-weight:700; color:#1c1e26; margin-bottom:8px; }
+    .policy-article-body { font-size:13px; color:#4b5563; line-height:1.9; }
+    .policy-article-body p { margin-bottom:8px; }
+    .policy-article-body ol, .policy-article-body ul { margin:8px 0 8px 18px; }
+    .policy-article-body li { margin-bottom:4px; }
+
+    .policy-table { width:100%; border-collapse:collapse; margin:12px 0; font-size:12px; }
+    .policy-table th, .policy-table td { border:1px solid #eaecf4; padding:8px 10px; text-align:left; }
+    .policy-table th { background:#f8f9fc; font-weight:700; color:#374151; }
+</style>
+
+<section class="policy-hero">
+    <div class="policy-hero-inner">
+        <h1>약관 및 정책</h1>
+        <p>SevMerge 서비스 이용을 위한 약관과 정책을 확인하세요.</p>
+        <div class="policy-tabs">
+            <a href="/policy/terms" class="tab {{#isTerms}}active{{/isTerms}}">이용약관</a>
+            <a href="/policy/privacy" class="tab {{#isPrivacy}}active{{/isPrivacy}}">개인정보처리방침</a>
+            <a href="/policy/ad" class="tab {{#isAd}}active{{/isAd}}">광고방침</a>
+            <a href="/policy/operation" class="tab {{#isOperation}}active{{/isOperation}}">운영정책</a>
+        </div>
+    </div>
+</section>

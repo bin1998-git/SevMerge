@@ -1,12 +1,17 @@
 package com.example.SevMerge.portfolio;
 
 import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,17 +33,16 @@ public class PortfolioService {
 
 
     // 포트폴리오 리스트
-    public List<PortfolioResponse.ListDTO> findByMemberId(Long expertId) {
+    public List<PortfolioResponse.ListDTO> findByMemberId(Long expertId, int page) {
 
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
                 () -> new NotFoundException("전문가를 찾을 수 없습니다.")
         );
+        Pageable pageable = PageRequest.of(page-1,10, Sort.by("createdAt").descending());
         // 전문가 아이디로 찾아 해당 전문가 포트 폴리오
-        List<Portfolio> portfolios = portfolioRepository.findByExpertIdIsActive(expertEntity.getId());
-
+        Page<Portfolio> portfolioPage = portfolioRepository.findByExpertIdIsActive(expertEntity.getId(),pageable);
         Long count = portfolioRepository.countPortfolioByMemberId(expertEntity.getId());
-
-        return portfolios.stream().map(portfolio -> new PortfolioResponse.ListDTO(portfolio,count)).toList();
+        return portfolioPage.stream().map(portfolio -> new PortfolioResponse.ListDTO(portfolio,count)).toList();
     }
 
 
@@ -60,7 +64,10 @@ public class PortfolioService {
     @Transactional
     public void save(PortfolioRequest.SaveDTO saveDTO)  {
 
+
+
         saveDTO.validate();
+
         System.out.println("saveDTO: "+saveDTO);
         Portfolio newPortfolio = Portfolio
                 .builder()
@@ -77,22 +84,22 @@ public class PortfolioService {
 
     }
 
-    @Transactional
-    public PortfolioResponse.UpdateDTO updatePage(Long portfolioId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
-                new BadRequestException("포트폴리오를 찾을수 없습니다.")
-        );
-        return new PortfolioResponse.UpdateDTO(portfolio);
-    }
+
 
     @Transactional
-    public void update(Long portfolioId, PortfolioRequest.UpdateDTO updateDTO) {
+    public void update(Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,Long sessionUserId) {
 
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
+
+        if(!portfolio.getExpertProfile().getMember().getId().equals(sessionUserId)){
+            throw new ForbiddenException("수정 권한이 없습니다.");
+        }
+
 
         updateDTO.validate();
+
         portfolio.setDescription(updateDTO.getDescription());
         portfolio.setTitle(updateDTO.getTitle());
         portfolio.setImageUrl(updateDTO.getImageUrl());

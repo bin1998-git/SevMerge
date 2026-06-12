@@ -1,0 +1,257 @@
+{{> layout/header}}
+
+<style>
+    .support-hero { background:#fff; border-bottom:1px solid #eaecf4; padding:48px 28px 0; }
+    .support-hero-inner { max-width:1140px; margin:0 auto; text-align:center; padding-bottom:36px; }
+    .support-hero-inner h1 { font-size:32px; font-weight:900; color:#1c1e26; letter-spacing:-1px; margin-bottom:10px; }
+    .support-hero-inner p { font-size:14px; color:#6b7280; margin-bottom:28px; }
+
+    .support-tabs { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+
+    .support-section { padding:48px 28px 80px; max-width:1140px; margin:0 auto; }
+
+    /* 고객센터 */
+    .support-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:48px; }
+    .support-card { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; padding:28px; text-align:center; transition:all .2s; }
+    .support-card:hover { border-color:#bfdbfe; box-shadow:0 8px 28px rgba(37,99,235,.08); transform:translateY(-3px); }
+    .support-card-icon { font-size:32px; margin-bottom:14px; }
+    .support-card-title { font-size:15px; font-weight:700; color:#1c1e26; margin-bottom:8px; }
+    .support-card-desc { font-size:12px; color:#9ca3af; line-height:1.7; margin-bottom:18px; }
+
+    .support-info { background:#f8f9ff; border:1px solid #e2e8ff; border-radius:16px; padding:32px; }
+    .support-info h2 { font-size:16px; font-weight:900; color:#1c1e26; margin-bottom:18px; }
+    .support-info-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #e8ecf8; font-size:13px; }
+    .support-info-row:last-child { border-bottom:none; }
+    .support-info-label { color:#9ca3af; font-weight:600; }
+    .support-info-value { color:#1c1e26; font-weight:700; }
+
+    /* 회사소개 */
+    .value-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin:32px 0 48px; }
+    .value-card { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; padding:26px; }
+    .value-card-icon { font-size:28px; margin-bottom:12px; }
+    .value-card-title { font-size:14px; font-weight:700; color:#1c1e26; margin-bottom:8px; }
+    .value-card-desc { font-size:12px; color:#9ca3af; line-height:1.7; }
+
+    .history-list { display:flex; flex-direction:column; gap:14px; }
+    .history-item { display:flex; gap:20px; align-items:flex-start; padding:16px 0; border-bottom:1px solid #f0f2f9; }
+    .history-year { font-size:15px; font-weight:900; color:#2563eb; width:70px; flex-shrink:0; }
+    .history-desc { font-size:13px; color:#4b5563; line-height:1.7; }
+
+    /* 인재채용 */
+    .job-list { display:flex; flex-direction:column; gap:10px; margin-top:28px; }
+    .job-card { display:flex; justify-content:space-between; align-items:center; background:#fff; border:1.5px solid #eaecf4; border-radius:12px; padding:18px 22px; transition:all .15s; }
+    .job-card:hover { border-color:#bfdbfe; box-shadow:0 4px 14px rgba(37,99,235,.07); }
+    .job-title { font-size:14px; font-weight:700; color:#1c1e26; margin-bottom:4px; }
+    .job-meta { font-size:12px; color:#9ca3af; }
+    .job-tag { font-size:11px; font-weight:700; color:#2563eb; background:#eff6ff; padding:3px 10px; border-radius:6px; }
+
+    .culture-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:28px; }
+    .culture-item { background:#f8f9fc; border-radius:12px; padding:20px; font-size:13px; color:#4b5563; line-height:1.7; }
+    .culture-item strong { display:block; color:#1c1e26; font-size:14px; margin-bottom:6px; }
+
+    /* 제휴문의 */
+    .partnership-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:28px; align-items:start; }
+    .partnership-type { display:flex; flex-direction:column; gap:12px; }
+    .type-card { background:#fff; border:1.5px solid #eaecf4; border-radius:12px; padding:18px 20px; }
+    .type-card-title { font-size:13px; font-weight:700; color:#1c1e26; margin-bottom:4px; }
+    .type-card-desc { font-size:12px; color:#9ca3af; line-height:1.6; }
+
+    .partnership-form { background:#f8f9ff; border:1px solid #e2e8ff; border-radius:16px; padding:28px; }
+    .form-group { margin-bottom:16px; }
+    .form-label { display:block; font-size:12px; font-weight:700; color:#374151; margin-bottom:6px; }
+    .form-input, .form-textarea {
+        width:100%; padding:11px 14px; background:#fff; border:1.5px solid #e2e5ef;
+        border-radius:9px; font-size:13px; font-family:inherit; color:#1c1e26; outline:none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color:#2563eb; }
+    .form-textarea { resize:vertical; min-height:100px; }
+</style>
+
+<section class="support-hero">
+    <div class="support-hero-inner">
+        <h1>고객센터</h1>
+        <p>SevMerge 이용 안내와 회사 소식을 한곳에서 확인하세요.</p>
+        <div class="support-tabs">
+            <a href="/support" class="tab {{#isSupport}}active{{/isSupport}}">고객센터</a>
+            <a href="/support?tab=about" class="tab {{#isAbout}}active{{/isAbout}}">회사소개</a>
+            <a href="/support?tab=careers" class="tab {{#isCareers}}active{{/isCareers}}">인재채용</a>
+            <a href="/support?tab=partnership" class="tab {{#isPartnership}}active{{/isPartnership}}">제휴 문의</a>
+        </div>
+    </div>
+</section>
+
+<section class="support-section">
+
+    {{#isSupport}}
+        <div>
+            <div class="support-grid">
+                <div class="support-card">
+                    <div class="support-card-icon">❓</div>
+                    <div class="support-card-title">자주 묻는 질문</div>
+                    <div class="support-card-desc">자주 발생하는 문의를 모아<br>빠르게 확인할 수 있어요.</div>
+                    <a href="/faq" class="btn btn-outline">FAQ 바로가기</a>
+                </div>
+                <div class="support-card">
+                    <div class="support-card-icon">📢</div>
+                    <div class="support-card-title">공지사항</div>
+                    <div class="support-card-desc">서비스 점검, 업데이트 등<br>주요 안내를 확인하세요.</div>
+                    <a href="/boards?boardType=NOTICE" class="btn btn-outline">공지 게시판</a>
+                </div>
+                <div class="support-card">
+                    <div class="support-card-icon">✉️</div>
+                    <div class="support-card-title">1:1 문의</div>
+                    <div class="support-card-desc">해결되지 않은 문제는<br>담당자에게 직접 문의해 주세요.</div>
+                    <a href="/boards/save?boardType=INQUIRY" class="btn btn-primary">문의 등록</a>
+                </div>
+            </div>
+
+            <div class="support-info">
+                <h2>운영 안내</h2>
+                <div class="support-info-row">
+                    <span class="support-info-label">운영 시간</span>
+                    <span class="support-info-value">평일 10:00 ~ 18:00 (점심시간 12:00 ~ 13:00)</span>
+                </div>
+                <div class="support-info-row">
+                    <span class="support-info-label">휴무</span>
+                    <span class="support-info-value">주말, 공휴일</span>
+                </div>
+                <div class="support-info-row">
+                    <span class="support-info-label">이메일</span>
+                    <span class="support-info-value">support@sevmerge.com</span>
+                </div>
+                <div class="support-info-row">
+                    <span class="support-info-label">1:1 문의 답변</span>
+                    <span class="support-info-value">영업일 기준 1~2일 이내</span>
+                </div>
+            </div>
+        </div>
+    {{/isSupport}}
+
+    {{#isAbout}}
+        <div>
+            <h2 style="font-size:20px; font-weight:900; color:#1c1e26;">우리는 이런 가치를 추구합니다</h2>
+            <div class="value-grid">
+                <div class="value-card">
+                    <div class="value-card-icon">🤝</div>
+                    <div class="value-card-title">신뢰할 수 있는 연결</div>
+                    <div class="value-card-desc">검증된 전문가와 의뢰인을 연결하여 안전한 외주 거래 환경을 만듭니다.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-card-icon">⚡</div>
+                    <div class="value-card-title">빠르고 합리적인 매칭</div>
+                    <div class="value-card-desc">실시간 입찰을 통해 합리적인 가격으로 빠르게 전문가를 찾을 수 있습니다.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-card-icon">📈</div>
+                    <div class="value-card-title">함께 성장하는 플랫폼</div>
+                    <div class="value-card-desc">리뷰와 평점 시스템으로 전문가와 의뢰인 모두가 신뢰를 쌓아갑니다.</div>
+                </div>
+            </div>
+
+            <h2 style="font-size:20px; font-weight:900; color:#1c1e26; margin-bottom:8px;">연혁</h2>
+            <div class="history-list">
+                <div class="history-item">
+                    <div class="history-year">2025</div>
+                    <div class="history-desc">SevMerge 베타 서비스 오픈, 입찰·리뷰·채팅·결제 시스템 구축</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-year">2025</div>
+                    <div class="history-desc">전문가 포트폴리오 및 프로필 인증 기능 추가</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-year">2026</div>
+                    <div class="history-desc">SevMerge 정식 서비스 출시 예정</div>
+                </div>
+            </div>
+        </div>
+    {{/isAbout}}
+
+    {{#isCareers}}
+        <div>
+            <h2 style="font-size:20px; font-weight:900; color:#1c1e26;">함께할 동료를 찾습니다</h2>
+            <p style="font-size:13px; color:#6b7280; margin-top:8px;">SevMerge는 더 나은 외주 매칭 경험을 만들기 위해 다양한 포지션에서 인재를 채용하고 있습니다.</p>
+
+            <div class="job-list">
+                <div class="job-card">
+                    <div>
+                        <div class="job-title">백엔드 개발자 (Spring Boot)</div>
+                        <div class="job-meta">정규직 · 경력 무관 · 서울</div>
+                    </div>
+                    <span class="job-tag">상시채용</span>
+                </div>
+                <div class="job-card">
+                    <div>
+                        <div class="job-title">프론트엔드 개발자</div>
+                        <div class="job-meta">정규직 · 경력 1년 이상 · 서울 / 재택 가능</div>
+                    </div>
+                    <span class="job-tag">상시채용</span>
+                </div>
+                <div class="job-card">
+                    <div>
+                        <div class="job-title">서비스 운영 매니저</div>
+                        <div class="job-meta">정규직 · 신입/경력 · 서울</div>
+                    </div>
+                    <span class="job-tag">상시채용</span>
+                </div>
+            </div>
+
+            <div class="culture-grid">
+                <div class="culture-item">
+                    <strong>자율과 책임</strong>
+                    자유로운 근무 환경 속에서 각자의 역할에 책임감을 가지고 일합니다.
+                </div>
+                <div class="culture-item">
+                    <strong>성장 지원</strong>
+                    도서 구입비, 컨퍼런스 참가비 등 학습과 성장을 적극적으로 지원합니다.
+                </div>
+            </div>
+        </div>
+    {{/isCareers}}
+
+    {{#isPartnership}}
+        <div>
+            <h2 style="font-size:20px; font-weight:900; color:#1c1e26;">제휴 문의</h2>
+            <p style="font-size:13px; color:#6b7280; margin-top:8px; margin-bottom:8px;">SevMerge와 함께 성장할 파트너를 찾고 있습니다. 아래 양식을 통해 제휴를 제안해 주세요.</p>
+
+            <div class="partnership-grid">
+                <div class="partnership-type">
+                    <div class="type-card">
+                        <div class="type-card-title">🏢 기업 제휴</div>
+                        <div class="type-card-desc">기업 전용 외주 매칭, 단체 계약 등 B2B 협업을 제안해 주세요.</div>
+                    </div>
+                    <div class="type-card">
+                        <div class="type-card-title">🎓 교육기관 제휴</div>
+                        <div class="type-card-desc">부트캠프, 교육기관과의 전문가 양성 및 매칭 협력을 환영합니다.</div>
+                    </div>
+                    <div class="type-card">
+                        <div class="type-card-title">📣 마케팅 제휴</div>
+                        <div class="type-card-desc">공동 프로모션, 콘텐츠 협업 등 다양한 마케팅 제휴를 제안해 주세요.</div>
+                    </div>
+                </div>
+
+                <form class="partnership-form" action="/partnership/inquiry" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">회사명 / 단체명</label>
+                        <input type="text" name="companyName" class="form-input" placeholder="예: (주)세브머지" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">담당자명</label>
+                        <input type="text" name="managerName" class="form-input" placeholder="홍길동" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">이메일</label>
+                        <input type="email" name="email" class="form-input" placeholder="example@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">제휴 내용</label>
+                        <textarea name="content" class="form-textarea" placeholder="제안하고 싶은 제휴 내용을 작성해 주세요." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">제휴 문의 보내기</button>
+                </form>
+            </div>
+        </div>
+    {{/isPartnership}}
+
+</section>
+
+{{> layout/footer}}

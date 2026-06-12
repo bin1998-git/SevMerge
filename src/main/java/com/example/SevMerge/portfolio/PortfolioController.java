@@ -26,18 +26,18 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
     private final ExpertProfileService expertProfileService;
     private final MemberService memberService;
-    private final ProjectService projectService;
 
     // 리스트
     @GetMapping("/portfolios")
     public String showPortfolios(HttpSession session,
-                                 Model model, @RequestParam("expertId") Long expertId) {
+                                 Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page) {
 
         Member member = (Member) session.getAttribute(Define.SESSION_USER);
 
-        List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId);
+        List<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId,page);
 
-        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId);
+        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId); // 멤버 아이디
+
         Member memberEntity = memberService.findMemberById(expertId);
 
         model.addAttribute("portfolios", portfolios);
@@ -66,7 +66,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/portfolios/save")
-    public String savePortfoliosPage(HttpSession session, Model model) {
+    public String savePortfoliosPage(HttpSession session, Model model, @RequestParam("expertId") Long expertId) {
         Member member = (Member) session.getAttribute(Define.SESSION_USER);
         if (member == null) {
             return "redirect:/login";
@@ -86,7 +86,9 @@ public class PortfolioController {
         if (member == null) {
             return "redirect:/login";
         }
-
+        if (member.isExpert() == false) {
+            throw new BadRequestException("전문가만 포트폴리오를 작성할수 있습니다.");
+        }
         portfolioService.save(saveDTO);
 
         return "redirect:/portfolios?expertId=" + saveDTO.getExpertId();
@@ -100,8 +102,10 @@ public class PortfolioController {
         if (member == null) {
             return "redirect:/login";
         }
-        PortfolioResponse.UpdateDTO portfolio = portfolioService.updatePage(portfolioId);
-        model.addAttribute("portfolio", portfolio);
+        PortfolioResponse.DetailDTO detailPortfolio = portfolioService.findPortfolio(portfolioId);
+
+        model.addAttribute("portfolio", detailPortfolio);
+
         return "portfolio/portfolio-update";
     }
 
@@ -113,23 +117,21 @@ public class PortfolioController {
         if (member == null) {
             return "redirect:/login";
         }
-        if(member.getId() != expertId){
-            throw new BadRequestException("수정권한이 없습니다.");
-        }
-        portfolioService.update(portfolioId, updateDTO);
+
+        portfolioService.update(portfolioId, updateDTO, member.getId());
 
         return "redirect:/portfolios?expertId=" + expertId;
     }
 
 
     @PostMapping("/portfolios/{portfolioId}/delete")
-    public String deletePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, @RequestParam(name = "expertId") Long expertId,HttpSession session) {
+    public String deletePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, @RequestParam(name = "expertId") Long expertId, HttpSession session) {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        if(sessionMember == null){
+        if (sessionMember == null) {
             return "redirect:/login";
         }
-        if(sessionMember.getId() != expertId){
+        if (sessionMember.getId() != expertId) {
             throw new BadRequestException("삭제 권한이 없습니다.");
         }
 
@@ -139,15 +141,6 @@ public class PortfolioController {
     }
 
 
-    // footer 페이지 테스트
-    @GetMapping("/foot")
-    public String showFoot(Model model) {
 
-        List<ProjectResponeDTO.ListDTO> projectList = projectService.findAllProjects();
-        List<ExpertProfileResponse> expertList = expertProfileService.getAll();
-        model.addAttribute("stats", projectList);
-        model.addAttribute("expert", expertList);
-        return "/footer-template/about";
-    }
 
 }
