@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 
 import java.util.List;
 
@@ -79,10 +80,15 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(MemberRequest.Login request, HttpSession session, Model model) {
-        memberService.login(request, session);
+        Member member = memberService.login(request, session);
 
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-        if (loginMember != null && loginMember.getRole() == Role.EXPERT) {
+        // 거절된 전문가는 안내 페이지로
+        if (member.getStatus() == Status.REJECTED) {
+            session.setAttribute("rejectedMemberId", member.getId());
+            return "redirect:/expert-rejected";
+        }
+
+        if (member.getRole() == Role.EXPERT) {
             return "redirect:/experts/dashboard";
         }
         return "redirect:/";
@@ -231,6 +237,11 @@ public class MemberController {
                 return "redirect:/login";
             }
 
+            if (existing.getStatus() == Status.REJECTED) {
+                session.setAttribute("rejectedMemberId", existing.getId());
+                return "redirect:/expert-rejected";
+            }
+
             session.setAttribute(Define.SESSION_USER, existing);
             log.info("구글 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
@@ -266,6 +277,11 @@ public class MemberController {
             if (existing.getStatus() == Status.SUSPENDED) {
                 log.info("카카오 정지 계정 로그인 차단 - memberId={}", existing.getId());
                 return "redirect:/login";
+            }
+
+            if (existing.getStatus() == Status.REJECTED) {
+                session.setAttribute("rejectedMemberId", existing.getId());
+                return "redirect:/expert-rejected";
             }
 
             session.setAttribute(Define.SESSION_USER, existing);
@@ -397,6 +413,40 @@ public class MemberController {
         }
 
         // 전문가는 세션에 안 넣고 승인 대기 안내 화면으로 보냄
+        return "redirect:/social-pending";
+    }
+    @GetMapping("/expert-rejected")
+    public String expertRejected(HttpSession session, Model model) {
+        Long memberId = (Long) session.getAttribute("rejectedMemberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+        String reason = memberService.getLatestRejectReason(memberId);
+        model.addAttribute("reason", reason);
+        return "member/expert-rejected";
+    }
+
+    // 재신청 폼 (기존 정보 채워서 보여줌)
+    @GetMapping("/expert-reapply-form")
+    public String expertReapplyForm(HttpSession session, Model model) {
+        Long memberId = (Long) session.getAttribute("rejectedMemberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("profile", memberService.getExpertProfileForReapply(memberId));
+        model.addAttribute("reason", memberService.getLatestRejectReason(memberId));
+        return "member/expert-reapply-form";
+    }
+
+    // 재신청 처리 (정보 업데이트 + PENDING)
+    @PostMapping("/expert-reapply")
+    public String expertReapply(MemberRequest.ExpertJoin request, HttpSession session) {
+        Long memberId = (Long) session.getAttribute("rejectedMemberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+        memberService.reapplyExpert(memberId, request);
+        session.removeAttribute("rejectedMemberId");
         return "redirect:/social-pending";
     }
 

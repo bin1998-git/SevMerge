@@ -1,0 +1,141 @@
+{{> layout/header}}
+
+<style>
+    .auth-section { padding: 60px 28px 80px; }
+    .auth-inner { max-width: 480px; margin: 0 auto; }
+    .auth-header { text-align: center; margin-bottom: 32px; }
+    .auth-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .auth-desc { font-size: 14px; color: #9ca3af; }
+    .auth-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 36px; display: flex; flex-direction: column; gap: 18px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-label .opt { color: #c4c9d9; font-weight: 500; margin-left: 4px; }
+    .form-input, .form-textarea { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
+    .form-input:focus, .form-textarea:focus { border-color: #2563eb; background: #fff; }
+    .form-textarea { resize: vertical; min-height: 84px; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: #9ca3af; }
+    .submit-btn { padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .submit-btn:hover { background: #1d4ed8; }
+    .reason-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 12px; padding: 16px 18px; }
+    .reason-label { font-size: 12px; font-weight: 700; color: #ef4444; margin-bottom: 6px; }
+    .reason-text { font-size: 13px; color: #1c1e26; line-height: 1.6; }
+    .skill-input-wrap { display: flex; gap: 8px; }
+    .skill-input-wrap .form-input { flex: 1; }
+    .skill-add-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .skill-add-btn:hover { background: #2563eb; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .skill-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    .skill-tag button { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+</style>
+
+<section class="auth-section">
+    <div class="auth-inner">
+        <div class="auth-header">
+            <h1 class="auth-title">전문가 재신청</h1>
+            <p class="auth-desc">거절 사유를 보완해 다시 신청해 주세요.</p>
+        </div>
+
+        <form class="auth-form" action="/expert-reapply" method="POST" id="reapplyForm">
+
+            {{#reason}}
+                <div class="reason-box">
+                    <div class="reason-label">이전 거절 사유</div>
+                    <div class="reason-text">{{reason}}</div>
+                </div>
+            {{/reason}}
+
+            <div class="form-group">
+                <label class="form-label">한 줄 소개 <span class="required">*</span></label>
+                <input type="text" name="intro" class="form-input" value="{{profile.intro}}" placeholder="예) 5년차 React 개발자입니다" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">경력 <span class="required">*</span></label>
+                <textarea name="career" class="form-textarea">{{profile.career}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">GitHub 주소 <span class="opt">(선택)</span></label>
+                <input type="text" name="githubUrl" class="form-input" value="{{profile.githubUrl}}" placeholder="https://github.com/username" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">기술 스택 <span class="required">*</span></label>
+                <div class="skill-input-wrap">
+                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter" />
+                    <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
+                </div>
+                <div id="skillTags" class="skill-tags"></div>
+                <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요.</span>
+                <input type="hidden" name="speciality" id="specialityHidden" value="{{profile.speciality}}" />
+            </div>
+
+            <button type="submit" class="submit-btn">다시 신청하기</button>
+        </form>
+    </div>
+</section>
+
+<script>
+    // ===== 기술 스택 태그 (기존 값으로 초기화) =====
+    const skillInput = document.getElementById("skillInput");
+    const skillAddBtn = document.getElementById("skillAddBtn");
+    const skillTags = document.getElementById("skillTags");
+    const specialityHidden = document.getElementById("specialityHidden");
+
+    // 기존 speciality를 콤마로 분리해서 초기 칩으로
+    let skills = [];
+    const initial = specialityHidden.value.trim();
+    if (initial) {
+        skills = initial.split(",").map(s => s.trim()).filter(s => s);
+    }
+
+    function renderSkills() {
+        skillTags.innerHTML = "";
+        skills.forEach((skill, idx) => {
+            const tag = document.createElement("span");
+            tag.className = "skill-tag";
+            tag.innerHTML = skill + ' <button type="button" data-idx="' + idx + '">×</button>';
+            skillTags.appendChild(tag);
+        });
+        specialityHidden.value = skills.join(",");
+    }
+
+    function addSkill() {
+        const val = skillInput.value.trim();
+        if (!val) return;
+        if (skills.includes(val)) { skillInput.value = ""; return; }
+        skills.push(val);
+        skillInput.value = "";
+        renderSkills();
+    }
+
+    skillAddBtn.addEventListener("click", addSkill);
+    skillInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); addSkill(); }
+    });
+    skillTags.addEventListener("click", function (e) {
+        if (e.target.tagName === "BUTTON") {
+            skills.splice(parseInt(e.target.dataset.idx), 1);
+            renderSkills();
+        }
+    });
+    renderSkills();  // 페이지 로드 시 기존 칩 표시
+
+    // 제출 검증
+    document.getElementById("reapplyForm").addEventListener("submit", function (e) {
+        const intro = e.target.intro.value.trim();
+        const career = e.target.career.value.trim();
+        if (!intro || !career) {
+            e.preventDefault();
+            alert("한 줄 소개와 경력을 입력해 주세요.");
+            return;
+        }
+        if (skills.length === 0) {
+            e.preventDefault();
+            alert("기술 스택을 최소 1개 이상 입력해 주세요.");
+        }
+    });
+</script>
+
+{{> layout/footer}}

@@ -92,7 +92,7 @@ public class Member {
     @Builder.Default
     private List<ChatRoom> expertChatRooms = new ArrayList<>();
 
-    // 기존 생성자 (유지)
+    // 생성자
     public Member(Long id, String email, String password,
                   String name, String phone,
                   Role role, Status status) {
@@ -107,7 +107,11 @@ public class Member {
         this.balance = 0;
     }
 
-    // 기존 편의 메서드 (유지)
+    public void reapply() {
+        this.status = Status.PENDING;
+    }
+
+    //  편의 메서드
     public void update(String password, String name, String phone) {
         if (password != null) this.password = password;
         if (name != null) this.name = name;
