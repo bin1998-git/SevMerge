@@ -216,6 +216,10 @@ public class BidService {
                 bid.getExpert().getId(),
                 bid.getProposedPrice().intValue()
         );
+        // [핵심 추가] 프로젝트 상태를 CLOSED로 변경
+        Project project = bid.getProject();
+        project.updateStatus(ProjectStatus.CLOSED);
+        projectRepository.save(project); // 상태 업데이트 저장
     }
 
     // 제안서 보류처리
