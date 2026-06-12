@@ -35,7 +35,10 @@ public class BoardService {
 
     public List<BoardResponse.ListDTO> findAllByMyBoard(Long memberId) {
 
-        return boardRepository.findByMyBoard(memberId);
+        return boardRepository.findByMyBoard(memberId)
+                .stream()
+                .map(BoardResponse.ListDTO::new)
+                .toList();
     }
 
     // 1:1 게시글 조회

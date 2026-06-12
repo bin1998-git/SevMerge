@@ -91,6 +91,23 @@ public class Project {
         if (requestDTO.getDeadline() != null)
             this.deadline = Timestamp.valueOf(requestDTO.getDeadline() + " 00:00:00");
         if (requestDTO.getBidFilter() != null) this.bidFilter = BidFilter.valueOf(requestDTO.getBidFilter());
+        if (requestDTO.getIsPrivate() != null) {
+            this.isPrivate = requestDTO.getIsPrivate();
+        }
+        
+    }
+
+        // 임시저장 업데이트 메서드
+    public void updateDraft(ProjectRequestDTO.UpdateDTO dto) {
+        if (dto.getTitle() != null) this.title = dto.getTitle();
+        if (dto.getDescription() != null) this.description = dto.getDescription();
+        if (dto.getBudgetMin() != null) this.budgetMin = dto.getBudgetMin();
+        if (dto.getBudgetMax() != null) this.budgetMax = dto.getBudgetMax();
+        if (dto.getDeadline() != null) this.deadline = Timestamp.valueOf(dto.getDeadline() + " 00:00:00");
+        if (dto.getBidFilter() != null) this.bidFilter = BidFilter.valueOf(dto.getBidFilter());
+        if (dto.getIsPrivate() != null) this.isPrivate = dto.getIsPrivate();
+        // 상태를 임시저장으로 변경
+        this.projectStatus = ProjectStatus.DRAFT;
     }
 
     // viewCount 증가 메서드

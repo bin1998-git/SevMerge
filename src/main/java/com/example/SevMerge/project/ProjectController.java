@@ -34,7 +34,7 @@ public class ProjectController {
 
     // 프로젝트 등록
     @PostMapping("/projects")
-    public String save(ProjectRequestDTO.SaveDTO req, HttpSession session) {
+    public String save(@RequestBody ProjectRequestDTO.SaveDTO req, HttpSession session) {
         log.info("project 등록 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login-form";
@@ -43,7 +43,6 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
-    // 프로젝트 목록 조회 (client 용)
     @GetMapping("/projects")
     public String list(Model model,
                        @RequestParam(required = false) String keyword,
@@ -51,40 +50,23 @@ public class ProjectController {
                        @RequestParam(required = false) String statusFilter,
                        @RequestParam(required = false) String bidFilter,
                        HttpSession session) {
-        log.info("project 목록 조회 요청 - category: {}, statusFilter: {}", category, statusFilter);
 
-        List<ProjectResponeDTO.ListDTO> projects;
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        // 1. [핵심] 빈 문자열("")로 들어오는 파라미터를 null로 변경 (에러 방지)
+        if (keyword != null && keyword.isBlank()) keyword = null;
+        if (category != null && category.isBlank()) category = null;
+        if (statusFilter != null && statusFilter.isBlank()) statusFilter = null;
+        if (bidFilter != null && bidFilter.isBlank()) bidFilter = null;
 
-        log.info("bidFilter 값: {}", bidFilter);
-        log.info("keyword: {}, category: {}, statusFilter: {}", keyword, category, statusFilter);
+        // 2. 서비스 호출
+        List<ProjectResponeDTO.ListDTO> projects =
+                projectService.findByFilters(keyword, category, statusFilter, bidFilter);
 
-
-        // 조건문 분기 처리 ( 낙찰 완료 조건 추가)
-        if (keyword != null && !keyword.isBlank()) {
-            projects = projectService.findByKeyword(keyword);
-        } else if (statusFilter != null && "CLOSED".equals(statusFilter)) {
-            projects = projectService.findByStatusClosed();
-        } else if (bidFilter != null && !bidFilter.isBlank()) {
-            projects = projectService.findByBidFilter(bidFilter);
-        } else if (category != null && !category.isBlank()) {
-            projects = projectService.findByCategory(category);
-        } else {
-            projects = projectService.findAllProjects();
-        }
-        if (sessionUser != null) {
-            model.addAttribute("sessionUser", sessionUser);
-        }
-
+        // 3. 모델 세팅 (기존과 동일)
         model.addAttribute("projects", projects);
         model.addAttribute("totalCount", projects.size());
         model.addAttribute("keyword", keyword != null ? keyword : "");
 
-        // 카테고리 및 필터 탭 활성화 로직 업데이트
-        // 다른 필터나 검색어가 없고, 낙찰완료 필터가 아닐때 활성화
         model.addAttribute("isAll", category == null && keyword == null && statusFilter == null && bidFilter == null);
-
-        // 낙찰완료건
         model.addAttribute("isClosedFilter", "CLOSED".equals(statusFilter));
         model.addAttribute("isWeb", "WEB".equals(category));
         model.addAttribute("isApp", "APP".equals(category));
@@ -94,7 +76,11 @@ public class ProjectController {
         model.addAttribute("isEtc", "ETC".equals(category));
         model.addAttribute("isCertifiedOnly", "CERTIFIED_ONLY".equals(bidFilter));
 
-        log.info("bidFilter 값: {}", bidFilter);
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser != null) {
+            model.addAttribute("sessionUser", sessionUser);
+        }
+
         return "project/project-list";
     }
 
@@ -194,6 +180,39 @@ public class ProjectController {
         projectService.doneProject(id, sessionUser);
         return "redirect:/my-pages?tab=projects";
     }
+
+
+    // 프로젝트 임시저장(비동기)
+    @PostMapping("/projects/draft")
+    @ResponseBody
+    public ResponseEntity<?> saveDraft(@RequestBody ProjectRequestDTO.UpdateDTO req, HttpSession session) {
+        log.info("프로젝트 임시저장 요청");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다");
+        }
+
+        Long draftId = projectService.saveDraft(sessionUser.getId(), req);
+        return ResponseEntity.ok(draftId);
+    }
+
+    // 임시저장 데이터 조회 (프로젝트 등록 시 호출)
+    @GetMapping("/projects/draft")
+    @ResponseBody
+    public ResponseEntity<?> getDraft(HttpSession session) {
+        log.info("project 임시저장 조회");
+        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다");
+        }
+
+        ProjectResponeDTO.DetailDTO dto = projectService.getMyDraft(sessionUser.getId());
+        return ResponseEntity.ok(dto);
+    }
+
+
+
+
 
     // 관리자용 프로젝트 관리 목록전체조회
     @GetMapping("/admin/projects")

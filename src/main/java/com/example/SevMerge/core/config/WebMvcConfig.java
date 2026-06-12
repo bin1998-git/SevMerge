@@ -7,13 +7,17 @@ import com.example.SevMerge.core.interceptor.BidInterceptor;
 import com.example.SevMerge.core.interceptor.LoginInterceptor;
 import com.example.SevMerge.core.interceptor.ProjectInterceptor;
 import com.example.SevMerge.core.interceptor.SessionInterceptor;
+import com.example.SevMerge.core.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.file.Paths;
 
 @Configuration
 @RequiredArgsConstructor
@@ -35,12 +39,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 로그인 체크
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/users/**", "/my-pages", "/my-pages/**", "/projects/save-form", "/messages/**","/boards/**")
+                .addPathPatterns("/users/**", "/my-pages", "/my-pages/**", "/projects/save-form", "/messages/** ", "/notifications/**", "/boards/**")
                 .excludePathPatterns(
                         "/",
                         "/login",
                         "/join",
                         "/logout",
+                        "/boards",
+                        "/boards/{id}",
                         "/projects",
                         "/projects/{id}",
                         "/google-redirect",    // 구글 로그인 통과
@@ -54,7 +60,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 관리자 체크
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**","/board/**")
+                .addPathPatterns("/admin/**","/boards/**")
                 .excludePathPatterns(
                         "/boards",
                         "/boards/save-form"
@@ -82,6 +88,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/bids/{id}/select"
                 );
 
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String externalPath = Paths.get(FileUtil.IMAGES_DIR).toString();
+        registry.addResourceHandler("/images/**")
+                // 추후 C:upload/
+                // C:\\upload
+                .addResourceLocations("file:"+externalPath);
     }
     @Bean
     public PasswordEncoder passwordEncoder() {

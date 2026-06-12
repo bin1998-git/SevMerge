@@ -37,6 +37,14 @@
     .terms-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; }
     .terms-item input { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
     .terms-item label { cursor: pointer; }
+    .skill-input-wrap { display: flex; gap: 8px; }
+    .skill-input-wrap .form-input { flex: 1; }
+    .skill-add-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .skill-add-btn:hover { background: #2563eb; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .skill-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    .skill-tag button { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .skill-tag button:hover { color: #ef4444; }
 </style>
 
 <section class="auth-section">
@@ -48,7 +56,7 @@
             <p class="auth-desc"><span class="role-tag">👨‍💻 전문가</span></p>
         </div>
 
-        <form class="auth-form" action="/join" method="POST" id="joinForm">
+        <form class="auth-form" action="/join" method="POST" id="joinForm" enctype="multipart/form-data">
             <input type="hidden" name="role" value="EXPERT" />
 
             <div class="notice-box">
@@ -57,15 +65,25 @@
 
             <div class="section-label">기본 정보</div>
 
+            <div class="form-group" style="align-items:center; margin-bottom:8px;">
+                <!-- 원형 미리보기 (크게, 가운데) -->
+                <div id="preview" style="width:110px; height:110px; border-radius:50%; background:#f0f1f5; border:2px solid #e2e5ef; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-size:44px; color:#c4c9d9; margin-bottom:14px;">👤</div>
+
+                <!-- 파일 선택 (숨기고 라벨을 버튼처럼) -->
+                <input type="file" name="profileImageFile" id="profileImageFile" accept="image/*" style="display:none;" />
+                <label for="profileImageFile" class="upload-btn" style="display:inline-block; padding:10px 22px; background:#fff; border:1.5px solid #2563eb; color:#2563eb; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">프로필 이미지 선택</label>
+                <span class="form-hint" id="fileName" style="margin-top:6px;">선택 사항이에요</span>
+            </div>
+
             <div class="form-group">
                 <label class="form-label">이름 <span class="required">*</span></label>
-                <input type="text" name="name" class="form-input" placeholder="이름을 입력하세요" maxlength="20" />
+                <input type="text" name="name" class="form-input"value="테스트용" placeholder="이름을 입력하세요" maxlength="20" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">이메일 <span class="required">*</span></label>
                 <div class="email-verify-wrap">
-                    <input type="email" name="email" id="emailInput" class="form-input" placeholder="이메일을 입력하세요" />
+                    <input type="email" name="email" id="emailInput" value="test@test" class="form-input" placeholder="이메일을 입력하세요" />
                     <button type="button" id="sendCodeBtn" class="verify-btn">인증</button>
                 </div>
             </div>
@@ -81,19 +99,31 @@
 
             <div class="form-group">
                 <label class="form-label">비밀번호 <span class="required">*</span></label>
-                <input type="password" name="password" id="pwInput" class="form-input" placeholder="비밀번호를 입력하세요" />
-                <span class="form-hint">영문, 숫자 포함 8자 이상</span>
+                <input type="password" name="password" id="pwInput" value="test123!" class="form-input" placeholder="비밀번호를 입력하세요" />
+                <span class="form-hint">영문, 숫자, 특수문자 포함 8자 이상</span>
             </div>
 
             <div class="form-group">
                 <label class="form-label">비밀번호 확인 <span class="required">*</span></label>
-                <input type="password" name="passwordConfirm" id="pwConfirmInput" class="form-input" placeholder="비밀번호를 다시 입력하세요" />
+                <input type="password" name="passwordConfirm" id="pwConfirmInput"value="test123!" class="form-input" placeholder="비밀번호를 다시 입력하세요" />
                 <span class="form-hint" id="pwMatchHint"></span>
             </div>
 
             <div class="form-group">
                 <label class="form-label">휴대폰 번호 <span class="required">*</span></label>
-                <input type="tel" name="phone" class="form-input" placeholder="010-0000-0000" />
+                <div class="email-verify-wrap">
+                    <input type="tel" name="phone" id="phoneInput"value="010-0101-0101" class="form-input" placeholder="010-0000-0000" />
+                    <button type="button" id="sendSmsBtn" class="verify-btn">인증</button>
+                </div>
+            </div>
+
+            <div class="form-group" id="smsCodeGroup" style="display:none;">
+                <label class="form-label">인증 코드 <span class="required">*</span></label>
+                <div class="email-verify-wrap">
+                    <input type="text" id="smsCodeInput" class="form-input" placeholder="인증번호 6자리" maxlength="6" />
+                    <button type="button" id="verifySmsBtn" class="verify-btn">확인</button>
+                </div>
+                <span class="form-hint" id="smsHint"></span>
             </div>
 
             <div class="divider"></div>
@@ -101,7 +131,7 @@
 
             <div class="form-group">
                 <label class="form-label">한 줄 소개 <span class="required">*</span></label>
-                <input type="text" name="intro" class="form-input" placeholder="예) 5년차 React 개발자입니다" />
+                <input type="text" name="intro" class="form-input"value="예) 5년차 React 개발자입니다123" placeholder="예) 5년차 React 개발자입니다" />
             </div>
 
             <div class="form-group">
@@ -113,6 +143,18 @@
             <div class="form-group">
                 <label class="form-label">GitHub 주소 <span class="opt">(선택)</span></label>
                 <input type="text" name="githubUrl" class="form-input" placeholder="https://github.com/username" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">기술 스택 <span class="required">*</span></label>
+                <div class="skill-input-wrap">
+                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter" />
+                    <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
+                </div>
+                <div id="skillTags" class="skill-tags"></div>
+                <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요. 의뢰인이 이 키워드로 검색해요.</span>
+                <!-- 실제 전송되는 값 (콤마로 합쳐짐) -->
+                <input type="hidden" name="speciality" id="specialityHidden" />
             </div>
 
             <div class="divider"></div>
@@ -182,37 +224,103 @@
     pwInput.addEventListener("input", checkPwMatch);
     pwConfirmInput.addEventListener("input", checkPwMatch);
 
-    // 제출 시 필수값 + 비밀번호 + 약관 검증
-    form.addEventListener("submit", function (e) {
-        const name = form.name.value.trim();
-        const email = form.email.value.trim();
-        const pw = pwInput.value;
-        const pwConfirm = pwConfirmInput.value;
-        const phone = form.phone.value.trim();
-        const intro = form.intro.value.trim();
-        const career = form.career.value.trim();
+// ===== 기술 스택 태그 =====
+    const skillInput = document.getElementById("skillInput");
+    const skillAddBtn = document.getElementById("skillAddBtn");
+    const skillTags = document.getElementById("skillTags");
+    const specialityHidden = document.getElementById("specialityHidden");
+    let skills = [];
 
-        if (!name || !email || !pw || !pwConfirm || !phone || !intro || !career) {
-            e.preventDefault();
-            alert("필수 항목을 모두 입력해 주세요.");
+    function renderSkills() {
+        skillTags.innerHTML = "";
+        skills.forEach((skill, idx) => {
+            const tag = document.createElement("span");
+            tag.className = "skill-tag";
+            tag.innerHTML = skill + ' <button type="button" data-idx="' + idx + '">×</button>';
+            skillTags.appendChild(tag);
+        });
+        specialityHidden.value = skills.join(",");  // 콤마로 합쳐 hidden에 저장
+    }
+
+    function addSkill() {
+        const val = skillInput.value.trim();
+        if (!val) return;
+        if (skills.includes(val)) {   // 중복 방지
+            skillInput.value = "";
             return;
         }
-        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
-        if (!pwRegex.test(pw)) {
-            e.preventDefault();
-            alert("비밀번호는 영문과 숫자를 포함해 8자 이상이어야 합니다.");
-            return;
+        skills.push(val);
+        skillInput.value = "";
+        renderSkills();
+    }
+
+    skillAddBtn.addEventListener("click", addSkill);
+    skillInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();   // 엔터로 폼 제출되는 것 방지
+            addSkill();
         }
-        if (pw !== pwConfirm) {
-            e.preventDefault();
-            alert("비밀번호가 일치하지 않습니다.");
-            return;
+    });
+    // 칩 X 버튼 (이벤트 위임)
+    skillTags.addEventListener("click", function (e) {
+        if (e.target.tagName === "BUTTON") {
+            const idx = parseInt(e.target.dataset.idx);
+            skills.splice(idx, 1);
+            renderSkills();
         }
-        const allChecked = [...document.querySelectorAll(".term-check")].every(c => c.checked);
-        if (!allChecked) {
-            e.preventDefault();
-            alert("전문가 가입을 위해 필수 약관에 모두 동의해 주세요.");
-            return;
+    });
+
+    // 제출 시 필수값 + 비밀번호 + 기술스택 + 약관 검증
+form.addEventListener("submit", function (e) {
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const pw = pwInput.value;
+    const pwConfirm = pwConfirmInput.value;
+    const phone = form.phone.value.trim();
+    const intro = form.intro.value.trim();
+    const career = form.career.value.trim();
+
+    if (!name || !email || !pw || !pwConfirm || !phone || !intro || !career) {
+        e.preventDefault();
+        alert("필수 항목을 모두 입력해 주세요.");
+        return;
+    }
+    const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!pwRegex.test(pw)) {
+        e.preventDefault();
+        alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+        return;
+    }
+    if (pw !== pwConfirm) {
+        e.preventDefault();
+        alert("비밀번호가 일치하지 않습니다.");
+        return;
+    }
+    // 기술 스택 최소 1개
+    if (skills.length === 0) {
+        e.preventDefault();
+        alert("기술 스택을 최소 1개 이상 입력해 주세요.");
+        return;
+    }
+    const allChecked = [...document.querySelectorAll(".term-check")].every(c => c.checked);
+    if (!allChecked) {
+        e.preventDefault();
+        alert("전문가 가입을 위해 필수 약관에 모두 동의해 주세요.");
+        return;
+    }
+});
+
+    // 전화번호 하이픈 자동 입력
+    const phoneInput = form.phone;
+    phoneInput.addEventListener("input", function () {
+        let v = phoneInput.value.replace(/[^0-9]/g, "");  // 숫자만 남김
+        if (v.length > 11) v = v.slice(0, 11);            // 최대 11자리
+        if (v.length < 4) {
+            phoneInput.value = v;
+        } else if (v.length < 8) {
+            phoneInput.value = v.slice(0, 3) + "-" + v.slice(3);
+        } else {
+            phoneInput.value = v.slice(0, 3) + "-" + v.slice(3, 7) + "-" + v.slice(7);
         }
     });
 
@@ -251,6 +359,71 @@
             codeHint.style.color = "#ef4444";
         }
     });
+
+    // ===== 휴대폰 SMS 인증 =====
+    const sendSmsBtn   = document.getElementById("sendSmsBtn");
+    const smsCodeGroup = document.getElementById("smsCodeGroup");
+    const smsCodeInput = document.getElementById("smsCodeInput");
+    const verifySmsBtn = document.getElementById("verifySmsBtn");
+    const smsHint      = document.getElementById("smsHint");
+
+    sendSmsBtn.addEventListener("click", async function () {
+        const phone = document.getElementById("phoneInput").value.trim();
+        if (!phone) { alert("휴대폰 번호를 입력해주세요."); return; }
+        const res = await fetch("/api/sms/send", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: phone })
+        });
+        if (res.ok) {
+            alert("인증번호가 발송되었습니다.");
+            smsCodeGroup.style.display = "flex";
+            smsCodeGroup.style.flexDirection = "column";
+        } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
+    });
+
+    verifySmsBtn.addEventListener("click", async function () {
+        const phone = document.getElementById("phoneInput").value.trim();
+        const code  = smsCodeInput.value.trim();
+        if (!code) { alert("인증번호를 입력해주세요."); return; }
+        const res = await fetch("/api/sms/verify", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: phone, code: code })
+        });
+        if (res.ok) {
+            smsHint.textContent = "✓ 인증이 완료되었습니다.";
+            smsHint.style.color = "#10b981";
+            document.getElementById("phoneInput").readOnly = true;
+            sendSmsBtn.disabled = true;
+            smsCodeInput.disabled = true;
+            verifySmsBtn.disabled = true;
+        } else {
+            smsHint.textContent = "✗ 인증번호가 일치하지 않습니다.";
+            smsHint.style.color = "#ef4444";
+        }
+    });
+
+    // 프로필 미리보기
+    const profileImageFile = document.getElementById("profileImageFile");
+    const preview = document.getElementById("preview");
+    const fileName = document.getElementById("fileName");
+    profileImageFile.addEventListener("change", function () {
+        const file = profileImageFile.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.style.backgroundImage = "url(" + e.target.result + ")";
+                preview.textContent = "";
+            };
+            reader.readAsDataURL(file);
+            fileName.textContent = file.name;
+        } else {
+            preview.style.backgroundImage = "";
+            preview.textContent = "👤";
+            fileName.textContent = "선택 사항이에요";
+        }
+    });
+
+
 </script>
 
 {{> layout/footer}}

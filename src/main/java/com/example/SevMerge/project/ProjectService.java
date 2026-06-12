@@ -6,13 +6,17 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -22,7 +26,9 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectCustomRepository projectCustomRepository;
     private final BidRepository bidRepository;
+    private final MemberRepository memberRepository;
 
     // 프로젝트 전체조회 서비스
     public List<ProjectResponeDTO.ListDTO> findAllProjects() {
@@ -68,6 +74,18 @@ public class ProjectService {
     public List<ProjectResponeDTO.ListDTO> findByCategory(String category) {
         log.info("project 카테고리별 조회 서비스 시작");
         List<Project> projectList = projectRepository.findByCategory(Category.valueOf(category));
+        return projectList.stream()
+                .map(ProjectResponeDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+
+
+    // 중복 체크
+    public List<ProjectResponeDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
+
+        List<Project> projectList = projectCustomRepository.findByFilters(keyword,category, statusFilter, bidFilter);
+
         return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
                 .collect(Collectors.toList());
@@ -139,6 +157,47 @@ public class ProjectService {
         log.info("deadline 값: {}", req.getDeadline());
         projectRepository.save(project);
     }
+
+    // 프로젝트 임시등록
+    @Transactional
+    public Long saveDraft(Long memberId, ProjectRequestDTO.UpdateDTO dto) {
+        Project project = projectRepository.findByMemberIdAndProjectStatus(memberId, ProjectStatus.DRAFT).orElseGet(
+                () -> {
+                    Member member = memberRepository.findById(memberId).orElseThrow();
+                    return Project.builder()
+                            .member(member)
+                            .title("임시저장")
+                            .category(Category.WEB)
+                            .description("")
+                            .budgetMin(0)
+                            .budgetMax(0)
+                            .deadline(new Timestamp(System.currentTimeMillis()))
+                            .bidFilter(BidFilter.ALL)
+                            .projectStatus(ProjectStatus.DRAFT)
+                            .build();
+
+
+                });
+        project.updateDraft(dto);
+        return projectRepository.save(project).getId();
+
+
+    }
+
+    //  임시저장 데이터 불러오기
+    public ProjectResponeDTO.DetailDTO getMyDraft(Long memberId) {
+        log.info("임시저장 프로젝트 조회 서비스 시작 - memberId: {}", memberId);
+        // 엔티티 조회
+        Project draft = projectRepository.findByMemberIdAndProjectStatus(memberId, ProjectStatus.DRAFT).orElse(null);
+
+        // 데이터가 없으면 null값
+        if (draft == null) {
+            return null;
+        }
+
+        return new ProjectResponeDTO.DetailDTO(draft);
+    }
+
 
     // 프로젝트 수정
     @Transactional

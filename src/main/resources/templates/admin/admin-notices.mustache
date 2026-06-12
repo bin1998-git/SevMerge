@@ -129,7 +129,6 @@
         overflow: hidden;
     }
 
-    /* 상단 헤더와 하단 로우의 전체 틀 FlexBox 설정 */
     .admin-table-head, .admin-table-row {
         display: flex;
         align-items: center;
@@ -152,7 +151,6 @@
         font-size: 13px;
     }
 
-    /* 1. 상단 헤더와 하단 데이터 줄 전체 틀 */
     .admin-table-head, .admin-table-row {
         display: flex !important;
         align-items: center !important;
@@ -175,10 +173,6 @@
         background: #fff !important;
     }
 
-
-    /* 2. 상하단 태그 종류 상관없이 순서대로 정중앙 배치 */
-
-    /* [1번째 칸] No (번호) - 무조건 60px 고정 후 정중앙 */
     .admin-table-head > *:nth-child(1),
     .cell-id {
         width: 60px !important;
@@ -186,7 +180,6 @@
         text-align: center !important;
     }
 
-    /* [2번째 칸] 제목 - 남은 여백 다 차지하고 무조건 정중앙 + 말줄임 */
     .admin-table-head > *:nth-child(2),
     .cell-title {
         flex: 1 !important;
@@ -320,7 +313,6 @@
         position: relative !important;
     }
 
-    /* 1. 기본 서브메뉴 상태 (!important를 제거하여 .active가 정상 작동하도록 수정) */
     .sidebar-submenu {
         display: none; /* !important를 뺐습니다 */
         flex-direction: column !important;
@@ -328,7 +320,6 @@
         background: #f8f9ff !important;
     }
 
-    /* 2. [★수정] 화면 이동 후 .active 클래스가 붙었을 때 상시 노출 (flex로 유지) */
     .sidebar-submenu.active {
         display: flex !important;
         visibility: visible !important;
@@ -337,12 +328,10 @@
         height: auto !important;
     }
 
-    /* 3. 호버했을 때도 똑같이 flex로 노출 (기존 유지) */
     .sidebar-dropdown-group:hover .sidebar-submenu {
         display: flex !important;
     }
 
-    /* 4. [★수정] 현재 머물고 있는 서브 메뉴 글자 색상 및 배경 파란색 고정 */
     .sidebar-submenu .submenu-link.selected {
         color: #2563eb !important;
         font-weight: bold !important;
@@ -350,14 +339,12 @@
         border-left-color: #2563eb !important; /* 왼쪽 바 색상 고정 */
     }
 
-    /* 5. 서브메뉴가 열렸을 때 '게시판 관리' 주 메뉴 호버 스타일 (기존 유지) */
     .sidebar-dropdown-group:hover .dropdown-trigger {
         color: #2563eb !important;
         background: #eff6ff !important;
         border-left-color: #2563eb !important;
     }
 
-    /* 6. [★추가] 화면 이동 후 '게시판 관리' 주 메뉴도 파란색 스타일 유지 */
     .sidebar-link.dropdown-trigger.active {
         color: #2563eb !important;
         background: #eff6ff !important;
@@ -365,14 +352,12 @@
         font-weight: bold !important;
     }
 
-    /* 7. 주변 링크 초기화 관련 (기존 유지) */
     .admin-sidebar:has(.sidebar-dropdown-group:hover) .sidebar-link.active {
         color: #6b7280 !important;
         background: transparent !important;
         border-left-color: transparent !important;
     }
 
-    /* 8. 기본 서브메뉴 링크 스타일 (기존 유지) */
     .submenu-link {
         display: flex !important;
         align-items: center !important;
@@ -385,7 +370,6 @@
         border-left: 3px solid transparent !important;
     }
 
-    /* 9. 서브메뉴 링크 호버 스타일 (기존 유지) */
     .submenu-link:hover {
         color: #2563eb !important;
         background: #eff6ff !important;

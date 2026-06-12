@@ -1,5 +1,6 @@
 package com.example.SevMerge.bid;
 
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.project.ProjectService;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 import java.util.List;
 
@@ -131,9 +134,12 @@ public class BidController {
     public ResponseEntity<?> select(@PathVariable Long id, HttpSession session) {
         log.info("의뢰인의 제안서 낙찰 처리 요청 - bidId: {}", id);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-
-        bidService.selectBid(id, sessionUser);
-        return ResponseEntity.ok().build();
+        try {
+            bidService.selectBid(id, sessionUser);
+            return ResponseEntity.ok().build();
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     // 9. 제안서 보류 처리

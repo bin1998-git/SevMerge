@@ -11,34 +11,25 @@
     .list-count { font-size: 14px; color: #9ca3af; font-weight: 500; }
     .list-count strong { color: #1c1e26; font-weight: 700; }
     .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .search-input::placeholder { color: #c4c9d9; }
+    .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; color: #1c1e26; outline: none; transition: border-color .15s; }
     .search-input:focus { border-color: #2563eb; }
-    .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+    /* 필터 버튼 스타일 */
     .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; transition: all .15s; text-decoration: none; }
+    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; cursor: pointer; transition: all .15s; }
     .tab:hover { border-color: #2563eb; color: #2563eb; }
     .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
-    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 7px; }
+
     .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
-    .project-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; transition: border-color .2s, box-shadow .2s, transform .15s; }
-    .project-card:hover { border-color: #bfdbfe; box-shadow: 0 8px 28px rgba(37,99,235,.08); transform: translateY(-3px); }
+    .project-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; transition: transform .15s; }
+    .project-card:hover { transform: translateY(-3px); border-color: #bfdbfe; }
     .project-card-link { display: block; padding: 24px; text-decoration: none; color: inherit; }
-    .project-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
     .project-category { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; }
     .badge-certified { font-size: 10px; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 9px; border-radius: 6px; }
-    .project-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 8px; line-height: 1.5; }
-    .project-desc { font-size: 12px; color: #9ca3af; line-height: 1.75; margin-bottom: 20px; }
-    .project-card-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f8; padding-top: 14px; }
-    .project-budget { font-size: 15px; font-weight: 900; color: #1c1e26; }
-    .project-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #c4c9d9; font-weight: 600; }
-    .d-day { color: #c4c9d9; }
-    .d-day.urgent { color: #ef4444; font-weight: 700; }
-    .empty-state { text-align: center; padding: 80px 0; }
-    .empty-msg { font-size: 15px; color: #c4c9d9; margin-bottom: 20px; }
-    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .project-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 8px; }
+    .project-desc { font-size: 12px; color: #9ca3af; margin-bottom: 20px; }
     .btn-primary { background: #2563eb; color: #fff; }
-    .btn-primary:hover { background: #1d4ed8; }
 </style>
 
 <div class="page-header">
@@ -50,7 +41,6 @@
 
 <section class="list-section">
     <div class="list-inner">
-
         <div class="list-action">
             <span class="list-count">총 <strong>{{totalCount}}</strong>개의 프로젝트</span>
             <a href="/projects/save-form" class="btn btn-primary btn-sm">프로젝트 등록</a>
@@ -64,76 +54,48 @@
         </form>
 
         <div class="filter-tabs">
-           <a href="/projects" class="tab {{#isAll}}active{{/isAll}}">전체</a>
-           <a href="/projects?category=WEB" class="tab {{#isWeb}}active{{/isWeb}}">웹개발</a>
-           <a href="/projects?category=APP" class="tab {{#isApp}}active{{/isApp}}">앱개발</a>
-           <a href="/projects?category=UI_UX" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</a>
-           <a href="/projects?category=DATA" class="tab {{#isData}}active{{/isData}}">데이터</a>
-           <a href="/projects?category=VIDEO" class="tab {{#isVideo}}active{{/isVideo}}">영상편집</a>
-           <a href="/projects?category=ETC" class="tab {{#isEtc}}active{{/isEtc}}">기타</a>
-
-           <a href="/projects?statusFilter=CLOSED" class="tab {{#isClosedFilter}}active{{/isClosedFilter}}" style="border-color:#cbd5e1; color:#475569;">🔒 낙찰 완료 건</a>
-
-           <a href="/projects?bidFilter=CERTIFIED_ONLY" class="tab {{#isCertifiedOnly}}active{{/isCertifiedOnly}}" style="border-color:#fde68a; color:#b45309;">⭐ 인증 전문가만</a>
+            <button type="button" onclick="resetFilters()" class="tab {{#isAll}}active{{/isAll}}">전체</button>
+            <button type="button" onclick="addFilter('category', 'WEB')" class="tab {{#isWeb}}active{{/isWeb}}">웹개발</button>
+            <button type="button" onclick="addFilter('category', 'APP')" class="tab {{#isApp}}active{{/isApp}}">앱개발</button>
+            <button type="button" onclick="addFilter('category', 'UI_UX')" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</button>
+            <button type="button" onclick="addFilter('category', 'DATA')" class="tab {{#isData}}active{{/isData}}">데이터</button>
+            <button type="button" onclick="addFilter('category', 'VIDEO')" class="tab {{#isVideo}}active{{/isVideo}}">영상편집</button>
+            <button type="button" onclick="addFilter('category', 'ETC')" class="tab {{#isEtc}}active{{/isEtc}}">기타</button>
+            <button type="button" onclick="addFilter('statusFilter', 'CLOSED')" class="tab {{#isClosedFilter}}active{{/isClosedFilter}}">🔒 낙찰 완료 건</button>
+            <button type="button" onclick="addFilter('bidFilter', 'CERTIFIED_ONLY')" class="tab {{#isCertifiedOnly}}active{{/isCertifiedOnly}}">⭐ 인증 전문가만</button>
         </div>
 
         <div class="project-grid">
             {{#projects}}
             <article class="project-card">
                 <a href="/projects/{{id}}" class="project-card-link">
-
                    <div class="project-card-top">
                        <span class="project-category">{{categoryName}}</span>
-
-                       {{#isClosed}}
-                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 6px;">🔒낙찰 완료</span>
-                       {{/isClosed}}
-                       {{^isClosed}}
-                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 3px 9px; border-radius: 6px;">⚡ 모집 중</span>
-                       {{/isClosed}}
-                       {{#privateProject}}
-                       <span class="badge-status" style="font-size: 10px; font-weight: 700; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 9px; border-radius: 6px;">🔒 비공개 입찰</span>
-                       {{/privateProject}}
-
-                       {{#isCertifiedOnly}}
-                       <span class="badge-certified">⭐ 인증 전문가만</span>
-                       {{/isCertifiedOnly}}
+                       {{#isCertifiedOnly}} <span class="badge-certified">⭐ 인증 전문가만</span> {{/isCertifiedOnly}}
                    </div>
-
                     <h3 class="project-title">{{title}}</h3>
                     <p class="project-desc">{{description}}</p>
-
-                   <div class="project-card-bottom">
-                      <div class="project-budget">{{budgetMin}}~{{budgetMax}}만원</div>
-                      <div class="project-meta">
-
-                          {{#isClosed}}
-                          <span style="color: #9ca3af; font-weight: 600;">체결 완료</span>
-                          {{/isClosed}}
-                          {{^isClosed}}
-                          <span>제안서 {{bidCount}}개</span>
-                          {{/isClosed}}
-
-                          {{#isClosed}}
-                          <span class="d-day" style="color: #9ca3af; font-weight: 700;">마감</span>
-                          {{/isClosed}}
-                          {{^isClosed}}
-                          <span class="d-day {{#isUrgent}}urgent{{/isUrgent}}">D-{{dDay}}</span>
-                          {{/isClosed}}
-                      </div>
-                   </div>
                 </a>
             </article>
             {{/projects}}
         </div>
-
-        {{^projects}}
-        <div class="empty-state">
-            <p class="empty-msg">등록된 프로젝트가 없습니다.</p>
-            <a href="/projects/save-form" class="btn btn-primary">첫 프로젝트 등록하기</a>
-        </div>
-        {{/projects}}
-
     </div>
 </section>
+
+<script>
+    function addFilter(key, value) {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get(key) === value) {
+            url.searchParams.delete(key);
+        } else {
+            url.searchParams.set(key, value);
+        }
+        window.location.href = url.toString();
+    }
+
+    function resetFilters() {
+        window.location.href = "/projects";
+    }
+</script>
+
 {{> layout/footer}}

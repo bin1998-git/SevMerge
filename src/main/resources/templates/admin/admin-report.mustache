@@ -1,0 +1,518 @@
+{{> layout/header}}
+
+<style>
+    .admin-wrap {
+        display: flex;
+        min-height: calc(100vh - 64px);
+    }
+
+    .admin-sidebar {
+        width: 220px;
+        background: #fff;
+        border-right: 1px solid #eaecf4;
+        padding: 28px 0;
+        flex-shrink: 0;
+        position: sticky;
+        top: 64px;
+        height: calc(100vh - 64px);
+    }
+
+    .sidebar-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #c4c9d9;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 0 20px;
+        margin-bottom: 8px;
+        margin-top: 20px;
+    }
+
+    .sidebar-label:first-child {
+        margin-top: 0;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b7280;
+        text-decoration: none;
+        transition: all .12s;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover {
+        color: #2563eb;
+        background: #f8f9ff;
+    }
+
+    .sidebar-link.active {
+        color: #2563eb;
+        background: #eff6ff;
+        border-left-color: #2563eb;
+    }
+
+    .sidebar-icon {
+        font-size: 16px;
+    }
+
+    .admin-content {
+        flex: 1;
+        padding: 36px 36px 80px;
+        background: #f5f6fa;
+    }
+
+    .admin-header {
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .admin-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #1c1e26;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+    }
+
+    .admin-desc {
+        font-size: 14px;
+        color: #9ca3af;
+    }
+
+    .search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 11px 16px;
+        background: #fff;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 9px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1c1e26;
+        outline: none;
+        max-width: 360px;
+    }
+
+    .search-input:focus {
+        border-color: #2563eb;
+        outline: none;
+    }
+
+    .search-btn {
+        padding: 11px 22px;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .admin-table-wrap {
+        background: #fff;
+        border-radius: 14px;
+        border: 1.5px solid #eaecf4;
+        overflow: hidden;
+    }
+
+    .admin-table-head, .admin-table-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
+        padding: 15px 22px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    .admin-table-head {
+        background: #f8f9fc;
+        border-bottom: 1px solid #eaecf4;
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ca3af;
+        letter-spacing: .5px;
+    }
+
+    .admin-table-row {
+        padding: 15px 22px;
+        border-bottom: 1px solid #f3f4f8;
+        font-size: 13px;
+    }
+
+    .admin-table-head, .admin-table-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 15px 22px !important;
+    }
+
+    .admin-table-head {
+        background: #f8f9fc !important;
+        border-bottom: 1px solid #eaecf4 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #9ca3af !important;
+        letter-spacing: .5px !important;
+    }
+
+    .admin-table-row {
+        border-bottom: 1px solid #f3f4f8 !important;
+        font-size: 13px !important;
+        background: #fff !important;
+    }
+
+    .admin-table-head > *:nth-child(1),
+    .cell-id {
+        width: 60px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .admin-table-head > *:nth-child(2),
+    .cell-title {
+        flex: 1 !important;
+        min-width: 0 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .admin-table-head > *:nth-child(3),
+    .cell-date {
+        width: 150px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .admin-table-row:last-child {
+        border-bottom: none;
+    }
+
+    .admin-table-row:hover {
+        background: #f8f9ff;
+    }
+
+    .report-cell-id {
+        width: 60px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-title {
+        flex: 2.2 !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        padding-left: 5px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .report-cell-reason {
+        width: 150px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-detail {
+        flex: 1.8 !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        padding-left: 5px !important;
+        color: #4b5563 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .report-cell-name {
+        width: 100px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-date {
+        width: 140px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-action {
+        width: 80px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    .cell-id {
+        color: #c4c9d9;
+        font-weight: 500;
+    }
+
+    .cell-name {
+        font-weight: 700;
+        color: #1c1e26;
+    }
+
+    .cell-email {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 2px;
+    }
+
+    .cell-date {
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+    .role-admin {
+        font-size: 11px;
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .role-member {
+        font-size: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .status-active {
+        font-size: 11px;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .del-btn {
+        padding: 5px 12px;
+        background: #fff3f3;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .del-btn:hover {
+        background: #fee2e2;
+    }
+
+    .paging {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 24px;
+    }
+
+    .page-btn {
+        padding: 9px 15px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e5ef;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
+        background: #fff;
+        text-decoration: none;
+        transition: all .15s;
+    }
+
+    .page-btn:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+    }
+
+    .page-btn.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+    }
+
+    .sidebar-dropdown-group {
+        display: block !important;
+        width: 100% !important;
+        position: relative !important;
+    }
+
+    .sidebar-submenu {
+        display: none; /* !important를 뺐습니다 */
+        flex-direction: column !important;
+        width: 100% !important;
+        background: #f8f9ff !important;
+    }
+
+    .sidebar-submenu.active {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-height: 500px !important;
+        height: auto !important;
+    }
+
+    .sidebar-dropdown-group:hover .sidebar-submenu {
+        display: flex !important;
+    }
+
+    .sidebar-submenu .submenu-link.selected {
+        color: #2563eb !important;
+        font-weight: bold !important;
+        background-color: #e0f2fe !important;
+        border-left-color: #2563eb !important;
+    }
+
+    .sidebar-dropdown-group:hover .dropdown-trigger {
+        color: #2563eb !important;
+        background: #eff6ff !important;
+        border-left-color: #2563eb !important;
+    }
+
+    .sidebar-link.dropdown-trigger.active {
+        color: #2563eb !important;
+        background: #eff6ff !important;
+        border-left-color: #2563eb !important;
+        font-weight: bold !important;
+    }
+
+    .admin-sidebar:has(.sidebar-dropdown-group:hover) .sidebar-link.active {
+        color: #6b7280 !important;
+        background: transparent !important;
+        border-left-color: transparent !important;
+    }
+
+    .submenu-link {
+        display: flex !important;
+        align-items: center !important;
+        padding: 10px 20px 10px 46px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #6b7280 !important;
+        text-decoration: none !important;
+        transition: all .12s !important;
+        border-left: 3px solid transparent !important;
+    }
+
+    .submenu-link:hover {
+        color: #2563eb !important;
+        background: #eff6ff !important;
+        border-left-color: #2563eb !important;
+    }
+</style>
+
+<div class="admin-wrap">
+    <main class="admin-content">
+
+        <div class="admin-header">
+            <div>
+                <h1 class="admin-title">댓글 신고 관리</h1>
+                <p class="admin-desc">사용자들이 제기한 댓글 신고 내역을 모니터링하고 조치합니다.</p>
+            </div>
+        </div>
+
+        <form action="/admin/reports" method="get" class="search-bar">
+            <input type="text" class="search-input" name="keyword" placeholder="댓글 내용, 신고자, 사유 검색..."
+                   value=""/>
+            <button type="submit" class="search-btn">검색</button>
+        </form>
+
+
+        <div class="admin-table-wrap"
+             style="width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;">
+
+            <div class="report-table-head-fix"
+                 style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 15px 22px !important; background: #f8f9fc !important; border-bottom: 1px solid #eaecf4 !important; width: 100% !important; box-sizing: border-box !important; font-size: 11px !important; font-weight: 700 !important; color: #9ca3af !important; letter-spacing: .5px !important;">
+                <span style="width: 50px !important; flex-shrink: 0 !important; text-align: center !important;">No</span>
+                <span style="flex: 1.8 !important; min-width: 0 !important; text-align: center !important;">신고 댓글 원문</span>
+                <span style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">신고 분류</span>
+                <span style="flex: 1.2 !important; min-width: 0 !important; text-align: center !important;">상세 신고 사유</span>
+                <span style="width: 90px !important; flex-shrink: 0 !important; text-align: center !important;">신고자</span>
+                <span style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">신고일자</span>
+                <span style="width: 70px !important; flex-shrink: 0 !important; text-align: center !important;">조치</span>
+                <span style="width: 40px !important; flex-shrink: 0 !important; text-align: center !important;"></span>
+            </div>
+
+            {{#reports}}
+                <div class="admin-table-row"
+                     style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 15px 22px !important; border-bottom: 1px solid #eaecf4 !important; width: 100% !important; box-sizing: border-box !important; font-size: 13px !important;">
+
+        <span class="cell-id report-cell-id"
+              style="width: 50px !important; flex-shrink: 0 !important; text-align: center !important;">{{id}}</span>
+
+                    <a href="/boards/{{boardId}}" class="cell-title report-cell-title"
+                       style="flex: 1.8 !important; min-width: 0 !important; text-align: center !important; color: #2563eb; text-decoration: none; font-weight: 600; white-space: normal !important; word-break: break-all !important;">
+                        {{commentContent}}
+                    </a>
+
+                    <span class="report-cell-reason"
+                          style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important; color: #dc3545; font-weight: 700;">
+                        {{reason}}
+                    </span>
+
+                    <span class="report-cell-detail"
+                          style="flex: 1.2 !important; min-width: 0 !important; text-align: center !important; white-space: normal !important; word-break: break-all !important;">
+                        {{contentDetail}}
+                    </span>
+
+                    <span class="cell-name report-cell-name"
+                          style="width: 90px !important; flex-shrink: 0 !important; text-align: center !important;">{{reporterName}}</span>
+
+                    <span class="cell-date report-cell-date"
+                          style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">{{createdAt}}</span>
+
+                    <span class="report-cell-action"
+                          style="width: 70px !important; flex-shrink: 0 !important; text-align: center !important;">
+
+                    <form action="/admin/reports/{{commentId}}/delete" method="post" style="display:inline;"
+                          onsubmit="return confirm('정말 이 댓글을 삭제 처리하시겠습니까?');">
+                        <button type="submit" class="del-btn">삭제</button>
+                    </form>
+        </span>
+
+                    <span class="report-cell-cancel"
+                          style="width: 40px !important; flex-shrink: 0 !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">
+            <form action="/admin/reports/{{id}}/reject" method="POST"
+                  style="display:inline; margin: 0 !important;" onsubmit="return confirm('이 신고 건을 반려하고 목록에서 제거하시겠습니까?\n(원본 댓글은 삭제되지 않습니다.)');">
+                <button type="submit" class="cancel-btn"
+                        style="background: none !important; border: none !important; color: #9ca3af !important; font-size: 20px !important; font-weight: bold !important; cursor: pointer !important; padding: 0 !important; line-height: 1 !important;"
+                        title="신고 반려">
+                    &times;
+                </button>
+            </form>
+                    </span>
+                </div>
+            {{/reports}}
+        </div>
+    </main>
+</div>
+{{> layout/footer}}

@@ -298,23 +298,21 @@
                  style="margin-bottom: 0; padding-bottom: 2px; flex-shrink: 0; display: flex; gap: 8px; align-items: center;">
                 <!-- 1. 작성자 본인일 때만 뜨는 수정/삭제 -->
                 {{^isNotice}}
-                {{#isOwner}}
-                    <a href="/boards/{{board.id}}/edit" class="btn btn-outline btn-sm">수정</a>
-                {{/isOwner}}
+                    {{#isOwner}}
+                        <a href="/boards/{{board.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+                    {{/isOwner}}
                 {{/isNotice}}
                 {{#isNotice}}
-                {{#isAdmin}}
-                    <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm">수정</a>
-                {{/isAdmin}}
+                    {{#isAdmin}}
+                        <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm">수정</a>
+                    {{/isAdmin}}
                 {{/isNotice}}
                 <!-- 관리자가 아닐 때만 일반 회원용 삭제 버튼 노출 -->
                 {{#isOwner}}
                     {{^isAdmin}}
-                        <form action="/boards/{{board.id}}/delete" method="POST" style="display:inline; margin: 0;">
-                            <button type="submit" class="btn btn-sm"
-                                    style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca;">삭제
-                            </button>
-                        </form>
+                        <button type="button" onclick="deleteBoard({{board.id}})" class="btn btn-sm"
+                                style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca;">삭제
+                        </button>
                     {{/isAdmin}}
                 {{/isOwner}}
 
@@ -376,39 +374,61 @@
                                     <div class="comment-date">{{createdAt}}</div>
                                 </div>
                             </div>
-                            {{#isOwner}}
-                                <div class="comment-actions" id="comment-actions-{{id}}">
-                                    <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
-                                    <form action="/comments/{{id}}/delete" method="POST" style="display:inline;">
-                                        <input type="hidden" name="boardId" value="{{boardId}}">
-                                        <button type="submit" class="comment-btn delete">삭제</button>
-                                    </form>
-                                </div>
-                            {{/isOwner}}
+
+                            <!-- 버튼 영역 시작 -->
+                            <div class="comment-actions-container">
+                                {{^isAdmin}}
+                                    {{#isOwner}}
+                                        <div class="comment-actions" id="comment-actions-{{id}}" style="display:inline-block;">
+                                            <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
+                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline;">
+                                                <input type="hidden" name="boardId" value="{{boardId}}">
+                                                <button type="submit" class="comment-btn delete">삭제</button>
+                                            </form>
+                                        </div>
+                                    {{/isOwner}}
+
+                                    {{^isOwner}}
+                                        <div class="comment-actions" style="display:inline-block;">
+                                            <button type="button" class="comment-btn report" onclick="openReportModal('{{id}}', '{{boardId}}')" style="background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
+                                                신고
+                                            </button>
+                                        </div>
+                                    {{/isOwner}}
+                                {{/isAdmin}}
+
+                            </div>
                         </div>
 
-                        <!-- 💡 3. 댓글 내용 수정 -->
                         <div class="comment-content">
                             <div id="comment-text-{{id}}" style="display: block;">
                                 {{comment}}
                             </div>
 
                             <div id="comment-edit-form-{{id}}" style="display: none; width: 100%; margin-top: 10px;">
-                                <form action="/comments/{{id}}/update" method="POST" style="display: flex; align-items: center; width: 100%; gap: 10px;">
+                                <form action="/comments/{{id}}/update" method="POST"
+                                      style="display: flex; align-items: center; width: 100%; gap: 10px;">
                                     <input type="hidden" name="boardId" value="{{boardId}}">
 
                                     <input type="text" name="comment" value="{{comment}}" required
                                            style="flex: 1; padding: 6px 10px; border: 1px solid #007bff; border-radius: 4px; font-size: 14px;">
 
-                                    <button type="submit" class="comment-btn" style="background-color: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px;">수정완료</button>
-                                    <button type="button" class="comment-btn" onclick="toggleEdit('{{id}}')" style="background-color: #6c757d; color: white; border: none; padding: 6px 10px; border-radius: 4px;">취소</button>
+                                    <button type="submit" class="comment-btn"
+                                            style="background-color: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px;">
+                                        수정완료
+                                    </button>
+                                    <button type="button" class="comment-btn" onclick="toggleEdit('{{id}}')"
+                                            style="background-color: #6c757d; color: white; border: none; padding: 6px 10px; border-radius: 4px;">
+                                        취소
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 {{/comments}}
+            </div>
 
-                <script>
+            <script>
                     function toggleEdit(commentId) {
                         const textView = document.getElementById('comment-text-' + commentId);
                         const editForm = document.getElementById('comment-edit-form-' + commentId);
@@ -424,6 +444,23 @@
                             if (actions) actions.style.display = 'block';
                         }
                     }
+
+                    async function deleteBoard(boardId) {
+                      try {
+                        if (!confirm("정말 삭제하시겠습니까?")) {
+                          return;
+                        }
+                        const res = await fetch("/boards/" + boardId, {
+                          method: "DELETE",
+                        });
+
+                        if (res.ok) {
+                          location.href = "/boards";
+                        }
+                      } catch (e) {
+                        alert(e.message);
+                      }
+                    }
                 </script>
                 {{^comments}}
                     <div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</div>
@@ -434,4 +471,67 @@
 
     </div>
 </section>
+
+<div id="reportModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+    <div style="background-color: #fff; padding: 28px; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); box-sizing: border-box;">
+
+        <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 20px; font-weight: 700; color: #1c1e26;">댓글 신고하기</h3>
+        <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">해당 댓글을 신고하는 사유와 상세 내용을 작성해 주세요.</p>
+
+        <form id="reportForm" action="" method="POST">
+            <!-- 히든 인풋 태그에 현재 게시글 ID를 자바스크립트가 채워 넣습니다 -->
+            <input type="hidden" id="modalBoardId" name="boardId" value="">
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; color: #4b5563; margin-bottom: 6px;">신고 분류</label>
+                <select name="reason" required style="width: 100%; padding: 12px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; outline: none; background: #fff; box-sizing: border-box;">
+                    <option value="" disabled selected>신고 사유를 선택하세요</option>
+                    <option value="스팸 광고 / 홍보성 도배">스팸 광고 / 홍보성 도배</option>
+                    <option value="욕설 / 비속어 및 혐오 표현">욕설 / 비속어 및 혐오 표현</option>
+                    <option value="타인 비방 및 명예훼손">타인 비방 및 명예훼손</option>
+                    <option value="음란성 혹은 부적절한 내용">음란성 혹은 부적절한 내용</option>
+                    <option value="기타 사유">기타 사유</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; color: #4b5563; margin-bottom: 6px;">상세 내용 입력</label>
+                <!-- 💡 [여기만 바꿨습니다] name 속성을 "detail"에서 자바 DTO와 완벽 매칭되는 "contentDetail"로 수정 완료! -->
+                <textarea name="contentDetail" placeholder="신고 사유에 대한 구체적인 내용을 입력해 주세요. (최대 300자)" maxlength="300" required
+                          style="width: 100%; height: 120px; padding: 12px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; resize: none; outline: none; box-sizing: border-box; color: #1c1e26;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="closeReportModal()" style="padding: 11px 20px; background: #f3f4f6; color: #4b5563; border: none; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s;">취소</button>
+                <button type="submit" style="padding: 11px 20px; background: #dc3545; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s;">신고보내기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openReportModal(commentId, boardId) {
+        const modal = document.getElementById('reportModal');
+        const form = document.getElementById('reportForm');
+        const hiddenBoardInput = document.getElementById('modalBoardId');
+
+        form.action = "/comments/" + commentId + "/report";
+        hiddenBoardInput.value = boardId;
+
+        modal.style.display = "flex";
+    }
+
+    function closeReportModal() {
+        const modal = document.getElementById('reportModal');
+        modal.style.display = "none";
+        document.getElementById('reportForm').reset(); // 폼 초기화
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('reportModal');
+        if (event.target == modal) {
+            closeReportModal();
+        }
+    }
+</script>
 {{> layout/footer}}

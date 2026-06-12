@@ -88,7 +88,7 @@ public class PaymentService {
 
         // 수수료 계산
         int platformFee = (int) (amount * PLATFORM_FEE_RATE);
-        int netAmount   = amount - platformFee;
+        int netAmount = amount - platformFee;
 
         // 에스크로 레코드 저장
         Payment payment = Payment.builder()

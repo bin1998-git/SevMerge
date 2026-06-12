@@ -2,15 +2,24 @@ package com.example.SevMerge.notification;
 
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "notification_tb")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Notification {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,4 +42,7 @@ public class Notification {
     @CreationTimestamp
     private Timestamp createdAt;
 
+    public void read() {
+        this.isRead = true;
+    }
 }

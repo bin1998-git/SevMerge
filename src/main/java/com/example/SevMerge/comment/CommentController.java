@@ -2,13 +2,14 @@ package com.example.SevMerge.comment;
 
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,8 +56,27 @@ public class CommentController {
             return "redirect:/login";
         }
 
+        if (sessionMember.getRole() == Role.ADMIN) {
+            commentService.deleteCommentByAdmin(commentId);
+            return "redirect:/admin/comments";
+        }
         commentService.deleteComment(commentId, sessionMember.getId());
 
         return "redirect:/boards/" + boardId;
+    }
+
+    // 관리자 댓글 전체조회
+    @GetMapping("/admin/comments")
+    public String showAdminComments(@RequestParam(name = "keyword", required = false) String keyword,
+                                    Model model, HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null || sessionMember.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+
+        List<CommentResponse.ListDTO> commentList = commentService.findAllCommentsForAdmin(keyword);
+        model.addAttribute("comments", commentList);
+        model.addAttribute("keyword", keyword);
+        return "admin/admin-comment";
     }
 }

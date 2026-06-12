@@ -51,7 +51,12 @@
 <section class="mypage-section">
     <div class="mypage-inner">
         <div class="profile-card">
-            <div class="profile-avatar">👤</div>
+            {{#member.profileImage}}
+                <div class="profile-avatar" style="background-image:url('{{member.profileImageUrl}}'); background-size:cover; background-position:center; border:2px solid #bfdbfe;"></div>
+            {{/member.profileImage}}
+            {{^member.profileImage}}
+                <div class="profile-avatar">👤</div>
+            {{/member.profileImage}}
             <div class="profile-info">
                 <div class="profile-name">{{member.name}}</div>
                 <div class="profile-email">{{member.email}}</div>

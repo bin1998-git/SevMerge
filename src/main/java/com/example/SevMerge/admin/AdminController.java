@@ -106,8 +106,6 @@ public class AdminController {
         board.setTitle(title);
         board.setContent(content);
 
-
-
         return "redirect:/admin/notices";
     }
 
@@ -150,7 +148,8 @@ public class AdminController {
         if ("APPROVE".equals(action)) {
             memberService.approveExpert(memberId);
         } else if ("REJECT".equals(action)) {
-            memberService.rejectExpert(memberId);
+            String reason = body.get("reason"); // 거절사유 추가
+            memberService.rejectExpert(memberId,reason);
         } else {
             throw new IllegalArgumentException("잘못된 요청 액션입니다.");
         }

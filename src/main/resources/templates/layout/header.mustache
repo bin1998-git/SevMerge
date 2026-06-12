@@ -81,26 +81,30 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 32px;
+            gap: 16px;
+            flex-wrap: nowrap;
+            overflow: hidden;
         }
 
         .nav-logo {
-            font-size: 20px;
-            font-weight: 900;
-            color: #1c1e26;
-            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
         }
-
-        .nav-logo span {
-            color: #2563eb;
+        .nav-logo img {
+            display: block;
+            height: 30px;
+            width: auto;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 24px;
             font-size: 14px;
             color: #6b7280;
             font-weight: 500;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .nav-links a:hover {
@@ -110,7 +114,10 @@
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
 
         .nav-username {
@@ -638,7 +645,11 @@
             flex: 1;
             gap: 0;
             justify-content: center;
+            min-width: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
+        .nav-links.expert-links::-webkit-scrollbar { display: none; }
 
         .expert-nav-tab {
             padding: 0 18px;
@@ -657,11 +668,16 @@
         .expert-nav-tab.active { color: #2563eb; border-color: #2563eb; }
 
         /* 잔액 위젯 */
-        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; }
+        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; flex-shrink: 0; white-space: nowrap; }
         .nav-balance-label { font-size: 11px; font-weight: 600; color: #3b82f6; }
         .nav-balance-amount { font-size: 14px; font-weight: 900; color: #1d4ed8; }
-        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; }
+        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; white-space: nowrap; }
         .nav-charge-btn:hover { background: #1d4ed8; }
+        .nav-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; color: #6b7280; transition: background .15s,
+        color .15s; }
+        .nav-bell:hover { background: #eff6ff; color: #2563eb; }
+        .nav-bell svg { width: 21px; height: 21px; }
+        .nav-bell-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; background: #22c55e; border: 2px solid #fff; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -672,7 +688,7 @@
     <div class="nav-inner">
         {{#isExpert}}
         <!-- 전문가 전용 탭 네비 -->
-        <a href="/experts/dashboard" class="nav-logo">Sev<span>Merge</span></a>
+        <a href="/experts/dashboard" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
         <nav class="nav-links expert-links">
             <a href="/bids/my-list"     class="expert-nav-tab">제안서 관리</a>
             <a href="/bids/my-orders"   class="expert-nav-tab">주문 관리</a>
@@ -689,12 +705,21 @@
                 <span class="nav-balance-amount">{{headerBalance}}원</span>
                 <a href="/withdrawal/form" class="nav-charge-btn">출금</a>
             </div>
+            <a href="/notifications" class="nav-bell" aria-label="알림">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
+            </a>
             <a href="/logout" class="btn btn-outline">로그아웃</a>
+
         </div>
         {{/isExpert}}
         {{^isExpert}}
         <!-- 일반 네비 -->
-        <a href="/" class="nav-logo">Sev<span>Merge</span></a>
+        <a href="/" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
 
         <nav class="nav-links">
             <!-- 1. 관리자 전용 메뉴 -->
@@ -709,6 +734,7 @@
                     <div class="nav-submenu">
                         <a href="/admin/boards" class="submenu-link">자유게시판</a>
                         <a href="/admin/notices" class="submenu-link">공지사항</a>
+                        <a href="/admin/reports" class="submenu-link">댓글신고관리</a>
                     </div>
                 </div>
 
@@ -737,15 +763,25 @@
         <!-- 우측 사용자 상태 바 -->
         <div class="nav-actions">
             {{#isLoggedIn}}
+                <span class="nav-username">{{sessionUser.name}}님</span>
                 {{^isAdmin}}
-                <div class="nav-balance-wrap">
-                    <span class="nav-balance-label">잔액</span>
-                    <span class="nav-balance-amount">{{headerBalance}}원</span>
-                    <a href="/charge/form" class="nav-charge-btn">충전</a>
-                </div>
+                    <div class="nav-balance-wrap">
+                        <span class="nav-balance-label">잔액</span>
+                        <span class="nav-balance-amount">{{headerBalance}}원</span>
+                        <a href="/charge/form" class="nav-charge-btn">충전</a>
+                    </div>
                 {{/isAdmin}}
                 <span class="nav-username">{{sessionUser.name}}님</span>
+                <a href="/notifications" class="nav-bell" aria-label="알림">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
+                </a>
                 <a href="/logout" class="btn btn-outline">로그아웃</a>
+
             {{/isLoggedIn}}
             {{^isLoggedIn}}
                 <a href="/login" class="btn btn-outline">로그인</a>

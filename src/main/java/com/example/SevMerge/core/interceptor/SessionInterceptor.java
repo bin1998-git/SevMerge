@@ -2,6 +2,7 @@ package com.example.SevMerge.core.interceptor;
 
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.notification.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class SessionInterceptor implements HandlerInterceptor {
 
     private final ChargeService chargeService;
+    private final NotificationService notificationService;
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
@@ -32,6 +34,8 @@ public class SessionInterceptor implements HandlerInterceptor {
                     modelAndView.addObject("isAdmin", member.isAdmin());
                     // 헤더 잔액 — 요청마다 DB에서 최신값 조회
                     modelAndView.addObject("headerBalance", chargeService.getBalance(member.getId()));
+                    modelAndView.addObject("hasNewNotification",
+                            notificationService.countUnRead(member) > 0);
                 } else {
                     modelAndView.addObject("isLoggedIn", false);
                     modelAndView.addObject("isExpert", false);

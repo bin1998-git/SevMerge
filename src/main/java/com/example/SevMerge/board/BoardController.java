@@ -3,20 +3,23 @@ package com.example.SevMerge.board;
 import com.example.SevMerge.comment.CommentResponse;
 import com.example.SevMerge.comment.CommentService;
 import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.expertprofile.ExpertProfileResponse;
+import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberResponse;
 import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -26,6 +29,7 @@ public class BoardController {
     private final BoardService boardService;
     private final CommentService commentService;
     private final BoardRepository boardRepository;
+    private final ExpertProfileService expertProfileService;
 
     // todo: 추후 메인 페이지 요청하는 곳 생성되면 삭제예정
     @GetMapping("/")
@@ -44,6 +48,35 @@ public class BoardController {
     @GetMapping("/intro")
     public String introPage() {
         return "intro";
+    }
+
+    @GetMapping("/exmain")
+    public String exmainPage(Model model) {
+        List<ExpertProfileResponse> all = expertProfileService.getAll();
+
+        // 섹션 1 — 오분대기조: avgRating 높은 순 상위 6명
+        List<ExpertProfileResponse> fastExperts = all.stream()
+                .sorted(Comparator.comparing(ExpertProfileResponse::getAvgRating).reversed())
+                .limit(6)
+                .toList();
+
+        // 섹션 2 — 바가지 수사대: totalReviews(완료 건수) 많은 순 상위 6명
+        List<ExpertProfileResponse> valueExperts = all.stream()
+                .sorted(Comparator.comparingInt(ExpertProfileResponse::getTotalReviews).reversed())
+                .limit(6)
+                .toList();
+
+        // 섹션 3 — 만족 취조실: isCertified 우선 정렬, 그 다음 avgRating 순
+        List<ExpertProfileResponse> asExperts = all.stream()
+                .sorted(Comparator.comparing(ExpertProfileResponse::isCertified).reversed()
+                        .thenComparing(Comparator.comparing(ExpertProfileResponse::getAvgRating).reversed()))
+                .limit(6)
+                .toList();
+
+        model.addAttribute("fastExperts", fastExperts);
+        model.addAttribute("valueExperts", valueExperts);
+        model.addAttribute("asExperts", asExperts);
+        return "exmain";
     }
 
     @GetMapping("/boards")
@@ -80,10 +113,11 @@ public class BoardController {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         boardService.increaseViewCount(boardId);
+        String sessionUserRole = (sessionMember != null && sessionMember.getRole() != null) ? sessionMember.getRole().name() : "GUEST";
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         Long boardOwner = board.getMemberId();
         Long sessionUserId = (sessionMember != null) ? sessionMember.getId() : null;
-        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId,sessionUserId);
+        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId,sessionUserId, sessionUserRole);
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
         model.addAttribute("isOwner", sessionMember != null && boardOwner.equals(sessionMember.getId()));
@@ -130,12 +164,16 @@ public class BoardController {
 
         boardService.saveBoard(sessionMember, saveBoardDTO);
 
+        if (saveBoardDTO.getBoardType() == BoardType.INQUIRY) {
+            return "redirect:/boards?boardType=INQUIRY";
+        }
+
         return "redirect:/boards";
     }
 
     @GetMapping("/boards/{boardId}/edit")
     public String updateBoardPage(@PathVariable(name = "boardId") Long boardId,
-                                  Model model,HttpSession session) {
+                                  Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
@@ -146,23 +184,24 @@ public class BoardController {
         return "board/board-update";
     }
 
-    @PostMapping("/boards/{boardId}/edit")
-    public String updateBoard(@PathVariable(name = "boardId") Long boardId,
-                              BoardRequest.UpdateBoardDTO updateBoardDTO,
-                              HttpSession session) {
+    @PutMapping("/boards/{boardId}")
+    @ResponseBody
+    public ResponseEntity<?> updateBoard(@PathVariable(name = "boardId") Long boardId,
+                                         @RequestBody BoardRequest.UpdateBoardDTO updateBoardDTO,
+                                         HttpSession session) {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         boardService.updateBoard(boardId, updateBoardDTO, sessionMember.getId());
-        return "redirect:/boards";
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/boards/{boardId}/delete")
-    public String deleteBoard(@PathVariable(name = "boardId") Long boardId,
-                              HttpSession session) {
+    @DeleteMapping("/boards/{boardId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId, HttpSession session) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         boardService.deleteBoard(boardId, sessionMember.getId());
-        return "redirect:/boards";
+        return ResponseEntity.ok().build();
     }
 
     // 관리자 자유 게시판 관리

@@ -53,7 +53,13 @@ INSERT INTO project_tb (member_id, title, category, description, budget_min, bud
 VALUES (1, '기업 리브랜딩을 위한 랜딩 페이지 및 UI/UX 디자인 고도화', 'APP',
         '기존 서비스의 웹 디자인 톤앤매너를 전면 수정하고 싶습니다. 반응형 웹 디자인을 지원해야 하며 신규 브랜드 로고(BI) 가이드라인을 제공해 드립니다.',
         2000000, 4000000, NOW(), 'ALL', 'OPEN', 0, false,false, NOW());
-
+INSERT INTO project_tb (
+    member_id, title, category, description, budget_min, budget_max,
+    deadline, bid_filter, project_status, view_count, is_deleted, is_private, created_at
+) VALUES (
+    1, '임시저장 중인 프로젝트 제목', 'WEB', '아직 작성 중인 내용입니다.',
+    0, 0, NOW(), 'ALL', 'DRAFT', 0, false, false, NOW()
+);
 
 
 -- Bid 더미데이터
@@ -132,7 +138,18 @@ VALUES (2, 2, '채팅에 결제까지 포함된 크로스플랫폼 앱이라면 
 INSERT INTO comment_tb (board_id, member_id, content, created_at, is_deleted)
 VALUES (2, 1, '저도 딱 글쓴이님과 똑같은 스펙으로 SevMerge에 프로젝트 등록하려고 조율 중이었는데, 먼저 질문해 주셔서 좋은 정보 얻고 갑니다!', NOW(), false);
 
+-- 댓글 신고 샘플데이터
+-- 1번째 샘플 데이터 (욕설 신고)
+INSERT INTO comment_report_tb (comment_id, reporter_id, reason, content_detail, created_at)
+VALUES (1, 2, '욕설 / 비속어 및 혐오 표현', '특정 사용자를 향해 지속적으로 공격적인 비속어와 욕설을 유포하고 있어 커뮤니티 환경을 해치고 있습니다.', NOW());
 
+-- 2번째 샘플 데이터 (스팸 홍보 신고)
+INSERT INTO comment_report_tb (comment_id, reporter_id, reason, content_detail, created_at)
+VALUES (2, 3, '스팸 광고 / 홍보성 도배', '댓글 내에 허가받지 않은 불법 주식 리딩방 링크와 도박 사이트 홍보 문구를 반복적으로 도배하고 있습니다.', NOW());
+
+-- 3번째 샘플 데이터 (타인 비방 신고)
+INSERT INTO comment_report_tb (comment_id, reporter_id, reason, content_detail, created_at)
+VALUES (3, 1, '타인 비방 및 명예훼손', '근거 없는 허위 사실을 바탕으로 작성자의 명예를 훼손하고 있으며 심각한 인신공격성 발언을 포함하고 있습니다.', NOW());
 
 -- ExpertProfile 샘플데이터
 -- 1번 샘플: 평점 높은 7년 차 풀스택 개발자 프로필 (member_id: 2)

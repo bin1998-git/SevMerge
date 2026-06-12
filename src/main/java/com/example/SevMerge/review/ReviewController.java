@@ -4,9 +4,12 @@ package com.example.SevMerge.review;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.expertprofile.ExpertProfile;
+import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
 
 import com.example.SevMerge.member.MemberService;
+import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -17,14 +20,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Controller
 public class ReviewController {
 
     private final ReviewService reviewService;
-    private final ReviewRepository reviewRepository;
     private final MemberService memberService;
-    private final BidService bidService;
+
+    // 내 리뷰 페이지
+    @GetMapping("/reviews/my")
+    public String myReviews(HttpSession session,
+                            Model model) {
+
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        List<ReviewResponse.ReviewListDTO> reviewList = reviewService.findMyReviews(sessionUser.getId());
+        model.addAttribute("reviews",reviewList);
+        double avg = reviewService.avgRating(sessionUser.getId());
+        model.addAttribute("avgStar", String.format("%.1f", avg));
+
+        return "review/my-reviews";
+    }
 
     // 리뷰작성 화면
     @GetMapping("/reviews/save")

@@ -4,6 +4,7 @@ import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.portfolio.PortfolioService;
+import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 
 import java.util.List;
 
@@ -58,9 +61,9 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(MemberRequest.Join request) {
-        memberService.join(request);
-
+    public String join(MemberRequest.Join request,
+                       @RequestParam(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
+        memberService.join(request, profileImageFile);
 
         if (request.getRole() != null && "EXPERT".equalsIgnoreCase(request.getRole().toString())) {
             return "redirect:/social-pending";
@@ -78,10 +81,15 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(MemberRequest.Login request, HttpSession session, Model model) {
-        memberService.login(request, session);
+        Member member = memberService.login(request, session);
 
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-        if (loginMember != null && loginMember.getRole() == Role.EXPERT) {
+        // 거절된 전문가는 안내 페이지로
+        if (member.getStatus() == Status.REJECTED) {
+            session.setAttribute("rejectedMemberId", member.getId());
+            return "redirect:/expert-rejected";
+        }
+
+        if (member.getRole() == Role.EXPERT) {
             return "redirect:/experts/dashboard";
         }
         return "redirect:/";
@@ -92,6 +100,25 @@ public class MemberController {
         memberService.logout(session);
         log.info("로그아웃완료");
         return "redirect:/";
+    }
+
+    // 클라이언트 대시보드
+    @GetMapping("/clients/dashboard")
+    public String clientDashboard(HttpSession session, Model model) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember == null) return "redirect:/login";
+        if (loginMember.isExpert()) return "redirect:/experts/dashboard";
+
+        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
+        long completedCount = myProjects.stream().filter(ProjectResponeDTO.ListDTO::isDone).count();
+        long activeCount    = myProjects.stream()
+                .filter(p -> "IN_PROGRESS".equals(p.getProjectStatus()) || "CLOSED".equals(p.getProjectStatus()))
+                .count();
+
+        model.addAttribute("projectCount",   myProjects.size());
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("activeCount",    activeCount);
+        return "member/exclient-dashboard";
     }
 
     // 마이페이지
@@ -230,6 +257,11 @@ public class MemberController {
                 return "redirect:/login";
             }
 
+            if (existing.getStatus() == Status.REJECTED) {
+                session.setAttribute("rejectedMemberId", existing.getId());
+                return "redirect:/expert-rejected";
+            }
+
             session.setAttribute(Define.SESSION_USER, existing);
             log.info("구글 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
@@ -239,6 +271,7 @@ public class MemberController {
         session.setAttribute("googleId",       googleId);
         session.setAttribute("googleNickname", nickname);
         session.setAttribute("googleEmail",    email);
+        session.setAttribute("googleImage",    profile.getPicture());
         return "redirect:/social-role";
     }
 
@@ -250,6 +283,7 @@ public class MemberController {
         MemberResponse.KakaoProfile profile = memberService.getKakaoProfile(code);
         Long kakaoId = profile.getId();
         String nickname = profile.getKakaoAccount().getProfile().getNickname() + "_" + kakaoId;
+        String image = profile.getKakaoAccount().getProfile().getProfileImageUrl();
 
         Member existing = memberService.findKakaoMember(kakaoId);
 
@@ -265,6 +299,11 @@ public class MemberController {
                 return "redirect:/login";
             }
 
+            if (existing.getStatus() == Status.REJECTED) {
+                session.setAttribute("rejectedMemberId", existing.getId());
+                return "redirect:/expert-rejected";
+            }
+
             session.setAttribute(Define.SESSION_USER, existing);
             log.info("카카오 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
@@ -273,6 +312,7 @@ public class MemberController {
         // 신규 회원 : 카카오 정보세션에서 잠깐 보관후 역할 선택 화면
         session.setAttribute("kakaoId", kakaoId);
         session.setAttribute("kakaoNickname", nickname);
+        session.setAttribute("kakaoImage", image);
         return "redirect:/social-role";
     }
 
@@ -302,21 +342,25 @@ public class MemberController {
         if (kakaoId != null) {
             // 카카오 가입 처리
             String nickname = (String) session.getAttribute("kakaoNickname");
-            member = memberService.registerKakaoMember(kakaoId, nickname, role);
+            String image = (String) session.getAttribute("kakaoImage");
+            member = memberService.registerKakaoMember(kakaoId, nickname, image, role);
 
             session.removeAttribute("kakaoId");
             session.removeAttribute("kakaoNickname");
+            session.removeAttribute("kakaoImage");
             log.info("카카오 소셜 가입 완료 - memberId={}", member.getId());
         } else if (googleId != null) {
             // 구글 가입 처리 로직 (CustomSuccessHandler에서 세팅한 값을 꺼냄)
             String nickname = (String) session.getAttribute("googleNickname");
             String email = (String) session.getAttribute("googleEmail");
+            String image = (String) session.getAttribute("googleImage");
 
-            member = memberService.registerGoogleMember(googleId, nickname, email, role);
+            member = memberService.registerGoogleMember(googleId, nickname, email,image, role);
 
             session.removeAttribute("googleId");
             session.removeAttribute("googleNickname");
             session.removeAttribute("googleEmail");
+            session.removeAttribute("googleImage");
             log.info("구글 소셜 가입 완료 - memberId={}", member.getId());
         }
         if (member != null) {
@@ -367,24 +411,62 @@ public class MemberController {
 
         if (kakaoId != null) {
             String nickname = (String) session.getAttribute("kakaoNickname");
-            memberService.registerKakaoExpert(kakaoId, nickname, request);
+            String image = (String) session.getAttribute("kakaoImage");
+            memberService.registerKakaoExpert(kakaoId, nickname,image, request);
 
             session.removeAttribute("kakaoId");
             session.removeAttribute("kakaoNickname");
+            session.removeAttribute("kakaoImage");
             log.info("카카오 전문가 가입(PENDING) 완료");
         } else {
             String nickname = (String) session.getAttribute("googleNickname");
             String email = (String) session.getAttribute("googleEmail");
+            String image = (String) session.getAttribute("googleImage");
             request.setEmail(email);  // disabled로 안 넘어온 이메일을 세션에서 보충
-            memberService.registerGoogleExpert(googleId, nickname, email, request);
+            memberService.registerGoogleExpert(googleId, nickname, email, image, request);
 
             session.removeAttribute("googleId");
             session.removeAttribute("googleNickname");
             session.removeAttribute("googleEmail");
+            session.removeAttribute("googleImage");
             log.info("구글 전문가 가입(PENDING) 완료");
         }
 
         // 전문가는 세션에 안 넣고 승인 대기 안내 화면으로 보냄
+        return "redirect:/social-pending";
+    }
+    @GetMapping("/expert-rejected")
+    public String expertRejected(HttpSession session, Model model) {
+        Long memberId = (Long) session.getAttribute("rejectedMemberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+        String reason = memberService.getLatestRejectReason(memberId);
+        model.addAttribute("reason", reason);
+        return "member/expert-rejected";
+    }
+
+    // 재신청 폼 (기존 정보 채워서 보여줌)
+    @GetMapping("/expert-reapply-form")
+    public String expertReapplyForm(HttpSession session, Model model) {
+        Long memberId = (Long) session.getAttribute("rejectedMemberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("profile", memberService.getExpertProfileForReapply(memberId));
+        model.addAttribute("reason", memberService.getLatestRejectReason(memberId));
+        return "member/expert-reapply-form";
+    }
+
+    // 재신청 처리 (정보 업데이트 + PENDING)
+    @PostMapping("/expert-reapply")
+    public String expertReapply(MemberRequest.ExpertJoin request, HttpSession session) {
+        Long memberId = (Long) session.getAttribute("rejectedMemberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+        memberService.reapplyExpert(memberId, request);
+        session.removeAttribute("rejectedMemberId");
         return "redirect:/social-pending";
     }
 

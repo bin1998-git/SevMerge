@@ -2,10 +2,17 @@ package com.example.SevMerge.notification;
 
 
 
+import com.example.SevMerge.core.util.ApiResponse;
+import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.member.Member;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * GET  /notifications                    → 쪽지함 목록 페이지
@@ -15,17 +22,32 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 
 @Controller
+@RequiredArgsConstructor
 public class NotificationController {
 
+    private final NotificationService notificationService;
+
     @GetMapping("/notifications")
-    public String notificationPage() {
-        return null;
+    public String notificationPage(Model model, HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        model.addAttribute("notifications", notificationService.findAllNotifications(sessionMember));
+
+        return "notification/notification-list";
     }
 
-    @PostMapping("/api/notifications/{id}/read")
-    public String readNotification(@PathVariable("id") Long memberId) {
-        return null;
+    @PostMapping("/notifications/{id}/read")
+    @ResponseBody
+    public ApiResponse<?> readNotification(@PathVariable("id") Long notificationId, HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        notificationService.markAsRead(notificationId, sessionMember);
+
+        return ApiResponse.ok("알림을 읽음 처리 했습니다.");
     }
 
-//    @PostMapping("/api/notifications/read-all")
+    @PostMapping("/notifications/read-all")
+    public String readAll(HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        notificationService.changeAllRead(sessionMember);
+        return "redirect:/notifications";
+    }
 }

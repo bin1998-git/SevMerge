@@ -35,7 +35,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                 SELECT b FROM Board b JOIN FETCH b.member
                 WHERE b.member.id = :memberId
             """)
-    List<BoardResponse.ListDTO> findByMyBoard(@Param("memberId") Long memberId);
+    List<Board> findByMyBoard(@Param("memberId") Long memberId);
 
     // 관리자 게시판 키워드 검색 조회
     @Query("""

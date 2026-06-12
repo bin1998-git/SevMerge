@@ -19,6 +19,7 @@ public class MemberResponse {
     private Role role;
     private Status status;
     private Timestamp createdAt;
+    private String profileImage;
 
     public static MemberResponse from(Member member) {
         return MemberResponse.builder()
@@ -29,6 +30,7 @@ public class MemberResponse {
                 .role(member.getRole())
                 .status(member.getStatus())
                 .createdAt(member.getCreatedAt())
+                .profileImage(member.getProfileImage())
                 .build();
     }
 
@@ -108,5 +110,16 @@ public class MemberResponse {
         private String name;
         private String email;
         private String picture;
+    }
+
+    // 이미지 최종 경로 편의성
+    public String getProfileImageUrl() {
+        if (profileImage == null || profileImage.isBlank()) {
+            return "/images/default.png";
+        }
+        if (profileImage.startsWith("http")) {
+            return profileImage;
+        }
+        return "/images/" + profileImage;
     }
 }

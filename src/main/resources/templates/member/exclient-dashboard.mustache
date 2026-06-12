@@ -1,0 +1,358 @@
+{{> layout/header}}
+
+<style>
+    /* ── 대시보드 본문 ── */
+    .dash-section { padding: 16px 28px 0; }
+    .dash-inner { max-width: 1200px; margin: 0 auto; }
+
+    .dash-grid {
+        display: grid;
+        grid-template-columns: 200px 1fr 260px 185px;
+        gap: 14px;
+        align-items: stretch;
+    }
+    .dash-col { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── 카드 공통 ── */
+    .dash-card {
+        background: #fff;
+        border: 1.5px solid #eaecf4;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .dash-col .dash-card:last-child { flex: 1; }
+
+    .dash-card-header {
+        padding: 10px 14px;
+        border-bottom: 1px solid #f0f2f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .dash-card-title { font-size: 12px; font-weight: 700; color: #1c1e26; }
+    .dash-card-more  { font-size: 11px; color: #2563eb; font-weight: 600; }
+    .dash-card-more:hover { text-decoration: underline; }
+
+    .dash-card-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; }
+
+    /* ── 클라이언트 프로필 카드 ── */
+    .client-avatar {
+        width: 52px; height: 52px; border-radius: 50%;
+        background: #f0fdf4; border: 2px solid #bbf7d0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; margin: 0 auto 8px;
+    }
+    .client-name { text-align: center; font-size: 13px; font-weight: 700; color: #1c1e26; margin-bottom: 3px; }
+    .client-role-badge {
+        display: block; text-align: center;
+        font-size: 10px; color: #16a34a;
+        background: #f0fdf4; border: 1px solid #bbf7d0;
+        border-radius: 20px; padding: 2px 10px;
+        width: fit-content; margin: 0 auto 10px; font-weight: 600;
+    }
+    .client-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .client-stat  { background: #f8f9fc; border-radius: 8px; padding: 7px 4px; text-align: center; }
+    .client-stat-val { display: block; font-size: 16px; font-weight: 900; color: #16a34a; margin-bottom: 1px; }
+    .client-stat-lbl { font-size: 9px; color: #9ca3af; font-weight: 500; }
+
+    /* ── 빠른 링크 ── */
+    .quick-links { display: flex; flex-direction: column; gap: 6px; }
+    .quick-link {
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 10px; border-radius: 8px;
+        font-size: 12px; font-weight: 600; color: #4b5563;
+        background: #f8f9fc; border: 1.5px solid #eaecf4;
+        transition: all .15s;
+    }
+    .quick-link:hover { background: #f0fdf4; border-color: #bbf7d0; color: #16a34a; }
+    .quick-link-icon { font-size: 13px; flex-shrink: 0; }
+
+    /* ── 섹션 링크 카드 ── */
+    .section-links { display: flex; flex-direction: column; gap: 7px; }
+    .section-link-card {
+        display: block; padding: 9px 12px;
+        background: #f8f9fc; border: 1.5px solid #eaecf4;
+        border-radius: 9px; transition: all .2s;
+    }
+    .section-link-card:hover {
+        background: #f0fdf4; border-color: #bbf7d0;
+        box-shadow: 0 2px 10px rgba(22,163,74,.07);
+        transform: translateX(2px);
+    }
+    .section-link-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+    .section-link-title { font-size: 12px; font-weight: 700; color: #1c1e26; display: flex; align-items: center; gap: 5px; }
+    .section-link-arrow { font-size: 16px; color: #c4c9d9; }
+    .section-link-desc  { font-size: 10px; color: #9ca3af; line-height: 1.4; }
+
+    /* ── 뱃지 ── */
+    .badge-live { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 20px; background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-ws   { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 20px; background: #fdf4ff; color: #9333ea; border: 1px solid #e9d5ff; }
+    .badge-new  { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 20px; background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+
+    /* ── 잔액 카드 ── */
+    .balance-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .balance-amount-row { display: flex; align-items: baseline; gap: 4px; }
+    .balance-label { font-size: 10px; color: #9ca3af; font-weight: 500; }
+    .balance-amount {
+        font-size: 22px; font-weight: 900; color: #1c1e26;
+        font-family: 'JetBrains Mono', monospace; letter-spacing: -1px;
+    }
+    .balance-unit { font-size: 12px; color: #6b7280; font-weight: 600; }
+    .balance-cta {
+        display: block; text-align: center;
+        background: #2563eb; color: #fff;
+        border-radius: 8px; padding: 9px 0;
+        font-size: 12px; font-weight: 700;
+        transition: background .15s;
+    }
+    .balance-cta:hover { background: #1d4ed8; }
+
+    /* ── 알림 ── */
+    .notification-empty { text-align: center; padding: 10px 0; font-size: 12px; color: #c4c9d9; }
+
+    /* ── 채팅 프리뷰 ── */
+    .chat-panel-preview { background: #f8f9fc; border-radius: 9px; padding: 10px 12px; margin-top: 8px; flex: 1; }
+    .chat-preview-header { font-size: 10px; font-weight: 700; color: #6b7280; margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
+    .chat-bubble { background: #fff; border: 1px solid #e8ecf8; border-radius: 7px; padding: 6px 10px; margin-bottom: 5px; }
+    .chat-bubble-name { font-size: 9px; font-weight: 700; color: #16a34a; margin-bottom: 2px; }
+    .chat-bubble-text { font-size: 11px; color: #4b5563; line-height: 1.4; }
+    .chat-open-btn { display: block; text-align: center; margin-top: 8px; font-size: 11px; color: #2563eb; font-weight: 600; }
+
+    /* ── 의뢰 요약 카드 ── */
+    .proj-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    .proj-summary-item { background: #f8f9fc; border-radius: 8px; padding: 8px 6px; text-align: center; }
+    .proj-summary-val { display: block; font-size: 18px; font-weight: 900; color: #2563eb; }
+    .proj-summary-lbl { font-size: 9px; color: #9ca3af; font-weight: 500; }
+
+    /* ── 에스크로 안내 배너 ── */
+    .escrow-notice {
+        background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+        border: 1px solid #bfdbfe; border-radius: 9px;
+        padding: 10px 12px; margin-top: 8px;
+        font-size: 11px; color: #374151; line-height: 1.6;
+    }
+    .escrow-notice strong { color: #2563eb; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 900px) {
+        .dash-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+        .dash-grid { grid-template-columns: 1fr; }
+        .dash-section { padding: 12px 14px 0; }
+    }
+</style>
+
+<!-- ── 4컬럼 대시보드 ── -->
+<section class="dash-section">
+    <div class="dash-inner">
+        <div class="dash-grid">
+
+            <!-- ① 왼쪽: 클라이언트 정보 + 빠른 링크 -->
+            <div class="dash-col">
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">내 정보</span>
+                        <a href="/my-pages?tab=edit" class="dash-card-more">편집 →</a>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="client-avatar">🙋</div>
+                        <div class="client-name">{{sessionUser.name}}</div>
+                        <span class="client-role-badge">💼 의뢰인</span>
+                        <div class="client-stats">
+                            <div class="client-stat">
+                                <span class="client-stat-val">{{projectCount}}</span>
+                                <span class="client-stat-lbl">등록 의뢰</span>
+                            </div>
+                            <div class="client-stat">
+                                <span class="client-stat-val">{{completedCount}}</span>
+                                <span class="client-stat-lbl">완료 주문</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">바로가기</span>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="quick-links">
+                            <a href="/projects/save-form" class="quick-link"><span class="quick-link-icon">➕</span>새 의뢰 등록</a>
+                            <a href="/my-pages?tab=projects" class="quick-link"><span class="quick-link-icon">📋</span>내 의뢰 목록</a>
+                            <a href="/exmain" class="quick-link"><span class="quick-link-icon">🔍</span>전문가 찾기</a>
+                            <a href="/my-pages?tab=edit" class="quick-link"><span class="quick-link-icon">⚙️</span>계정 설정</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ② 가운데: 의뢰 관리 + 받은 제안서 -->
+            <div class="dash-col">
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">의뢰 관리</span>
+                        <a href="/my-pages?tab=projects" class="dash-card-more">전체보기 →</a>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="proj-summary-grid">
+                            <div class="proj-summary-item">
+                                <span class="proj-summary-val">{{projectCount}}</span>
+                                <span class="proj-summary-lbl">전체 의뢰</span>
+                            </div>
+                            <div class="proj-summary-item">
+                                <span class="proj-summary-val">{{activeCount}}</span>
+                                <span class="proj-summary-lbl">진행 중</span>
+                            </div>
+                        </div>
+                        <div class="section-links">
+                            <a href="/projects/save-form" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">✏️ 새 의뢰 등록</span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">프로젝트 요구사항 작성 후 전문가 모집</div>
+                            </a>
+                            <a href="/my-pages?tab=projects" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">📁 내 의뢰 목록</span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">등록한 의뢰 현황 · 수정 · 완료 처리</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">받은 제안서</span>
+                        <a href="/my-pages?tab=projects" class="dash-card-more">확인하기 →</a>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="section-links">
+                            <a href="/my-pages?tab=projects" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">
+                                        📨 제안서 검토
+                                        <span class="badge-new">NEW</span>
+                                    </span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">의뢰에 달린 전문가 제안서 낙찰 선택</div>
+                            </a>
+                        </div>
+                        <div class="escrow-notice">
+                            ✅ 낙찰 후 결제금은 <strong>에스크로</strong>로 안전하게 보관됩니다.<br>
+                            작업 완료 확인 후 자동 정산됩니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ 오른쪽(메인): 주문 & 결제 + 채팅 -->
+            <div class="dash-col">
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">주문 & 결제</span>
+                        <a href="/payment/my" class="dash-card-more">상세보기 →</a>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="section-links">
+                            <a href="/payment/my" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">💳 에스크로 현황</span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">진행 중인 에스크로 결제 확인</div>
+                            </a>
+                            <a href="/payment/my" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">📦 진행 중인 주문</span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">작업 진행 현황 · 완료 확인 · 환불 신청</div>
+                            </a>
+                            <a href="/my-pages?tab=reviews" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">⭐ 내가 남긴 리뷰</span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">완료된 주문에 대한 리뷰 작성 · 확인</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">작업 대화</span>
+                        <a href="/chat/room" class="dash-card-more">채팅방 →</a>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="chat-panel-preview">
+                            <div class="chat-preview-header">
+                                💬 채팅 미리보기 <span class="badge-ws">WebSocket</span>
+                            </div>
+                            <div class="chat-bubble">
+                                <div class="chat-bubble-name">전문가</div>
+                                <div class="chat-bubble-text">요청하신 기능 구현 완료했습니다 확인 부탁드립니다!</div>
+                            </div>
+                            <div class="chat-bubble">
+                                <div class="chat-bubble-name" style="color:#2563eb;">나 (의뢰인)</div>
+                                <div class="chat-bubble-text">확인했습니다, 감사합니다.</div>
+                            </div>
+                            <a href="/chat/room" class="chat-open-btn">
+                                <span class="badge-live">실시간</span> 채팅방 열기 →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ④ 우측: 잔액/충전 + 알림 -->
+            <div class="dash-col">
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">잔액</span>
+                        <a href="/charge/form" class="dash-card-more">충전 →</a>
+                    </div>
+                    <div class="balance-card-body">
+                        <div>
+                            <div class="balance-label">현재 잔액</div>
+                            <div class="balance-amount-row">
+                                <span class="balance-amount">{{headerBalance}}</span>
+                                <span class="balance-unit">원</span>
+                            </div>
+                        </div>
+                        <a href="/charge/form" class="balance-cta">💳 잔액 충전</a>
+                        <div class="section-links">
+                            <a href="/payment/my" class="section-link-card">
+                                <div class="section-link-top">
+                                    <span class="section-link-title">📊 결제 내역</span>
+                                    <span class="section-link-arrow">›</span>
+                                </div>
+                                <div class="section-link-desc">충전 · 에스크로 내역 조회</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <span class="dash-card-title">알림</span>
+                    </div>
+                    <div class="dash-card-body">
+                        <div class="notification-empty">새 알림이 없습니다.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{> layout/footer}}

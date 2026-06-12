@@ -65,12 +65,32 @@
                     <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
                 {{/isAdmin}}
 
-                <button type="submit" class="btn btn-primary">수정완료</button>
+                <button type="button" onclick="updateBoard({{board.id}})" class="btn btn-primary">수정완료</button>
             </div>
 
         </form>
 
     </div>
 </section>
+<script>
+    async function updateBoard(boardId) {
+      try {
+        const title = document.querySelector('input[name="title"]').value;
+        const content = document.querySelector(
+          'textarea[name="content"]',
+        ).value;
 
+        const res = await fetch("/boards/" + boardId, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, content }),
+        });
+        if (res.ok) {
+          location.href = "/boards/" + boardId;
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+</script>
 {{> layout/footer}}

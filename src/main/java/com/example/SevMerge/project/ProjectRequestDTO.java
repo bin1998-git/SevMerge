@@ -52,6 +52,7 @@ public class ProjectRequestDTO {
         private Integer budgetMax;
         private String deadline;
         private String bidFilter;
+        private Boolean isPrivate;
 
         public void validate() {
             if (title == null || title.isBlank()) {
@@ -62,6 +63,16 @@ public class ProjectRequestDTO {
                 throw new BadRequestException("최대예산은 최소예산보다 작을수 없습니다");
             }
         }
+    }
+
+    @Data
+    public static class DraftDTO {
+        private String title;
+        private String description;
+        private Integer budgetMin;
+        private Integer budgetMax;
+        private String deadline;
+        private String bidFilter;
     }
 
 
