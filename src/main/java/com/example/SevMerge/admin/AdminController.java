@@ -106,8 +106,6 @@ public class AdminController {
         board.setTitle(title);
         board.setContent(content);
 
-
-
         return "redirect:/admin/notices";
     }
 

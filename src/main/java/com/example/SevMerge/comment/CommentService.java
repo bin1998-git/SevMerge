@@ -21,12 +21,12 @@ public class CommentService {
 
 
     // 댓글 목록 조회
-    public List<CommentResponse.ListDTO> findComments(Long boardId, Long sessionUserId) {
+    public List<CommentResponse.ListDTO> findComments(Long boardId, Long sessionUserId, String sessionUserRole) {
 
         List<Comment> commentList = commentRepository.findByBoardIdWithMember(boardId);
 
         return commentList.stream()
-                .map(comment -> new CommentResponse.ListDTO(comment,sessionUserId))
+                .map(comment -> new CommentResponse.ListDTO(comment, sessionUserId,  sessionUserRole))
                 .toList();
     }
 
@@ -71,7 +71,32 @@ public class CommentService {
             throw new IllegalArgumentException("댓글 삭제 권한이 없습니다");
         }
 
-        // 3. 댓글 진짜로 삭제 (DB에서 Hard Delete)
-        commentRepository.delete(commentEntity);
+        // 3. 댓글 삭제
+        commentEntity.softDelete();
     }
+
+    // 관리자 전용 전체 댓글 조회
+    @Transactional(readOnly = true)
+    public List<CommentResponse.ListDTO> findAllCommentsForAdmin(String keyword) {
+        List<Comment> commentList;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            commentList = commentRepository.findByContentContainingForAdmin(keyword.trim());
+        } else {
+            commentList = commentRepository.findAllWithMemberAndBoard();
+        }
+        return commentList.stream()
+                .map(comment -> new CommentResponse.ListDTO(comment, null, null))
+                .toList();
+    }
+
+    // 관리자 전용 삭제
+    @Transactional
+    public void deleteCommentByAdmin(Long commentId) {
+        Comment commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+
+        commentEntity.softDelete();
+    }
+
 }

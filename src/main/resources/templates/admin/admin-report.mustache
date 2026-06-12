@@ -130,10 +130,12 @@
     }
 
     .admin-table-head, .admin-table-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 22px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
+        padding: 15px 22px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
     }
 
     .admin-table-head {
@@ -190,7 +192,6 @@
         text-overflow: ellipsis !important;
     }
 
-    /* [3번째 칸] 날짜 - 무조건 150px 고정 후 정중앙 */
     .admin-table-head > *:nth-child(3),
     .cell-date {
         width: 150px !important;
@@ -198,13 +199,65 @@
         text-align: center !important;
     }
 
-
     .admin-table-row:last-child {
         border-bottom: none;
     }
 
     .admin-table-row:hover {
         background: #f8f9ff;
+    }
+
+    .report-cell-id {
+        width: 60px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-title {
+        flex: 2.2 !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        padding-left: 5px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .report-cell-reason {
+        width: 150px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-detail {
+        flex: 1.8 !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        padding-left: 5px !important;
+        color: #4b5563 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .report-cell-name {
+        width: 100px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-date {
+        width: 140px !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+
+    .report-cell-action {
+        width: 80px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
     .cell-id {
@@ -335,8 +388,8 @@
     .sidebar-submenu .submenu-link.selected {
         color: #2563eb !important;
         font-weight: bold !important;
-        background-color: #e0f2fe !important; /* 연한 파란색 배경 */
-        border-left-color: #2563eb !important; /* 왼쪽 바 색상 고정 */
+        background-color: #e0f2fe !important;
+        border-left-color: #2563eb !important;
     }
 
     .sidebar-dropdown-group:hover .dropdown-trigger {
@@ -375,44 +428,90 @@
         background: #eff6ff !important;
         border-left-color: #2563eb !important;
     }
-
 </style>
 
 <div class="admin-wrap">
-
-
-
     <main class="admin-content">
 
         <div class="admin-header">
             <div>
-                <h1 class="admin-title">공지사항 관리</h1>
-                <p class="admin-desc">전체 공지사항 목록을 관리합니다.</p>
+                <h1 class="admin-title">댓글 신고 관리</h1>
+                <p class="admin-desc">사용자들이 제기한 댓글 신고 내역을 모니터링하고 조치합니다.</p>
             </div>
         </div>
 
-        <form action="/admin/notices" method="get" class="search-bar">
-            <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value=""/>
+        <form action="/admin/reports" method="get" class="search-bar">
+            <input type="text" class="search-input" name="keyword" placeholder="댓글 내용, 신고자, 사유 검색..."
+                   value=""/>
             <button type="submit" class="search-btn">검색</button>
         </form>
 
-        <div class="admin-table-wrap">
-            <div class="admin-table-head">
-                <span>No</span><span>제목</span><span>날짜</span>
+
+        <div class="admin-table-wrap"
+             style="width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;">
+
+            <div class="report-table-head-fix"
+                 style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 15px 22px !important; background: #f8f9fc !important; border-bottom: 1px solid #eaecf4 !important; width: 100% !important; box-sizing: border-box !important; font-size: 11px !important; font-weight: 700 !important; color: #9ca3af !important; letter-spacing: .5px !important;">
+                <span style="width: 50px !important; flex-shrink: 0 !important; text-align: center !important;">No</span>
+                <span style="flex: 1.8 !important; min-width: 0 !important; text-align: center !important;">신고 댓글 원문</span>
+                <span style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">신고 분류</span>
+                <span style="flex: 1.2 !important; min-width: 0 !important; text-align: center !important;">상세 신고 사유</span>
+                <span style="width: 90px !important; flex-shrink: 0 !important; text-align: center !important;">신고자</span>
+                <span style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">신고일자</span>
+                <span style="width: 70px !important; flex-shrink: 0 !important; text-align: center !important;">조치</span>
+                <span style="width: 40px !important; flex-shrink: 0 !important; text-align: center !important;"></span>
             </div>
 
-            {{#boards}}
-                <div class="admin-table-row">
-                    <!-- 1. 글 번호 -->
-                    <span class="cell-id">{{id}}</span>
-                    <!-- 2. 제목 -->
-                    <a href="/boards/{{id}}" class="cell-title" style="font-weight: 500; text-decoration: none; color: inherit;">
-                        {{title}}
+            {{#reports}}
+                <div class="admin-table-row"
+                     style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 15px 22px !important; border-bottom: 1px solid #eaecf4 !important; width: 100% !important; box-sizing: border-box !important; font-size: 13px !important;">
+
+        <span class="cell-id report-cell-id"
+              style="width: 50px !important; flex-shrink: 0 !important; text-align: center !important;">{{id}}</span>
+
+                    <a href="/boards/{{boardId}}" class="cell-title report-cell-title"
+                       style="flex: 1.8 !important; min-width: 0 !important; text-align: center !important; color: #2563eb; text-decoration: none; font-weight: 600; white-space: normal !important; word-break: break-all !important;">
+                        {{commentContent}}
                     </a>
-                    <!-- 4. 작성일 -->
-                    <span class="cell-date">{{createdAt}}</span>
+
+                    <span class="report-cell-reason"
+                          style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important; color: #dc3545; font-weight: 700;">
+                        {{reason}}
+                    </span>
+
+                    <span class="report-cell-detail"
+                          style="flex: 1.2 !important; min-width: 0 !important; text-align: center !important; white-space: normal !important; word-break: break-all !important;">
+                        {{contentDetail}}
+                    </span>
+
+                    <span class="cell-name report-cell-name"
+                          style="width: 90px !important; flex-shrink: 0 !important; text-align: center !important;">{{reporterName}}</span>
+
+                    <span class="cell-date report-cell-date"
+                          style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">{{createdAt}}</span>
+
+                    <span class="report-cell-action"
+                          style="width: 70px !important; flex-shrink: 0 !important; text-align: center !important;">
+
+                    <form action="/admin/reports/{{commentId}}/delete" method="post" style="display:inline;"
+                          onsubmit="return confirm('정말 이 댓글을 삭제 처리하시겠습니까?');">
+                        <button type="submit" class="del-btn">삭제</button>
+                    </form>
+        </span>
+
+                    <span class="report-cell-cancel"
+                          style="width: 40px !important; flex-shrink: 0 !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">
+            <form action="/admin/reports/{{id}}/reject" method="POST"
+                  style="display:inline; margin: 0 !important;" onsubmit="return confirm('이 신고 건을 반려하고 목록에서 제거하시겠습니까?\n(원본 댓글은 삭제되지 않습니다.)');">
+                <button type="submit" class="cancel-btn"
+                        style="background: none !important; border: none !important; color: #9ca3af !important; font-size: 20px !important; font-weight: bold !important; cursor: pointer !important; padding: 0 !important; line-height: 1 !important;"
+                        title="신고 반려">
+                    &times;
+                </button>
+            </form>
+                    </span>
                 </div>
-            {{/boards}}
+            {{/reports}}
         </div>
     </main>
 </div>
