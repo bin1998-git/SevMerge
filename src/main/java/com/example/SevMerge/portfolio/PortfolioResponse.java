@@ -15,9 +15,8 @@ public class PortfolioResponse {
         private String imageUrl;
         private String expertName;
         private String createdAt;
-        private Long portfolioCount;
         @Builder
-        public ListDTO(Portfolio portfolio,Long count) {
+        public ListDTO(Portfolio portfolio) {
             this.id = portfolio.getId();
             this.title = portfolio.getTitle();
             this.description = portfolio.getDescription();
@@ -26,7 +25,7 @@ public class PortfolioResponse {
                     : portfolio.getImageUrl();
             this.expertName = portfolio.getExpertProfile().getMember().getName();
             this.createdAt = portfolio.getCreatedAt().toString();
-            this.portfolioCount = count;
+
         }
     }
 

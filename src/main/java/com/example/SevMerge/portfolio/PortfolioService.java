@@ -33,19 +33,18 @@ public class PortfolioService {
 
 
     // 포트폴리오 리스트 페이징
-    public List<PortfolioResponse.ListDTO> findByMemberId(Long expertId, int page) {
+    public Page<PortfolioResponse.ListDTO> findByMemberId(Long expertId, int page) {
 
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
                 () -> new NotFoundException("전문가를 찾을 수 없습니다.")
         );
-        Pageable pageable = PageRequest.of(page-1,10, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createdAt").descending());
         // 전문가 아이디로 찾아 해당 전문가 포트 폴리오
-        Page<Portfolio> portfolioPage = portfolioRepository.findByExpertIdIsActive(expertEntity.getId(),pageable);
-        Long count = portfolioRepository.countPortfolioByMemberId(expertEntity.getId());
-        return portfolioPage.stream().map(portfolio -> new PortfolioResponse.ListDTO(portfolio,count)).toList();
+        Page<Portfolio> portfolioPage = portfolioRepository.findByExpertIdIsActive(expertEntity.getId(), pageable);
+
+        return portfolioPage.map(PortfolioResponse.ListDTO::new);
+
     }
-
-
     // 포트폴리오 리스트
     public List<Portfolio> findPortfolioList(Long memberId){
 
