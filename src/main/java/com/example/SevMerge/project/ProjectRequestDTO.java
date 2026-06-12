@@ -52,6 +52,7 @@ public class ProjectRequestDTO {
         private Integer budgetMax;
         private String deadline;
         private String bidFilter;
+        private Boolean isPrivate;
 
         public void validate() {
             if (title == null || title.isBlank()) {
