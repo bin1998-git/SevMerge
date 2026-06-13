@@ -218,6 +218,19 @@
         .nav-bell svg { width: 21px; height: 21px; }
         .nav-bell-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; background: #22c55e; border: 2px solid #fff; border-radius: 50%; }
 
+
+        .profile-menu { position: relative; }
+        .profile-trigger { background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
+        .profile-thumb { width: 44px; height: 44px; border-radius: 50%; background-size: cover; background-position: center; background-color: #eff6ff; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 0; overflow: hidden; flex-shrink: 0; }
+        .profile-thumb-default { font-size: 14px; font-weight: 800; color: #2563eb; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
+        .profile-dropdown { display: none; position: absolute; top: 50px; right: 0; min-width: 180px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.1); padding: 6px; z-index: 9999; }
+        .profile-dropdown.open { display: block; }
+        .pd-head { padding: 10px 12px 8px; border-bottom: 1px solid #f3f4f8; margin-bottom: 6px; }
+        .pd-name { font-size: 14px; font-weight: 800; color: #1c1e26; }
+        .pd-item { display: block; padding: 10px 12px; font-size: 13px; font-weight: 600; color: #4b5563; text-decoration: none; border-radius: 8px; transition: background .12s; }
+        .pd-item:hover { background: #f8f9ff; color: #2563eb; }
+        .pd-logout { color: #ef4444; }
+        .pd-logout:hover { background: #fff3f3; color: #ef4444; }
         .admin-dropdown-trigger {
             font-size: inherit;
             font-weight: inherit;
@@ -328,19 +341,25 @@
 <header class="nav">
     <div class="nav-inner">
         {{#isExpert}}
+            {{#isExpert}}
+                <!-- 전문가 전용 탭 네비 -->
+                <a href="/experts/dashboard" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+                <nav class="nav-links expert-links">
+                    <a href="/bids/my-list"     class="expert-nav-tab">제안서 관리</a>
+                    <a href="/bids/my-orders"   class="expert-nav-tab">주문 관리</a>
+                    <a href="/payment/my"       class="expert-nav-tab">수익 &amp; 정산</a>
+                    <a href="/reviews/my"       class="expert-nav-tab">평가 및 리뷰</a>
+                    <a href="/experts/my/form"  class="expert-nav-tab">프로필 수정</a>
+                    <a href="/boards"           class="expert-nav-tab">게시판</a>
+                    <a href="/messages"         class="expert-nav-tab">쪽지함</a>
+                </nav>
+
+                <!-- 우측: 잔액 + 알림 + 프로필 -->
+                <div class="nav-actions">
+                </div>
+            {{/isExpert}}
             <!-- 전문가 전용 탭 네비 -->
-            <a href="/experts/dashboard" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
-            <nav class="nav-links expert-links">
-                <a href="/bids/my-list"     class="expert-nav-tab">제안서 관리</a>
-                <a href="/bids/my-orders"   class="expert-nav-tab">주문 관리</a>
-                <a href="/payment/my"      class="expert-nav-tab">수익 &amp; 정산</a>
-                <a href="/reviews/my"      class="expert-nav-tab">평가 및 리뷰</a>
-                <a href="/experts/my/form" class="expert-nav-tab">프로필 수정</a>
-                <a href="/boards"          class="expert-nav-tab">게시판</a>
-                <a href="/messages"        class="expert-nav-tab">쪽지함</a>
-            </nav>
             <div class="nav-actions">
-                <span class="nav-username">{{sessionUser.name}}님</span>
                 <div class="nav-balance-wrap">
                     <span class="nav-balance-label">잔액</span>
                     <span class="nav-balance-amount">{{headerBalance}}원</span>
@@ -354,8 +373,24 @@
                     </svg>
                     {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
                 </a>
-                <a href="/logout" class="btn btn-outline">로그아웃</a>
 
+                <!-- 프로필 드롭다운 (전문가) -->
+                <div class="profile-menu" id="profileMenuExpert">
+                    <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownExpert')" aria-label="내 메뉴">
+                        {{#sessionUser.profileImage}}
+                            <span class="profile-thumb" style="background-image:url('/images/{{sessionUser.profileImage}}');"></span>
+                        {{/sessionUser.profileImage}}
+                        {{^sessionUser.profileImage}}
+                            <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
+                        {{/sessionUser.profileImage}}
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdownExpert">
+                        <div class="pd-head"><div class="pd-name">{{sessionUser.name}}님</div></div>
+                        <a href="/experts/dashboard" class="pd-item">🏠 대시보드</a>
+                        <a href="/experts/my/form" class="pd-item">⚙️ 프로필 수정</a>
+                        <a href="/logout" class="pd-item pd-logout">🚪 로그아웃</a>
+                    </div>
+                </div>
             </div>
         {{/isExpert}}
         {{^isExpert}}
@@ -404,7 +439,6 @@
             <!-- 우측 사용자 상태 바 -->
             <div class="nav-actions">
                 {{#isLoggedIn}}
-                    <span class="nav-username">{{sessionUser.name}}님</span>
                     {{^isAdmin}}
                         <div class="nav-balance-wrap">
                             <span class="nav-balance-label">잔액</span>
@@ -420,8 +454,29 @@
                         </svg>
                         {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
                     </a>
-                    <a href="/logout" class="btn btn-outline">로그아웃</a>
 
+                    <!-- 프로필 드롭다운 (일반/관리자) -->
+                    <div class="profile-menu" id="profileMenuUser">
+                        <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownUser')" aria-label="내 메뉴">
+                            {{#sessionUser.profileImage}}
+                                <span class="profile-thumb" style="background-image:url('/images/{{sessionUser.profileImage}}');"></span>
+                            {{/sessionUser.profileImage}}
+                            {{^sessionUser.profileImage}}
+                                <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
+                            {{/sessionUser.profileImage}}
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdownUser">
+                            <div class="pd-head"><div class="pd-name">{{sessionUser.name}}님</div></div>
+                            {{#isAdmin}}
+                                <a href="/admin/main" class="pd-item">🛠️ 관리자 페이지</a>
+                            {{/isAdmin}}
+                            {{^isAdmin}}
+                                <a href="/my-pages" class="pd-item">🏠 마이페이지</a>
+                                <a href="/my-pages?tab=edit" class="pd-item">⚙️ 정보 수정</a>
+                            {{/isAdmin}}
+                            <a href="/logout" class="pd-item pd-logout">🚪 로그아웃</a>
+                        </div>
+                    </div>
                 {{/isLoggedIn}}
                 {{^isLoggedIn}}
                     <a href="/login" class="btn btn-outline">로그인</a>
@@ -431,10 +486,26 @@
         {{/isExpert}}
     </div>
 </header>
-
-
-
-
+<script>
+    function toggleProfileMenu(e, dropdownId) {
+        e.stopPropagation();
+        document.getElementById(dropdownId).classList.toggle("open");
+    }
+    document.addEventListener("click", function (e) {
+        document.querySelectorAll(".profile-dropdown.open").forEach(function (dd) {
+            const menu = dd.closest(".profile-menu");
+            if (menu && !menu.contains(e.target)) {
+                dd.classList.remove("open");
+            }
+        });
+    });
+     document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".profile-thumb-default").forEach(function (el) {
+            const name = el.textContent.trim();
+            if (name) el.textContent = name.charAt(0);  // 첫 글자만
+        });
+    });
+</script>
 
 {{#isAdmin}}
     <script>
