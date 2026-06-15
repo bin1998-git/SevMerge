@@ -74,7 +74,7 @@ public class PortfolioService {
         saveDTO.validate();
         try {
             Portfolio newPortfolio = null;
-            String savedFileName = FileUtil.saveFile(saveDTO.getImageUrl());
+            String savedFileName = FileUtil.saveFile(saveDTO.getImageFile());
             newPortfolio = Portfolio
                     .builder()
                     .expertProfile(expertProfileRepository

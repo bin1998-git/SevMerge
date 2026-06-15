@@ -14,7 +14,7 @@ public class PortfolioRequest {
         private Long expertId; // expert의 memberId
         private String title; // 제목
         private String description; // 설명
-        private MultipartFile imageUrl; // 이미지 링크
+        private MultipartFile imageFile; // 이미지 링크
         private String projectUrl; // 프로젝트 링크
 
         public void validate () {
@@ -25,7 +25,9 @@ public class PortfolioRequest {
             if(description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
             }
-
+            if (projectUrl.startsWith("https://")) {
+                throw new BadRequestException("프로젝트 링크는 https:// 로 시작해야 합니다");
+            }
         }
 
     }
@@ -47,6 +49,9 @@ public class PortfolioRequest {
             }
             if(description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
+            }
+            if (projectUrl.startsWith("https://")) {
+                throw new BadRequestException("프로젝트 링크는 https:// 로 시작해야 합니다");
             }
         }
     }

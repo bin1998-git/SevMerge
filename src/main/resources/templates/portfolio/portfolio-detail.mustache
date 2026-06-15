@@ -64,6 +64,9 @@
                     <a href="{{portfolio.projectUrl}}" target="_blank" class="portfolio-link-url">{{portfolio.projectUrl}}</a>
                 </div>
                 {{/portfolio.projectUrl}}
+                {{^portfolio.projectUrl}}
+                    <span class="no-link">등록된 프로젝트가 없습니다.</span>
+                {{/portfolio.projectUrl}}
                 <div class="portfolio-actions">
                     <a href="/portfolios?expertId={{portfolio.expertId}}" class="btn btn-outline">← 목록으로</a>
                     {{#isOwner}}
