@@ -30,6 +30,7 @@ public class PaymentResponse {
     private boolean isSettled;
     private boolean isRefunded;
 
+
     public static PaymentResponse from(Payment payment) {
         String statusName = payment.getStatus().name();
         return PaymentResponse.builder()
