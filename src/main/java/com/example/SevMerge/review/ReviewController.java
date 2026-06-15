@@ -86,7 +86,7 @@ public class ReviewController {
 
         reviewService.save(reviewDTO, sessionUser);
 
-        return "redirect:/mypage/tab?=reviews";
+        return "redirect:/my-pages?tab=reviews";
     }
 
     // 리뷰상세 화면

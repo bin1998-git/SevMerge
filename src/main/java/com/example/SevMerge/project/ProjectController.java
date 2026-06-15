@@ -33,14 +33,14 @@ public class ProjectController {
     }
 
     // 프로젝트 등록
-    @PostMapping("/projects")
-    public String save(@RequestBody ProjectRequestDTO.SaveDTO req, HttpSession session) {
-        log.info("project 등록 요청");
+    @PostMapping("/projects/save")
+    @ResponseBody
+    public ResponseEntity<?> save(@RequestBody ProjectRequestDTO.SaveDTO req, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) return "redirect:/login-form";
+        if (sessionUser == null) return ResponseEntity.status(401).build();
         req.validate();
         projectService.saveProject(req, sessionUser);
-        return "redirect:/projects";
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/projects")
