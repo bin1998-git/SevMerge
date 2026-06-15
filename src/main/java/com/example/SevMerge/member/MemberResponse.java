@@ -21,6 +21,7 @@ public class MemberResponse {
     private Timestamp createdAt;
     private String profileImage;
     private Integer balance;
+    private String provider;
 
     public static MemberResponse from(Member member) {
         return MemberResponse.builder()
@@ -33,6 +34,7 @@ public class MemberResponse {
                 .createdAt(member.getCreatedAt())
                 .profileImage(member.getProfileImage())
                 .balance(member.getBalance())
+                .provider(member.getProvider())
                 .build();
     }
 
@@ -44,6 +46,9 @@ public class MemberResponse {
         return this.role == Role.EXPERT;
     }
 
+    public boolean isSocial() {
+        return provider != null && !provider.isBlank();
+    }
     /**
      * 액세스 토큰 응답 정보
      */
@@ -124,4 +129,6 @@ public class MemberResponse {
         }
         return "/images/" + profileImage;
     }
+
+
 }

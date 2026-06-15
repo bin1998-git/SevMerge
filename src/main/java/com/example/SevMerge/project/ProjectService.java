@@ -111,6 +111,8 @@ public class ProjectService {
         return projectList.stream()
                 .map(p -> {
                     ProjectResponeDTO.ListDTO dto = new ProjectResponeDTO.ListDTO(p);
+                    //입찰 수 카운트 추가
+                    dto.setBidCount((int) bidRepository.countByProjectId(p.getId()));
                     bidRepository.findSelectedBidByProjectId(p.getId(), BidStatus.SELECTED)
                             .ifPresent(bid -> dto.setSelectedExpertId(bid.getExpert().getId()));
                     return dto;

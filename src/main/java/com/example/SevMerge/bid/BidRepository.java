@@ -59,4 +59,11 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
            """)
     boolean existsBidRelation(@Param("memberId1") Long memberId1, @Param("memberId2") Long memberId2);
 
+
+    // 프로젝트별 입찰(제안서) 개수
+    @Query("""
+        SELECT COUNT(b) FROM Bid b
+        WHERE b.project.id = :projectId AND b.isDeleted = false
+        """)
+    long countByProjectId(@Param("projectId") Long projectId);
 }

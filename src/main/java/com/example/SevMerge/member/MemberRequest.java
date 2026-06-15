@@ -39,6 +39,7 @@ public class MemberRequest {
     public static class Update {
         private String name;
         private String phone;
+        private String newPassword;
     }
 
     @Data
