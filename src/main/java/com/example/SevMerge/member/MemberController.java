@@ -89,9 +89,9 @@ public class MemberController {
             return "redirect:/expert-rejected";
         }
 
-//        if (member.getRole() == Role.EXPERT) {
-//            return "redirect:/experts/dashboard";
-//        }
+        if (member.getRole() == Role.ADMIN) {
+            return "main";
+        }
         return "redirect:/exmain";
     }
 
@@ -232,7 +232,11 @@ public class MemberController {
 
     // 관리자 - 회원 삭제
     @PostMapping("/admin/members/{id}/delete")
-    public String deleteMemberByAdmin(@PathVariable(name = "id") Long id) {
+    public String deleteMemberByAdmin(@PathVariable(name = "id") Long id,
+                                      HttpSession session,
+                                      Model model) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        model.addAttribute("isAdmin",sessionUser.isAdmin());
         memberService.withdrawMember(id);
         return "redirect:/admin/members";
     }

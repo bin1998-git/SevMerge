@@ -81,6 +81,27 @@ public class GlobalExceptionHandler {
         return "err/500";
     }
 
+    @ExceptionHandler(AdminException.class)
+    @ResponseBody
+    public String adminException(AdminException e, HttpServletRequest request) {
+        log.warn("=== AdminException ===");
+        log.warn("요청 URL : {}", request.getRequestURL());
+        log.warn("에러 메시지 : {}", e.getMessage());
+
+
+
+        String message = e.getMessage().replace("'", "\\'");
+
+
+
+        return """
+                <script>
+                    alert('%s');
+                    history.back();
+                </script>
+                """.formatted(message);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String dataIntegrity(DataIntegrityViolationException e, HttpServletRequest request) {
         log.warn("=== DB 제약조건 위반 ===");

@@ -1,5 +1,6 @@
 package com.example.SevMerge.member;
 
+import com.example.SevMerge.core.exception.AdminException;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.util.FileUtil;
@@ -173,6 +174,10 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
         //엔티티 메서드를 호출해 상태만 true 변경.
+
+        if(member.isAdmin()) {
+            throw new AdminException("관리자 계정은 삭제가 불가능합니다.");
+        }
         member.withdraw();
         log.info("회원 탈퇴 완료 (Dirty Checking으로 DB 반영) - memberId={}", memberId);
     }

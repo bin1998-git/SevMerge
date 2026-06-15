@@ -515,7 +515,7 @@
         const form = document.getElementById('reportForm');
         const hiddenBoardInput = document.getElementById('modalBoardId');
 
-        form.action = "/comments/" + commentId + "/report";
+        form.action = "/admin/comments/" + commentId + "/report";
         hiddenBoardInput.value = boardId;
 
         modal.style.display = "flex";

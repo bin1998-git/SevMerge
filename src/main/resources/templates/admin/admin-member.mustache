@@ -384,7 +384,9 @@
                     </span>
                     <form action="/admin/members/{{id}}/delete" method="POST" style="display:inline;"
                           onsubmit="return confirm('정말로 이 회원을 삭제하시겠습니까?');">
+                        {{^isAdmin}}
                         <button type="submit" class="del-btn">삭제</button>
+                        {{/isAdmin}}
                     </form>
 
                 </div>
