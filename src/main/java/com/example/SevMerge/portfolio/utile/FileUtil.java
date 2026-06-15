@@ -12,7 +12,7 @@ import java.util.UUID;
 public class FileUtil {
 
     // 업로드될 파일 경로
-    public static final String IMAGE_DIR = Paths.get(System.getProperty("user.home"),"sevMergeImages").toString();
+    public static final String IMAGE_DIR = Paths.get(System.getProperty("user.home"),"sevMerge_uploads", "portfolio").toString();
 
     public static String saveFile(MultipartFile file) throws IOException {
 

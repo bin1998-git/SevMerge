@@ -98,7 +98,7 @@ public class PortfolioService {
     public void update(Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,Long sessionUserId) {
 
         String newImageFile = null; // 파일경로
-
+        updateDTO.validate();
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() ->
                 new BadRequestException("포트폴리오를 찾을수 없습니다.")
         );
@@ -108,12 +108,11 @@ public class PortfolioService {
         }
 
         // 리퀘스트로 파일이 있을때
-        if(!updateDTO.getImageFile().isEmpty() && updateDTO.getImageFile() != null){
+        if(updateDTO.getImageFile() != null && !updateDTO.getImageFile().isEmpty()){
             try {
                 if(!FileUtil.isImageFile(updateDTO.getImageFile())){
                     throw new BadRequestException("이미지 파일만 업로드 가능 합니다.");
                 }
-
                  // 새이미지 로컬 폴더에 저장 (중복되지 않을 이미지 파일 이름을 리턴)
                 // 이미지 파일 경로 반환
                 newImageFile = FileUtil.saveFile(updateDTO.getImageFile());
@@ -121,12 +120,11 @@ public class PortfolioService {
                 throw new RuntimeException(e);
             }
         }
-
-        updateDTO.validate();
-
+        if(newImageFile != null){
+            portfolio.setImageUrl(newImageFile);
+        }
         portfolio.setDescription(updateDTO.getDescription());
         portfolio.setTitle(updateDTO.getTitle());
-        portfolio.setImageUrl(newImageFile); // 경로 업데이트
         portfolio.setProjectUrl(updateDTO.getProjectUrl());
 
     }

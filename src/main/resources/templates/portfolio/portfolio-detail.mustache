@@ -42,7 +42,7 @@
         <div class="portfolio-card">
             <div class="portfolio-img">
                 {{#portfolio.imageUrl}}
-                <img src="{{portfolio.imageUrl}}" alt="{{portfolio.title}}" onerror="handleImageError(this)" />
+                <img src="/images/portfolio/{{portfolio.imageUrl}}" alt="{{portfolio.title}}" onerror="handleImageError(this)" />
                 {{/portfolio.imageUrl}}
                 {{^portfolio.imageUrl}}
                 🖼️

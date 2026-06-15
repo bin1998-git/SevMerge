@@ -115,7 +115,6 @@ public class PortfolioController {
         if (member == null) {
             return "redirect:/login";
         }
-
         portfolioService.update(portfolioId, updateDTO, member.getId());
 
         return "redirect:/portfolios?expertId=" + expertId;
