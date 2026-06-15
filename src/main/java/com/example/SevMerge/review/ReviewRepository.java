@@ -13,28 +13,22 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review , Long> {
 
-    // Repository
-    @Query("SELECT r FROM Review r JOIN FETCH r.reviewer WHERE r.targeter.id = :memberId")
+    // 작성자 이름이 보여야되기 때문에 reviewer 조인
+    @Query("SELECT r FROM Review r JOIN FETCH r.reviewer WHERE r.targeter.id = :memberId AND r.isDelete = false")
     List<Review> findMyReviews(@Param("memberId") Long memberId);
+
+    @Query("""
+                SELECT r FROM Review r JOIN FETCH r.targeter WHERE r.reviewer.id = :reviewerId AND r.isDelete = false
+            """)
+    List<Review> findMySaveReviews(@Param("reviewerId") Long reviewerId);
+
 
     // 평균값 계산
     @Query("""
-        SELECT AVG(r.countStar) FROM Review r WHERE r.targeter.id = :targetId
+        SELECT AVG(r.countStar) FROM Review r WHERE r.targeter.id = :targetId AND r.isDelete = false
     """)
      Double avgRating(@Param("targetId") Long targetId);
 
-//
-//    // 리뷰 카운트 레파지토리
-//    @Query("""
-//        SELECT COUNT(r.id) FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
-//    """)
-//     Optional<Integer> countReview(@Param("expertId") Long expertId);
-//
-//
-//    // 특정 전문가의 리뷰들
-//    @Query("""
-//        SELECT r FROM Review r JOIN r.expertProfile WHERE r.expertProfile.id = :expertId
-//    """)
-//     Page<Review> findByExpertProfileReviewPage(@Param("expertId") Long expertId, Pageable pageable);
+
 
 }

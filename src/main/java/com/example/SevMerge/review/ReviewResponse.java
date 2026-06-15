@@ -49,6 +49,7 @@ public class ReviewResponse {
     @Data
     public static class ReviewDetailDTO {
         private Long id;
+        private Long reviewerId;
         private String reviewerName;
         private String targeterName;
         private Integer countStar;
@@ -59,6 +60,7 @@ public class ReviewResponse {
             this.id = review.getId();
             this.reviewerName = review.getReviewer().getName();
             this.targeterName = review.getTargeter().getName();
+            this.reviewerId = review.getReviewer().getId();
             this.countStar = review.getCountStar();
             this.content = review.getContent();
             this.createdAt = review.getCreatedAt();
