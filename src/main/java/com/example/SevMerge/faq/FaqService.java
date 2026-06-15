@@ -18,6 +18,12 @@ public class FaqService {
     public List<Faq> findAll() {
         return faqRepository.findAllIsActive();
     }
+    public Faq findById(Long faqId) {
+        return faqRepository.findById(faqId).orElseThrow(() ->
+                    new BadRequestException("FAQ를 찾을수 없습니다.")
+                );
+    }
+
 
     @Transactional
     public void save(Member sessionUser, FaqRequest request) {
