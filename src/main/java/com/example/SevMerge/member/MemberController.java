@@ -121,7 +121,8 @@ public class MemberController {
         return "member/exclient-dashboard";
     }
 
-    // 마이페이지
+
+    // 마이페이지 (의뢰인 전용)
     @GetMapping("/my-pages")
     public String mypage(@RequestParam(required = false) String tab,
                          HttpSession session, Model model) {
@@ -130,42 +131,55 @@ public class MemberController {
         if (loginMember == null) {
             return "redirect:/login";
         }
-
-        if(tab == null) {
-            tab = loginMember.isExpert() ? "bids" : "projects";
+        // 전문가는 마이페이지 대신 전문가 대시보드로
+        if (loginMember.isExpert()) {
+            return "redirect:/experts/dashboard";
         }
+
+        if (tab == null) tab = "projects";
 
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
         model.addAttribute("isProjects",  tab.equalsIgnoreCase("projects"));
         model.addAttribute("isBoards",    tab.equalsIgnoreCase("boards"));
         model.addAttribute("isReviews",   tab.equalsIgnoreCase("reviews"));
-        model.addAttribute("isBids",      tab.equalsIgnoreCase("bids"));
         model.addAttribute("isEdit",      tab.equalsIgnoreCase("edit"));
-        model.addAttribute("isPortfolio", tab.equalsIgnoreCase("portfolios"));
+        // 준비중 메뉴 (포인트 충전/출금/결제내역)
+        model.addAttribute("isCharge",    tab.equalsIgnoreCase("charge"));
+        model.addAttribute("isWithdraw",  tab.equalsIgnoreCase("withdraw"));
+        model.addAttribute("isPayments",  tab.equalsIgnoreCase("payments"));
 
+        // 통계 (등록 프로젝트 수, 완료 프로젝트 수)
+        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
+        model.addAttribute("projectCount", myProjects.size());
+        model.addAttribute("completedCount", myProjects.stream()
+                .filter(ProjectResponeDTO.ListDTO::isDone).count());
+        model.addAttribute("messageCount", 0);  // 쪽지 기능 연결 전까지 0
 
-        model.addAttribute("projectCount", projectService.myProjects(loginMember).size());
-        if (loginMember.getRole() == Role.EXPERT) {
-            model.addAttribute("bidCount", bidService.findMyBids(loginMember).size());
-        }
+        // 탭별 데이터
         if (tab.equals("projects")) {
-            model.addAttribute("projects", projectService.myProjects(loginMember));
+            model.addAttribute("projects", myProjects);
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {
             model.addAttribute("reviews", reviewService.findMyReviews(loginMember.getId()));
-        } else if (tab.equals("bids")) {
-            model.addAttribute("bids", bidService.findMyBids(loginMember));
         } else if (tab.equals("edit")) {
             model.addAttribute("rawName", loginMember.getName());
             model.addAttribute("rawEmail", loginMember.getEmail());
-        } else if(tab.equals("portfolios")) {
-            model.addAttribute("portfolios",portfolioService.findPortfolioList(loginMember.getId()));
         }
 
-        return "member/mypage";
+        return "member/client-mypage";
     }
 
+    // 회원 탈퇴 (본인)
+    @DeleteMapping("/my-pages/withdraw")
+    @ResponseBody
+    public ResponseEntity<?> withdrawMyAccount(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
+        memberService.withdrawMember(loginMember.getId());
+        session.invalidate();
+        return ResponseEntity.ok().body("탈퇴 완료");
+    }
     // 회원 정보 수정 페이지 이동 (GET)
     @GetMapping("/mypage/update") //
     public String updateMemberPage(HttpSession session, Model model) {

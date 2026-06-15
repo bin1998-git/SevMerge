@@ -20,6 +20,7 @@ public class MemberResponse {
     private Status status;
     private Timestamp createdAt;
     private String profileImage;
+    private Integer balance;
 
     public static MemberResponse from(Member member) {
         return MemberResponse.builder()
@@ -31,6 +32,7 @@ public class MemberResponse {
                 .status(member.getStatus())
                 .createdAt(member.getCreatedAt())
                 .profileImage(member.getProfileImage())
+                .balance(member.getBalance())
                 .build();
     }
 

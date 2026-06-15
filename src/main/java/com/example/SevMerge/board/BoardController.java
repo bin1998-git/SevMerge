@@ -87,22 +87,34 @@ public class BoardController {
 
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
-        // 페이징 + 키워드 서비스 호출
-        Page<BoardResponse.ListDTO> boardPage = boardService.findAllByBoardType(BoardType.valueOf(boardType.toUpperCase()), keyword, page);
-
-        // todo-추후 페이지 번호 추가
         model.addAttribute("isFree", boardType.equalsIgnoreCase("FREE"));
         model.addAttribute("isNotice", boardType.equalsIgnoreCase("NOTICE"));
         model.addAttribute("isInquiry", boardType.equalsIgnoreCase("INQUIRY"));
         model.addAttribute("isAdmin", sessionMember != null && sessionMember.getRole() == Role.ADMIN);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("boardType", boardType);
+
+        // 1:1 문의 분기
+        if (boardType.equalsIgnoreCase("INQUIRY")) {
+            if (sessionMember == null) return "redirect:/login-form";
+            List<BoardResponse.ListDTO> inquiryBoards = boardService.findAllInquiry(BoardType.INQUIRY, sessionMember);
+            model.addAttribute("boards", inquiryBoards);
+            model.addAttribute("boardCount", inquiryBoards.size());
+            model.addAttribute("totalPages", 1);
+            model.addAttribute("currentPage", 1);
+            model.addAttribute("prevPage", null);
+            model.addAttribute("nextPage", null);
+            return "board/board-list";
+        }
+
+        // 일반 게시판
+        Page<BoardResponse.ListDTO> boardPage = boardService.findAllByBoardType(BoardType.valueOf(boardType.toUpperCase()), keyword, page);
         model.addAttribute("boards", boardPage.getContent());
         model.addAttribute("boardCount", boardPage.getTotalElements());
         model.addAttribute("totalPages", boardPage.getTotalPages());
         model.addAttribute("currentPage", page);
-        model.addAttribute("keyword", keyword);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < boardPage.getTotalPages() ? page + 1 : null);
-        model.addAttribute("boardType", boardType);
 
         return "board/board-list";
     }

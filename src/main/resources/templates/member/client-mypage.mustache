@@ -1,0 +1,293 @@
+{{> layout/header}}
+
+<style>
+    .cm-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 28px 80px; }
+
+    /* 상단 배너 (광고/이벤트 영역) */
+    .cm-banner { background: linear-gradient(135deg, #1846C9 0%, #2563eb 55%, #5b8fff 100%); border-radius: 16px; padding: 26px 32px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; position: relative; overflow: hidden; min-height: 104px; }
+    .cm-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 85% 50%, rgba(255,255,255,.12) 0%, transparent 55%); pointer-events: none; }
+    .cm-banner-left { display: flex; flex-direction: column; gap: 7px; z-index: 1; }
+    .cm-banner-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.18); border-radius: 20px; padding: 3px 11px; width: fit-content; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #fff; }
+    .cm-banner-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+    .cm-banner-title { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.02em; line-height: 1.3; }
+    .cm-banner-title span { opacity: .8; font-size: 13px; font-weight: 400; }
+    .cm-banner-cta { padding: 11px 22px; background: #fff; color: #2563eb; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; z-index: 1; text-decoration: none; }
+    .cm-banner-cta:hover { background: #eff6ff; }
+
+    .cm-body { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start; }
+
+    /* 왼쪽 사이드 */
+    .cm-side { background: #fff; border: 1px solid #e2e7f0; border-radius: 16px; overflow: hidden; }
+    .cm-profile { padding: 28px 24px; text-align: center; border-bottom: 1px solid #f3f4f8; }
+    .cm-avatar { width: 80px; height: 80px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 34px; background-size: cover; background-position: center; }
+    .cm-name { font-size: 16px; font-weight: 800; color: #1c1e26; }
+    .cm-role { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 12px; border-radius: 20px; }
+    .cm-menu { padding: 10px 0; }
+    .cm-group { font-size: 11px; font-weight: 700; color: #c4c9d9; letter-spacing: 1px; padding: 12px 22px 6px; }
+    .cm-link { display: flex; align-items: center; gap: 10px; padding: 11px 22px; font-size: 14px; font-weight: 600; color: #4b5563; text-decoration: none; border-left: 3px solid transparent; cursor: pointer; transition: all .12s; }
+    .cm-link:hover { background: #f8f9ff; color: #2563eb; }
+    .cm-link.active { background: #eff6ff; color: #2563eb; border-left-color: #2563eb; }
+    .cm-link.danger { color: #ef4444; }
+    .cm-link.danger:hover { background: #fff3f3; }
+    .cm-icon { width: 18px; text-align: center; }
+    .cm-soon { font-size: 10px; color: #c4c9d9; margin-left: auto; }
+
+    /* 오른쪽 */
+    .cm-main { display: flex; flex-direction: column; gap: 24px; }
+    .cm-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+    .cm-stat { background: #fff; border: 1px solid #e2e7f0; border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 12px; transition: border-color .15s, box-shadow .15s; }
+    .cm-stat:hover { border-color: #bfdbfe; box-shadow: 0 6px 20px rgba(37,99,235,.07); }
+    .cm-stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+    .ic-blue { background: #eff6ff; } .ic-green { background: #ecfdf5; } .ic-amber { background: #fffbeb; } .ic-violet { background: #f5f3ff; }
+    .cm-stat-val { font-size: 20px; font-weight: 900; line-height: 1; }
+    .cm-stat-lbl { font-size: 12px; color: #9ca3af; margin-top: 5px; }
+
+    .cm-content { background: #fff; border: 1px solid #e2e7f0; border-radius: 16px; padding: 28px 30px; min-height: 420px; }
+    .cm-content-head { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f8; }
+    .cm-content-title { font-size: 18px; font-weight: 900; }
+    .cm-content-sub { font-size: 13px; color: #9ca3af; margin-top: 3px; }
+
+    .cm-item { border: 1px solid #e2e7f0; border-radius: 12px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; text-decoration: none; color: inherit; transition: border-color .15s, box-shadow .15s; }
+    .cm-item:hover { border-color: #bfdbfe; box-shadow: 0 4px 14px rgba(37,99,235,.06); }
+    .cm-item-body { flex: 1; }
+    .cm-item-cat { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 9px; border-radius: 5px; display: inline-block; margin-bottom: 6px; }
+    .cm-item-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 4px; }
+    .cm-item-meta { font-size: 12px; color: #9ca3af; }
+    .cm-item-right { text-align: right; flex-shrink: 0; margin-left: 16px; }
+    .cm-item-price { font-size: 15px; font-weight: 900; }
+    .cm-item-status { font-size: 11px; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .st-open { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .st-closed { background: #f3f4f8; color: #9ca3af; }
+    .st-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .cm-empty { text-align: center; padding: 60px 0; font-size: 15px; color: #c4c9d9; }
+
+    .cm-btn { display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; text-decoration: none; margin-top: 8px; }
+    .cm-btn-primary { background: #2563eb; color: #fff; }
+
+    /* 정보수정 폼 */
+    .cm-form { display: flex; flex-direction: column; gap: 18px; max-width: 480px; }
+    .cm-fg { display: flex; flex-direction: column; gap: 7px; }
+    .cm-flabel { font-size: 13px; font-weight: 700; color: #374151; }
+    .cm-finput { padding: 12px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
+    .cm-finput:focus { border-color: #2563eb; background: #fff; }
+    .cm-finput:disabled { color: #9ca3af; }
+    .cm-form-btns { display: flex; justify-content: flex-end; }
+
+    /* 준비중 안내 */
+    .cm-soon-box { text-align: center; padding: 70px 0; }
+    .cm-soon-icon { font-size: 44px; margin-bottom: 14px; }
+    .cm-soon-title { font-size: 17px; font-weight: 800; color: #1c1e26; margin-bottom: 6px; }
+    .cm-soon-desc { font-size: 14px; color: #9ca3af; }
+
+    /* 페이지네이션 */
+    .cm-paging { display: flex; justify-content: center; gap: 6px; margin-top: 22px; }
+    .cm-page { padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e7f0; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; cursor: pointer; text-decoration: none; }
+    .cm-page:hover { border-color: #2563eb; color: #2563eb; }
+    .cm-page.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+</style>
+
+<div class="cm-wrap">
+
+    <!-- 상단 배너 (광고/이벤트 자리) -->
+    <div class="cm-banner">
+        <div class="cm-banner-left">
+            <div class="cm-banner-badge"><span class="cm-banner-dot"></span> 이번 주 한정 이벤트</div>
+            <div class="cm-banner-title">첫 프로젝트 수수료 0% 🎉<br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
+        </div>
+        <a href="/projects/save-form" class="cm-banner-cta">프로젝트 등록하기 →</a>
+    </div>
+
+    <div class="cm-body">
+
+        <!-- 왼쪽: 프로필 + 사이드바 -->
+        <aside class="cm-side">
+            <div class="cm-profile">
+                {{#member.profileImage}}
+                    <div class="cm-avatar" style="background-image:url('{{member.profileImageUrl}}');"></div>
+                {{/member.profileImage}}
+                {{^member.profileImage}}
+                    <div class="cm-avatar">👤</div>
+                {{/member.profileImage}}
+                <div class="cm-name">{{member.name}}</div>
+                <div class="cm-role">💼 의뢰인</div>
+            </div>
+            <nav class="cm-menu">
+                <div class="cm-group">내 활동</div>
+                <a href="/my-pages?tab=projects" class="cm-link {{#isProjects}}active{{/isProjects}}"><span class="cm-icon">📋</span>내 프로젝트</a>
+                <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon">📝</span>내 게시글</a>
+                <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon">⭐</span>리뷰</a>
+
+                <div class="cm-group">포인트 / 결제</div>
+                <a href="/my-pages?tab=charge" class="cm-link {{#isCharge}}active{{/isCharge}}"><span class="cm-icon">💰</span>포인트 충전<span class="cm-soon">준비중</span></a>
+                <a href="/my-pages?tab=withdraw" class="cm-link {{#isWithdraw}}active{{/isWithdraw}}"><span class="cm-icon">🏦</span>포인트 출금<span class="cm-soon">준비중</span></a>
+                <a href="/my-pages?tab=payments" class="cm-link {{#isPayments}}active{{/isPayments}}"><span class="cm-icon">🧾</span>결제 내역<span class="cm-soon">준비중</span></a>
+
+                <div class="cm-group">계정</div>
+                <a href="/my-pages?tab=edit" class="cm-link {{#isEdit}}active{{/isEdit}}"><span class="cm-icon">⚙️</span>계정 / 정보 수정</a>
+                <a href="#" onclick="withdrawMember(event)" class="cm-link danger"><span class="cm-icon">🚪</span>회원 탈퇴</a>
+            </nav>
+        </aside>
+
+        <!-- 오른쪽: 통계 + 콘텐츠 -->
+        <div class="cm-main">
+
+            <!-- 통계 -->
+            <div class="cm-stats">
+                <div class="cm-stat"><div class="cm-stat-icon ic-blue">📋</div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">등록 프로젝트</div></div></div>
+                <div class="cm-stat"><div class="cm-stat-icon ic-green">✅</div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료 프로젝트</div></div></div>
+                <div class="cm-stat"><div class="cm-stat-icon ic-amber">💬</div><div><div class="cm-stat-val">{{messageCount}}</div><div class="cm-stat-lbl">새 메시지</div></div></div>
+                <div class="cm-stat"><div class="cm-stat-icon ic-violet">💰</div><div><div class="cm-stat-val">{{member.balance}}</div><div class="cm-stat-lbl">보유 포인트</div></div></div>
+            </div>
+
+            <!-- 콘텐츠 -->
+            <section class="cm-content">
+
+                {{! ===== 내 프로젝트 ===== }}
+                {{#isProjects}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">내 프로젝트</div>
+                        <div class="cm-content-sub">내가 등록한 프로젝트를 관리해요.</div>
+                    </div>
+                    {{#projects}}
+                        <div class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">{{categoryName}}</span>
+                                {{#isOpen}}<a href="/bids?projectId={{id}}" style="text-decoration:none;color:inherit;"><div class="cm-item-title">{{title}}</div></a>{{/isOpen}}
+                                {{^isOpen}}<a href="/projects/{{id}}" style="text-decoration:none;color:inherit;"><div class="cm-item-title">{{title}}</div></a>{{/isOpen}}
+                                <div class="cm-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <div class="cm-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
+                                <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}</span>
+                                {{#isClosed}}
+                                    <form action="/projects/{{id}}/done" method="POST">
+                                        <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">검토확인</button>
+                                    </form>
+                                {{/isClosed}}
+                                {{#isDone}}
+                                    <a href="/reviews/save?targetId={{selectedExpertId}}" class="cm-btn cm-btn-primary" style="display:block;">리뷰 작성</a>
+                                {{/isDone}}
+                            </div>
+                        </div>
+                    {{/projects}}
+                    {{^projects}}<div class="cm-empty">등록한 프로젝트가 없습니다.</div>{{/projects}}
+                {{/isProjects}}
+
+                {{! ===== 내 게시글 ===== }}
+                {{#isBoards}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">내 게시글</div>
+                        <div class="cm-content-sub">내가 작성한 게시글이에요.</div>
+                    </div>
+                    {{#boards}}
+                        <a href="/boards/{{id}}" class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">{{boardType}}</span>
+                                <div class="cm-item-title">{{title}}</div>
+                                <div class="cm-item-meta">{{createdAt}} · 조회 {{viewCount}}</div>
+                            </div>
+                        </a>
+                    {{/boards}}
+                    {{^boards}}<div class="cm-empty">작성한 게시글이 없습니다.</div>{{/boards}}
+                {{/isBoards}}
+
+                {{! ===== 리뷰 ===== }}
+                {{#isReviews}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">리뷰</div>
+                        <div class="cm-content-sub">내가 작성한 리뷰예요.</div>
+                    </div>
+                    {{#reviews}}
+                        <a href="/reviews/{{id}}" class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">리뷰</span>
+                                <div class="cm-item-title">{{reviewerName}}</div>
+                                <div class="cm-item-meta">{{content}}</div>
+                                <div class="cm-item-meta">{{createdAt}}</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <span class="cm-item-status st-done">★{{countStar}}</span>
+                            </div>
+                        </a>
+                    {{/reviews}}
+                    {{^reviews}}<div class="cm-empty">작성한 리뷰가 없습니다.</div>{{/reviews}}
+                {{/isReviews}}
+
+                {{! ===== 정보 수정 ===== }}
+                {{#isEdit}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">계정 / 정보 수정</div>
+                        <div class="cm-content-sub">기본 정보와 비밀번호를 변경할 수 있어요.</div>
+                    </div>
+                    <form class="cm-form" id="editForm">
+                        <div class="cm-fg">
+                            <label class="cm-flabel">이름</label>
+                            <input type="text" id="updateName" name="name" class="cm-finput" value="{{member.name}}"/>
+                        </div>
+                        <div class="cm-fg">
+                            <label class="cm-flabel">이메일</label>
+                            <input type="email" class="cm-finput" value="{{member.email}}" disabled/>
+                        </div>
+                        <div class="cm-fg">
+                            <label class="cm-flabel">새 비밀번호</label>
+                            <input type="password" id="updatePassword" name="newPassword" class="cm-finput" placeholder="변경할 경우만 입력"/>
+                        </div>
+                        <div class="cm-fg">
+                            <label class="cm-flabel">새 비밀번호 확인</label>
+                            <input type="password" id="updatePasswordConfirm" name="newPasswordConfirm" class="cm-finput" placeholder="변경할 경우만 입력"/>
+                        </div>
+                        <div class="cm-form-btns">
+                            <button type="button" class="cm-btn cm-btn-primary" style="padding:10px 22px;font-size:14px;" onclick="updateMyInfo()">수정완료</button>
+                        </div>
+                    </form>
+                {{/isEdit}}
+
+                {{! ===== 준비중 메뉴들 (포인트 충전/출금/결제내역) ===== }}
+                {{#isCharge}}
+                    <div class="cm-soon-box"><div class="cm-soon-icon">💰</div><div class="cm-soon-title">포인트 충전</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
+                {{/isCharge}}
+                {{#isWithdraw}}
+                    <div class="cm-soon-box"><div class="cm-soon-icon">🏦</div><div class="cm-soon-title">포인트 출금</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
+                {{/isWithdraw}}
+                {{#isPayments}}
+                    <div class="cm-soon-box"><div class="cm-soon-icon">🧾</div><div class="cm-soon-title">결제 내역</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
+                {{/isPayments}}
+
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateMyInfo() {
+        const nameVal = document.getElementById("updateName").value;
+        const passwordVal = document.getElementById("updatePassword").value;
+        const confirmVal = document.getElementById("updatePasswordConfirm").value;
+        if (!nameVal.trim()) { alert("이름을 입력해 주세요."); return; }
+        if (passwordVal !== confirmVal) { alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다."); return; }
+        const updateData = { name: nameVal, newPassword: passwordVal, newPasswordConfirm: confirmVal };
+        fetch('/my-pages', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData)
+        })
+        .then(response => {
+            if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
+            else { alert("회원 정보 수정에 실패했습니다."); }
+        })
+        .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+    }
+
+    function withdrawMember(e) {
+        e.preventDefault();
+        if (!confirm("정말 탈퇴하시겠습니까? 탈퇴 후에는 복구할 수 없습니다.")) return;
+        fetch('/my-pages/withdraw', { method: 'DELETE' })
+        .then(response => {
+            if (response.ok) { alert("회원 탈퇴가 완료되었습니다."); window.location.href = "/"; }
+            else { alert("회원 탈퇴에 실패했습니다."); }
+        })
+        .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+    }
+</script>
+
+{{> layout/footer}}
