@@ -29,7 +29,6 @@ public class Faq {
     @ColumnDefault("true")
     private Boolean isActive;
 
-
     public void delete (){
         isActive = false;
     }
