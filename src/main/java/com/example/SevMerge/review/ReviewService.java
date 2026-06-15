@@ -34,10 +34,7 @@ public class ReviewService {
 
 
     private final ReviewRepository reviewRepository;
-    private final ExpertProfileRepository expertProfileRepository;
     private final MemberRepository memberRepository;
-    private final ProjectRepository projectRepository;
-    private final BidRepository bidRepository;
 
     // 리뷰작성
     @Transactional
@@ -70,13 +67,13 @@ public class ReviewService {
 
     // 리뷰수정
     @Transactional
-    public void updateReview(ReviewRequest.UpdateRequestDTO updateDTO, Long reviewId) {
+    public void updateReview(ReviewRequest.UpdateRequestDTO updateDTO, Long reviewId, Long userId) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
                 new BadRequestException("해당 리뷰는 존재하지 않습니다.")
         );
 
-        if(!review.getReviewer().getId().equals(reviewId)) {
+        if(!review.getReviewer().getId().equals(userId)) {
             throw new UnauthorizedException("리뷰 수정 권한이 없습니다.");
         }
 
@@ -88,13 +85,13 @@ public class ReviewService {
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(Long reviewId, Long userId) {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
                 new BadRequestException("해당 리뷰는 존재하지 않습니다.")
         );
 
-        if(!review.getReviewer().getId().equals(reviewId)) {
+        if(!review.getReviewer().getId().equals(userId)) {
             throw new UnauthorizedException("리뷰 삭제 권한이 없습니다");
         }
 
@@ -102,8 +99,17 @@ public class ReviewService {
 
     }
 
+    // 전문가 리뷰 조회
     public List<ReviewResponse.ReviewListDTO> findMyReviews(Long targetId) {
         return reviewRepository.findMyReviews(targetId)
+                .stream()
+                .map(ReviewResponse.ReviewListDTO::new)
+                .toList();
+    }
+
+    // 내가 작성한 리뷰 조회
+    public List<ReviewResponse.ReviewListDTO> findMySaveReviews(Long reviewerId) {
+        return reviewRepository.findMySaveReviews(reviewerId)
                 .stream()
                 .map(ReviewResponse.ReviewListDTO::new)
                 .toList();
