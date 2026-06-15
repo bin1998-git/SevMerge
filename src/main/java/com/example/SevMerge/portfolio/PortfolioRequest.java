@@ -25,7 +25,7 @@ public class PortfolioRequest {
             if(description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
             }
-            if (projectUrl.startsWith("https://")) {
+            if (!projectUrl.startsWith("https://")) {
                 throw new BadRequestException("프로젝트 링크는 https:// 로 시작해야 합니다");
             }
         }
@@ -50,7 +50,7 @@ public class PortfolioRequest {
             if(description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
             }
-            if (projectUrl.startsWith("https://")) {
+            if (!projectUrl.startsWith("https://")) {
                 throw new BadRequestException("프로젝트 링크는 https:// 로 시작해야 합니다");
             }
         }
