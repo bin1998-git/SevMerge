@@ -14,11 +14,12 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
         SELECT r FROM Report r 
         JOIN FETCH r.comment c 
         JOIN FETCH c.board b 
-        JOIN FETCH r.reporter m 
+        JOIN FETCH c.member cm     
+        JOIN FETCH r.reporter rm   
         WHERE r.isProcessed = false 
           AND (:keyword IS NULL OR :keyword = '' 
                OR c.content LIKE %:keyword% 
-               OR m.name LIKE %:keyword% 
+               OR cm.name LIKE %:keyword% 
                OR r.reason LIKE %:keyword%)
         ORDER BY r.id DESC
     """)

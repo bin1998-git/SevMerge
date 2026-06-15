@@ -60,10 +60,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 관리자 체크
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**","/boards/**")
+                .addPathPatterns("/admin/**")
                 .excludePathPatterns(
-                        "/boards",
-                        "/boards/save-form"
+
                         );
 
         // 프로젝트 작성자 권한 체크 (목록/상세는 전문가도 볼 수 있어야 하므로 제외)
