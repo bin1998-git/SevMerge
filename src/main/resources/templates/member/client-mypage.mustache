@@ -221,6 +221,22 @@
                     </div>
                     <form class="cm-form" id="editForm">
                         <div class="cm-fg">
+                            <label class="cm-flabel">프로필 이미지</label>
+                            <div style="display:flex; align-items:center; gap:16px;">
+                                {{#member.profileImage}}
+                                    <div id="imgPreview" style="width:64px;height:64px;border-radius:50%;background-image:url('{{member.profileImageUrl}}');background-size:cover;background-position:center;border:2px solid #bfdbfe;flex-shrink:0;"></div>
+                                {{/member.profileImage}}
+                                {{^member.profileImage}}
+                                    <div id="imgPreview" style="width:64px;height:64px;border-radius:50%;background:#eff6ff;border:2px solid #bfdbfe;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👤</div>
+                                {{/member.profileImage}}
+                                <div style="display:flex;flex-direction:column;gap:6px;">
+                                    <input type="file" id="profileImageFile" accept="image/*" style="display:none;" onchange="previewImage(this)"/>
+                                    <button type="button" class="cm-btn cm-btn-primary" style="margin-top:0;" onclick="document.getElementById('profileImageFile').click()">이미지 변경</button>
+                                    <span style="font-size:11px;color:#9ca3af;">JPG, PNG, GIF (5MB 이하)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cm-fg">
                             <label class="cm-flabel">이름</label>
                             <input type="text" id="updateName" name="name" class="cm-finput" value="{{member.name}}"/>
                         </div>
@@ -281,47 +297,69 @@
 </div>
 
 <script>
-    function updateMyInfo() {
-        const nameVal = document.getElementById("updateName").value;
-        const pwEl = document.getElementById("updatePassword");
-        const pwConfirmEl = document.getElementById("updatePasswordConfirm");
-        const passwordVal = pwEl ? pwEl.value : "";       // 소셜이면 칸이 없음
-        const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
-        const phoneVal = document.getElementById("updatePhone").value.trim();
-        const originalPhone = "{{member.phone}}";
+    function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById("imgPreview");
+        preview.style.backgroundImage = `url('${e.target.result}')`;
+        preview.style.backgroundSize = "cover";
+        preview.style.backgroundPosition = "center";
+        preview.textContent = "";  // 👤 이모지 제거
+    };
+    reader.readAsDataURL(input.files[0]);
+}
 
-        if (!nameVal.trim()) { alert("이름을 입력해 주세요."); return; }
+function updateMyInfo() {
+    const nameVal = document.getElementById("updateName").value.trim();
+    const pwEl = document.getElementById("updatePassword");
+    const pwConfirmEl = document.getElementById("updatePasswordConfirm");
+    const passwordVal = pwEl ? pwEl.value : "";
+    const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
+    const phoneVal = document.getElementById("updatePhone").value.trim();
+    const originalPhone = "{{member.phone}}";
 
-        // 비밀번호 입력했을 때만 검사 (소셜은 passwordVal이 빈 값)
-        if (passwordVal) {
-            const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-            if (!pwRegex.test(passwordVal)) {
-                alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
-                return;
-            }
-            if (passwordVal !== confirmVal) {
-                alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-                return;
-            }
-        }
+    if (!nameVal) { alert("이름을 입력해 주세요."); return; }
 
-        if (phoneVal !== originalPhone && !phoneVerified) {
-            alert("변경한 휴대폰 번호는 인증이 필요합니다.");
+    if (passwordVal) {
+        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+        if (!pwRegex.test(passwordVal)) {
+            alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
             return;
         }
-
-        const updateData = { name: nameVal, phone: phoneVal, newPassword: passwordVal };
-        fetch('/my-pages', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updateData)
-        })
-        .then(response => {
-            if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
-            else { alert("회원 정보 수정에 실패했습니다."); }
-        })
-        .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+        if (passwordVal !== confirmVal) {
+            alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            return;
+        }
     }
+
+    if (phoneVal !== originalPhone && !phoneVerified) {
+        alert("변경한 휴대폰 번호는 인증이 필요합니다.");
+        return;
+    }
+
+    // FormData로 전송 (이미지 + JSON 같이)
+    const formData = new FormData();
+    formData.append("data", new Blob(
+        [JSON.stringify({ name: nameVal, phone: phoneVal, newPassword: passwordVal })],
+        { type: "application/json" }
+    ));
+
+    const imageFile = document.getElementById("profileImageFile").files[0];
+    if (imageFile) {
+        formData.append("profileImageFile", imageFile);
+    }
+
+    fetch('/my-pages', {
+        method: 'PUT',
+        body: formData   // Content-Type 헤더 직접 설정 X (브라우저가 multipart로 자동 설정)
+    })
+    .then(response => {
+        if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
+        else { response.text().then(t => alert("수정 실패: " + t)); }
+    })
+    .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+}
 
     // ===== 비밀번호 확인 =====
     const pwInput = document.getElementById("updatePassword");

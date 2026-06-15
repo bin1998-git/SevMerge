@@ -195,11 +195,14 @@ public class MemberController {
     // 회원 정보 수정 처리 (PUT)
     @PutMapping("/my-pages")
     @ResponseBody
-    public ResponseEntity<?> updateMember(@RequestBody MemberRequest.Update request, HttpSession session) {
+    public ResponseEntity<?> updateMember(
+            @RequestPart("data") MemberRequest.Update request,
+            @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile,
+            HttpSession session) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
 
-        memberService.updateMyInfo(loginMember.getId(), request);
+        memberService.updateMyInfo(loginMember.getId(), request, profileImageFile);
         session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
         return ResponseEntity.ok().body("정보 변경 완료");
     }
