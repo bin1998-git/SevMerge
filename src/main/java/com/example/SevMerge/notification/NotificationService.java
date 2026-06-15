@@ -56,4 +56,21 @@ public class NotificationService {
                         .build());
     }
 
+    @Transactional
+    public void deleteNotification(Long id, Member sessionMember) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("알림을 찾을 수 없습니다."));
+
+        if (!notification.getReceiver().getId().equals(sessionMember.getId())) {
+            throw new UnauthorizedException("알림을 삭제할 권한이 없습니다.");
+        }
+
+        notification.delete();
+
+    }
+
+    public void deleteAllNotifications(Member receiver) {
+        notificationRepository.deleteAll();
+    }
+
 }

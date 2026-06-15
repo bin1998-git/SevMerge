@@ -310,51 +310,39 @@ INSERT INTO review_tb (reviewer_id, targeter_id, count_star, content, created_at
 VALUES (1, 2, 5, '기술적으로 매우 뛰어나신 분입니다. 복잡한 작업도 깔끔하게 처리해 주셨어요.', NOW());
 
 
+-- Notification 샘플데이터
+-- 컬럼: receiver_id, type, content, url, is_read, is_deleted, created_at
+
 -- ── 의뢰인 김의뢰(1) 가 받는 알림 ──
-INSERT INTO notification_tb (receiver_id, type, content, url, is_read, created_at)
-VALUES
-    -- 홍길동(2)이 1번 프로젝트에 제안서 제출 (안읽음 · 최신)
-    (1, 'NEW_BID', '홍길동 전문가가 ''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제안서를 제출했습니다.', '/projects/1', false,
-     DATE_SUB(NOW(), INTERVAL 10 MINUTE)),
-    -- 김디자(3)이 1번 프로젝트에 제안서 제출 (안읽음)
-    (1, 'NEW_BID', '김디자 전문가가 ''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제안서를 제출했습니다.', '/projects/1', false,
-     DATE_SUB(NOW(), INTERVAL 2 HOUR)),
-    -- 홍길동(2)이 2번 프로젝트(AI)에 제안서 제출 (읽음)
-    (1, 'NEW_BID', '홍길동 전문가가 ''제조업 불량품 검출용 AI 컴퓨터 비전 모델 개발'' 프로젝트에 제안서를 제출했습니다.', '/projects/2', true,
-     DATE_SUB(NOW(), INTERVAL 1 DAY)),
-    -- 홍길동(2)에게서 새 쪽지 도착 (안읽음) — message 6번과 대응
-    (1, 'MESSAGE_RECEIVED', '홍길동님이 ''[AI 모델] 학습 데이터셋 전달 방법 문의'' 쪽지를 보냈습니다.', '/messages', false,
-     DATE_SUB(NOW(), INTERVAL 1 HOUR)),
-    -- 김디자(3)에게서 새 쪽지 도착 (읽음) — message 4번과 대응
-    (1, 'MESSAGE_RECEIVED', '김디자님이 ''Re: 랜딩페이지 1차 시안 일정 문의드립니다'' 쪽지를 보냈습니다.', '/messages', true,
-     DATE_SUB(NOW(), INTERVAL 4 DAY));
+INSERT INTO notification_tb (receiver_id, type, content, url, is_read, is_deleted, created_at)
+VALUES (1, 'NEW_BID', '홍길동 전문가가 ''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제안서를 제출했습니다.', '/projects/1', false, false,
+        DATE_SUB(NOW(), INTERVAL 10 MINUTE)),
+       (1, 'NEW_BID', '김디자 전문가가 ''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제안서를 제출했습니다.', '/projects/1', false, false,
+        DATE_SUB(NOW(), INTERVAL 2 HOUR)),
+       (1, 'NEW_BID', '홍길동 전문가가 ''제조업 불량품 검출용 AI 컴퓨터 비전 모델 개발'' 프로젝트에 제안서를 제출했습니다.', '/projects/2', true, false,
+        DATE_SUB(NOW(), INTERVAL 1 DAY)),
+       (1, 'MESSAGE_RECEIVED', '홍길동님이 ''[AI 모델] 학습 데이터셋 전달 방법 문의'' 쪽지를 보냈습니다.', '/messages', false, false,
+        DATE_SUB(NOW(), INTERVAL 1 HOUR)),
+       (1, 'MESSAGE_RECEIVED', '김디자님이 ''Re: 랜딩페이지 1차 시안 일정 문의드립니다'' 쪽지를 보냈습니다.', '/messages', true, false,
+        DATE_SUB(NOW(), INTERVAL 4 DAY));
 
 -- ── 전문가 홍길동(2) 가 받는 알림 ──
-INSERT INTO notification_tb (receiver_id, type, content, url, is_read, created_at)
-VALUES
-    -- 1번 프로젝트 제안서가 낙찰됨 (안읽음 · 최신)
-    (2, 'BID_SELECTED', '축하합니다! ''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제출한 제안서가 낙찰되었습니다.', '/bids/my-list', false,
-     DATE_SUB(NOW(), INTERVAL 30 MINUTE)),
-    -- 결제 완료 → 작업 시작 가능 (안읽음)
-    (2, 'PAYMENT_COMPLETED', '''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트의 대금 결제가 완료되어 작업을 시작할 수 있습니다.', '/bids/my-orders',
-     false, DATE_SUB(NOW(), INTERVAL 20 MINUTE)),
-    -- 전문가 신청 승인 (읽음 · 오래됨)
-    (2, 'EXPERT_APPROVED', '전문가 신청이 승인되었습니다. 이제 프로젝트에 제안서를 제출할 수 있습니다.', '/experts/dashboard', true,
-     DATE_SUB(NOW(), INTERVAL 10 DAY)),
-    -- 의뢰인(1)에게서 새 쪽지 (읽음) — message 1번과 대응
-    (2, 'MESSAGE_RECEIVED', '김의뢰님이 ''[문의] 채팅 및 결제 기능 일정 확인 부탁드립니다'' 쪽지를 보냈습니다.', '/messages', true,
-     DATE_SUB(NOW(), INTERVAL 3 DAY));
+INSERT INTO notification_tb (receiver_id, type, content, url, is_read, is_deleted, created_at)
+VALUES (2, 'BID_SELECTED', '축하합니다! ''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제출한 제안서가 낙찰되었습니다.', '/bids/my-orders', false,
+        false, DATE_SUB(NOW(), INTERVAL 30 MINUTE)),
+       (2, 'PAYMENT_COMPLETED', '''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트의 대금 결제가 완료되어 작업을 시작할 수 있습니다.', '/bids/my-orders',
+        false, false, DATE_SUB(NOW(), INTERVAL 20
+  MINUTE)),
+       (2, 'EXPERT_APPROVED', '전문가 신청이 승인되었습니다. 지금 바로 활동을 시작해보세요!', '/experts/dashboard', true, false,
+        DATE_SUB(NOW(), INTERVAL 10 DAY)),
+       (2, 'MESSAGE_RECEIVED', '김의뢰님이 ''[문의] 채팅 및 결제 기능 일정 확인 부탁드립니다'' 쪽지를 보냈습니다.', '/messages', true, false,
+        DATE_SUB(NOW(), INTERVAL 3 DAY));
 
 -- ── 전문가 김디자(3) 가 받는 알림 ──
-INSERT INTO notification_tb (receiver_id, type, content, url, is_read, created_at)
-VALUES
-    -- 3번 프로젝트(디자인) 낙찰 (안읽음)
-    (3, 'BID_SELECTED', '축하합니다! ''기업 리브랜딩을 위한 랜딩 페이지 및 UI/UX 디자인 고도화'' 프로젝트에 제출한 제안서가 낙찰되었습니다.', '/bids/my-list', false,
-     DATE_SUB(NOW(), INTERVAL 6 HOUR)),
-    -- 결제 완료 (안읽음)
-    (3, 'PAYMENT_COMPLETED', '''기업 리브랜딩을 위한 랜딩 페이지 및 UI/UX 디자인 고도화'' 프로젝트의 대금 결제가 완료되어 작업을 시작할 수 있습니다.',
-     '/bids/my-orders', false, DATE_SUB(NOW(), INTERVAL 5
-  HOUR)),
-    -- 1번 프로젝트 제안서는 거절됨 (읽음)
-    (3, 'BID_REJECTED', '''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제출한 제안서가 아쉽게도 선정되지 않았습니다.', '/bids/my-list', true,
-     DATE_SUB(NOW(), INTERVAL 1 DAY));
+INSERT INTO notification_tb (receiver_id, type, content, url, is_read, is_deleted, created_at)
+VALUES (3, 'BID_SELECTED', '축하합니다! ''기업 리브랜딩을 위한 랜딩 페이지 및 UI/UX 디자인 고도화'' 프로젝트에 제출한 제안서가 낙찰되었습니다.', '/bids/my-list',
+        false, false, DATE_SUB(NOW(), INTERVAL 6 HOUR)),
+       (3, 'PAYMENT_COMPLETED', '''기업 리브랜딩을 위한 랜딩 페이지 및 UI/UX 디자인 고도화'' 프로젝트의 대금 결제가 완료되어 작업을 시작할 수 있습니다.',
+        '/bids/my-orders', false, false, DATE_SUB(NOW(), INTERVAL 5 HOUR)),
+       (3, 'BID_REJECTED', '''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제출한 제안서가 아쉽게도 선정되지 않았습니다.', '/bids/my-list', true,
+        false, DATE_SUB(NOW(), INTERVAL 1 DAY));

@@ -9,10 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * GET  /notifications                    → 쪽지함 목록 페이지
@@ -48,6 +45,21 @@ public class NotificationController {
     public String readAll(HttpSession session) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
         notificationService.changeAllRead(sessionMember);
+        return "redirect:/notifications";
+    }
+
+    @PostMapping("/notifications/{id}/delete")
+    @ResponseBody
+    public ApiResponse<?> deleteNotification(@PathVariable("id") Long notificationId, HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        notificationService.deleteNotification(notificationId, sessionMember);
+        return ApiResponse.ok("알림을 삭제했습니다.");
+    }
+
+    @PostMapping("/notifications/delete-all")
+    public String deleteAll(HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        notificationService.deleteAllNotifications(sessionMember);
         return "redirect:/notifications";
     }
 }

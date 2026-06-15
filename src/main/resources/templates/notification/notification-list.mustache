@@ -41,6 +41,20 @@
         color: #2563eb;
     }
 
+    .noti-head-actions { display: flex; gap: 8px; }
+    .btn-delete-all {
+        padding: 10px 18px;
+        background: #fff;
+        border: 1.5px solid #fecaca;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #ef4444;
+        cursor: pointer;
+        transition: all .15s;
+    }
+    .btn-delete-all:hover { background: #fef2f2; border-color: #ef4444; }
+
     .noti-list {
         display: flex;
         flex-direction: column;
@@ -167,6 +181,41 @@
         background: #1d4ed8;
     }
 
+    .noti-card-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .btn-delete {
+        padding: 9px 18px;
+        background: #fff;
+        border: 1.5px solid #fecaca;
+        color: #ef4444;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+    .btn-delete:hover { background: #fef2f2; border-color: #ef4444; }
+
+    .noti-delete {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+        color: #c4c9d9;
+        flex-shrink: 0;
+        display: inline-flex;
+        transition: background .15s, color .15s;
+    }
+    .noti-delete:hover { background: #fef2f2; color: #ef4444; }
+
+    .noti-delete svg { width: 15px; height: 15px; }
+
     .noti-empty {
         text-align: center;
         padding: 80px 0;
@@ -182,9 +231,15 @@
     <div class="noti-inner">
         <div class="noti-head">
             <h1 class="noti-title">알림</h1>
-            <form action="/notifications/read-all" method="POST" style="margin:0;">
-                <button type="submit" class="btn-read-all">알림 모두 읽음</button>
-            </form>
+            <div class="noti-head-actions">
+                <form action="/notifications/read-all" method="POST" style="margin:0;">
+                    <button type="submit" class="btn-read-all">알림 모두 읽음</button>
+                </form>
+                <form action="/notifications/delete-all" method="POST" style="margin:0;"
+                      onsubmit="return confirm('모든 알림을 삭제하시겠습니까?');">
+                    <button type="submit" class="btn-delete-all">알림 전체 삭제</button>
+                </form>
+            </div>
         </div>
 
         <div class="noti-list">
@@ -201,10 +256,20 @@
                              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
+                        <button type="button" class="noti-delete" onclick="deleteNoti(event, this)" aria-label="삭제">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
                     <div class="noti-card-body">
                         <div class="noti-card-content">{{content}}</div>
-                        <a href="{{url}}" class="btn-goto">관련 페이지로 이동</a>
+                        <div class="noti-card-actions">
+                            <a href="{{url}}" class="btn-goto">관련 페이지로 이동</a>
+                            <button type="button" class="btn-delete" onclick="deleteNoti(event, this)">삭제</button>
+                        </div>
                     </div>
                 </div>
             {{/notifications}}
@@ -232,6 +297,17 @@
                     });
         }
     }
+
+    function deleteNoti(event, btn) {
+        event.stopPropagation();  // 카드가 펼쳐지지 않도록 이벤트 전파 차단
+        const card = btn.closest('.noti-card');
+        const id = card.dataset.id;
+        fetch('/notifications/' + id + '/delete', { method: 'POST' })
+                .then(res => res.json())
+                .then(body => { if (body.success) card.remove(); })
+                .catch(() => {});
+    }
+
 </script>
 
 {{> layout/footer}}
