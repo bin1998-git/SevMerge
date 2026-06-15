@@ -27,7 +27,7 @@ public class NotificationService {
     public void notifyBidSelected(Member expert, String projectTitle) {
         notify(expert, NotificationType.BID_SELECTED,
                 expert.getName() + " 전문가님 축하합니다! \n'" + projectTitle + "' 프로젝트에 제출한 제안서가 낙찰 되었습니다! ",
-                "/projects/my-orders" );
+                "/bids/my-orders" );
     }
 
     // 제안서 거절(탈락) → 전문가
@@ -124,9 +124,9 @@ public class NotificationService {
         notification.delete();
 
     }
-
+    @Transactional
     public void deleteAllNotifications(Member receiver) {
-        notificationRepository.deleteAll();
+        notificationRepository.changeAllDeleted(receiver);
     }
 
 }
