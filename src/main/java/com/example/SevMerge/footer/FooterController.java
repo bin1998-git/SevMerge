@@ -1,6 +1,7 @@
 package com.example.SevMerge.footer;
 
 
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberService;
@@ -51,19 +52,5 @@ public class FooterController {
         return "footerProc/operation";
     }
 
-    // FAQ
-    @GetMapping("/policys/faq")
-    public String faq(Model model, HttpSession session){
 
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-
-        Member memberEntity = memberService.findMemberById(sessionMember.getId());
-
-        memberEntity.isAdmin();
-
-        model.addAttribute("isAdmin",memberEntity);
-
-        return "footerProc/faq";
-
-    }
 }

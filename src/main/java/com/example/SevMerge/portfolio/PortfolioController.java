@@ -69,7 +69,6 @@ public class PortfolioController {
         if (member == null) {
             return "redirect:/login";
         }
-
         ExpertProfileResponse expertProfileEntity = expertProfileService.getByMemberId(member.getId());
 
         model.addAttribute("expertProfile", expertProfileEntity);

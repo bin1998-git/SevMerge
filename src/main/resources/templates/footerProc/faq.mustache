@@ -1,56 +1,258 @@
 {{>layout/header}}
 
 <style>
-    .faq-hero { background:#fff; border-bottom:1px solid #eaecf4; padding:48px 28px 0; }
-    .faq-hero-inner { max-width:1140px; margin:0 auto; text-align:center; padding-bottom:36px; }
-    .faq-hero-inner h1 { font-size:32px; font-weight:900; color:#1c1e26; letter-spacing:-1px; margin-bottom:10px; }
-    .faq-hero-inner p { font-size:14px; color:#6b7280; }
+    .faq-hero {
+        background: #fff;
+        border-bottom: 1px solid #eaecf4;
+        padding: 48px 28px 0;
+    }
 
-    .faq-section { padding:48px 28px 80px; max-width:880px; margin:0 auto; }
+    .faq-hero-inner {
+        max-width: 1140px;
+        margin: 0 auto;
+        text-align: center;
+        padding-bottom: 36px;
+    }
 
-    .faq-write-box { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; padding:32px; margin-bottom:28px; }
-    .faq-write-box h2 { font-size:16px; font-weight:900; color:#1c1e26; margin-bottom:18px; }
-    .faq-form-group { margin-bottom:14px; }
-    .faq-form-group label { display:block; font-size:13px; font-weight:700; color:#374151; margin-bottom:6px; }
+    .faq-hero-inner h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #1c1e26;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+    }
+
+    .faq-hero-inner p {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .faq-section {
+        padding: 48px 28px 80px;
+        max-width: 880px;
+        margin: 0 auto;
+    }
+
+    .faq-write-box {
+        background: #fff;
+        border: 1.5px solid #eaecf4;
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 28px;
+    }
+
+    .faq-write-box h2 {
+        font-size: 16px;
+        font-weight: 900;
+        color: #1c1e26;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .faq-write-box h2::before {
+        content: "";
+        display: block;
+        width: 4px;
+        height: 16px;
+        background: #2563eb;
+        border-radius: 2px;
+    }
+
+    .faq-form-group {
+        margin-bottom: 14px;
+    }
+
+    .faq-form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
     .faq-form-group input,
     .faq-form-group textarea {
-        width:100%; box-sizing:border-box; padding:10px 12px;
-        border:1.5px solid #eaecf4; border-radius:8px; font-size:13px; color:#1c1e26;
-        font-family:inherit;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border: 1.5px solid #eaecf4;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #1c1e26;
+        font-family: inherit;
+        transition: border-color 0.15s;
     }
+
     .faq-form-group input:focus,
-    .faq-form-group textarea:focus { outline:none; border-color:#c7cbe0; }
-    .faq-form-group textarea { resize:vertical; line-height:1.6; }
+    .faq-form-group textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    .faq-form-group textarea {
+        resize: vertical;
+        line-height: 1.6;
+    }
 
     .faq-submit-btn {
-        display:inline-block; padding:10px 22px; border-radius:8px;
-        background:#1c1e26; color:#fff; font-size:13px; font-weight:700;
-        border:none; cursor:pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 22px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
     }
-    .faq-submit-btn:hover { background:#33363f; }
 
-    .faq-list { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; overflow:hidden; }
+    .faq-submit-btn:hover {
+        background: #1d4ed8;
+    }
 
-    .faq-item { border-bottom:1px solid #eaecf4; }
-    .faq-item:last-child { border-bottom:none; }
+    .faq-list {
+        background: #fff;
+        border: 1.5px solid #eaecf4;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .faq-item {
+        border-bottom: 1px solid #eaecf4;
+    }
+
+    .faq-item:last-child {
+        border-bottom: none;
+    }
 
     .faq-question {
-        display:flex; align-items:flex-start; gap:10px; cursor:pointer;
-        padding:18px 24px; font-size:14px; font-weight:700; color:#1c1e26;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        padding: 20px 24px;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #1c1e26;
+        transition: background 0.15s;
     }
+
+    .faq-question:hover {
+        background: #f8f9fc;
+    }
+
     .faq-question .badge {
-        flex-shrink:0; width:20px; height:20px; border-radius:6px;
-        background:#f8f9fc; color:#6b7280; font-size:12px; font-weight:900;
-        display:flex; align-items:center; justify-content:center;
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #eaf0fe;
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .faq-question .badge.a-badge {
+        background: #f8f9fc;
+        color: #6b7280;
+    }
+
+    .faq-question .q-text {
+        flex: 1;
+    }
+
+    .faq-question .chevron {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        color: #9ca3af;
+        transition: transform 0.2s;
+    }
+
+    .faq-question.open .chevron {
+        transform: rotate(180deg);
     }
 
     .faq-answer {
-        display:none; padding:0 24px 18px 54px;
-        font-size:13px; color:#4b5563; line-height:1.9; white-space:pre-line;
+        display: none;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 0 24px 22px 24px;
+        font-size: 13.5px;
+        color: #4b5563;
+        line-height: 1.9;
+        white-space: pre-line;
     }
-    .faq-answer.open { display:block; }
 
-    .faq-empty { text-align:center; font-size:13px; color:#9ca3af; padding:48px 0; }
+    .faq-answer.open {
+        display: flex;
+    }
+
+    .faq-empty {
+        text-align: center;
+        font-size: 13px;
+        color: #9ca3af;
+        padding: 48px 0;
+    }
+
+    .faq-admin-actions {
+        padding: 0 24px 20px 66px;
+        display: flex;
+        gap: 8px;
+    }
+
+    .faq-edit-btn,
+    .faq-delete-btn {
+        padding: 8px 18px;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 12.5px;
+        font-weight: 700;
+        border: 1.5px solid #eaecf4;
+        cursor: pointer;
+        color: #374151;
+        transition: all 0.15s;
+    }
+
+    .faq-edit-btn:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+        background: #eaf0fe;
+    }
+
+    .faq-delete-btn:hover {
+        border-color: #d85a30;
+        color: #d85a30;
+        background: #fdf2ee;
+    }
+
+    .faq-edit-box {
+        display: none;
+        padding: 0 24px 24px 66px;
+    }
+
+    .faq-edit-box.open {
+        display: block;
+    }
+
+    .faq-edit-box .faq-form-group {
+        margin-bottom: 10px;
+    }
+
+    .faq-edit-box-inner {
+        background: #f8f9fc;
+        border: 1.5px solid #eaecf4;
+        border-radius: 12px;
+        padding: 20px;
+    }
 </style>
 
 <section class="faq-hero">
@@ -65,7 +267,7 @@
     {{#isAdmin}}
         <div class="faq-write-box">
             <h2>FAQ 등록</h2>
-            <form action="/faq" method="post">
+            <form action="/faqs/save" method="post">
                 <div class="faq-form-group">
                     <label>질문</label>
                     <input type="text" name="question" placeholder="질문을 입력하세요" required>
@@ -83,11 +285,40 @@
         {{#faqList}}
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleAnswer(this)">
-                    <span class="badge">Q</span> {{question}}
+                    <span class="badge">Q</span>
+                    <span class="q-text">{{question}}</span>
+                    <svg class="chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
                 <div class="faq-answer">
-                    <span class="badge">A</span> {{answer}}
+                    <span class="badge a-badge">A</span>
+                    <span>{{answer}}</span>
                 </div>
+                {{#isAdmin}}
+                    <div class="faq-admin-actions">
+                        <button type="button" class="faq-edit-btn" onclick="toggleEdit(this)">수정하기</button>
+                        <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
+                            <button type="submit" class="faq-delete-btn">삭제하기</button>
+                        </form>
+                    </div>
+
+                    <div class="faq-edit-box">
+                        <div class="faq-edit-box-inner">
+                            <form action="/faqs/update/{{id}}" method="post">
+                                <div class="faq-form-group">
+                                    <label>질문</label>
+                                    <input type="text" name="question" value="{{question}}" required>
+                                </div>
+                                <div class="faq-form-group">
+                                    <label>답변</label>
+                                    <textarea name="answer" rows="4" required>{{answer}}</textarea>
+                                </div>
+                                <button type="submit" class="faq-submit-btn">저장하기</button>
+                            </form>
+                        </div>
+                    </div>
+                {{/isAdmin}}
             </div>
         {{/faqList}}
 
@@ -102,6 +333,13 @@
     function toggleAnswer(el) {
         const answer = el.nextElementSibling;
         answer.classList.toggle('open');
+        el.classList.toggle('open');
+    }
+
+    function toggleEdit(btn) {
+        const item = btn.closest('.faq-item');
+        const editBox = item.querySelector('.faq-edit-box');
+        editBox.classList.toggle('open');
     }
 </script>
 
