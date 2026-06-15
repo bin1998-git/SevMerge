@@ -69,34 +69,26 @@ public class PortfolioService {
 
 
     @Transactional
-    public void save(PortfolioRequest.SaveDTO saveDTO,Long sessionUserId)  {
+    public void save(PortfolioRequest.SaveDTO saveDTO, Long sessionUserId) {
 
-
-
-        String newFileName = null;
         saveDTO.validate();
-
-
-        if(saveDTO.getImageUrl() == null && saveDTO.getImageUrl().isEmpty()) {
-
-
-
+        try {
+            Portfolio newPortfolio = null;
+            String savedFileName = FileUtil.saveFile(saveDTO.getImageUrl());
+            newPortfolio = Portfolio
+                    .builder()
+                    .expertProfile(expertProfileRepository
+                            .findByMemberId(saveDTO.getExpertId()).orElseThrow(() -> new BadRequestException("전문가를 찾지못했습니다.")))
+                    .title(saveDTO.getTitle())
+                    .description(saveDTO.getDescription())
+                    .imageUrl(savedFileName)
+                    .projectUrl(saveDTO.getProjectUrl())
+                    .isActive(true)
+                    .build();
+            portfolioRepository.save(newPortfolio);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-
-
-        Portfolio newPortfolio = Portfolio
-                .builder()
-                .expertProfile(expertProfileRepository
-                        .findByMemberId(saveDTO.getExpertId()).orElseThrow(() -> new BadRequestException("전문가를 찾지못했습니다.")))
-                .title(saveDTO.getTitle())
-                .description(saveDTO.getDescription())
-                .imageUrl(saveDTO.getImageUrl())
-                .projectUrl(saveDTO.getProjectUrl())
-                .isActive(true)
-                .build();
-
-        portfolioRepository.save(newPortfolio);
 
     }
 
@@ -116,15 +108,15 @@ public class PortfolioService {
         }
 
         // 리퀘스트로 파일이 있을때
-        if(!updateDTO.getImageUrl().isEmpty() && updateDTO.getImageUrl() != null){
+        if(!updateDTO.getImageFile().isEmpty() && updateDTO.getImageFile() != null){
             try {
-                if(!FileUtil.isImageFile(updateDTO.getImageUrl())){
+                if(!FileUtil.isImageFile(updateDTO.getImageFile())){
                     throw new BadRequestException("이미지 파일만 업로드 가능 합니다.");
                 }
 
                  // 새이미지 로컬 폴더에 저장 (중복되지 않을 이미지 파일 이름을 리턴)
                 // 이미지 파일 경로 반환
-                newImageFile = FileUtil.saveFile(updateDTO.getImageUrl(),FileUtil.IMAGE_DIR);
+                newImageFile = FileUtil.saveFile(updateDTO.getImageFile());
             }  catch (IOException e) {
                 throw new RuntimeException(e);
             }

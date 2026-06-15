@@ -12,19 +12,19 @@ import java.util.UUID;
 public class FileUtil {
 
     // 업로드될 파일 경로
-    public static final String IMAGE_DIR = Paths.get(System.getProperty("user.home"),"blog_uploads").toString();
+    public static final String IMAGE_DIR = Paths.get(System.getProperty("user.home"),"sevMergeImages").toString();
 
-    public static String saveFile(MultipartFile file, String uploadDir) throws IOException {
+    public static String saveFile(MultipartFile file) throws IOException {
 
         // 1 . 1단계 파일 유효성 검사 - 파일이 없거나 크기가 0 이면 오류
-        if(file == null && file.isEmpty()){
+        if(file == null || file.isEmpty()){
             return null;
         }
 
         // 파일 업로드 경로 생성
         Path uploadPath = Paths.get(IMAGE_DIR);
 
-        if(Files.exists(uploadPath)){
+        if(!Files.exists(uploadPath)){
             Files.createDirectories(uploadPath); // 뎁스가 깊으면 상위 폴더까지 자동생성
         }
 
@@ -47,12 +47,12 @@ public class FileUtil {
     // 2 . 파일 삭제하는 기능 만들어 주기
     // 파일 삭제에서는 파일 이름과 파일 경로가 필요하다
     // File은 파일 생성 경로를 만들고 파일 자체의 데이터는 가지지 않는다
-    public static void deleteFile(String fileName, String uploadDir) throws IOException {
+    public static void deleteFile(String fileName) throws IOException {
         if(fileName == null || fileName.isEmpty()){
             return;
         }
         // Path -> C://upload/xxx_a.png
-        Path filePath = Paths.get(uploadDir, fileName);
+        Path filePath = Paths.get(IMAGE_DIR, fileName);
         if(Files.exists(filePath)){
             // 폴더경로 존재 확인 했고 파일명 기준으로 파일이 존재하면 삭제
             Files.delete(filePath);

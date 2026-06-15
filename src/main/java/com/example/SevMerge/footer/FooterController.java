@@ -63,7 +63,7 @@ public class FooterController {
 
         model.addAttribute("isAdmin",memberEntity);
 
-        return ""
+        return "footerProc/faq";
 
     }
 }

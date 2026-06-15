@@ -37,7 +37,7 @@ public class PortfolioRequest {
         private Long id; // 포폴 아이디
         private String title;
         private String description;
-        private MultipartFile imageUrl;
+        private MultipartFile imageFile;
         private String projectUrl;
 
         public void validate () {
