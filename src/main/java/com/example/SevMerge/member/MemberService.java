@@ -186,7 +186,16 @@ public class MemberService {
     @Transactional
     public void updateMyInfo(Long memberId, MemberRequest.Update request) {
         Member member = findMemberById(memberId);
-        member.updateInfo(request.getName(), request.getPhone());
+
+        // 전화번호 수정 안했을 때 기존 값 유지
+        String phone = (request.getPhone() != null && !request.getPhone().isBlank())
+                ? request.getPhone() : member.getPhone();
+        member.updateInfo(request.getName(), phone);
+
+        // 비밀번호 변경 입력 했을 때만 수정
+        if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
+            member.changePassword(passwordEncoder.encode(request.getNewPassword()));
+        }
     }
 
     @Transactional
@@ -487,6 +496,8 @@ public class MemberService {
                 .phone("010-0000-0000")
                 .role(Role.CLIENT)
                 .status(Status.ACTIVE)
+                .provider("kakao")
+                .providerId(kakaoUserKey)
                 .profileImage(image)
                 .build();
         return memberRepository.save(newMember);
@@ -538,6 +549,8 @@ public class MemberService {
                 .phone("010-0000-0000")
                 .role(Role.EXPERT)
                 .status(Status.PENDING)
+                .provider("kakao")
+                .providerId(kakaoUserKey)
                 .profileImage(image)
                 .build();
         Member saved = memberRepository.save(newMember);

@@ -102,24 +102,24 @@ public class MemberController {
         return "redirect:/";
     }
 
-    // 클라이언트 대시보드
-    @GetMapping("/clients/dashboard")
-    public String clientDashboard(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-        if (loginMember == null) return "redirect:/login";
-        if (loginMember.isExpert()) return "redirect:/experts/dashboard";
-
-        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
-        long completedCount = myProjects.stream().filter(ProjectResponeDTO.ListDTO::isDone).count();
-        long activeCount    = myProjects.stream()
-                .filter(p -> "IN_PROGRESS".equals(p.getProjectStatus()) || "CLOSED".equals(p.getProjectStatus()))
-                .count();
-
-        model.addAttribute("projectCount",   myProjects.size());
-        model.addAttribute("completedCount", completedCount);
-        model.addAttribute("activeCount",    activeCount);
-        return "member/exclient-dashboard";
-    }
+//    // 클라이언트 대시보드
+//    @GetMapping("/clients/dashboard")
+//    public String clientDashboard(HttpSession session, Model model) {
+//        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+//        if (loginMember == null) return "redirect:/login";
+//        if (loginMember.isExpert()) return "redirect:/experts/dashboard";
+//
+//        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
+//        long completedCount = myProjects.stream().filter(ProjectResponeDTO.ListDTO::isDone).count();
+//        long activeCount    = myProjects.stream()
+//                .filter(p -> "IN_PROGRESS".equals(p.getProjectStatus()) || "CLOSED".equals(p.getProjectStatus()))
+//                .count();
+//
+//        model.addAttribute("projectCount",   myProjects.size());
+//        model.addAttribute("completedCount", completedCount);
+//        model.addAttribute("activeCount",    activeCount);
+//        return "member/exclient-dashboard";
+//    }
 
 
     // 마이페이지 (의뢰인 전용)

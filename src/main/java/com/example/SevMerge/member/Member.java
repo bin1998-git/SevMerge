@@ -186,4 +186,14 @@ public class Member {
         this.profileImage = profileImage;
     }
 
+    // 이미지 소셜 http URL은 그대로, 업로드 파일은 /images/ 처리
+    public String getProfileImageUrl() {
+        if (profileImage == null || profileImage.isBlank()) {
+            return "/images/default.png";
+        }
+        if (profileImage.startsWith("http")) {
+            return profileImage;
+        }
+        return "/images/" + profileImage;
+    }
 }

@@ -378,7 +378,7 @@
                 <div class="profile-menu" id="profileMenuExpert">
                     <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownExpert')" aria-label="내 메뉴">
                         {{#sessionUser.profileImage}}
-                            <span class="profile-thumb" style="background-image:url('/images/{{sessionUser.profileImage}}');"></span>
+                            <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
                         {{/sessionUser.profileImage}}
                         {{^sessionUser.profileImage}}
                             <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
@@ -459,7 +459,7 @@
                     <div class="profile-menu" id="profileMenuUser">
                         <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownUser')" aria-label="내 메뉴">
                             {{#sessionUser.profileImage}}
-                                <span class="profile-thumb" style="background-image:url('/images/{{sessionUser.profileImage}}');"></span>
+                                <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
                             {{/sessionUser.profileImage}}
                             {{^sessionUser.profileImage}}
                                 <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
