@@ -1,195 +1,424 @@
 {{>layout/header}}
 
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+
 <style>
-    .faq-form-hero {
-        background: #fff;
-        border-bottom: 1px solid #eaecf4;
-        padding: 56px 28px 0;
+    :root {
+        --brand-blue:      #2D6BFF;
+        --brand-blue-deep: #1846C9;
+        --brand-ink:       #0C1424;
+        --brand-slate:     #33415C;
+        --brand-muted:     #5A6B85;
+        --brand-mist:      #EBEEF4;
+        --brand-line:      #E2E7F0;
+        --brand-white:     #FFFFFF;
     }
 
-    .faq-form-hero-inner {
-        max-width: 1140px;
-        margin: 0 auto;
+    .ef-wrap { font-family: 'Space Grotesk', sans-serif; }
+
+    /* ── Hero ── */
+    .ef-hero {
+        background: var(--brand-white);
+        border-bottom: 1px solid var(--brand-line);
+        padding: 48px 28px 36px;
         text-align: center;
-        padding-bottom: 40px;
     }
 
-    .faq-form-hero-icon {
+    .ef-eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--brand-muted);
+        margin-bottom: 12px;
+    }
+
+    .ef-hero-icon {
         width: 56px;
         height: 56px;
-        margin: 0 auto 18px;
+        margin: 0 auto 16px;
         border-radius: 16px;
-        background: #eaf0fe;
-        color: #2563eb;
+        background: #dde8ff;
+        color: var(--brand-blue);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .faq-form-hero-icon svg {
-        width: 28px;
-        height: 28px;
+    .ef-hero-icon svg { width: 28px; height: 28px; }
+
+    .ef-hero h1 {
+        font-size: 30px;
+        font-weight: 700;
+        color: var(--brand-ink);
+        letter-spacing: -.02em;
+        margin-bottom: 8px;
+        line-height: 1.2;
     }
 
-    .faq-form-hero-inner h1 {
-        font-size: 32px;
-        font-weight: 900;
-        color: #1c1e26;
-        letter-spacing: -1px;
-        margin-bottom: 10px;
-    }
-
-    .faq-form-hero-inner p {
+    .ef-hero p {
         font-size: 14px;
-        color: #6b7280;
+        color: var(--brand-muted);
+        font-weight: 500;
     }
 
-    .faq-form-section {
-        padding: 40px 28px 80px;
-        max-width: 640px;
+    /* ── Content ── */
+    .ef-content-bg {
+        background: var(--brand-mist);
+    }
+
+    .ef-content {
+        max-width: 980px;
         margin: 0 auto;
+        padding: 36px 28px 80px;
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 24px;
+        align-items: start;
     }
 
-    .faq-form-box {
-        background: #fff;
-        border: 1.5px solid #eaecf4;
+    /* ── Form Card ── */
+    .ef-card {
+        background: var(--brand-white);
+        border: 1px solid var(--brand-line);
         border-radius: 16px;
         padding: 32px;
     }
 
-    .faq-form-box h2 {
-        font-size: 16px;
-        font-weight: 900;
-        color: #1c1e26;
-        margin-bottom: 20px;
+    .ef-card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--brand-ink);
+        margin-bottom: 24px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
     }
 
-    .faq-form-box h2::before {
+    .ef-card-title::before {
         content: "";
         display: block;
         width: 4px;
         height: 16px;
-        background: #2563eb;
+        background: var(--brand-blue);
         border-radius: 2px;
+        flex-shrink: 0;
     }
 
-    .faq-form-group {
-        margin-bottom: 18px;
+    .ef-id-badge {
+        margin-left: auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        color: var(--brand-muted);
+        background: var(--brand-mist);
+        border: 1px solid var(--brand-line);
+        border-radius: 6px;
+        padding: 3px 9px;
     }
 
-    .faq-form-group label {
-        display: block;
+    .ef-group { margin-bottom: 20px; }
+
+    .ef-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 7px;
+    }
+
+    .ef-label {
         font-size: 13px;
         font-weight: 700;
-        color: #374151;
-        margin-bottom: 6px;
+        color: var(--brand-slate);
     }
 
-    .faq-form-group input,
-    .faq-form-group textarea {
+    .ef-required {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--brand-blue);
+        letter-spacing: .05em;
+    }
+
+    .ef-input,
+    .ef-textarea {
         width: 100%;
         box-sizing: border-box;
         padding: 11px 14px;
-        border: 1.5px solid #eaecf4;
+        border: 1.5px solid var(--brand-line);
         border-radius: 8px;
         font-size: 13.5px;
-        color: #1c1e26;
-        font-family: inherit;
-        transition: border-color 0.15s;
+        color: var(--brand-ink);
+        font-family: 'Space Grotesk', sans-serif;
+        background: var(--brand-white);
+        transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    .faq-form-group input:focus,
-    .faq-form-group textarea:focus {
+    .ef-input:focus,
+    .ef-textarea:focus {
         outline: none;
-        border-color: #2563eb;
+        border-color: var(--brand-blue);
+        box-shadow: 0 0 0 3px #dde8ff;
     }
 
-    .faq-form-group textarea {
+    .ef-textarea {
         resize: vertical;
         line-height: 1.7;
     }
 
-    .faq-form-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 8px;
+    .ef-divider {
+        border: none;
+        border-top: 1px solid var(--brand-line);
+        margin: 24px 0;
     }
 
-    .faq-btn-primary {
+    .ef-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .ef-btn-primary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 6px;
         flex: 1;
         padding: 12px 22px;
         border-radius: 8px;
-        background: #2563eb;
+        background: var(--brand-blue);
         color: #fff;
         font-size: 13.5px;
         font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif;
         border: none;
         cursor: pointer;
         transition: background 0.15s;
     }
 
-    .faq-btn-primary:hover {
-        background: #1d4ed8;
-    }
+    .ef-btn-primary:hover { background: var(--brand-blue-deep); }
 
-    .faq-btn-secondary {
+    .ef-btn-secondary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 6px;
         padding: 12px 22px;
         border-radius: 8px;
-        background: #fff;
-        color: #374151;
+        background: var(--brand-white);
+        color: var(--brand-slate);
         font-size: 13.5px;
         font-weight: 700;
-        border: 1.5px solid #eaecf4;
+        font-family: 'Space Grotesk', sans-serif;
+        border: 1.5px solid var(--brand-line);
         cursor: pointer;
         text-decoration: none;
         transition: all 0.15s;
     }
 
-    .faq-btn-secondary:hover {
-        background: #f8f9fc;
-        border-color: #d1d5db;
+    .ef-btn-secondary:hover {
+        background: var(--brand-mist);
+        border-color: var(--brand-muted);
+    }
+
+    /* ── Sidebar ── */
+    .ef-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .ef-side-card {
+        background: var(--brand-white);
+        border: 1px solid var(--brand-line);
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .ef-side-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--brand-blue);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ef-side-title svg { width: 13px; height: 13px; }
+
+    .ef-tip-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ef-tip-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12.5px;
+        color: var(--brand-slate);
+        line-height: 1.55;
+    }
+
+    .ef-tip-list li .tip-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--brand-blue);
+        flex-shrink: 0;
+        margin-top: 6px;
+    }
+
+    .ef-warn-card {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+
+    .ef-warn-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #92400e;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ef-warn-body {
+        font-size: 12.5px;
+        color: #78350f;
+        line-height: 1.6;
+    }
+
+    .ef-warn-body strong { font-weight: 700; }
+
+    @media (max-width: 768px) {
+        .ef-content { grid-template-columns: 1fr; }
+        .ef-sidebar { display: none; }
     }
 </style>
 
-<section class="faq-form-hero">
-    <div class="faq-form-hero-inner">
-        <div class="faq-form-hero-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
-        <h1>FAQ 수정</h1>
-        <p>등록된 질문과 답변을 수정합니다.</p>
+<div class="ef-wrap">
+
+<section class="ef-hero">
+    <div class="ef-eyebrow">FAQ Management</div>
+    <div class="ef-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
     </div>
+    <h1>FAQ 수정</h1>
+    <p>등록된 질문과 답변을 수정합니다.</p>
 </section>
 
-<section class="faq-form-section">
-    <div class="faq-form-box">
-        <h2>FAQ 수정</h2>
-        <form action="/faqs/update/{{faq.id}}" method="post">
-            <div class="faq-form-group">
-                <label>질문</label>
-                <input type="text" name="question" value="{{faq.question}}" required>
+<div class="ef-content-bg">
+    <div class="ef-content">
+
+        <!-- 폼 -->
+        <div class="ef-card">
+            <h2 class="ef-card-title">
+                FAQ 수정
+                <span class="ef-id-badge">#{{faq.id}}</span>
+            </h2>
+            <form action="/faqs/update/{{faq.id}}" method="post">
+                <div class="ef-group">
+                    <div class="ef-label-row">
+                        <span class="ef-label">질문</span>
+                        <span class="ef-required">REQUIRED</span>
+                    </div>
+                    <input class="ef-input" type="text" name="question"
+                           value="{{faq.question}}" required>
+                </div>
+                <div class="ef-group">
+                    <div class="ef-label-row">
+                        <span class="ef-label">답변</span>
+                        <span class="ef-required">REQUIRED</span>
+                    </div>
+                    <textarea class="ef-textarea" name="answer" rows="8" required>{{faq.answer}}</textarea>
+                </div>
+                <hr class="ef-divider">
+                <div class="ef-actions">
+                    <a href="/policys/faq" class="ef-btn-secondary">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        취소
+                    </a>
+                    <button type="submit" class="ef-btn-primary">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                            <path d="M4 10L8.5 14.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        저장하기
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 사이드바 -->
+        <aside class="ef-sidebar">
+            <div class="ef-warn-card">
+                <div class="ef-warn-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+                        <path d="M10 3L18 17H2L10 3Z" stroke="#92400e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10 9v4M10 14.5v.5" stroke="#92400e" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    수정 전 확인
+                </div>
+                <div class="ef-warn-body">
+                    저장하면 <strong>기존 내용이 즉시 교체</strong>됩니다.<br>
+                    수정 전 내용으로 되돌릴 수 없으니 신중하게 작성해 주세요.
+                </div>
             </div>
-            <div class="faq-form-group">
-                <label>답변</label>
-                <textarea name="answer" rows="6" required>{{faq.answer}}</textarea>
+
+            <div class="ef-side-card">
+                <div class="ef-side-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M10 9v5M10 6.5v.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    수정 가이드
+                </div>
+                <ul class="ef-tip-list">
+                    <li><span class="tip-dot"></span>질문의 의미가 바뀌지 않도록 주의하세요.</li>
+                    <li><span class="tip-dot"></span>오탈자나 잘못된 정보를 우선 확인하세요.</li>
+                    <li><span class="tip-dot"></span>답변이 길 경우 줄바꿈으로 구조를 정리하세요.</li>
+                    <li><span class="tip-dot"></span>관련 링크나 페이지를 언급하면 더 유용합니다.</li>
+                </ul>
             </div>
-            <div class="faq-form-actions">
-                <a href="/policys/faq" class="faq-btn-secondary">취소</a>
-                <button type="submit" class="faq-btn-primary">저장하기</button>
+
+            <div class="ef-side-card">
+                <div class="ef-side-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2a8 8 0 1 1 0 16A8 8 0 0 1 10 2Z" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    좋은 답변의 조건
+                </div>
+                <ul class="ef-tip-list">
+                    <li><span class="tip-dot"></span>핵심을 먼저, 부연 설명은 뒤에</li>
+                    <li><span class="tip-dot"></span>전문 용어는 쉬운 말로 풀어서</li>
+                    <li><span class="tip-dot"></span>단계가 있으면 번호 매기기 활용</li>
+                </ul>
             </div>
-        </form>
+        </aside>
+
     </div>
-</section>
+</div>
+
+</div><!-- /ef-wrap -->
 
 {{>layout/footer}}

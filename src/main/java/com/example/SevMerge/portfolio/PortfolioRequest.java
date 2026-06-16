@@ -17,13 +17,16 @@ public class PortfolioRequest {
         private MultipartFile imageFile; // 이미지 링크
         private String projectUrl; // 프로젝트 링크
 
-        public void validate () {
+        public void validate() {
 
-            if(title == null || title.trim().isEmpty()) {
+            if (title == null || title.trim().isEmpty()) {
                 throw new BadRequestException("제목 입력은 필수 입니다.");
             }
-            if(description == null || description.trim().isEmpty()) {
+            if (description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
+            }
+            if (projectUrl == null || projectUrl.trim().isEmpty()) {
+                throw new BadRequestException("프로젝트 URL을 입력해 주세요");
             }
             if (!projectUrl.startsWith("https://")) {
                 throw new BadRequestException("프로젝트 링크는 https:// 로 시작해야 합니다");
@@ -42,13 +45,16 @@ public class PortfolioRequest {
         private MultipartFile imageFile;
         private String projectUrl;
 
-        public void validate () {
+        public void validate() {
 
-            if(title == null || title.trim().isEmpty()) {
+            if (title == null || title.trim().isEmpty()) {
                 throw new BadRequestException("제목 입력은 필수 입니다.");
             }
-            if(description == null || description.trim().isEmpty()) {
+            if (description == null || description.trim().isEmpty()) {
                 throw new BadRequestException("설명란을 입력해 주세요.");
+            }
+            if (projectUrl == null || projectUrl.trim().isEmpty()) {
+                throw new BadRequestException("프로젝트 URL을 입력해 주세요");
             }
             if (!projectUrl.startsWith("https://")) {
                 throw new BadRequestException("프로젝트 링크는 https:// 로 시작해야 합니다");

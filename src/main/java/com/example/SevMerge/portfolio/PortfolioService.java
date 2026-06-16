@@ -32,7 +32,6 @@ public class PortfolioService {
     private final MemberRepository memberRepository;
     private final ExpertProfileRepository expertProfileRepository;
 
-
     // 포트폴리오 리스트 페이징
     public Page<PortfolioResponse.ListDTO> findByMemberId(Long expertId, int page) {
 
@@ -53,7 +52,6 @@ public class PortfolioService {
 
     }
 
-
     // 포트폴리오 아이디로 포트플리오 찾고 포트폴리오 DetailDTO 반환
     @Transactional
     public PortfolioResponse.DetailDTO findPortfolio(Long portfolioId) {
@@ -64,9 +62,6 @@ public class PortfolioService {
         //
         return new PortfolioResponse.DetailDTO(portfolioEntity);
     }
-
-
-
 
     @Transactional
     public void save(PortfolioRequest.SaveDTO saveDTO, Long sessionUserId) {
@@ -91,8 +86,6 @@ public class PortfolioService {
         }
 
     }
-
-
 
     @Transactional
     public void update(Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,Long sessionUserId) {

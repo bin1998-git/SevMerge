@@ -45,15 +45,15 @@
     <div class="list-inner">
 
         <div class="list-action">
-            <span class="list-count">총 <strong>{{portfolios.size}}</strong>개의 포트폴리오</span>
+            <span class="list-count">총 <strong>{{portfolioCount}}</strong>개의 포트폴리오</span>
             {{#isOwner}}
             <a href="/portfolios/save?expertId={{expertProfile.id}}" class="btn btn-primary btn-sm">+ 포트폴리오 추가</a>
             {{/isOwner}}
         </div>
 
-        {{#portfolios}}
-        <div class="portfolio-grid">
 
+        <div class="portfolio-grid">
+        {{#portfolios}}
             <div class="portfolio-card">
                 <div class="portfolio-card-img">
                     {{#imageUrl}}
@@ -82,9 +82,9 @@
                     </div>
                 </div>
             </div>
-
-        </div>
         {{/portfolios}}
+        </div>
+
 
         {{^portfolios}}
         <div class="empty-state">

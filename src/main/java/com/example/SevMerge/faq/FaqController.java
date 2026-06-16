@@ -39,7 +39,7 @@ public class FaqController {
     }
 
     // 등록 페이지
-    @GetMapping("/faqs/new")
+    @GetMapping("/faqs/save")
     public String saveFaqPage(HttpSession session) {
         Member memberEntity = (Member) session.getAttribute(Define.SESSION_USER);
         if (memberEntity == null || !memberEntity.isAdmin()) {
