@@ -129,6 +129,7 @@
         overflow: hidden;
     }
 
+    /* 상단 헤더와 하단 로우의 전체 틀 FlexBox 설정 */
     .admin-table-head, .admin-table-row {
         display: flex;
         align-items: center;
@@ -151,6 +152,7 @@
         font-size: 13px;
     }
 
+    /* 1. 상단 헤더와 하단 데이터 줄 전체 틀 */
     .admin-table-head, .admin-table-row {
         display: flex !important;
         align-items: center !important;
@@ -173,6 +175,10 @@
         background: #fff !important;
     }
 
+
+    /* 2. 상하단 태그 종류 상관없이 순서대로 정중앙 배치 */
+
+    /* [1번째 칸] No (번호) - 무조건 60px 고정 후 정중앙 */
     .admin-table-head > *:nth-child(1),
     .cell-id {
         width: 60px !important;
@@ -180,6 +186,7 @@
         text-align: center !important;
     }
 
+    /* [2번째 칸] 제목 - 남은 여백 다 차지하고 무조건 정중앙 + 말줄임 */
     .admin-table-head > *:nth-child(2),
     .cell-title {
         flex: 1 !important;
@@ -314,29 +321,10 @@
     }
 
     .sidebar-submenu {
-        display: none; /* !important를 뺐습니다 */
+        display: none !important;
         flex-direction: column !important;
         width: 100% !important;
         background: #f8f9ff !important;
-    }
-
-    .sidebar-submenu.active {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        max-height: 500px !important;
-        height: auto !important;
-    }
-
-    .sidebar-dropdown-group:hover .sidebar-submenu {
-        display: flex !important;
-    }
-
-    .sidebar-submenu .submenu-link.selected {
-        color: #2563eb !important;
-        font-weight: bold !important;
-        background-color: #e0f2fe !important; /* 연한 파란색 배경 */
-        border-left-color: #2563eb !important; /* 왼쪽 바 색상 고정 */
     }
 
     .sidebar-dropdown-group:hover .dropdown-trigger {
@@ -345,11 +333,8 @@
         border-left-color: #2563eb !important;
     }
 
-    .sidebar-link.dropdown-trigger.active {
-        color: #2563eb !important;
-        background: #eff6ff !important;
-        border-left-color: #2563eb !important;
-        font-weight: bold !important;
+    .sidebar-dropdown-group:hover .sidebar-submenu {
+        display: flex !important;
     }
 
     .admin-sidebar:has(.sidebar-dropdown-group:hover) .sidebar-link.active {
@@ -375,7 +360,6 @@
         background: #eff6ff !important;
         border-left-color: #2563eb !important;
     }
-
 </style>
 
 <div class="admin-wrap">
@@ -383,31 +367,20 @@
 
 
     <main class="admin-content">
-
         <div class="admin-header">
             <div>
-                <h1 class="admin-title">공지사항 관리</h1>
-                <p class="admin-desc">전체 공지사항 목록을 관리합니다.</p>
+                <h1 class="admin-title">1:1문의 댓글 관리</h1>
+                <p class="admin-desc">1:1문의 댓글을 관리합니다.</p>
             </div>
         </div>
-
-        <div style="position: relative; width: 100%; min-height: 50px; margin-bottom: 20px;">
-            <div style="position: absolute; left: 0; top: 0;">
-                <form action="/admin/notices" method="get" class="search-bar" style="margin: 0; display: flex; gap: 10px;">
-                    <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value="" style="width: 350px; box-sizing: border-box;"/>
-                    <button type="submit" class="search-btn">검색</button>
-                </form>
-            </div>
-            <div style="position: absolute; right: 4%; top: 0; transform: translateX(50%);">
-                <a href="/admin/notices/write" class="search-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; margin: 0;">작성</a>
-            </div>
-        </div>
-
+        <form action="/admin/inquiry" method="get" class="search-bar">
+            <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value=""/>
+            <button type="submit" class="search-btn">검색</button>
+        </form>
         <div class="admin-table-wrap">
             <div class="admin-table-head">
                 <span>No</span><span>제목</span><span>날짜</span>
             </div>
-
             {{#boards}}
                 <div class="admin-table-row">
                     <!-- 1. 글 번호 -->
@@ -423,4 +396,6 @@
         </div>
     </main>
 </div>
+
+
 {{> layout/footer}}

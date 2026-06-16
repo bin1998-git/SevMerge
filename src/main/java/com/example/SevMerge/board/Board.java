@@ -60,5 +60,4 @@ public class Board {
     public void softDelete() {
         this.isActive = false;
     }
-
 }
