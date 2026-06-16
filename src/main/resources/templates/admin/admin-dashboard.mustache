@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SevMerge Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+    --bg-deep:    #050d1f;
+    --bg-mid:     #0b1a3e;
+    --bg-card:    rgba(255,255,255,0.055);
+    --bg-card-h:  rgba(255,255,255,0.10);
+    --border:     rgba(255,255,255,0.10);
+    --border-b:   rgba(255,255,255,0.18);
+    --blue-6:     #2563eb;
+    --blue-5:     #3b82f6;
+    --blue-4:     #60a5fa;
+    --blue-3:     #93c5fd;
+    --blue-1:     #dbeafe;
+    --green:      #34d399;
+    --yellow:     #fbbf24;
+    --red:        #f87171;
+    --purple:     #a78bfa;
+    --orange:     #fb923c;
+    --teal:       #2dd4bf;
+    --t1: #f8fafc;
+    --t2: rgba(255,255,255,0.62);
+    --t3: rgba(255,255,255,0.35);
+    --t4: rgba(255,255,255,0.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg-deep);
+    color: var(--t1);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ──── ANIMATED BG ──── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(37,99,235,0.20) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(99,102,241,0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(14,165,233,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+/* ──── TOP NAVBAR ──── */
+.adm-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 60px;
+    background: rgba(5,13,31,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.adm-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.adm-logo-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+}
+.adm-brand-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--t1);
+    letter-spacing: -0.3px;
+}
+.adm-brand-sub {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--blue-4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.adm-nav-center {
+    display: flex;
+    gap: 4px;
+}
+.adm-nav-link {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--t2);
+    text-decoration: none;
+    transition: all .15s;
+}
+.adm-nav-link:hover { background: var(--bg-card-h); color: var(--t1); }
+.adm-nav-link.active { background: rgba(37,99,235,0.22); color: var(--blue-4); }
+.adm-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.adm-badge-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(37,99,235,0.18);
+    border: 1px solid rgba(96,165,250,0.30);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue-4);
+}
+.adm-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.adm-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    border: 2px solid rgba(96,165,250,0.4);
+}
+
+/* ──── HERO BANNER ──── */
+.adm-hero {
+    padding: 40px 40px 28px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(99,102,241,0.06) 50%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+}
+.adm-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+}
+.adm-hero-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--t1);
+    letter-spacing: -0.8px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+.adm-hero-title span {
+    background: linear-gradient(90deg, #60a5fa, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.adm-hero-sub { font-size: 14px; color: var(--t3); }
+.adm-date-box {
+    text-align: right;
+    font-size: 12px;
+    color: var(--t3);
+    line-height: 1.8;
+}
+.adm-date-box strong { display: block; font-size: 22px; font-weight: 900; color: var(--t1); letter-spacing: -0.5px; }
+
+/* KPI STRIP */
+.adm-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+}
+.adm-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    backdrop-filter: blur(8px);
+    transition: all .2s;
+    cursor: default;
+}
+.adm-kpi-card:hover {
+    background: var(--bg-card-h);
+    border-color: var(--border-b);
+    transform: translateY(-2px);
+}
+.adm-kpi-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.adm-kpi-label { font-size: 11px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .8px; }
+.adm-kpi-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+.adm-kpi-val { font-size: 32px; font-weight: 900; color: var(--t1); letter-spacing: -1.5px; line-height: 1; margin-bottom: 8px; }
+.adm-kpi-trend { font-size: 12px; color: var(--t3); }
+.adm-kpi-trend .up { color: var(--green); font-weight: 700; }
+.adm-kpi-trend .warn { color: var(--yellow); font-weight: 700; }
+.adm-kpi-trend .down { color: var(--red); font-weight: 700; }
+.adm-kpi-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+.adm-kpi-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--blue-6), var(--blue-4));
+}
+
+/* ──── MAIN CONTENT ──── */
+.adm-body {
+    padding: 32px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* SECTION HEADER */
+.adm-section-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.adm-section-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--t1);
+    letter-spacing: -0.2px;
+}
+.adm-section-title span {
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--blue-5);
+    border-radius: 2px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+.adm-section-meta { font-size: 12px; color: var(--t3); }
+
+/* GLASS CARD BASE */
+.g-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: all .2s;
+}
+.g-card:hover { border-color: var(--border-b); }
+
+/* ──── FEATURE HUB ──── */
+.adm-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+.adm-hub-tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 20px;
+    backdrop-filter: blur(8px);
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+}
+.adm-hub-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity .2s;
+}
+.adm-hub-tile:hover {
+    background: var(--bg-card-h);
+    border-color: var(--border-b);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+}
+.adm-hub-tile:hover::before { opacity: 1; }
+.tile-blue::before { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.tile-indigo::before { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+.tile-emerald::before { background: linear-gradient(90deg, #059669, #34d399); }
+.tile-purple::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.tile-orange::before { background: linear-gradient(90deg, #ea580c, #fb923c); }
+.tile-rose::before { background: linear-gradient(90deg, #e11d48, #f87171); }
+.tile-teal::before { background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+.tile-yellow::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.adm-hub-icon-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.adm-hub-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.icon-blue { background: rgba(37,99,235,0.18); }
+.icon-indigo { background: rgba(79,70,229,0.18); }
+.icon-emerald { background: rgba(5,150,105,0.18); }
+.icon-purple { background: rgba(124,58,237,0.18); }
+.icon-orange { background: rgba(234,88,12,0.18); }
+.icon-rose { background: rgba(225,29,72,0.18); }
+.icon-teal { background: rgba(13,148,136,0.18); }
+.icon-yellow { background: rgba(217,119,6,0.18); }
+.adm-hub-count {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--t1);
+    letter-spacing: -1px;
+    line-height: 1;
+}
+.adm-hub-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--t1);
+    margin-bottom: 2px;
+}
+.adm-hub-detail { font-size: 11px; color: var(--t3); }
+.adm-hub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 2px 8px;
+    width: fit-content;
+}
+.badge-blue { background: rgba(37,99,235,0.18); color: var(--blue-4); border: 1px solid rgba(37,99,235,0.3); }
+.badge-green { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+.badge-yellow { background: rgba(251,191,36,0.12); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+.badge-red { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.badge-purple { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+.badge-teal { background: rgba(45,212,191,0.12); color: var(--teal); border: 1px solid rgba(45,212,191,0.3); }
+
+/* ──── BOTTOM ROW ──── */
+.adm-bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+}
+
+/* ACTIVITY TIMELINE */
+.adm-timeline { padding: 24px 24px 8px; }
+.adm-timeline-list { display: flex; flex-direction: column; gap: 0; }
+.adm-tl-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+}
+.adm-tl-item:last-child { border-bottom: none; }
+.adm-tl-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+.adm-tl-body { flex: 1; }
+.adm-tl-msg { font-size: 13px; color: var(--t1); font-weight: 500; line-height: 1.4; margin-bottom: 3px; }
+.adm-tl-msg strong { font-weight: 700; }
+.adm-tl-time { font-size: 11px; color: var(--t3); }
+
+/* RIGHT PANEL */
+.adm-right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+/* QUICK ACTIONS */
+.adm-qactions { padding: 22px; }
+.adm-qa-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.adm-qa-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--t1);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all .15s;
+}
+.adm-qa-btn:hover { background: rgba(37,99,235,0.14); border-color: rgba(96,165,250,0.35); color: var(--blue-4); }
+.adm-qa-icon { font-size: 15px; flex-shrink: 0; }
+.adm-qa-label { flex: 1; }
+.adm-qa-arrow { font-size: 11px; color: var(--t3); }
+
+/* SYSTEM STATUS */
+.adm-sysstat { padding: 22px; }
+.adm-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+.adm-stat-row:last-child { border-bottom: none; }
+.adm-stat-key { color: var(--t2); font-weight: 500; }
+.adm-stat-val { font-weight: 700; }
+.adm-stat-ok { color: var(--green); }
+.adm-stat-warn { color: var(--yellow); }
+.adm-stat-err { color: var(--red); }
+
+/* REPORT/INQUIRY ALERT BAR */
+.adm-alert-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid;
+    font-size: 13px;
+    font-weight: 600;
+}
+.adm-alert-bar.type-red {
+    background: rgba(248,113,113,0.08);
+    border-color: rgba(248,113,113,0.25);
+    color: var(--red);
+}
+.adm-alert-bar.type-yellow {
+    background: rgba(251,191,36,0.08);
+    border-color: rgba(251,191,36,0.25);
+    color: var(--yellow);
+}
+.adm-alert-bar a {
+    margin-left: auto;
+    font-size: 12px;
+    color: inherit;
+    text-decoration: none;
+    opacity: .7;
+}
+.adm-alert-bar a:hover { opacity: 1; }
+
+/* CHART BAR (CSS only) */
+.adm-mini-chart { padding: 22px; }
+.adm-chart-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.adm-chart-label { font-size: 11px; color: var(--t3); width: 60px; flex-shrink: 0; }
+.adm-chart-track { flex: 1; height: 20px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+.adm-chart-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--blue-6), var(--blue-4));
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    transition: width .6s ease;
+}
+.adm-chart-fill.g { background: linear-gradient(90deg, #059669, #34d399); }
+.adm-chart-fill.p { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+
+/* PAGINATION META */
+.adm-pager-meta { font-size: 11px; color: var(--t3); display: flex; justify-content: space-between; padding: 0 24px 16px; }
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+    .adm-kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .adm-hub-grid { grid-template-columns: repeat(2, 1fr); }
+    .adm-bottom-row { grid-template-columns: 1fr; }
+    .adm-right-panel { flex-direction: row; flex-wrap: wrap; }
+    .adm-right-panel .g-card { flex: 1; min-width: 260px; }
+}
+@media (max-width: 768px) {
+    .adm-body { padding: 20px 16px 40px; }
+    .adm-hero { padding: 24px 20px 20px; }
+    .adm-nav { padding: 0 16px; }
+    .adm-nav-center { display: none; }
+    .adm-kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .adm-hub-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ TOP NAVBAR ════════ -->
+<nav class="adm-nav">
+    <div class="adm-nav-brand">
+        <div class="adm-logo-box">SM</div>
+        <div>
+            <div class="adm-brand-name">SevMerge</div>
+            <div class="adm-brand-sub">Control Panel</div>
+        </div>
+    </div>
+
+    <div class="adm-nav-center">
+        <a href="/admin/main"       class="adm-nav-link">대시보드</a>
+        <a href="/admin/members"    class="adm-nav-link">회원</a>
+        <a href="/admin/projects"   class="adm-nav-link">프로젝트</a>
+        <a href="/admin/experts"    class="adm-nav-link">전문가</a>
+        <a href="/admin/boards"     class="adm-nav-link">게시판</a>
+        <a href="/admin/notices"    class="adm-nav-link">공지</a>
+        <a href="/admin/reports"    class="adm-nav-link">신고</a>
+        <a href="/admin/inquiry"    class="adm-nav-link">문의</a>
+    </div>
+
+    <div class="adm-nav-right">
+        <div class="adm-badge-pill">
+            <div class="adm-badge-dot"></div>
+            ADMIN
+        </div>
+        <div class="adm-avatar">관</div>
+    </div>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<section class="adm-hero">
+    <div class="adm-hero-top">
+        <div>
+            <h1 class="adm-hero-title">관리자 <span>Command Center</span></h1>
+            <p class="adm-hero-sub">SevMerge 플랫폼의 모든 기능을 한 화면에서 제어합니다.</p>
+        </div>
+        <div class="adm-date-box">
+            <strong>2026</strong>
+            06월 16일 월요일<br>
+            <span style="color:var(--blue-4);font-weight:600;">시스템 정상 운영 중</span>
+        </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="adm-kpi-strip">
+        <!-- 총 회원 -->
+        <div class="adm-kpi-card">
+            <div class="adm-kpi-top">
+                <span class="adm-kpi-label">총 회원수</span>
+                <div class="adm-kpi-icon icon-blue">👥</div>
+            </div>
+            <div class="adm-kpi-val">1,247</div>
+            <div class="adm-kpi-trend">이번 달 <span class="up">+23명 ↑</span></div>
+            <div class="adm-kpi-bar"><div class="adm-kpi-bar-fill" style="width:78%"></div></div>
+        </div>
+        <!-- 전체 프로젝트 -->
+        <div class="adm-kpi-card">
+            <div class="adm-kpi-top">
+                <span class="adm-kpi-label">전체 프로젝트</span>
+                <div class="adm-kpi-icon icon-indigo">📋</div>
+            </div>
+            <div class="adm-kpi-val">384</div>
+            <div class="adm-kpi-trend">진행 중 <span class="up">86건</span></div>
+            <div class="adm-kpi-bar"><div class="adm-kpi-bar-fill" style="width:62%"></div></div>
+        </div>
+        <!-- 완료 프로젝트 -->
+        <div class="adm-kpi-card">
+            <div class="adm-kpi-top">
+                <span class="adm-kpi-label">완료 프로젝트</span>
+                <div class="adm-kpi-icon icon-emerald">✅</div>
+            </div>
+            <div class="adm-kpi-val">298</div>
+            <div class="adm-kpi-trend">이번 달 <span class="up">+14건</span></div>
+            <div class="adm-kpi-bar"><div class="adm-kpi-bar-fill" style="width:55%"></div></div>
+        </div>
+        <!-- 승인대기 전문가 -->
+        <div class="adm-kpi-card">
+            <div class="adm-kpi-top">
+                <span class="adm-kpi-label">전문가 승인 대기</span>
+                <div class="adm-kpi-icon icon-yellow">⏳</div>
+            </div>
+            <div class="adm-kpi-val">12</div>
+            <div class="adm-kpi-trend"><span class="warn">처리 필요</span></div>
+            <div class="adm-kpi-bar"><div class="adm-kpi-bar-fill" style="width:30%;background:linear-gradient(90deg,#d97706,#fbbf24)"></div></div>
+        </div>
+        <!-- 미처리 신고 -->
+        <div class="adm-kpi-card">
+            <div class="adm-kpi-top">
+                <span class="adm-kpi-label">미처리 신고/문의</span>
+                <div class="adm-kpi-icon icon-rose">🚨</div>
+            </div>
+            <div class="adm-kpi-val">13</div>
+            <div class="adm-kpi-trend">신고 <span class="down">5건</span> · 문의 <span class="warn">8건</span></div>
+            <div class="adm-kpi-bar"><div class="adm-kpi-bar-fill" style="width:20%;background:linear-gradient(90deg,#e11d48,#f87171)"></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ MAIN BODY ════════ -->
+<div class="adm-body">
+
+    <!-- ALERT BARS -->
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="adm-alert-bar type-red">
+            🚨 <span>미처리 신고가 <strong>5건</strong> 있습니다. 즉시 검토가 필요합니다.</span>
+            <a href="/admin/reports">신고 관리 →</a>
+        </div>
+        <div class="adm-alert-bar type-yellow">
+            ⏳ <span>전문가 승인 대기 <strong>12명</strong>이 있습니다. 검토 후 처리해주세요.</span>
+            <a href="/admin/experts">전문가 관리 →</a>
+        </div>
+    </div>
+
+    <!-- ────── FEATURE HUB ────── -->
+    <div>
+        <div class="adm-section-hd">
+            <div class="adm-section-title"><span></span>기능 허브 — 관리 페이지 바로가기</div>
+            <div class="adm-section-meta">총 8개 관리 영역</div>
+        </div>
+        <div class="adm-hub-grid">
+
+            <!-- 회원 관리 -->
+            <a href="/admin/members" class="adm-hub-tile tile-blue">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-blue">👥</div>
+                    <div class="adm-hub-count">1,247</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">회원 관리</div>
+                    <div class="adm-hub-detail">가입 승인 · 정지 · 삭제 · 권한 변경</div>
+                </div>
+                <div class="adm-hub-badge badge-blue">이번 달 +23명</div>
+            </a>
+
+            <!-- 프로젝트 관리 -->
+            <a href="/admin/projects" class="adm-hub-tile tile-indigo">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-indigo">📋</div>
+                    <div class="adm-hub-count">384</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">프로젝트 관리</div>
+                    <div class="adm-hub-detail">전체 조회 · 삭제 · 상태 모니터링</div>
+                </div>
+                <div class="adm-hub-badge badge-blue">진행 중 86건</div>
+            </a>
+
+            <!-- 전문가 승인 -->
+            <a href="/admin/experts" class="adm-hub-tile tile-emerald">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-emerald">🏅</div>
+                    <div class="adm-hub-count">12</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">전문가 승인</div>
+                    <div class="adm-hub-detail">신청 검토 · 승인 / 거절 처리</div>
+                </div>
+                <div class="adm-hub-badge badge-yellow">대기 중 12명</div>
+            </a>
+
+            <!-- 게시판 관리 -->
+            <a href="/admin/boards" class="adm-hub-tile tile-purple">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-purple">📝</div>
+                    <div class="adm-hub-count">2,891</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">게시판 관리</div>
+                    <div class="adm-hub-detail">자유게시판 · 전체 게시글 조회 · 삭제</div>
+                </div>
+                <div class="adm-hub-badge badge-purple">자유 / 공지</div>
+            </a>
+
+            <!-- 공지사항 -->
+            <a href="/admin/notices" class="adm-hub-tile tile-teal">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-teal">📢</div>
+                    <div class="adm-hub-count">47</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">공지사항 관리</div>
+                    <div class="adm-hub-detail">공지 작성 · 수정 · 삭제</div>
+                </div>
+                <div class="adm-hub-badge badge-teal">최근 3건 신규</div>
+            </a>
+
+            <!-- 신고 관리 -->
+            <a href="/admin/reports" class="adm-hub-tile tile-rose">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-rose">🚨</div>
+                    <div class="adm-hub-count">5</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">신고 관리</div>
+                    <div class="adm-hub-detail">신고 접수 · 처리 · 제재 결정</div>
+                </div>
+                <div class="adm-hub-badge badge-red">즉시 처리 필요</div>
+            </a>
+
+            <!-- 문의 관리 -->
+            <a href="/admin/inquiry" class="adm-hub-tile tile-orange">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-orange">💬</div>
+                    <div class="adm-hub-count">8</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">문의 관리</div>
+                    <div class="adm-hub-detail">고객 문의 확인 · 답변 처리</div>
+                </div>
+                <div class="adm-hub-badge badge-yellow">미답변 8건</div>
+            </a>
+
+            <!-- 댓글 관리 -->
+            <a href="/admin/comments" class="adm-hub-tile tile-yellow">
+                <div class="adm-hub-icon-row">
+                    <div class="adm-hub-icon icon-yellow">💭</div>
+                    <div class="adm-hub-count">4,102</div>
+                </div>
+                <div>
+                    <div class="adm-hub-name">댓글 관리</div>
+                    <div class="adm-hub-detail">전체 댓글 조회 · 블라인드 · 삭제</div>
+                </div>
+                <div class="adm-hub-badge badge-teal">전체 보기</div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- ────── BOTTOM ROW ────── -->
+    <div class="adm-bottom-row">
+
+        <!-- 최근 활동 로그 -->
+        <div>
+            <div class="adm-section-hd">
+                <div class="adm-section-title"><span></span>최근 관리자 활동 로그</div>
+                <div class="adm-section-meta">최근 24시간</div>
+            </div>
+            <div class="g-card adm-timeline">
+                <div class="adm-timeline-list">
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--green)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">전문가 신청 승인 — <strong>김개발</strong> 계정 전문가 전환 완료</div>
+                            <div class="adm-tl-time">방금 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--red)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">회원 정지 처리 — <strong>spam_user_99</strong> (신고 누적 3회)</div>
+                            <div class="adm-tl-time">12분 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--blue-4)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">공지사항 등록 — <strong>서버 점검 안내 (6/20 02:00~04:00)</strong></div>
+                            <div class="adm-tl-time">34분 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--yellow)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">게시글 삭제 — 부적절한 홍보 게시글 (ID #2847) 삭제</div>
+                            <div class="adm-tl-time">1시간 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--green)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">전문가 신청 승인 — <strong>박디자인</strong> 계정 전문가 전환 완료</div>
+                            <div class="adm-tl-time">2시간 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--purple)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">전문가 신청 거절 — <strong>test_expert1</strong> 포트폴리오 미흡</div>
+                            <div class="adm-tl-time">3시간 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--teal)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">문의 답변 완료 — 결제 관련 문의 (ID #189) 처리</div>
+                            <div class="adm-tl-time">5시간 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                    <div class="adm-tl-item">
+                        <div class="adm-tl-dot" style="background:var(--red)"></div>
+                        <div class="adm-tl-body">
+                            <div class="adm-tl-msg">신고 처리 — 부적절한 리뷰 신고 접수 및 검토 완료</div>
+                            <div class="adm-tl-time">6시간 전 · admin@sevmerge.com</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-pager-meta">
+                <span>최근 8건 표시</span>
+                <span>전체 로그 보기 →</span>
+            </div>
+
+            <!-- 프로젝트 현황 바 차트 -->
+            <div class="adm-section-hd" style="margin-top:8px;">
+                <div class="adm-section-title"><span></span>프로젝트 상태 분포</div>
+            </div>
+            <div class="g-card adm-mini-chart">
+                <div class="adm-chart-row">
+                    <div class="adm-chart-label">모집 중</div>
+                    <div class="adm-chart-track">
+                        <div class="adm-chart-fill" style="width:42%">42%</div>
+                    </div>
+                </div>
+                <div class="adm-chart-row">
+                    <div class="adm-chart-label">진행 중</div>
+                    <div class="adm-chart-track">
+                        <div class="adm-chart-fill" style="width:22%">22%</div>
+                    </div>
+                </div>
+                <div class="adm-chart-row">
+                    <div class="adm-chart-label">완료</div>
+                    <div class="adm-chart-track">
+                        <div class="adm-chart-fill g" style="width:28%">28%</div>
+                    </div>
+                </div>
+                <div class="adm-chart-row">
+                    <div class="adm-chart-label">마감</div>
+                    <div class="adm-chart-track">
+                        <div class="adm-chart-fill p" style="width:8%">8%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="adm-right-panel">
+
+            <!-- QUICK ACTIONS -->
+            <div class="g-card adm-qactions">
+                <div class="adm-section-title" style="margin-bottom:12px;"><span></span>빠른 실행</div>
+                <div class="adm-qa-grid">
+                    <a href="/admin/notices/write" class="adm-qa-btn">
+                        <span class="adm-qa-icon">📢</span>
+                        <span class="adm-qa-label">공지사항 작성</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/experts?status=PENDING" class="adm-qa-btn">
+                        <span class="adm-qa-icon">🏅</span>
+                        <span class="adm-qa-label">전문가 승인 처리</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/reports" class="adm-qa-btn">
+                        <span class="adm-qa-icon">🚨</span>
+                        <span class="adm-qa-label">미처리 신고 보기</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/inquiry" class="adm-qa-btn">
+                        <span class="adm-qa-icon">💬</span>
+                        <span class="adm-qa-label">미답변 문의 처리</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/members" class="adm-qa-btn">
+                        <span class="adm-qa-icon">👥</span>
+                        <span class="adm-qa-label">회원 현황 전체 보기</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/projects" class="adm-qa-btn">
+                        <span class="adm-qa-icon">📋</span>
+                        <span class="adm-qa-label">프로젝트 전체 보기</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/boards" class="adm-qa-btn">
+                        <span class="adm-qa-icon">📝</span>
+                        <span class="adm-qa-label">게시판 관리</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                    <a href="/admin/comments" class="adm-qa-btn">
+                        <span class="adm-qa-icon">💭</span>
+                        <span class="adm-qa-label">댓글 관리</span>
+                        <span class="adm-qa-arrow">›</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- SYSTEM STATUS -->
+            <div class="g-card adm-sysstat">
+                <div class="adm-section-title" style="margin-bottom:12px;"><span></span>시스템 현황</div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">서버 상태</span>
+                    <span class="adm-stat-val adm-stat-ok">● 정상</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">DB 연결</span>
+                    <span class="adm-stat-val adm-stat-ok">● 연결됨</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">세션 인터셉터</span>
+                    <span class="adm-stat-val adm-stat-ok">● 활성</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">알림 서비스</span>
+                    <span class="adm-stat-val adm-stat-ok">● 활성</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">에스크로 서비스</span>
+                    <span class="adm-stat-val adm-stat-ok">● 정상</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">Spring Boot</span>
+                    <span class="adm-stat-val" style="color:var(--blue-4);">v3.x 가동 중</span>
+                </div>
+                <div class="adm-stat-row">
+                    <span class="adm-stat-key">업타임</span>
+                    <span class="adm-stat-val" style="color:var(--t1);">14일 07:23:51</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- ════════ END ════════ -->
+
+</body>
+</html>
