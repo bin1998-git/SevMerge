@@ -21,12 +21,26 @@ public class main {
     private final ExpertProfileService expertProfileService;
 
     @GetMapping("/")
-    public String introPage() {
+    public String introPage(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember != null) {
+            return "redirect:/exmain";
+        }
         return "intro";
     }
 
     @GetMapping("/exmain")
-    public String exmainPage(Model model) {
+    public String exmainPage(HttpSession session,Model model) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+
+        if (loginMember != null) {
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("sessionUser", loginMember);
+            model.addAttribute("isExpert", loginMember.isExpert());
+        } else {
+            model.addAttribute("isLoggedIn", false);
+        }
+
         List<ExpertProfileResponse> all = expertProfileService.getAll();
 
         // 섹션 1 — 오분대기조: avgRating 높은 순 상위 6명

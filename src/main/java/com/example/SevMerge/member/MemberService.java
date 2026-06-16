@@ -192,17 +192,28 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMyInfo(Long memberId, MemberRequest.Update request) {
+    public void updateMyInfo(Long memberId, MemberRequest.Update request, MultipartFile profileImageFile) {
         Member member = findMemberById(memberId);
 
-        // 전화번호 수정 안했을 때 기존 값 유지
         String phone = (request.getPhone() != null && !request.getPhone().isBlank())
                 ? request.getPhone() : member.getPhone();
         member.updateInfo(request.getName(), phone);
 
-        // 비밀번호 변경 입력 했을 때만 수정
         if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
             member.changePassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+
+        // 프로필 이미지 변경
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            if (!FileUtil.isImageFile(profileImageFile)) {
+                throw new BadRequestException("이미지 파일만 업로드할 수 있습니다.");
+            }
+            try {
+                String savedImage = FileUtil.saveFile(profileImageFile, FileUtil.IMAGES_DIR);
+                member.updateProfileImage(savedImage);
+            } catch (IOException e) {
+                throw new BadRequestException("이미지 업로드에 실패했습니다.");
+            }
         }
     }
 

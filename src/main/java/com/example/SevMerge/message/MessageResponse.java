@@ -1,19 +1,19 @@
 package com.example.SevMerge.message;
 
 import com.example.SevMerge.core.util.MyDateUtil;
-import com.example.SevMerge.bid.BidStatus;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
 import com.example.SevMerge.project.Project;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.sql.Timestamp;
+import lombok.Getter;
+import lombok.Setter;
 
 public class MessageResponse {
 
     // 쪽지 목록
-    @Data
+    @Getter
+    @Setter
     public static class ListDTO {
         private Long id;
         private String senderName;
@@ -30,7 +30,16 @@ public class MessageResponse {
             this.isRead = message.getIsRead();
             this.createdAt = MyDateUtil.timestampFormat(message.getCreatedAt());
         }
+
+        public boolean isRead() {
+            return Boolean.TRUE.equals(this.isRead);
+        }
+
+        public boolean isUnread() {
+            return !Boolean.TRUE.equals(this.isRead);
+        }
     }
+
 
     // 쪽지 상세
     @Data

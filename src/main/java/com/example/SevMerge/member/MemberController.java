@@ -3,6 +3,9 @@ package com.example.SevMerge.member;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.message.MessageRepository;
+import com.example.SevMerge.message.MessageService;
+import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
@@ -17,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 
 import java.util.List;
 
@@ -37,6 +39,9 @@ public class MemberController {
     private final BidService bidService;
     private final ReviewRepository reviewRepository;
     private final PortfolioService portfolioService;
+    private final MessageService messageService;
+    private final MessageRepository messageRepository;
+    private final PaymentService paymentService;
 
     @GetMapping("/join-start")
     public String joinStart(Model model) {
@@ -121,7 +126,6 @@ public class MemberController {
 //        return "member/exclient-dashboard";
 //    }
 
-
     // 마이페이지 (의뢰인 전용)
     @GetMapping("/my-pages")
     public String mypage(@RequestParam(required = false) String tab,
@@ -139,22 +143,25 @@ public class MemberController {
         if (tab == null) tab = "projects";
 
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
-        model.addAttribute("isProjects",  tab.equalsIgnoreCase("projects"));
-        model.addAttribute("isBoards",    tab.equalsIgnoreCase("boards"));
-        model.addAttribute("isReviews",   tab.equalsIgnoreCase("reviews"));
-        model.addAttribute("isEdit",      tab.equalsIgnoreCase("edit"));
+        model.addAttribute("isProjects", tab.equalsIgnoreCase("projects"));
+        model.addAttribute("isBoards", tab.equalsIgnoreCase("boards"));
+        model.addAttribute("isReviews", tab.equalsIgnoreCase("reviews"));
+        model.addAttribute("isEdit", tab.equalsIgnoreCase("edit"));
         // 준비중 메뉴 (포인트 충전/출금/결제내역)
-        model.addAttribute("isCharge",    tab.equalsIgnoreCase("charge"));
-        model.addAttribute("isWithdraw",  tab.equalsIgnoreCase("withdraw"));
-        model.addAttribute("isPayments",  tab.equalsIgnoreCase("payments"));
+        model.addAttribute("isCharge", tab.equalsIgnoreCase("charge"));
+        model.addAttribute("isWithdraw", tab.equalsIgnoreCase("withdraw"));
+        model.addAttribute("isPayments", tab.equalsIgnoreCase("payments"));
 
         // 통계 (등록 프로젝트 수, 완료 프로젝트 수)
         List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
         model.addAttribute("projectCount", myProjects.size());
         model.addAttribute("completedCount", myProjects.stream()
                 .filter(ProjectResponeDTO.ListDTO::isDone).count());
-        model.addAttribute("messageCount", 0);  // 쪽지 기능 연결 전까지 0
 
+        //  메시지 카운트
+        long unreadMessageCount = messageRepository.countUnreadMessages(loginMember);
+        model.addAttribute("messageCount", unreadMessageCount);
+        model.addAttribute("isMessages", tab.equalsIgnoreCase("messages"));
         // 탭별 데이터
         if (tab.equals("projects")) {
             model.addAttribute("projects", myProjects);
@@ -165,6 +172,17 @@ public class MemberController {
         } else if (tab.equals("edit")) {
             model.addAttribute("rawName", loginMember.getName());
             model.addAttribute("rawEmail", loginMember.getEmail());
+        } else if (tab.equals("messages")) {
+            model.addAttribute("messages",
+                    messageService.findMessages(loginMember, "received", 1, "desc", null).getContent());
+        } else if (tab.equals("payments")) {
+            try {
+                model.addAttribute("payments",
+                        paymentService.getClientPayments(loginMember.getId()));
+            } catch (Exception e) {
+                log.warn("결제 내역 조회 실패 - {}", e.getMessage());
+                model.addAttribute("payments", List.of());
+            }
         }
 
         return "member/client-mypage";
@@ -180,6 +198,7 @@ public class MemberController {
         session.invalidate();
         return ResponseEntity.ok().body("탈퇴 완료");
     }
+
     // 회원 정보 수정 페이지 이동 (GET)
     @GetMapping("/mypage/update") //
     public String updateMemberPage(HttpSession session, Model model) {
@@ -195,11 +214,14 @@ public class MemberController {
     // 회원 정보 수정 처리 (PUT)
     @PutMapping("/my-pages")
     @ResponseBody
-    public ResponseEntity<?> updateMember(@RequestBody MemberRequest.Update request, HttpSession session) {
+    public ResponseEntity<?> updateMember(
+            @RequestPart("data") MemberRequest.Update request,
+            @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile,
+            HttpSession session) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
 
-        memberService.updateMyInfo(loginMember.getId(), request);
+        memberService.updateMyInfo(loginMember.getId(), request, profileImageFile);
         session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
         return ResponseEntity.ok().body("정보 변경 완료");
     }
@@ -236,7 +258,7 @@ public class MemberController {
                                       HttpSession session,
                                       Model model) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        model.addAttribute("isAdmin",sessionUser.isAdmin());
+        model.addAttribute("isAdmin", sessionUser.isAdmin());
         memberService.withdrawMember(id);
         return "redirect:/admin/members";
     }
@@ -258,7 +280,7 @@ public class MemberController {
         MemberResponse.GoogleProfile profile = memberService.getGoogleProfile(code);
         String googleId = profile.getSub();
         String nickname = profile.getName();
-        String email    = profile.getEmail();
+        String email = profile.getEmail();
 
         Member existing = memberService.findGoogleMember(googleId);
 
@@ -286,10 +308,10 @@ public class MemberController {
         }
 
         // 신규 회원 -> 세션에 임시 보관 후 역할 선택 화면으로
-        session.setAttribute("googleId",       googleId);
+        session.setAttribute("googleId", googleId);
         session.setAttribute("googleNickname", nickname);
-        session.setAttribute("googleEmail",    email);
-        session.setAttribute("googleImage",    profile.getPicture());
+        session.setAttribute("googleEmail", email);
+        session.setAttribute("googleImage", profile.getPicture());
         return "redirect:/social-role";
     }
 
@@ -373,7 +395,7 @@ public class MemberController {
             String email = (String) session.getAttribute("googleEmail");
             String image = (String) session.getAttribute("googleImage");
 
-            member = memberService.registerGoogleMember(googleId, nickname, email,image, role);
+            member = memberService.registerGoogleMember(googleId, nickname, email, image, role);
 
             session.removeAttribute("googleId");
             session.removeAttribute("googleNickname");
@@ -430,7 +452,7 @@ public class MemberController {
         if (kakaoId != null) {
             String nickname = (String) session.getAttribute("kakaoNickname");
             String image = (String) session.getAttribute("kakaoImage");
-            memberService.registerKakaoExpert(kakaoId, nickname,image, request);
+            memberService.registerKakaoExpert(kakaoId, nickname, image, request);
 
             session.removeAttribute("kakaoId");
             session.removeAttribute("kakaoNickname");
@@ -453,6 +475,7 @@ public class MemberController {
         // 전문가는 세션에 안 넣고 승인 대기 안내 화면으로 보냄
         return "redirect:/social-pending";
     }
+
     @GetMapping("/expert-rejected")
     public String expertRejected(HttpSession session, Model model) {
         Long memberId = (Long) session.getAttribute("rejectedMemberId");
