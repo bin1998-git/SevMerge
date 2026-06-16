@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SevMerge — 페이지 기능 맵</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d12;
+    --surface: #16161f;
+    --border: #252535;
+    --text: #e2e2ec;
+    --muted: #6b6b85;
+    --public: #22c55e;
+    --client: #3b82f6;
+    --expert: #a855f7;
+    --admin: #ef4444;
+    --both: #f59e0b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,13,18,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+  .topbar-title span { color: var(--muted); font-weight: 400; margin-left: 8px; font-size: 13px; }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid currentColor;
+    opacity: 0.85;
+  }
+  .badge.public  { color: var(--public); }
+  .badge.client  { color: var(--client); }
+  .badge.expert  { color: var(--expert); }
+  .badge.admin   { color: var(--admin); }
+  .badge.both    { color: var(--both); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* ── STATS ── */
+  .stats {
+    display: flex;
+    gap: 24px;
+    padding: 24px 32px 0;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+  .stat-label { font-size: 11px; color: var(--muted); }
+
+  /* ── LAYOUT ── */
+  .main { padding: 28px 32px 64px; }
+  .section { margin-bottom: 36px; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-icon { font-size: 14px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 10px;
+  }
+
+  /* ── PAGE CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: default;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 12px 0 0 12px;
+    background: var(--accent-color, transparent);
+  }
+  .card:hover {
+    border-color: #3a3a55;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .card-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #d0d0e8;
+  }
+  .card-badges { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
+  .card-url {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: "SF Mono", "Fira Code", monospace;
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: #9090b0;
+    line-height: 1.55;
+  }
+  .card-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .action-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2px 7px;
+    border-radius: 6px;
+    color: #7070a0;
+  }
+  .action-tag.get  { color: #6ee7b7; border-color: rgba(110,231,183,0.15); background: rgba(110,231,183,0.05); }
+  .action-tag.post { color: #fbbf24; border-color: rgba(251,191,36,0.15); background: rgba(251,191,36,0.05); }
+
+  /* role accent colors */
+  .card.public  { --accent-color: var(--public); }
+  .card.client  { --accent-color: var(--client); }
+  .card.expert  { --accent-color: var(--expert); }
+  .card.admin   { --accent-color: var(--admin); }
+  .card.both    { --accent-color: var(--both); }
+
+  /* ── FLOW DIAGRAM (user flow) ── */
+  .flow-section { margin-bottom: 36px; }
+  .flow-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .flows { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .flow-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .flow-role {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .flow-steps { display: flex; flex-direction: column; gap: 0; }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    position: relative;
+  }
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 30px;
+    bottom: -2px;
+    width: 1px;
+    background: var(--border);
+  }
+  .step-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .step-circle.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #93c5fd; }
+  .step-body { flex: 1; }
+  .step-name { font-size: 12px; font-weight: 600; color: #c8c8e0; }
+  .step-url { font-size: 10px; color: var(--muted); font-family: monospace; }
+
+  /* ── FILTER BUTTONS ── */
+  .filters {
+    display: flex;
+    gap: 8px;
+    padding: 16px 32px 0;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text);
+  }
+  .filter-btn.active { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-title">
+    SevMerge
+    <span>페이지 기능 맵 · Spring Boot + Mustache</span>
+  </div>
+  <div class="legend">
+    <span class="badge public"><span class="dot"></span>공개</span>
+    <span class="badge client"><span class="dot"></span>클라이언트</span>
+    <span class="badge expert"><span class="dot"></span>전문가</span>
+    <span class="badge both"><span class="dot"></span>공통(로그인)</span>
+    <span class="badge admin"><span class="dot"></span>관리자</span>
+  </div>
+</header>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">38</div><div class="stat-label">총 페이지</div></div>
+  <div class="stat"><div class="stat-num">13</div><div class="stat-label">도메인</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">사용자 역할</div></div>
+  <div class="stat"><div class="stat-num">7</div><div class="stat-label">관리자 페이지</div></div>
+</div>
+
+<!-- FILTER -->
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCards('all')">전체</button>
+  <button class="filter-btn" onclick="filterCards('public')">공개</button>
+  <button class="filter-btn" onclick="filterCards('client')">클라이언트</button>
+  <button class="filter-btn" onclick="filterCards('expert')">전문가</button>
+  <button class="filter-btn" onclick="filterCards('both')">공통</button>
+  <button class="filter-btn" onclick="filterCards('admin')">관리자</button>
+</div>
+
+<main class="main">
+
+  <!-- ── USER FLOW ── -->
+  <div class="flow-section">
+    <div class="flow-title">🔄 핵심 사용자 플로우</div>
+    <div class="flows">
+
+      <!-- Client flow -->
+      <div class="flow-card">
+        <div class="flow-role" style="color: var(--client);">
+          <span class="badge client"><span class="dot"></span>클라이언트</span> 프로젝트 의뢰 플로우
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step"><div class="step-circle active">1</div><div class="step-body"><div class="step-name">회원가입</div><div class="step-url">/join?role=client</div></div></div>
+          <div class="flow-step"><div class="step-circle">2</div><div class="step-body"><div class="step-name">프로젝트 등록</div><div class="step-url">/projects/save-form</div></div></div>
+          <div class="flow-step"><div class="step-circle">3</div><div class="step-body"><div class="step-name">입찰 확인 & 선택</div><div class="step-url">/projects/{id} → /bids/{id}/select</div></div></div>
+          <div class="flow-step"><div class="step-circle">4</div><div class="step-body"><div class="step-name">에스크로 결제</div><div class="step-url">/payment/form</div></div></div>
+          <div class="flow-step"><div class="step-circle">5</div><div class="step-body"><div class="step-name">채팅 &amp; 작업 진행</div><div class="step-url">/chat/{roomId}</div></div></div>
+          <div class="flow-step"><div class="step-circle">6</div><div class="step-body"><div class="step-name">프로젝트 완료 &amp; 정산</div><div class="step-url">/payment/{id}/settle</div></div></div>
+          <div class="flow-step"><div class="step-circle">7</div><div class="step-body"><div class="step-name">리뷰 작성</div><div class="step-url">/reviews/save</div></div></div>
+        </div>
+      </div>
+
+      <!-- Expert flow -->
+      <div class="flow-card">
+        <div class="flow-role" style="color: var(--expert);">
+          <span class="badge expert"><span class="dot"></span>전문가</span> 수주 플로우
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step"><div class="step-circle active">1</div><div class="step-body"><div class="step-name">전문가 회원가입</div><div class="step-url">/join?role=expert</div></div></div>
+          <div class="flow-step"><div class="step-circle">2</div><div class="step-body"><div class="step-name">관리자 승인 대기</div><div class="step-url">/member/expert-pending</div></div></div>
+          <div class="flow-step"><div class="step-circle">3</div><div class="step-body"><div class="step-name">프로필 &amp; 포트폴리오 등록</div><div class="step-url">/experts/my/form · /portfolios/save</div></div></div>
+          <div class="flow-step"><div class="step-circle">4</div><div class="step-body"><div class="step-name">프로젝트 탐색 &amp; 입찰</div><div class="step-url">/projects → /bids/save-form</div></div></div>
+          <div class="flow-step"><div class="step-circle">5</div><div class="step-body"><div class="step-name">채팅 &amp; 작업 진행</div><div class="step-url">/chat/{roomId}</div></div></div>
+          <div class="flow-step"><div class="step-circle">6</div><div class="step-body"><div class="step-name">정산 수령</div><div class="step-url">/withdrawal/form</div></div></div>
+        </div>
+      </div>
+
+      <!-- Admin flow -->
+      <div class="flow-card">
+        <div class="flow-role" style="color: var(--admin);">
+          <span class="badge admin"><span class="dot"></span>관리자</span> 운영 플로우
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step"><div class="step-circle active">1</div><div class="step-body"><div class="step-name">대시보드</div><div class="step-url">/admin/main</div></div></div>
+          <div class="flow-step"><div class="step-circle">2</div><div class="step-body"><div class="step-name">전문가 승인/거절</div><div class="step-url">/admin/experts</div></div></div>
+          <div class="flow-step"><div class="step-circle">3</div><div class="step-body"><div class="step-name">회원 관리</div><div class="step-url">/admin/members</div></div></div>
+          <div class="flow-step"><div class="step-circle">4</div><div class="step-body"><div class="step-name">신고 처리</div><div class="step-url">/admin/report</div></div></div>
+          <div class="flow-step"><div class="step-circle">5</div><div class="step-body"><div class="step-name">게시판/공지 관리</div><div class="step-url">/admin/boards · /admin/notices</div></div></div>
+          <div class="flow-step"><div class="step-circle">6</div><div class="step-body"><div class="step-name">프로젝트 관리</div><div class="step-url">/admin/projects</div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PAGES BY DOMAIN ── -->
+  <div id="cards-root">
+
+  <!-- 인증/회원 -->
+  <div class="section" data-section="auth">
+    <div class="section-title"><span class="section-icon">👤</span> 인증 &amp; 회원</div>
+    <div class="grid">
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">메인 홈</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /</div>
+        <div class="card-desc">서비스 소개 메인 페이지. 전문가 목록 및 프로젝트 목록 진입 링크.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">가입 시작</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /join-start</div>
+        <div class="card-desc">회원가입 진입점. 소셜 로그인(카카오) 또는 이메일 가입 선택.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">역할 선택</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /join-role</div>
+        <div class="card-desc">클라이언트 또는 전문가로 가입할 역할 선택 화면.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">클라이언트 가입폼</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /join?role=client</div>
+        <div class="card-desc">클라이언트 회원가입 폼. 이름·이메일·비밀번호 입력.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /join</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">전문가 가입폼</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /join?role=expert</div>
+        <div class="card-desc">전문가 회원가입 폼. 가입 후 관리자 승인 대기 상태 전환.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /join</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">로그인</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /login</div>
+        <div class="card-desc">이메일·비밀번호 로그인. 역할별 대시보드로 리다이렉트. 거절된 전문가는 /expert-rejected 이동.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /login</span></div>
+      </div>
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">클라이언트 마이페이지</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /my-pages</div>
+        <div class="card-desc">내 프로젝트·리뷰·결제 내역 탭 뷰. 프로필 수정 링크 포함.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">전문가 승인 대기</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /member/expert-pending</div>
+        <div class="card-desc">가입 후 관리자 승인 대기 안내 페이지.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">전문가 재신청</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /expert-reapply</div>
+        <div class="card-desc">거절된 전문가가 수정 후 재심사 신청하는 폼.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 전문가 프로필 -->
+  <div class="section" data-section="expert">
+    <div class="section-title"><span class="section-icon">🧑‍💻</span> 전문가 프로필</div>
+    <div class="grid">
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">전문가 목록</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /experts</div>
+        <div class="card-desc">승인된 전문가 목록. 카테고리·키워드 필터. 프로필 카드 클릭 시 상세 이동.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">전문가 상세</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /experts/{memberId}</div>
+        <div class="card-desc">전문가 소개·기술스택·포트폴리오·리뷰 통합 뷰. 클라이언트는 메시지 전송 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">전문가 대시보드</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /experts/dashboard</div>
+        <div class="card-desc">내 수주 현황·수익·리뷰·프로필 완성도 한눈에 확인. 프로필·포트폴리오 관리 진입.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">프로필 등록/수정</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /experts/my/form</div>
+        <div class="card-desc">전문가 소개·기술스택·시간당 단가 등 프로필 작성 폼.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 프로젝트 -->
+  <div class="section" data-section="project">
+    <div class="section-title"><span class="section-icon">📋</span> 프로젝트</div>
+    <div class="grid">
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">프로젝트 목록</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /projects</div>
+        <div class="card-desc">등록된 프로젝트 목록. 카테고리·예산·기한 필터. 전문가가 입찰 가능한 공개 의뢰.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">프로젝트 등록</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /projects/save-form</div>
+        <div class="card-desc">제목·카테고리·예산·기한·상세설명 입력. 임시저장(/projects/draft) 지원.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /projects/save</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">프로젝트 상세</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /projects/{id}</div>
+        <div class="card-desc">프로젝트 내용·입찰 목록 확인. 클라이언트는 입찰 선택 가능. 전문가는 입찰 등록 버튼.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">프로젝트 수정</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /projects/{id}/edit</div>
+        <div class="card-desc">등록한 프로젝트 내용 수정. 입찰 선택 전에만 수정 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">임시저장 프로젝트</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /projects/draft</div>
+        <div class="card-desc">임시저장한 프로젝트 목록 및 이어서 작성.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 입찰 -->
+  <div class="section" data-section="bid">
+    <div class="section-title"><span class="section-icon">🏷️</span> 입찰 (Bid)</div>
+    <div class="grid">
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">입찰 등록</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /bids/save-form</div>
+        <div class="card-desc">프로젝트에 제안 금액·기간·한마디 입력. 로그인 없으면 /login 리다이렉트.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /bids</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">입찰 전체 목록</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /bids</div>
+        <div class="card-desc">특정 프로젝트의 모든 입찰 목록. 클라이언트가 입찰자 선택.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">내 입찰 목록</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /bids/my-list</div>
+        <div class="card-desc">내가 제출한 입찰 현황(대기/선택됨/미선택). 수정·철회 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">내 수주 목록</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /bids/my-orders</div>
+        <div class="card-desc">클라이언트에게 선택된 입찰(수주) 목록. 결제 대기·진행중·완료 상태별 확인.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">입찰 수정</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /bids/{id}/edit</div>
+        <div class="card-desc">제출한 입찰 내용 수정. 선택 전까지만 수정 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 포트폴리오 -->
+  <div class="section" data-section="portfolio">
+    <div class="section-title"><span class="section-icon">🖼️</span> 포트폴리오</div>
+    <div class="grid">
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">포트폴리오 목록</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /portfolios?expertId=</div>
+        <div class="card-desc">특정 전문가의 포트폴리오 목록. 전문가 상세 페이지에서 진입.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">포트폴리오 상세</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /portfolios/{id}</div>
+        <div class="card-desc">포트폴리오 이미지·설명·사용 기술 상세 뷰.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">포트폴리오 등록</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /portfolios/save</div>
+        <div class="card-desc">제목·이미지 업로드·설명·기술 태그 입력.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">포트폴리오 수정</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /portfolios/{id}/edit</div>
+        <div class="card-desc">등록한 포트폴리오 수정 및 삭제.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/update · /{id}/delete</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 결제/충전/출금 -->
+  <div class="section" data-section="payment">
+    <div class="section-title"><span class="section-icon">💳</span> 결제 · 충전 · 출금</div>
+    <div class="grid">
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">에스크로 결제폼</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /payment/form</div>
+        <div class="card-desc">선택된 입찰에 대한 에스크로 결제. 토스 결제 연동. 결제 완료 시 채팅방 생성.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /payment/escrow</span></div>
+      </div>
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">결제 내역</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /payment/my</div>
+        <div class="card-desc">내 결제 목록. 각 결제건에서 정산(/settle) 또는 환불(/refund) 처리.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/settle · /{id}/refund</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">포인트 충전폼</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /charge/form</div>
+        <div class="card-desc">포인트/캐시 충전. 토스 결제 연동. 성공·실패 페이지로 분기.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag get">GET /charge/success · /charge/fail</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">출금 신청</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /withdrawal/form</div>
+        <div class="card-desc">보유 수익을 계좌로 출금 신청. 솔뱅크 API 연동.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /withdrawal/request</span></div>
+      </div>
+      <div class="card expert" data-role="expert">
+        <div class="card-head"><div class="card-name">출금 내역</div><div class="card-badges"><span class="badge expert"><span class="dot"></span>전문가</span></div></div>
+        <div class="card-url">GET /withdrawal/history</div>
+        <div class="card-desc">출금 신청 내역 및 처리 상태 확인.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 채팅 / 메시지 -->
+  <div class="section" data-section="chat">
+    <div class="section-title"><span class="section-icon">💬</span> 채팅 &amp; 메시지</div>
+    <div class="grid">
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">채팅방</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /chat/{roomId}</div>
+        <div class="card-desc">에스크로 결제 완료 후 생성되는 1:1 채팅방. WebSocket 실시간 메시지. 파일 첨부 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">WebSocket</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">쪽지 목록</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /messages?box=received|sent</div>
+        <div class="card-desc">받은/보낸 쪽지 목록. 쪽지는 프로젝트 시작 전 문의용.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">쪽지 상세</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /messages/{id}</div>
+        <div class="card-desc">쪽지 내용 확인 및 삭제.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/delete</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">쪽지 보내기</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /messages/send</div>
+        <div class="card-desc">수신자·제목·내용 입력. 전문가 상세에서 문의 시 자동 수신자 지정.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 리뷰 -->
+  <div class="section" data-section="review">
+    <div class="section-title"><span class="section-icon">⭐</span> 리뷰</div>
+    <div class="grid">
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">리뷰 작성</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /reviews/save</div>
+        <div class="card-desc">완료된 프로젝트에 대해 별점+텍스트 리뷰 작성. 프로젝트당 1회.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">내 리뷰 목록</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /reviews/my</div>
+        <div class="card-desc">내가 작성했거나 받은 리뷰 목록. 수정·삭제 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">리뷰 상세</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /reviews/{id}</div>
+        <div class="card-desc">리뷰 내용 상세 확인. 전문가 프로필에서 연결.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card client" data-role="client">
+        <div class="card-head"><div class="card-name">리뷰 수정</div><div class="card-badges"><span class="badge client"><span class="dot"></span>클라이언트</span></div></div>
+        <div class="card-url">GET /reviews/{id}/edit</div>
+        <div class="card-desc">작성한 리뷰 수정. 작성자만 수정 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST · DELETE</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 게시판 -->
+  <div class="section" data-section="board">
+    <div class="section-title"><span class="section-icon">📰</span> 게시판</div>
+    <div class="grid">
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">게시판 목록</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /boards?boardType=NOTICE|INQUIRY</div>
+        <div class="card-desc">공지사항·문의사항 탭 구분 게시판. 비로그인도 공지 열람 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card public" data-role="public">
+        <div class="card-head"><div class="card-name">게시글 상세</div><div class="card-badges"><span class="badge public"><span class="dot"></span>공개</span></div></div>
+        <div class="card-url">GET /boards/{id}</div>
+        <div class="card-desc">게시글 내용·댓글 목록. 댓글 작성은 로그인 필요.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">게시글 작성</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /boards/save</div>
+        <div class="card-desc">문의사항 작성 (로그인 필요). 관리자는 공지사항 작성 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">게시글 수정</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /boards/{id}/edit</div>
+        <div class="card-desc">본인 게시글 수정. 관리자는 모든 글 수정/삭제 가능.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 알림 -->
+  <div class="section" data-section="notification">
+    <div class="section-title"><span class="section-icon">🔔</span> 알림</div>
+    <div class="grid">
+      <div class="card both" data-role="both">
+        <div class="card-head"><div class="card-name">알림 목록</div><div class="card-badges"><span class="badge both"><span class="dot"></span>공통</span></div></div>
+        <div class="card-url">GET /notifications</div>
+        <div class="card-desc">입찰·결제·채팅·리뷰 관련 알림 목록. 읽음 처리 지원.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관리자 -->
+  <div class="section" data-section="admin">
+    <div class="section-title"><span class="section-icon">⚙️</span> 관리자</div>
+    <div class="grid">
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">관리자 대시보드</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/main</div>
+        <div class="card-desc">가입 현황·프로젝트 수·결제 통계 한눈에. 빠른 승인 대기 목록.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">전문가 관리</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/experts</div>
+        <div class="card-desc">전문가 승인 대기 목록. 승인/거절 처리. 거절 시 재신청 안내.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST approve · reject</span></div>
+      </div>
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">회원 관리</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/members</div>
+        <div class="card-desc">전체 회원 목록·검색. 회원 강제 탈퇴 처리.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/delete</span></div>
+      </div>
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">프로젝트 관리</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/projects</div>
+        <div class="card-desc">전체 프로젝트 목록·상태 확인. 부적절한 의뢰 강제 삭제.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/delete</span></div>
+      </div>
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">신고 관리</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/report</div>
+        <div class="card-desc">사용자 신고 접수 목록·처리 현황. 제재 조치.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span></div>
+      </div>
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">게시판 관리</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/boards</div>
+        <div class="card-desc">전체 게시글 관리. 부적절한 게시글 삭제.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/delete</span></div>
+      </div>
+      <div class="card admin" data-role="admin">
+        <div class="card-head"><div class="card-name">공지사항 관리</div><div class="card-badges"><span class="badge admin"><span class="dot"></span>관리자</span></div></div>
+        <div class="card-url">GET /admin/notices</div>
+        <div class="card-desc">공지사항 목록·등록·수정. 전체 사용자에게 노출.</div>
+        <div class="card-actions"><span class="action-tag get">GET</span><span class="action-tag post">POST /{id}/update</span></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- #cards-root -->
+
+</main>
+
+<script>
+function filterCards(role) {
+  // update button state
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    if (role === 'all') {
+      card.style.display = '';
+      card.style.opacity = '1';
+    } else {
+      const cardRole = card.dataset.role;
+      if (cardRole === role) {
+        card.style.display = '';
+        card.style.opacity = '1';
+      } else {
+        card.style.opacity = '0.15';
+        card.style.pointerEvents = 'none';
+        // fade other cards
+        card.style.display = '';
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

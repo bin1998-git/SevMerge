@@ -1,31 +1,21 @@
 package com.example.SevMerge.review;
 
 
-import com.example.SevMerge.bid.Bid;
-import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
-import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
-import com.example.SevMerge.member.MemberResponse;
-import com.example.SevMerge.member.Role;
-import com.example.SevMerge.project.Project;
-import com.example.SevMerge.project.ProjectRepository;
+import com.example.SevMerge.payment.PaymentRepository;
+import com.example.SevMerge.payment.PaymentStatus;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.AbstractProtocol;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.math.RoundingMode;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +25,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
+    private final PaymentRepository paymentRepository;
+    private final ExpertProfileRepository expertProfileRepository;
 
     // 리뷰작성
     @Transactional
@@ -50,8 +42,31 @@ public class ReviewService {
                 () -> new NotFoundException("대상자를 찾을 수 없습니다.")
         );
 
+        // 완료된 거래가 있는지 확인 (의뢰인→전문가 또는 전문가→의뢰인 양방향 체크)
+        boolean hasSettledTransaction =
+                paymentRepository.existsByClientIdAndExpertIdAndStatus(reviewer.getId(), targetEntity.getId(), PaymentStatus.SETTLED)
+                || paymentRepository.existsByClientIdAndExpertIdAndStatus(targetEntity.getId(), reviewer.getId(), PaymentStatus.SETTLED);
+
+        if (!hasSettledTransaction) {
+            throw new BadRequestException("완료된 거래가 있어야 리뷰를 작성할 수 있습니다.");
+        }
+
+        // 동일 대상 중복 리뷰 방지
+        if (reviewRepository.existsByReviewerAndTargeter(reviewer.getId(), targetEntity.getId())) {
+            throw new BadRequestException("이미 해당 사용자에게 리뷰를 작성했습니다.");
+        }
+
         reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity));
 
+        // ExpertProfile avgRating / totalReviews 갱신
+        expertProfileRepository.findByMemberId(targetEntity.getId()).ifPresent(profile -> {
+            Double avg = reviewRepository.avgRating(targetEntity.getId());
+            int count = reviewRepository.countByTargeterId(targetEntity.getId());
+            profile.setAvgRating(avg != null
+                    ? BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO);
+            profile.setTotalReviews(count);
+        });
     }
 
     // 리뷰조회

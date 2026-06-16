@@ -142,4 +142,13 @@ public class NotificationService {
         });
     }
 
+    // 전문가 계정 정지 → 진행 중 프로젝트 의뢰인
+    @Transactional
+    public void notifyExpertSuspended(Member client, String expertName, String projectTitle) {
+        notify(client, NotificationType.EXPERT_SUSPENDED,
+                "'" + projectTitle + "' 프로젝트의 담당 전문가(" + expertName + ")가 정지되었습니다.\n관리자에게 문의해주세요.",
+                "/supports");
+    }
+
+
 }

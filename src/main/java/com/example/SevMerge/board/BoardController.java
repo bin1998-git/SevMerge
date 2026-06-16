@@ -80,7 +80,7 @@ public class BoardController {
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
         Long boardOwner = board.getMemberId();
         Long sessionUserId = (sessionUser != null) ? sessionUser.getId() : null;
-        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId,sessionUserId, sessionUserRole);
+        List<CommentResponse.ListDTO> commentList = commentService.findComments(boardId, sessionUserId, sessionUserRole);
         model.addAttribute("board", board);
         model.addAttribute("comments", commentList);
         model.addAttribute("isOwner", sessionUser != null && boardOwner.equals(sessionUser.getId()));
@@ -103,7 +103,7 @@ public class BoardController {
             }
         }
 
-        // 자유게시판은 로그인만 되어있으면 됨
+        // 자유게시판,1:1은 로그인만 되어있으면 됨
         if (boardType.equalsIgnoreCase("FREE") ||
                 boardType.equalsIgnoreCase("INQUIRY")) {
             if (sessionUser == null) {
@@ -201,5 +201,67 @@ public class BoardController {
 
         boardService.deleteBoardByAdmin(boardId);
         return "redirect:/admin/boards";
+    }
+
+    // 공지사항 작성화면 띄우기
+    @GetMapping("/admin/notices/write")
+    public String noticeWriteForm(Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("isAdmin", true);
+        model.addAttribute("isNotice", true);
+        model.addAttribute("isFree", false);
+        Board board = Board.builder()
+                .title("")
+                .content("")
+                .viewCount(0)
+                .isActive(true)
+                .build();
+        model.addAttribute("board", board);
+
+        return "admin/admin-noticewrite";
+    }
+
+    // 공지사항 작성
+    @PostMapping("/admin/notices/write")
+    public String noticeWrite(@RequestParam("title") String title,
+                              @RequestParam("content") String content,
+                              HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+        boardService.createNotice(title, content, sessionUser.getId());
+
+        return "/admin/notices";
+    }
+
+    // 공지사항 삭제
+    @PostMapping("admin/notices/{boardId}/delete")
+    public String deleteNoticeByAdmin(@PathVariable(name = "boardId") Long boardId, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+        boardService.deleteNotice(boardId);
+        return "redirect:/admin/notices";
+    }
+
+    // 관리자 1:1문의 목록화면 띄우기
+    @GetMapping("/admin/inquiry")
+    public String adminInquiryList(Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+
+        List<BoardResponse.ListDTO> inquiryBoards = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser);
+        model.addAttribute("boards", inquiryBoards);
+
+        return "admin/admin-inquiry";
     }
 }

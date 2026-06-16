@@ -1,0 +1,195 @@
+{{>layout/header}}
+
+<style>
+    .faq-form-hero {
+        background: #fff;
+        border-bottom: 1px solid #eaecf4;
+        padding: 56px 28px 0;
+    }
+
+    .faq-form-hero-inner {
+        max-width: 1140px;
+        margin: 0 auto;
+        text-align: center;
+        padding-bottom: 40px;
+    }
+
+    .faq-form-hero-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 18px;
+        border-radius: 16px;
+        background: #eaf0fe;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .faq-form-hero-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .faq-form-hero-inner h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #1c1e26;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+    }
+
+    .faq-form-hero-inner p {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .faq-form-section {
+        padding: 40px 28px 80px;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .faq-form-box {
+        background: #fff;
+        border: 1.5px solid #eaecf4;
+        border-radius: 16px;
+        padding: 32px;
+    }
+
+    .faq-form-box h2 {
+        font-size: 16px;
+        font-weight: 900;
+        color: #1c1e26;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .faq-form-box h2::before {
+        content: "";
+        display: block;
+        width: 4px;
+        height: 16px;
+        background: #2563eb;
+        border-radius: 2px;
+    }
+
+    .faq-form-group {
+        margin-bottom: 18px;
+    }
+
+    .faq-form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .faq-form-group input,
+    .faq-form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 14px;
+        border: 1.5px solid #eaecf4;
+        border-radius: 8px;
+        font-size: 13.5px;
+        color: #1c1e26;
+        font-family: inherit;
+        transition: border-color 0.15s;
+    }
+
+    .faq-form-group input:focus,
+    .faq-form-group textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    .faq-form-group textarea {
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .faq-form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .faq-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 12px 22px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 13.5px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .faq-btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .faq-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 22px;
+        border-radius: 8px;
+        background: #fff;
+        color: #374151;
+        font-size: 13.5px;
+        font-weight: 700;
+        border: 1.5px solid #eaecf4;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+    .faq-btn-secondary:hover {
+        background: #f8f9fc;
+        border-color: #d1d5db;
+    }
+</style>
+
+<section class="faq-form-hero">
+    <div class="faq-form-hero-inner">
+        <div class="faq-form-hero-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1>FAQ 수정</h1>
+        <p>등록된 질문과 답변을 수정합니다.</p>
+    </div>
+</section>
+
+<section class="faq-form-section">
+    <div class="faq-form-box">
+        <h2>FAQ 수정</h2>
+        <form action="/faqs/update/{{faq.id}}" method="post">
+            <div class="faq-form-group">
+                <label>질문</label>
+                <input type="text" name="question" value="{{faq.question}}" required>
+            </div>
+            <div class="faq-form-group">
+                <label>답변</label>
+                <textarea name="answer" rows="6" required>{{faq.answer}}</textarea>
+            </div>
+            <div class="faq-form-actions">
+                <a href="/policys/faq" class="faq-btn-secondary">취소</a>
+                <button type="submit" class="faq-btn-primary">저장하기</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+{{>layout/footer}}

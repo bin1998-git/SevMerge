@@ -3,6 +3,7 @@ package com.example.SevMerge.bid;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
+import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.notification.NotificationService;
 import com.example.SevMerge.payment.Payment;
@@ -31,7 +32,8 @@ public class BidService {
     private final ProjectRepository projectRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
-    private final NotificationService  notificationService;
+    private final NotificationService notificationService;
+    private final ExpertProfileRepository expertProfileRepository;
 
     // 제안서 작성
     @Transactional
@@ -60,9 +62,13 @@ public class BidService {
                     throw new BadRequestException("이미 입찰한 프로젝트입니다.");
                 });
 
-        // 인증된 전문가만 받을수 있게 체크
+        // 인증된 전문가만 받을수 있게 체크 (ExpertProfile.isCertified 기준)
         if (project.getBidFilter() == BidFilter.CERTIFIED_ONLY) {
-            if (!session.isActiveExpert()) {
+            boolean certified = expertProfileRepository
+                    .findByMemberId(session.getId())
+                    .map(profile -> profile.isCertified())
+                    .orElse(false);
+            if (!certified) {
                 throw new ForbiddenException("인증된 전문가만 입찰 받을수 있습니다");
             }
         }
@@ -222,10 +228,7 @@ public class BidService {
                 bid.getProposedPrice().intValue()
         );
         notificationService.notifyPaymentCompleted(session, bid.getExpert(), bid.getProject().getTitle());
-        // [핵심 추가] 프로젝트 상태를 CLOSED로 변경
-        Project project = bid.getProject();
-        project.updateStatus(ProjectStatus.CLOSED);
-        projectRepository.save(project); // 상태 업데이트 저장
+        // createEscrow 내부에서 IN_PROGRESS로 전환 완료 — 중복 업데이트 제거
     }
 
     // 제안서 보류처리

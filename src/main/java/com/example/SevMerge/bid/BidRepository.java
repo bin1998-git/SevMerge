@@ -66,4 +66,13 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
         WHERE b.project.id = :projectId AND b.isDeleted = false
         """)
     long countByProjectId(@Param("projectId") Long projectId);
+
+    // 전문가의 낙찰된(SELECTED) 제안서 목록 — 계정 정지 알림용
+    @Query("""
+        SELECT b FROM Bid b
+        JOIN FETCH b.project p
+        JOIN FETCH p.member
+        WHERE b.expert.id = :expertId AND b.status = 'SELECTED' AND b.isDeleted = false
+        """)
+    List<Bid> findSelectedBidsByExpertId(@Param("expertId") Long expertId);
 }
