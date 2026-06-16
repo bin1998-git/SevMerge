@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SevMerge — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+    --bg:        #eef2f7;
+    --surface:   #ffffff;
+    --surface-2: #f7f9fc;
+    --blue-9:    #1e3a8a;
+    --blue-8:    #1e40af;
+    --blue-7:    #1d4ed8;
+    --blue-5:    #3b82f6;
+    --blue-4:    #60a5fa;
+    --blue-3:    #93c5fd;
+    --blue-1:    #eff6ff;
+    --blue-0:    #f0f7ff;
+    --bdr:       #e2e8f0;
+    --bdr-b:     #bfdbfe;
+    --t1:        #0f172a;
+    --t2:        #475569;
+    --t3:        #94a3b8;
+    --t4:        #cbd5e1;
+    --green:     #059669;
+    --green-l:   #d1fae5;
+    --red:       #dc2626;
+    --red-l:     #fee2e2;
+    --amber:     #d97706;
+    --amber-l:   #fef3c7;
+    --purple:    #7c3aed;
+    --purple-l:  #ede9fe;
+    --shadow-s:  0 1px 2px rgba(15,23,42,0.05), 0 0 0 1px rgba(15,23,42,0.04);
+    --shadow-m:  0 4px 12px rgba(15,23,42,0.07), 0 0 0 1px rgba(15,23,42,0.04);
+    --shadow-b:  0 2px 4px rgba(30,58,138,0.06), 0 0 0 1px rgba(30,58,138,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--t1);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ─── TOPBAR ─── */
+.tb {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.tb-brand { display: flex; align-items: center; gap: 10px; }
+.tb-mark {
+    width: 26px; height: 26px;
+    background: var(--blue-8);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 900; color: #fff; letter-spacing: -0.5px;
+}
+.tb-name { font-size: 14px; font-weight: 800; color: var(--t1); letter-spacing: -0.3px; }
+.tb-slash { color: var(--t4); margin: 0 6px; font-weight: 300; }
+.tb-page { font-size: 13px; color: var(--t2); font-weight: 500; }
+.tb-right { display: flex; align-items: center; gap: 14px; }
+.tb-live {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; color: var(--green);
+    letter-spacing: .3px;
+}
+.tb-live-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 2px rgba(5,150,105,0.18);
+}
+.tb-divider { width: 1px; height: 16px; background: var(--bdr); }
+.tb-date { font-size: 12px; color: var(--t3); font-weight: 500; }
+.tb-admin {
+    display: flex; align-items: center; gap: 7px;
+    padding: 4px 10px 4px 7px;
+    border: 1px solid var(--bdr);
+    border-radius: 20px;
+    font-size: 12px; font-weight: 700; color: var(--t2);
+    cursor: default;
+}
+.tb-admin-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--blue-1);
+    border: 1.5px solid var(--blue-3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 900; color: var(--blue-8);
+}
+
+/* ─── FEATURE NAV PILL BAR ─── */
+.fnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--bdr);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 42px;
+    overflow-x: auto;
+}
+.fnav::-webkit-scrollbar { display: none; }
+.fnav-item {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 600; color: var(--t2);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all .12s;
+    flex-shrink: 0;
+}
+.fnav-item:hover { background: var(--blue-0); color: var(--blue-7); }
+.fnav-item.active { background: var(--blue-1); color: var(--blue-8); }
+.fnav-cnt {
+    font-size: 10px; font-weight: 800;
+    background: var(--bdr);
+    color: var(--t3);
+    border-radius: 10px; padding: 1px 6px;
+    min-width: 18px; text-align: center;
+}
+.fnav-cnt.hot { background: var(--red-l); color: var(--red); }
+.fnav-cnt.warn { background: var(--amber-l); color: var(--amber); }
+.fnav-cnt.blue { background: var(--blue-1); color: var(--blue-7); }
+
+/* ─── MAIN LAYOUT ─── */
+.page { padding: 28px 28px 60px; display: flex; flex-direction: column; gap: 22px; max-width: 1400px; margin: 0 auto; }
+
+/* PAGE HEADER */
+.ph { display: flex; align-items: flex-end; justify-content: space-between; }
+.ph-left {}
+.ph-eyebrow { font-size: 11px; font-weight: 700; color: var(--blue-5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.ph-title { font-size: 22px; font-weight: 900; color: var(--t1); letter-spacing: -0.6px; }
+.ph-right { text-align: right; }
+.ph-date { font-size: 11px; color: var(--t3); margin-bottom: 2px; }
+.ph-num { font-size: 28px; font-weight: 900; color: var(--blue-9); letter-spacing: -1px; }
+
+/* ─── KPI ROW ─── */
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.kpi {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: 10px;
+    padding: 18px 18px 14px;
+    box-shadow: var(--shadow-s);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .15s, border-color .15s;
+}
+.kpi:hover { box-shadow: var(--shadow-m); border-color: var(--bdr-b); }
+.kpi::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+}
+.kpi-blue::after  { background: var(--blue-7); }
+.kpi-green::after { background: var(--green); }
+.kpi-amber::after { background: var(--amber); }
+.kpi-red::after   { background: var(--red); }
+.kpi-purple::after{ background: var(--purple); }
+.kpi-label { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+.kpi-val { font-size: 30px; font-weight: 900; letter-spacing: -1.2px; line-height: 1; margin-bottom: 8px; }
+.kv-blue   { color: var(--blue-8); }
+.kv-green  { color: var(--green); }
+.kv-amber  { color: var(--amber); }
+.kv-red    { color: var(--red); }
+.kv-purple { color: var(--purple); }
+.kpi-sub { font-size: 11px; color: var(--t3); }
+.kpi-sub .up  { color: var(--green);  font-weight: 700; }
+.kpi-sub .dn  { color: var(--red);    font-weight: 700; }
+.kpi-sub .wn  { color: var(--amber);  font-weight: 700; }
+.kpi-prog {
+    height: 3px;
+    background: var(--bdr);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+.kpi-prog-fill {
+    height: 100%;
+    border-radius: 2px;
+}
+.pf-b { background: var(--blue-5); }
+.pf-g { background: var(--green); }
+.pf-a { background: var(--amber); }
+.pf-r { background: var(--red); }
+.pf-p { background: var(--purple); }
+
+/* ─── CARD BASE ─── */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--bdr);
+    border-radius: 10px;
+    box-shadow: var(--shadow-s);
+    overflow: hidden;
+    transition: box-shadow .15s;
+}
+.card:hover { box-shadow: var(--shadow-m); }
+.card-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--bdr);
+}
+.card-title {
+    font-size: 12px; font-weight: 800; color: var(--t1);
+    display: flex; align-items: center; gap: 7px;
+}
+.card-title-accent { width: 3px; height: 12px; border-radius: 1.5px; flex-shrink: 0; }
+.card-meta { font-size: 11px; color: var(--t3); }
+.card-link {
+    font-size: 11px; font-weight: 700; color: var(--blue-7);
+    text-decoration: none; padding: 4px 8px; border-radius: 5px;
+    transition: background .12s;
+}
+.card-link:hover { background: var(--blue-0); }
+
+/* ─── MAIN GRID ROWS ─── */
+.row-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+.row-3   { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.row-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* ─── DATA TABLE ─── */
+.dt-hd {
+    display: grid;
+    padding: 8px 18px;
+    font-size: 10px; font-weight: 700; color: var(--t3);
+    text-transform: uppercase; letter-spacing: .5px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--bdr);
+}
+.dt-row {
+    display: grid;
+    padding: 11px 18px;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(226,232,240,0.7);
+    align-items: center;
+    transition: background .1s;
+}
+.dt-row:last-child { border-bottom: none; }
+.dt-row:hover { background: var(--blue-0); }
+.col-m { grid-template-columns: 28px 1fr 80px 70px 65px; gap: 10px; }
+.col-p { grid-template-columns: 28px 1fr 70px 65px 65px; gap: 10px; }
+.col-e { grid-template-columns: 28px 1fr 75px 75px; gap: 10px; }
+.col-r { grid-template-columns: 28px 1fr 80px 60px; gap: 10px; }
+.c-id { font-size: 10px; color: var(--t4); font-weight: 600; }
+.c-name { font-weight: 700; color: var(--t1); font-size: 12px; }
+.c-sub { font-size: 10px; color: var(--t3); margin-top: 1px; }
+.c-dim { font-size: 11px; color: var(--t3); }
+
+/* ─── BADGES ─── */
+.b {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 700;
+    border-radius: 4px; padding: 2px 7px;
+}
+.b-active  { background: var(--green-l);  color: var(--green); }
+.b-wait    { background: var(--amber-l);  color: var(--amber); }
+.b-pend    { background: var(--blue-1);   color: var(--blue-8); }
+.b-susp    { background: var(--red-l);    color: var(--red); }
+.b-prog    { background: #dbeafe;         color: var(--blue-8); }
+.b-done    { background: var(--green-l);  color: var(--green); }
+.b-closed  { background: var(--surface-2); color: var(--t3); border: 1px solid var(--bdr); }
+.b-new     { background: var(--purple-l); color: var(--purple); }
+
+/* ─── ACTION BTNS ─── */
+.ab {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 700;
+    border-radius: 5px; padding: 4px 9px;
+    text-decoration: none; border: 1px solid; cursor: pointer;
+    transition: all .1s;
+}
+.ab-blue  { background: var(--blue-1); color: var(--blue-8); border-color: var(--blue-3); }
+.ab-blue:hover  { background: var(--blue-7); color: #fff; border-color: var(--blue-7); }
+.ab-green { background: var(--green-l); color: var(--green); border-color: #a7f3d0; }
+.ab-green:hover { background: var(--green); color: #fff; border-color: var(--green); }
+.ab-red   { background: var(--red-l); color: var(--red); border-color: #fca5a5; }
+.ab-red:hover   { background: var(--red); color: #fff; border-color: var(--red); }
+.ab-ghost { background: transparent; color: var(--t2); border-color: var(--bdr); }
+.ab-ghost:hover { background: var(--surface-2); }
+
+/* ─── HORIZONTAL BAR ─── */
+.hb-list { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+.hb-row { display: grid; grid-template-columns: 72px 1fr 34px; gap: 8px; align-items: center; }
+.hb-key { font-size: 11px; color: var(--t2); font-weight: 600; }
+.hb-track {
+    height: 16px; background: var(--surface-2);
+    border: 1px solid var(--bdr);
+    border-radius: 3px; overflow: hidden;
+}
+.hb-fill {
+    height: 100%; border-radius: 2px;
+    display: flex; align-items: center; padding-right: 5px;
+    justify-content: flex-end;
+    font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.85);
+}
+.hf-b  { background: var(--blue-5); }
+.hf-g  { background: var(--green); }
+.hf-a  { background: var(--amber); }
+.hf-gr { background: var(--t4); }
+.hb-num { font-size: 11px; font-weight: 800; color: var(--t1); text-align: right; }
+
+/* ─── ACTIVITY FEED ─── */
+.feed { padding: 4px 0; }
+.feed-item {
+    display: flex; gap: 12px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(226,232,240,0.6);
+    transition: background .1s;
+}
+.feed-item:last-child { border-bottom: none; }
+.feed-item:hover { background: var(--blue-0); }
+.feed-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 5px;
+}
+.feed-body { flex: 1; }
+.feed-msg { font-size: 12px; color: var(--t1); font-weight: 500; line-height: 1.4; }
+.feed-msg strong { font-weight: 700; color: var(--blue-8); }
+.feed-time { font-size: 10px; color: var(--t3); margin-top: 2px; }
+
+/* ─── NOTICE LIST ─── */
+.nl-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(226,232,240,0.6);
+    transition: background .1s;
+}
+.nl-item:last-child { border-bottom: none; }
+.nl-item:hover { background: var(--blue-0); }
+.nl-icon { font-size: 13px; flex-shrink: 0; }
+.nl-body { flex: 1; min-width: 0; }
+.nl-title {
+    font-size: 12px; font-weight: 600; color: var(--t1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nl-date { font-size: 10px; color: var(--t3); margin-top: 1px; }
+.nl-badge {
+    font-size: 9px; font-weight: 800;
+    background: linear-gradient(90deg, var(--blue-7), var(--blue-5));
+    color: #fff; border-radius: 3px; padding: 2px 5px; flex-shrink: 0;
+}
+
+/* ─── QUICK ACTIONS ─── */
+.qa-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.qa {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 600; color: var(--t2);
+    text-decoration: none;
+    transition: all .1s;
+    border: 1px solid transparent;
+}
+.qa:hover { background: var(--blue-0); color: var(--blue-8); border-color: var(--bdr-b); }
+.qa-icon { font-size: 14px; flex-shrink: 0; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); }
+.qa-lbl { flex: 1; }
+.qa-arr { color: var(--t4); font-size: 12px; }
+
+/* ─── ALERT STRIP ─── */
+.alerts { display: flex; gap: 10px; }
+.alert {
+    flex: 1; display: flex; align-items: center; gap: 10px;
+    padding: 11px 16px;
+    border-radius: 8px; border: 1px solid;
+    font-size: 12px; font-weight: 600;
+}
+.alert a { margin-left: auto; font-weight: 700; font-size: 11px; text-decoration: none; opacity: .7; }
+.alert a:hover { opacity: 1; }
+.al-red    { background: var(--red-l);   border-color: #fca5a5; color: var(--red); }
+.al-amber  { background: var(--amber-l); border-color: #fcd34d; color: var(--amber); }
+.al-blue   { background: var(--blue-1);  border-color: var(--blue-3); color: var(--blue-8); }
+
+/* ─── SYSTEM STATUS ─── */
+.ss-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 18px;
+    border-bottom: 1px solid rgba(226,232,240,0.6);
+    font-size: 12px;
+}
+.ss-row:last-child { border-bottom: none; }
+.ss-key { color: var(--t2); font-weight: 500; display: flex; align-items: center; gap: 7px; }
+.ss-dot { width: 5px; height: 5px; border-radius: 50%; }
+.d-ok  { background: var(--green); }
+.d-wn  { background: var(--amber); }
+.d-err { background: var(--red); }
+.ss-val { font-weight: 700; font-size: 11px; }
+.sv-ok  { color: var(--green); }
+.sv-wn  { color: var(--amber); }
+.sv-bl  { color: var(--blue-8); }
+.sv-gr  { color: var(--t3); }
+
+/* ─── STAT CALLOUT ─── */
+.callout {
+    background: var(--blue-1);
+    border: 1px solid var(--bdr-b);
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+}
+.callout-icon { font-size: 24px; }
+.callout-val { font-size: 24px; font-weight: 900; color: var(--blue-9); letter-spacing: -1px; }
+.callout-label { font-size: 11px; color: var(--blue-8); font-weight: 600; margin-top: 1px; }
+
+/* ─── REPORT ROW ─── */
+.rr {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 18px;
+    border-bottom: 1px solid rgba(226,232,240,0.6);
+    font-size: 12px;
+    transition: background .1s;
+}
+.rr:last-child { border-bottom: none; }
+.rr:hover { background: var(--blue-0); }
+.rr-idx { color: var(--t4); font-size: 10px; min-width: 16px; padding-top: 1px; }
+.rr-body { flex: 1; }
+.rr-title { font-weight: 600; color: var(--t1); }
+.rr-meta { font-size: 10px; color: var(--t3); margin-top: 1px; }
+
+@media (max-width: 1200px) {
+    .kpi-row   { grid-template-columns: repeat(3, 1fr); }
+    .row-2-1   { grid-template-columns: 1fr; }
+    .row-3     { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+    .page      { padding: 16px 14px 40px; }
+    .kpi-row   { grid-template-columns: repeat(2, 1fr); }
+    .row-3     { grid-template-columns: 1fr; }
+    .row-2     { grid-template-columns: 1fr; }
+    .alerts    { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="tb">
+    <div class="tb-brand">
+        <div class="tb-mark">SM</div>
+        <span class="tb-name">SevMerge</span>
+        <span class="tb-slash">/</span>
+        <span class="tb-page">Admin</span>
+    </div>
+    <div class="tb-right">
+        <div class="tb-live"><div class="tb-live-dot"></div>시스템 정상</div>
+        <div class="tb-divider"></div>
+        <span class="tb-date">2026. 06. 16 월</span>
+        <div class="tb-divider"></div>
+        <div class="tb-admin">
+            <div class="tb-admin-dot">관</div>
+            관리자
+        </div>
+    </div>
+</header>
+
+<!-- FEATURE NAV -->
+<nav class="fnav">
+    <a href="/admin/members"  class="fnav-item active">👥 회원 <span class="fnav-cnt blue">1,247</span></a>
+    <a href="/admin/projects" class="fnav-item">📋 프로젝트 <span class="fnav-cnt">384</span></a>
+    <a href="/admin/experts"  class="fnav-item">🏅 전문가 <span class="fnav-cnt warn">12</span></a>
+    <a href="/admin/boards"   class="fnav-item">📝 게시판 <span class="fnav-cnt">2,891</span></a>
+    <a href="/admin/notices"  class="fnav-item">📢 공지 <span class="fnav-cnt">47</span></a>
+    <a href="/admin/reports"  class="fnav-item">🚨 신고 <span class="fnav-cnt hot">5</span></a>
+    <a href="/admin/inquiry"  class="fnav-item">💬 문의 <span class="fnav-cnt warn">8</span></a>
+    <a href="/admin/comments" class="fnav-item">💭 댓글 <span class="fnav-cnt">4,102</span></a>
+</nav>
+
+<!-- MAIN -->
+<div class="page">
+
+    <!-- PAGE HEADER -->
+    <div class="ph">
+        <div class="ph-left">
+            <div class="ph-eyebrow">Control Panel</div>
+            <div class="ph-title">관리자 대시보드</div>
+        </div>
+        <div class="ph-right">
+            <div class="ph-date">Today</div>
+            <div class="ph-num">06.16</div>
+        </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="alerts">
+        <div class="alert al-red">
+            🚨 <span>미처리 신고 <strong>5건</strong> — 즉시 검토 필요</span>
+            <a href="/admin/reports" class="ab ab-red" style="margin-left:auto;">처리하기 →</a>
+        </div>
+        <div class="alert al-amber">
+            ⏳ <span>전문가 승인 대기 <strong>12명</strong> — 검토 후 처리</span>
+            <a href="/admin/experts?status=PENDING" class="ab ab-ghost" style="margin-left:auto;color:var(--amber);border-color:#fcd34d;">승인 →</a>
+        </div>
+        <div class="alert al-blue">
+            💬 <span>미답변 문의 <strong>8건</strong> — 답변 대기 중</span>
+            <a href="/admin/inquiry" class="ab ab-blue" style="margin-left:auto;">답변 →</a>
+        </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+        <div class="kpi kpi-blue">
+            <div class="kpi-label">총 회원수</div>
+            <div class="kpi-val kv-blue">1,247</div>
+            <div class="kpi-sub">이번 달 <span class="up">+23명</span></div>
+            <div class="kpi-prog"><div class="kpi-prog-fill pf-b" style="width:78%"></div></div>
+        </div>
+        <div class="kpi kpi-blue">
+            <div class="kpi-label">전체 프로젝트</div>
+            <div class="kpi-val kv-blue">384</div>
+            <div class="kpi-sub">진행 중 <span class="up">86건</span></div>
+            <div class="kpi-prog"><div class="kpi-prog-fill pf-b" style="width:62%"></div></div>
+        </div>
+        <div class="kpi kpi-green">
+            <div class="kpi-label">완료 프로젝트</div>
+            <div class="kpi-val kv-green">298</div>
+            <div class="kpi-sub">이번 달 <span class="up">+14건</span></div>
+            <div class="kpi-prog"><div class="kpi-prog-fill pf-g" style="width:55%"></div></div>
+        </div>
+        <div class="kpi kpi-amber">
+            <div class="kpi-label">전문가 승인 대기</div>
+            <div class="kpi-val kv-amber">12</div>
+            <div class="kpi-sub"><span class="wn">처리 필요</span></div>
+            <div class="kpi-prog"><div class="kpi-prog-fill pf-a" style="width:22%"></div></div>
+        </div>
+        <div class="kpi kpi-red">
+            <div class="kpi-label">미처리 신고·문의</div>
+            <div class="kpi-val kv-red">13</div>
+            <div class="kpi-sub">신고 <span class="dn">5</span> · 문의 <span class="wn">8</span></div>
+            <div class="kpi-prog"><div class="kpi-prog-fill pf-r" style="width:18%"></div></div>
+        </div>
+    </div>
+
+    <!-- ROW 1: 회원 + 프로젝트 현황 | 최근 활동 -->
+    <div class="row-2-1">
+
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+            <!-- 최근 가입 회원 -->
+            <div class="card">
+                <div class="card-hd">
+                    <div class="card-title">
+                        <div class="card-title-accent" style="background:var(--blue-7)"></div>
+                        최근 가입 회원
+                    </div>
+                    <a href="/admin/members" class="card-link">전체 보기 →</a>
+                </div>
+                <div class="dt-hd col-m">
+                    <span>#</span><span>이름 / 이메일</span><span>가입일</span><span>권한</span><span>상태</span>
+                </div>
+                <div class="dt-row col-m">
+                    <span class="c-id">42</span>
+                    <div><div class="c-name">이민준</div><div class="c-sub">minjun@email.com</div></div>
+                    <span class="c-dim">06.16</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-active">활성</span></span>
+                </div>
+                <div class="dt-row col-m">
+                    <span class="c-id">41</span>
+                    <div><div class="c-name">박서연</div><div class="c-sub">seoyeon@email.com</div></div>
+                    <span class="c-dim">06.15</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-active">활성</span></span>
+                </div>
+                <div class="dt-row col-m">
+                    <span class="c-id">40</span>
+                    <div><div class="c-name">김도현</div><div class="c-sub">dohyeon@email.com</div></div>
+                    <span class="c-dim">06.15</span>
+                    <span><span class="b b-active">전문가</span></span>
+                    <span><span class="b b-active">활성</span></span>
+                </div>
+                <div class="dt-row col-m">
+                    <span class="c-id">39</span>
+                    <div><div class="c-name">최유진</div><div class="c-sub">yujin@email.com</div></div>
+                    <span class="c-dim">06.14</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-wait">대기</span></span>
+                </div>
+                <div class="dt-row col-m">
+                    <span class="c-id">38</span>
+                    <div><div class="c-name">강지훈</div><div class="c-sub">jihoon@email.com</div></div>
+                    <span class="c-dim">06.14</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-susp">정지</span></span>
+                </div>
+            </div>
+
+            <!-- 프로젝트 현황 -->
+            <div class="card">
+                <div class="card-hd">
+                    <div class="card-title">
+                        <div class="card-title-accent" style="background:var(--blue-5)"></div>
+                        프로젝트 상태 분포
+                    </div>
+                    <a href="/admin/projects" class="card-link">관리 →</a>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--bdr);">
+                    <div style="padding:14px 18px;border-right:1px solid var(--bdr);">
+                        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">최근 등록</div>
+                        <div class="dt-row col-p" style="padding:7px 0;grid-template-columns:20px 1fr 55px 55px 55px;gap:6px;">
+                            <span class="c-id">91</span>
+                            <span class="c-name">쇼핑몰 백엔드</span>
+                            <span class="c-dim">이민준</span>
+                            <span class="c-dim">06.16</span>
+                            <span><span class="b b-prog">진행중</span></span>
+                        </div>
+                        <div class="dt-row col-p" style="padding:7px 0;grid-template-columns:20px 1fr 55px 55px 55px;gap:6px;">
+                            <span class="c-id">90</span>
+                            <span class="c-name">앱 UI 디자인</span>
+                            <span class="c-dim">박서연</span>
+                            <span class="c-dim">06.15</span>
+                            <span><span class="b b-pend">모집중</span></span>
+                        </div>
+                        <div class="dt-row col-p" style="padding:7px 0;border-bottom:none;grid-template-columns:20px 1fr 55px 55px 55px;gap:6px;">
+                            <span class="c-id">89</span>
+                            <span class="c-name">React 대시보드</span>
+                            <span class="c-dim">최유진</span>
+                            <span class="c-dim">06.14</span>
+                            <span><span class="b b-done">완료</span></span>
+                        </div>
+                    </div>
+                    <div style="padding:14px 18px;">
+                        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">상태별 분포</div>
+                        <div class="hb-list" style="padding:0;">
+                            <div class="hb-row">
+                                <span class="hb-key">모집 중</span>
+                                <div class="hb-track"><div class="hb-fill hf-b" style="width:42%">42%</div></div>
+                                <span class="hb-num">162</span>
+                            </div>
+                            <div class="hb-row">
+                                <span class="hb-key">진행 중</span>
+                                <div class="hb-track"><div class="hb-fill hf-b" style="width:22%;background:#60a5fa;">22%</div></div>
+                                <span class="hb-num">86</span>
+                            </div>
+                            <div class="hb-row">
+                                <span class="hb-key">완료</span>
+                                <div class="hb-track"><div class="hb-fill hf-g" style="width:28%">28%</div></div>
+                                <span class="hb-num">108</span>
+                            </div>
+                            <div class="hb-row">
+                                <span class="hb-key">마감</span>
+                                <div class="hb-track"><div class="hb-fill hf-gr" style="width:8%">8%</div></div>
+                                <span class="hb-num">28</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:10px 18px;display:flex;gap:8px;">
+                    <a href="/admin/projects" class="ab ab-blue">📋 전체 프로젝트</a>
+                    <a href="/admin/projects" class="ab ab-ghost">+ 삭제 처리</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 최근 활동 -->
+        <div class="card">
+            <div class="card-hd">
+                <div class="card-title">
+                    <div class="card-title-accent" style="background:var(--purple)"></div>
+                    관리자 활동 로그
+                </div>
+                <span class="card-meta">최근 24h</span>
+            </div>
+            <div class="feed">
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--green)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">전문가 승인 — <strong>김개발</strong></div>
+                        <div class="feed-time">방금 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--red)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">회원 정지 — <strong>spam_user_99</strong></div>
+                        <div class="feed-time">12분 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--blue-5)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">공지 등록 — <strong>서버 점검 안내</strong></div>
+                        <div class="feed-time">34분 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--amber)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">게시글 삭제 — ID #2847</div>
+                        <div class="feed-time">1시간 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--green)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">전문가 승인 — <strong>박디자인</strong></div>
+                        <div class="feed-time">2시간 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--purple)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">전문가 거절 — <strong>test_expert1</strong></div>
+                        <div class="feed-time">3시간 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--blue-4)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">문의 답변 완료 — ID #189</div>
+                        <div class="feed-time">5시간 전</div>
+                    </div>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-dot" style="background:var(--red)"></div>
+                    <div class="feed-body">
+                        <div class="feed-msg">신고 처리 — 부적절 리뷰</div>
+                        <div class="feed-time">6시간 전</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ROW 2: 전문가 | 신고+문의 | 빠른 실행 -->
+    <div class="row-3">
+
+        <!-- 전문가 승인 대기 -->
+        <div class="card">
+            <div class="card-hd">
+                <div class="card-title">
+                    <div class="card-title-accent" style="background:var(--amber)"></div>
+                    전문가 승인 대기
+                </div>
+                <a href="/admin/experts?status=PENDING" class="card-link">전체 →</a>
+            </div>
+            <div>
+                <div class="dt-hd col-e">
+                    <span>#</span><span>이름 / 분야</span><span>신청일</span><span>처리</span>
+                </div>
+                <div class="dt-row col-e">
+                    <span class="c-id">12</span>
+                    <div><div class="c-name">홍길동</div><div class="c-sub">풀스택 개발</div></div>
+                    <span class="c-dim">06.15</span>
+                    <div style="display:flex;gap:3px;">
+                        <a href="/admin/experts" class="ab ab-green">승인</a>
+                        <a href="/admin/experts" class="ab ab-red">거절</a>
+                    </div>
+                </div>
+                <div class="dt-row col-e">
+                    <span class="c-id">11</span>
+                    <div><div class="c-name">김수진</div><div class="c-sub">UI/UX</div></div>
+                    <span class="c-dim">06.14</span>
+                    <div style="display:flex;gap:3px;">
+                        <a href="/admin/experts" class="ab ab-green">승인</a>
+                        <a href="/admin/experts" class="ab ab-red">거절</a>
+                    </div>
+                </div>
+                <div class="dt-row col-e">
+                    <span class="c-id">10</span>
+                    <div><div class="c-name">이재원</div><div class="c-sub">모바일</div></div>
+                    <span class="c-dim">06.13</span>
+                    <div style="display:flex;gap:3px;">
+                        <a href="/admin/experts" class="ab ab-green">승인</a>
+                        <a href="/admin/experts" class="ab ab-red">거절</a>
+                    </div>
+                </div>
+                <div class="dt-row col-e">
+                    <span class="c-id">9</span>
+                    <div><div class="c-name">박민영</div><div class="c-sub">데이터 분석</div></div>
+                    <span class="c-dim">06.12</span>
+                    <div style="display:flex;gap:3px;">
+                        <a href="/admin/experts" class="ab ab-green">승인</a>
+                        <a href="/admin/experts" class="ab ab-red">거절</a>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:10px 18px;border-top:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:11px;color:var(--t3);">외 8명 대기 중</span>
+                <a href="/admin/experts" class="ab ab-blue">전체 처리 →</a>
+            </div>
+        </div>
+
+        <!-- 신고 & 문의 -->
+        <div class="card">
+            <div class="card-hd">
+                <div class="card-title">
+                    <div class="card-title-accent" style="background:var(--red)"></div>
+                    신고 · 문의 현황
+                </div>
+            </div>
+            <div style="padding:12px 18px 8px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="callout">
+                    <div class="callout-icon">🚨</div>
+                    <div>
+                        <div class="callout-val" style="color:var(--red)">5</div>
+                        <div class="callout-label" style="color:var(--red)">미처리 신고</div>
+                    </div>
+                </div>
+                <div class="callout" style="background:var(--amber-l);border-color:#fcd34d;">
+                    <div class="callout-icon">💬</div>
+                    <div>
+                        <div class="callout-val" style="color:var(--amber)">8</div>
+                        <div class="callout-label" style="color:var(--amber)">미답변 문의</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="padding:6px 18px;font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">미처리 신고</div>
+                <div class="rr">
+                    <span class="rr-idx">1</span>
+                    <div class="rr-body">
+                        <div class="rr-title">허위 전문가 신청</div>
+                        <div class="rr-meta">신고자: 이민준 · 06.16</div>
+                    </div>
+                    <span class="b b-new">처리중</span>
+                </div>
+                <div class="rr">
+                    <span class="rr-idx">2</span>
+                    <div class="rr-body">
+                        <div class="rr-title">부적절한 홍보 게시글</div>
+                        <div class="rr-meta">신고자: 박서연 · 06.15</div>
+                    </div>
+                    <span class="b b-wait">접수</span>
+                </div>
+                <div class="rr">
+                    <span class="rr-idx">3</span>
+                    <div class="rr-body">
+                        <div class="rr-title">리뷰 허위 작성 의심</div>
+                        <div class="rr-meta">신고자: 최유진 · 06.14</div>
+                    </div>
+                    <span class="b b-wait">접수</span>
+                </div>
+            </div>
+            <div style="padding:10px 18px;border-top:1px solid var(--bdr);display:flex;gap:6px;">
+                <a href="/admin/reports" class="ab ab-red" style="flex:1;justify-content:center;">신고 관리</a>
+                <a href="/admin/inquiry" class="ab ab-ghost" style="flex:1;justify-content:center;color:var(--amber);border-color:#fcd34d;">문의 관리</a>
+            </div>
+        </div>
+
+        <!-- 빠른 실행 + 시스템 -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+
+            <div class="card">
+                <div class="card-hd">
+                    <div class="card-title">
+                        <div class="card-title-accent" style="background:var(--blue-5)"></div>
+                        빠른 실행
+                    </div>
+                </div>
+                <div class="qa-list">
+                    <a href="/admin/notices/write" class="qa"><div class="qa-icon">📢</div><span class="qa-lbl">공지사항 작성</span><span class="qa-arr">›</span></a>
+                    <a href="/admin/experts?status=PENDING" class="qa"><div class="qa-icon">🏅</div><span class="qa-lbl">전문가 승인 처리</span><span class="qa-arr">›</span></a>
+                    <a href="/admin/members" class="qa"><div class="qa-icon">👥</div><span class="qa-lbl">회원 현황 보기</span><span class="qa-arr">›</span></a>
+                    <a href="/admin/boards" class="qa"><div class="qa-icon">📝</div><span class="qa-lbl">게시판 관리</span><span class="qa-arr">›</span></a>
+                    <a href="/admin/comments" class="qa"><div class="qa-icon">💭</div><span class="qa-lbl">댓글 관리</span><span class="qa-arr">›</span></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-hd">
+                    <div class="card-title">
+                        <div class="card-title-accent" style="background:var(--green)"></div>
+                        시스템 현황
+                    </div>
+                    <span style="font-size:11px;font-weight:700;color:var(--green)">● 정상</span>
+                </div>
+                <div>
+                    <div class="ss-row"><span class="ss-key"><div class="ss-dot d-ok"></div>Spring Boot</span><span class="ss-val sv-ok">운영중</span></div>
+                    <div class="ss-row"><span class="ss-key"><div class="ss-dot d-ok"></div>DB 연결</span><span class="ss-val sv-ok">정상</span></div>
+                    <div class="ss-row"><span class="ss-key"><div class="ss-dot d-ok"></div>세션/알림</span><span class="ss-val sv-ok">활성</span></div>
+                    <div class="ss-row"><span class="ss-key"><div class="ss-dot d-wn"></div>캐시 메모리</span><span class="ss-val sv-wn">74%</span></div>
+                    <div class="ss-row"><span class="ss-key"><div class="ss-dot d-ok"></div>업타임</span><span class="ss-val sv-bl">14일 07:23</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ROW 3: 공지사항 -->
+    <div class="card">
+        <div class="card-hd">
+            <div class="card-title">
+                <div class="card-title-accent" style="background:var(--blue-7)"></div>
+                공지사항 관리
+            </div>
+            <div style="display:flex;gap:8px;">
+                <a href="/admin/notices/write" class="ab ab-blue">+ 작성</a>
+                <a href="/admin/notices" class="ab ab-ghost">전체 보기 →</a>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);">
+            <div class="nl-item" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px;border-right:1px solid var(--bdr);">
+                <div style="display:flex;align-items:center;gap:6px;width:100%;">
+                    <span class="nl-icon">📌</span>
+                    <span class="nl-badge">NEW</span>
+                </div>
+                <div class="nl-title">서버 점검 안내 (6/20)</div>
+                <div class="nl-date">2026.06.16</div>
+            </div>
+            <div class="nl-item" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px;border-right:1px solid var(--bdr);">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="nl-icon">📌</span>
+                    <span class="nl-badge">NEW</span>
+                </div>
+                <div class="nl-title">전문가 인증 기준 강화</div>
+                <div class="nl-date">2026.06.12</div>
+            </div>
+            <div class="nl-item" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px;border-right:1px solid var(--bdr);">
+                <div><span class="nl-icon">📢</span></div>
+                <div class="nl-title">개인정보처리방침 개정</div>
+                <div class="nl-date">2026.06.08</div>
+            </div>
+            <div class="nl-item" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px;border-right:1px solid var(--bdr);">
+                <div><span class="nl-icon">📢</span></div>
+                <div class="nl-title">에스크로 시스템 업데이트</div>
+                <div class="nl-date">2026.06.01</div>
+            </div>
+            <div class="nl-item" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px;">
+                <div><span class="nl-icon">📢</span></div>
+                <div class="nl-title">5월 이용 통계 공개</div>
+                <div class="nl-date">2026.05.31</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
