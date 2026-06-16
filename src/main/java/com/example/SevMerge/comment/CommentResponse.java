@@ -16,6 +16,7 @@ public class CommentResponse {
         private Boolean isOwner; // 댓글 소유자 여부 (로그인유저랑 비교)
         private String createdAt; // 댓글 작성 시간
         private Long boardId;
+        private Boolean isCommentAdmin;
 
         public ListDTO(Comment comment, Long sessionUserId, String sessionUserRole) {
             this.id = comment.getId();
@@ -25,6 +26,7 @@ public class CommentResponse {
             if (comment.getMember() != null) {
                 this.memberId = comment.getMember().getId();
                 this.memberName = comment.getMember().getName();
+                this.isCommentAdmin = comment.getMember().getRole() != null && "ADMIN".equalsIgnoreCase(comment.getMember().getRole().toString());
             }
 
             // 게시글 ID추출
