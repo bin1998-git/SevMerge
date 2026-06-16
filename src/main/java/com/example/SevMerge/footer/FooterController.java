@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -51,6 +52,13 @@ public class FooterController {
         model.addAttribute("isOperation", true);
         return "footerProc/operation";
     }
+
+//    // 제휴문의 기능 이메일 보내기
+//    @PostMapping("/partnership/inquiry")
+//    public String inquiry(Model model) {
+//
+//
+//    }
 
 
 }

@@ -36,6 +36,7 @@ public class PortfolioController {
         ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId); // 멤버 아이디
 
         model.addAttribute("portfolios", portfolios);
+        model.addAttribute("portfolioCount", portfolios.getTotalElements());
         model.addAttribute("expertProfile", expertProfile);
         model.addAttribute("totalPages",portfolios.getTotalPages());
         model.addAttribute("currentPage",page);
