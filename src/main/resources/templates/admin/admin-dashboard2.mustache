@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SevMerge — Admin Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+    --black:   #06030d;
+    --dp1:     #0e0720;
+    --dp2:     #160c2e;
+    --gc:      rgba(255,255,255,0.05);
+    --gc-h:    rgba(255,255,255,0.09);
+    --bdr:     rgba(255,255,255,0.08);
+    --bdr-b:   rgba(167,139,250,0.30);
+    --v9:      #4c1d95;
+    --v7:      #7c3aed;
+    --v5:      #8b5cf6;
+    --v4:      #a78bfa;
+    --v3:      #c4b5fd;
+    --v1:      #ede9fe;
+    --pk:      #ec4899;
+    --pk-l:    #f9a8d4;
+    --fus:     #d946ef;
+    --rose:    #f43f5e;
+    --amber:   #f59e0b;
+    --cyan:    #06b6d4;
+    --emerald: #10b981;
+    --t1: #f5f3ff;
+    --t2: rgba(255,255,255,0.60);
+    --t3: rgba(255,255,255,0.32);
+    --t4: rgba(255,255,255,0.14);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--black);
+    color: var(--t1);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ─── AMBIENT ─── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 70% 55% at 10% 20%, rgba(124,58,237,0.22) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 45% at 90% 75%, rgba(236,72,153,0.14) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 35% at 60% 10%, rgba(217,70,239,0.10) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+/* ─── TOPBAR ─── */
+.tb {
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    background: rgba(6,3,13,0.90);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--bdr);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+.tb-left { display: flex; align-items: center; gap: 10px; }
+.tb-gem {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--v7), var(--pk));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 900; color: #fff;
+}
+.tb-name { font-size: 14px; font-weight: 800; letter-spacing: -0.3px; }
+.tb-sep { width: 1px; height: 18px; background: var(--bdr); margin: 0 10px; }
+.tb-page { font-size: 12px; color: var(--v3); font-weight: 600; }
+.tb-right { display: flex; align-items: center; gap: 12px; }
+.tb-tag {
+    font-size: 10px; font-weight: 700;
+    border-radius: 5px;
+    padding: 3px 9px;
+    letter-spacing: .5px;
+}
+.tb-tag.live { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.tb-tag.v { background: rgba(139,92,246,0.15); color: var(--v3); border: 1px solid rgba(139,92,246,0.3); }
+.tb-time { font-size: 11px; color: var(--t3); font-variant-numeric: tabular-nums; }
+.tb-ava {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--v7), var(--fus));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+    border: 1.5px solid var(--v4);
+}
+
+/* ─── SPLIT LAYOUT ─── */
+.split {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* ──────── LEFT PANEL ──────── */
+.lp {
+    width: 300px;
+    flex-shrink: 0;
+    background: rgba(14,7,32,0.70);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid var(--bdr);
+    overflow-y: auto;
+    padding: 28px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+.lp::-webkit-scrollbar { width: 4px; }
+.lp::-webkit-scrollbar-thumb { background: var(--v9); border-radius: 2px; }
+
+/* BIG METRIC RING */
+.ring-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.ring-outer {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+.ring-svg { transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--bdr); stroke-width: 8; }
+.ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
+.ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.ring-val { font-size: 24px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.ring-sub { font-size: 9px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+.ring-label { font-size: 11px; font-weight: 700; color: var(--t2); text-align: center; }
+.ring-delta { font-size: 10px; color: var(--t3); }
+.ring-delta .up { color: #34d399; font-weight: 700; }
+.ring-delta .dn { color: var(--rose); font-weight: 700; }
+
+.lp-divider { height: 1px; background: var(--bdr); }
+
+/* MINI METRIC ROW */
+.mm-row { display: flex; flex-direction: column; gap: 14px; }
+.mm-item { display: flex; align-items: center; gap: 12px; }
+.mm-icon {
+    width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+}
+.mi-v  { background: rgba(124,58,237,0.18); }
+.mi-pk { background: rgba(236,72,153,0.15); }
+.mi-fu { background: rgba(217,70,239,0.15); }
+.mi-cy { background: rgba(6,182,212,0.15); }
+.mi-am { background: rgba(245,158,11,0.15); }
+.mi-em { background: rgba(16,185,129,0.15); }
+.mm-body { flex: 1; min-width: 0; }
+.mm-label { font-size: 11px; color: var(--t3); font-weight: 600; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .5px; }
+.mm-val { font-size: 18px; font-weight: 900; line-height: 1; letter-spacing: -0.5px; }
+.mm-bar { height: 3px; background: var(--bdr); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.mm-bar-fill { height: 100%; border-radius: 2px; }
+.fill-v { background: linear-gradient(90deg, var(--v7), var(--v4)); }
+.fill-pk { background: linear-gradient(90deg, #be185d, var(--pk)); }
+.fill-fu { background: linear-gradient(90deg, #a21caf, var(--fus)); }
+.fill-cy { background: linear-gradient(90deg, #0e7490, var(--cyan)); }
+.fill-am { background: linear-gradient(90deg, #b45309, var(--amber)); }
+.fill-em { background: linear-gradient(90deg, #047857, var(--emerald)); }
+
+/* ALERT CHIPS */
+.chip-list { display: flex; flex-direction: column; gap: 6px; }
+.chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    font-size: 12px; font-weight: 600;
+    border: 1px solid;
+    text-decoration: none;
+    color: inherit;
+    transition: all .15s;
+}
+.chip:hover { transform: translateX(3px); }
+.chip-rose { background: rgba(244,63,94,0.08); border-color: rgba(244,63,94,0.25); color: #fda4af; }
+.chip-amber { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); color: #fcd34d; }
+.chip-v { background: rgba(139,92,246,0.10); border-color: rgba(139,92,246,0.28); color: var(--v3); }
+.chip-count { margin-left: auto; font-size: 14px; font-weight: 900; }
+
+/* ──────── RIGHT PANEL ──────── */
+.rp {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    min-width: 0;
+}
+.rp::-webkit-scrollbar { width: 4px; }
+.rp::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 2px; }
+
+/* PAGE TITLE */
+.rp-title-row { display: flex; align-items: flex-end; justify-content: space-between; }
+.rp-title {
+    font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1;
+    background: linear-gradient(90deg, var(--v3), var(--pk-l));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.rp-subtitle { font-size: 13px; color: var(--t3); margin-top: 4px; }
+.rp-date { font-size: 12px; color: var(--t3); text-align: right; }
+.rp-date strong { display: block; font-size: 20px; font-weight: 900; color: var(--t1); letter-spacing: -0.5px; -webkit-text-fill-color: var(--t1); }
+
+/* TABS */
+.tab-row { display: flex; gap: 4px; border-bottom: 1px solid var(--bdr); }
+.tab-btn {
+    padding: 9px 18px;
+    font-size: 13px; font-weight: 700;
+    color: var(--t3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+}
+.tab-btn:hover { color: var(--v3); }
+.tab-btn.act { color: var(--v4); border-bottom-color: var(--v5); }
+.tab-cnt {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; border-radius: 9px;
+    background: rgba(139,92,246,0.25);
+    font-size: 10px; font-weight: 800; padding: 0 4px;
+    color: var(--v3);
+}
+.tab-cnt.red { background: rgba(244,63,94,0.2); color: #fda4af; }
+.tab-cnt.amber { background: rgba(245,158,11,0.2); color: #fcd34d; }
+
+/* GRID */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* GLASS CARD */
+.gc {
+    background: var(--gc);
+    border: 1px solid var(--bdr);
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+    transition: border-color .2s;
+}
+.gc:hover { border-color: var(--bdr-b); }
+.gc-pad { padding: 20px; }
+.gc-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--bdr);
+}
+.gc-title { font-size: 13px; font-weight: 800; color: var(--t1); display: flex; align-items: center; gap: 8px; }
+.gc-title-dot { width: 6px; height: 6px; border-radius: 50%; }
+.gc-meta { font-size: 11px; color: var(--t3); }
+
+/* TABLE */
+.adm-tbl { width: 100%; }
+.adm-tbl-hd {
+    display: grid;
+    padding: 9px 16px;
+    font-size: 10px; font-weight: 700; color: var(--t3);
+    text-transform: uppercase; letter-spacing: .5px;
+    background: rgba(139,92,246,0.06);
+    border-bottom: 1px solid var(--bdr);
+}
+.adm-tbl-row {
+    display: grid;
+    padding: 12px 16px;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    align-items: center;
+    transition: background .12s;
+}
+.adm-tbl-row:last-child { border-bottom: none; }
+.adm-tbl-row:hover { background: rgba(139,92,246,0.06); }
+.col-m5 { grid-template-columns: 32px 1fr 90px 80px 70px; gap: 10px; }
+.col-p5 { grid-template-columns: 32px 1fr 80px 80px 70px; gap: 10px; }
+.col-e4 { grid-template-columns: 32px 1fr 90px 80px; gap: 10px; }
+.c-id { color: var(--t4); font-size: 10px; font-weight: 600; }
+.c-name { font-weight: 700; color: var(--t1); }
+.c-sub { font-size: 10px; color: var(--t3); margin-top: 1px; }
+.c-date { color: var(--t3); font-size: 10px; }
+
+/* BADGES */
+.b {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; border-radius: 20px;
+    padding: 2px 9px; white-space: nowrap;
+}
+.b-active  { background: rgba(16,185,129,0.14); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+.b-wait    { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+.b-pend    { background: rgba(139,92,246,0.14); color: var(--v3); border: 1px solid rgba(139,92,246,0.28); }
+.b-prog    { background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.25); }
+.b-done    { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.22); }
+.b-closed  { background: rgba(255,255,255,0.06); color: var(--t3); border: 1px solid var(--bdr); }
+.b-susp    { background: rgba(244,63,94,0.12); color: #fda4af; border: 1px solid rgba(244,63,94,0.25); }
+.b-report  { background: rgba(244,63,94,0.12); color: #fda4af; border: 1px solid rgba(244,63,94,0.25); }
+.b-ans     { background: rgba(139,92,246,0.14); color: var(--v3); border: 1px solid rgba(139,92,246,0.28); }
+.b-no-ans  { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+
+/* ACTION BTN */
+.act-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+    text-decoration: none; cursor: pointer; border: 1px solid;
+    transition: all .12s;
+}
+.ab-v { background: rgba(139,92,246,0.14); color: var(--v3); border-color: rgba(139,92,246,0.3); }
+.ab-v:hover { background: rgba(139,92,246,0.28); }
+.ab-rose { background: rgba(244,63,94,0.10); color: #fda4af; border-color: rgba(244,63,94,0.28); }
+.ab-rose:hover { background: rgba(244,63,94,0.22); }
+.ab-green { background: rgba(16,185,129,0.12); color: #6ee7b7; border-color: rgba(16,185,129,0.28); }
+.ab-green:hover { background: rgba(16,185,129,0.24); }
+.ab-amber { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.28); }
+.ab-amber:hover { background: rgba(245,158,11,0.24); }
+
+/* HORIZONTAL BAR */
+.hbar-list { display: flex; flex-direction: column; gap: 11px; }
+.hbar-row { display: grid; grid-template-columns: 70px 1fr 36px; gap: 10px; align-items: center; font-size: 11px; }
+.hbar-key { color: var(--t3); font-weight: 600; }
+.hbar-track { height: 18px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+.hbar-fill {
+    height: 100%; border-radius: 4px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 5px; font-size: 9px; font-weight: 800;
+    color: rgba(255,255,255,0.75);
+}
+.hbar-num { font-weight: 800; color: var(--t1); text-align: right; }
+
+/* QUICK ACTION GRID */
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 16px 20px; }
+.qa-item {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px;
+    border-radius: 10px;
+    background: rgba(139,92,246,0.07);
+    border: 1px solid rgba(139,92,246,0.15);
+    text-decoration: none;
+    color: var(--t1);
+    transition: all .15s;
+}
+.qa-item:hover { background: rgba(139,92,246,0.15); border-color: var(--bdr-b); transform: translateY(-2px); }
+.qa-icon { font-size: 18px; }
+.qa-label { font-size: 12px; font-weight: 700; }
+.qa-desc { font-size: 10px; color: var(--t3); }
+
+/* NOTICE LIST */
+.notice-list { display: flex; flex-direction: column; }
+.notice-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background .12s;
+}
+.notice-row:last-child { border-bottom: none; }
+.notice-row:hover { background: rgba(139,92,246,0.06); }
+.notice-pin { font-size: 12px; }
+.notice-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--t1); }
+.notice-date { font-size: 11px; color: var(--t3); }
+.notice-new {
+    font-size: 9px; font-weight: 800; background: linear-gradient(90deg, var(--v7), var(--pk));
+    color: #fff; border-radius: 4px; padding: 2px 5px;
+}
+
+/* REPORT INQUIRY GRID */
+.ri-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ri-card { display: flex; flex-direction: column; }
+.ri-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px;
+    transition: background .12s;
+}
+.ri-row:last-child { border-bottom: none; }
+.ri-row:hover { background: rgba(236,72,153,0.05); }
+.ri-idx { color: var(--t4); font-size: 10px; min-width: 20px; padding-top: 1px; }
+.ri-body { flex: 1; min-width: 0; }
+.ri-msg { font-weight: 600; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ri-meta { font-size: 10px; color: var(--t3); margin-top: 2px; }
+
+/* SYSTEM STATUS (right side) */
+.sys-list { display: flex; flex-direction: column; gap: 0; }
+.sys-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px;
+}
+.sys-row:last-child { border-bottom: none; }
+.sys-key { color: var(--t2); font-weight: 500; display: flex; align-items: center; gap: 7px; }
+.sys-dot { width: 6px; height: 6px; border-radius: 50%; }
+.sys-ok   { background: #34d399; box-shadow: 0 0 6px rgba(52,211,153,0.6); }
+.sys-warn { background: var(--amber); box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+.sys-err  { background: var(--rose); box-shadow: 0 0 6px rgba(244,63,94,0.5); }
+.sys-val  { font-weight: 700; }
+.sys-val.ok { color: #6ee7b7; }
+.sys-val.warn { color: #fcd34d; }
+.sys-val.err { color: #fda4af; }
+.sys-val.info { color: var(--v3); }
+
+/* HEATMAP (activity) */
+.heatmap { padding: 16px 20px; }
+.hm-label { font-size: 10px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.hm-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 4px;
+}
+.hm-cell {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.04);
+    transition: all .15s;
+}
+.hm-cell:hover { transform: scale(1.3); }
+.h0 { background: rgba(139,92,246,0.06); }
+.h1 { background: rgba(139,92,246,0.20); }
+.h2 { background: rgba(139,92,246,0.38); }
+.h3 { background: rgba(139,92,246,0.58); }
+.h4 { background: rgba(139,92,246,0.82); }
+.hm-legend { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 10px; color: var(--t3); }
+.hm-legend-cells { display: flex; gap: 3px; }
+.hm-legend-cells span { width: 10px; height: 10px; border-radius: 2px; }
+
+@media (max-width: 1100px) {
+    .lp { width: 240px; }
+    .g3 { grid-template-columns: 1fr 1fr; }
+    .ri-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 800px) {
+    .split { flex-direction: column; }
+    .lp { width: 100%; border-right: none; border-bottom: 1px solid var(--bdr); }
+    .rp { padding: 20px 16px 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<header class="tb">
+    <div class="tb-left">
+        <div class="tb-gem">S</div>
+        <span class="tb-name">SevMerge</span>
+        <div class="tb-sep"></div>
+        <span class="tb-page">Analytics Dashboard</span>
+    </div>
+    <div class="tb-right">
+        <span class="tb-tag live">● LIVE</span>
+        <span class="tb-tag v">v2.0</span>
+        <span class="tb-time">2026.06.16 MON</span>
+        <div class="tb-ava">관</div>
+    </div>
+</header>
+
+<!-- ═══ SPLIT LAYOUT ═══ -->
+<div class="split">
+
+<!-- ──────── LEFT PANEL ──────── -->
+<aside class="lp">
+
+    <!-- BIG RING: 회원수 -->
+    <div class="ring-wrap">
+        <div class="ring-outer">
+            <svg class="ring-svg" width="120" height="120" viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill" cx="60" cy="60" r="50"
+                    stroke="url(#gv1)"
+                    stroke-dasharray="314"
+                    stroke-dashoffset="69"/>
+                <defs>
+                    <linearGradient id="gv1" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#7c3aed"/>
+                        <stop offset="100%" stop-color="#ec4899"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="ring-center">
+                <div class="ring-val" style="color:var(--v3)">1,247</div>
+                <div class="ring-sub">MEMBERS</div>
+            </div>
+        </div>
+        <div class="ring-label">전체 회원</div>
+        <div class="ring-delta">이번 달 <span class="up">+23명</span></div>
+    </div>
+
+    <div class="lp-divider"></div>
+
+    <!-- MINI METRICS -->
+    <div class="mm-row">
+        <div class="mm-item">
+            <div class="mm-icon mi-v">📋</div>
+            <div class="mm-body">
+                <div class="mm-label">전체 프로젝트</div>
+                <div class="mm-val" style="color:var(--v3)">384</div>
+                <div class="mm-bar"><div class="mm-bar-fill fill-v" style="width:68%"></div></div>
+            </div>
+        </div>
+        <div class="mm-item">
+            <div class="mm-icon mi-cy">⚡</div>
+            <div class="mm-body">
+                <div class="mm-label">진행 중</div>
+                <div class="mm-val" style="color:var(--cyan)">86</div>
+                <div class="mm-bar"><div class="mm-bar-fill fill-cy" style="width:22%"></div></div>
+            </div>
+        </div>
+        <div class="mm-item">
+            <div class="mm-icon mi-em">✅</div>
+            <div class="mm-body">
+                <div class="mm-label">완료 프로젝트</div>
+                <div class="mm-val" style="color:var(--emerald)">298</div>
+                <div class="mm-bar"><div class="mm-bar-fill fill-em" style="width:55%"></div></div>
+            </div>
+        </div>
+        <div class="mm-item">
+            <div class="mm-icon mi-pk">🏅</div>
+            <div class="mm-body">
+                <div class="mm-label">등록 전문가</div>
+                <div class="mm-val" style="color:var(--pk-l)">147</div>
+                <div class="mm-bar"><div class="mm-bar-fill fill-pk" style="width:40%"></div></div>
+            </div>
+        </div>
+        <div class="mm-item">
+            <div class="mm-icon mi-fu">📝</div>
+            <div class="mm-body">
+                <div class="mm-label">전체 게시글</div>
+                <div class="mm-val" style="color:var(--fus)">2,891</div>
+                <div class="mm-bar"><div class="mm-bar-fill fill-fu" style="width:85%"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lp-divider"></div>
+
+    <!-- ALERT CHIPS -->
+    <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">즉시 처리 필요</div>
+    <div class="chip-list">
+        <a href="/admin/reports" class="chip chip-rose">
+            🚨 미처리 신고<span class="chip-count">5</span>
+        </a>
+        <a href="/admin/inquiry" class="chip chip-amber">
+            💬 미답변 문의<span class="chip-count">8</span>
+        </a>
+        <a href="/admin/experts?status=PENDING" class="chip chip-v">
+            🏅 전문가 승인 대기<span class="chip-count">12</span>
+        </a>
+    </div>
+
+    <div class="lp-divider"></div>
+
+    <!-- MONTHLY HEATMAP (CSS) -->
+    <div>
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">월별 활동 히트맵</div>
+        <div class="hm-grid">
+            <div class="hm-cell h1"></div><div class="hm-cell h2"></div><div class="hm-cell h0"></div>
+            <div class="hm-cell h3"></div><div class="hm-cell h1"></div><div class="hm-cell h4"></div>
+            <div class="hm-cell h2"></div><div class="hm-cell h1"></div><div class="hm-cell h3"></div>
+            <div class="hm-cell h4"></div><div class="hm-cell h2"></div><div class="hm-cell h1"></div>
+            <div class="hm-cell h0"></div><div class="hm-cell h3"></div><div class="hm-cell h2"></div>
+            <div class="hm-cell h1"></div><div class="hm-cell h4"></div><div class="hm-cell h3"></div>
+            <div class="hm-cell h2"></div><div class="hm-cell h0"></div><div class="hm-cell h1"></div>
+            <div class="hm-cell h3"></div><div class="hm-cell h2"></div><div class="hm-cell h4"></div>
+            <div class="hm-cell h1"></div><div class="hm-cell h2"></div><div class="hm-cell h3"></div>
+            <div class="hm-cell h0"></div><div class="hm-cell h4"></div><div class="hm-cell h2"></div>
+            <div class="hm-cell h1"></div><div class="hm-cell h3"></div><div class="hm-cell h2"></div>
+            <div class="hm-cell h4"></div><div class="hm-cell h1"></div><div class="hm-cell h3"></div>
+        </div>
+        <div class="hm-legend">
+            낮음
+            <div class="hm-legend-cells">
+                <span class="h0"></span><span class="h1"></span>
+                <span class="h2"></span><span class="h3"></span><span class="h4"></span>
+            </div>
+            높음
+        </div>
+    </div>
+
+</aside>
+
+<!-- ──────── RIGHT PANEL ──────── -->
+<main class="rp">
+
+    <!-- PAGE TITLE -->
+    <div class="rp-title-row">
+        <div>
+            <div class="rp-title">Admin Analytics</div>
+            <div class="rp-subtitle">SevMerge 플랫폼 전체 관리 · 분석 허브</div>
+        </div>
+        <div class="rp-date">
+            <strong>06. 16</strong>
+            2026년 월요일 · 서울
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-row">
+        <a href="/admin/members"  class="tab-btn act">👥 회원 <span class="tab-cnt">1,247</span></a>
+        <a href="/admin/projects" class="tab-btn">📋 프로젝트 <span class="tab-cnt">384</span></a>
+        <a href="/admin/experts"  class="tab-btn">🏅 전문가 <span class="tab-cnt amber">12</span></a>
+        <a href="/admin/boards"   class="tab-btn">📝 게시판</a>
+        <a href="/admin/notices"  class="tab-btn">📢 공지</a>
+        <a href="/admin/reports"  class="tab-btn">🚨 신고 <span class="tab-cnt red">5</span></a>
+        <a href="/admin/inquiry"  class="tab-btn">💬 문의 <span class="tab-cnt amber">8</span></a>
+        <a href="/admin/comments" class="tab-btn">💭 댓글</a>
+    </div>
+
+    <!-- ROW 1: 회원 + 프로젝트 분포 -->
+    <div class="g2">
+        <!-- 최근 가입 회원 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--v4)"></div>
+                    최근 가입 회원
+                </div>
+                <a href="/admin/members" class="act-btn ab-v">전체 보기 →</a>
+            </div>
+            <div class="adm-tbl">
+                <div class="adm-tbl-hd col-m5">
+                    <span>#</span><span>이름 / 이메일</span><span>가입일</span><span>권한</span><span>상태</span>
+                </div>
+                <div class="adm-tbl-row col-m5">
+                    <span class="c-id">42</span>
+                    <div><div class="c-name">이민준</div><div class="c-sub">minjun@email.com</div></div>
+                    <span class="c-date">06.16</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-active">활성</span></span>
+                </div>
+                <div class="adm-tbl-row col-m5">
+                    <span class="c-id">41</span>
+                    <div><div class="c-name">박서연</div><div class="c-sub">seoyeon@email.com</div></div>
+                    <span class="c-date">06.15</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-active">활성</span></span>
+                </div>
+                <div class="adm-tbl-row col-m5">
+                    <span class="c-id">40</span>
+                    <div><div class="c-name">김도현</div><div class="c-sub">dohyeon@email.com</div></div>
+                    <span class="c-date">06.15</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-wait">대기</span></span>
+                </div>
+                <div class="adm-tbl-row col-m5">
+                    <span class="c-id">39</span>
+                    <div><div class="c-name">최유진</div><div class="c-sub">yujin@email.com</div></div>
+                    <span class="c-date">06.14</span>
+                    <span><span class="b b-active">전문가</span></span>
+                    <span><span class="b b-active">활성</span></span>
+                </div>
+                <div class="adm-tbl-row col-m5">
+                    <span class="c-id">38</span>
+                    <div><div class="c-name">강지훈</div><div class="c-sub">jihoon@email.com</div></div>
+                    <span class="c-date">06.14</span>
+                    <span><span class="b b-pend">일반</span></span>
+                    <span><span class="b b-susp">정지</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 프로젝트 상태 분포 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--cyan)"></div>
+                    프로젝트 현황 분석
+                </div>
+                <a href="/admin/projects" class="act-btn ab-v">관리 →</a>
+            </div>
+            <div class="gc-pad">
+                <div class="hbar-list">
+                    <div class="hbar-row">
+                        <span class="hbar-key">모집 중</span>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width:42%;background:linear-gradient(90deg,var(--v7),var(--v4))">42%</div>
+                        </div>
+                        <span class="hbar-num">162</span>
+                    </div>
+                    <div class="hbar-row">
+                        <span class="hbar-key">진행 중</span>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width:22%;background:linear-gradient(90deg,#0e7490,var(--cyan))">22%</div>
+                        </div>
+                        <span class="hbar-num">86</span>
+                    </div>
+                    <div class="hbar-row">
+                        <span class="hbar-key">완료</span>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width:28%;background:linear-gradient(90deg,#047857,var(--emerald))">28%</div>
+                        </div>
+                        <span class="hbar-num">108</span>
+                    </div>
+                    <div class="hbar-row">
+                        <span class="hbar-key">마감</span>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width:8%;background:linear-gradient(90deg,#6b7280,#9ca3af)">8%</div>
+                        </div>
+                        <span class="hbar-num">28</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px;border-top:1px solid var(--bdr);padding-top:16px;">
+                    <div style="font-size:11px;color:var(--t3);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">최근 등록 프로젝트</div>
+                    <div class="adm-tbl">
+                        <div class="adm-tbl-row col-p5" style="padding:8px 0;">
+                            <span class="c-id">91</span>
+                            <span class="c-name">쇼핑몰 백엔드 개발</span>
+                            <span class="c-date">이민준</span>
+                            <span class="c-date">06.16</span>
+                            <span><span class="b b-prog">진행중</span></span>
+                        </div>
+                        <div class="adm-tbl-row col-p5" style="padding:8px 0;">
+                            <span class="c-id">90</span>
+                            <span class="c-name">앱 UI 디자인 의뢰</span>
+                            <span class="c-date">박서연</span>
+                            <span class="c-date">06.15</span>
+                            <span><span class="b b-pend">모집중</span></span>
+                        </div>
+                        <div class="adm-tbl-row col-p5" style="padding:8px 0;">
+                            <span class="c-id">89</span>
+                            <span class="c-name">React 대시보드 제작</span>
+                            <span class="c-date">최유진</span>
+                            <span class="c-date">06.14</span>
+                            <span><span class="b b-done">완료</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW 2: 전문가 승인 + 빠른 실행 -->
+    <div class="g2">
+        <!-- 전문가 승인 대기 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--pk)"></div>
+                    전문가 승인 대기
+                </div>
+                <a href="/admin/experts?status=PENDING" class="act-btn ab-v">전체 보기 →</a>
+            </div>
+            <div class="adm-tbl">
+                <div class="adm-tbl-hd col-e4">
+                    <span>#</span><span>이름 / 분야</span><span>신청일</span><span>처리</span>
+                </div>
+                <div class="adm-tbl-row col-e4">
+                    <span class="c-id">12</span>
+                    <div><div class="c-name">홍길동</div><div class="c-sub">풀스택 개발</div></div>
+                    <span class="c-date">06.15</span>
+                    <div style="display:flex;gap:4px;">
+                        <a href="/admin/experts" class="act-btn ab-green">승인</a>
+                        <a href="/admin/experts" class="act-btn ab-rose">거절</a>
+                    </div>
+                </div>
+                <div class="adm-tbl-row col-e4">
+                    <span class="c-id">11</span>
+                    <div><div class="c-name">김수진</div><div class="c-sub">UI/UX 디자인</div></div>
+                    <span class="c-date">06.14</span>
+                    <div style="display:flex;gap:4px;">
+                        <a href="/admin/experts" class="act-btn ab-green">승인</a>
+                        <a href="/admin/experts" class="act-btn ab-rose">거절</a>
+                    </div>
+                </div>
+                <div class="adm-tbl-row col-e4">
+                    <span class="c-id">10</span>
+                    <div><div class="c-name">이재원</div><div class="c-sub">모바일 앱</div></div>
+                    <span class="c-date">06.13</span>
+                    <div style="display:flex;gap:4px;">
+                        <a href="/admin/experts" class="act-btn ab-green">승인</a>
+                        <a href="/admin/experts" class="act-btn ab-rose">거절</a>
+                    </div>
+                </div>
+                <div class="adm-tbl-row col-e4">
+                    <span class="c-id">9</span>
+                    <div><div class="c-name">박민영</div><div class="c-sub">데이터 분석</div></div>
+                    <span class="c-date">06.12</span>
+                    <div style="display:flex;gap:4px;">
+                        <a href="/admin/experts" class="act-btn ab-green">승인</a>
+                        <a href="/admin/experts" class="act-btn ab-rose">거절</a>
+                    </div>
+                </div>
+                <div style="padding:10px 16px;font-size:11px;color:var(--t3);">외 8명 더 대기 중 →</div>
+            </div>
+        </div>
+
+        <!-- 빠른 실행 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--fus)"></div>
+                    빠른 실행
+                </div>
+            </div>
+            <div class="qa-grid">
+                <a href="/admin/notices/write" class="qa-item">
+                    <div class="qa-icon">📢</div>
+                    <div class="qa-label">공지 작성</div>
+                    <div class="qa-desc">새 공지사항 등록</div>
+                </a>
+                <a href="/admin/experts?status=PENDING" class="qa-item">
+                    <div class="qa-icon">🏅</div>
+                    <div class="qa-label">전문가 승인</div>
+                    <div class="qa-desc">대기 12명 처리</div>
+                </a>
+                <a href="/admin/reports" class="qa-item" style="background:rgba(244,63,94,0.08);border-color:rgba(244,63,94,0.20);">
+                    <div class="qa-icon">🚨</div>
+                    <div class="qa-label">신고 처리</div>
+                    <div class="qa-desc">미처리 5건 확인</div>
+                </a>
+                <a href="/admin/inquiry" class="qa-item" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.20);">
+                    <div class="qa-icon">💬</div>
+                    <div class="qa-label">문의 답변</div>
+                    <div class="qa-desc">미답변 8건 처리</div>
+                </a>
+                <a href="/admin/boards" class="qa-item">
+                    <div class="qa-icon">📝</div>
+                    <div class="qa-label">게시판 관리</div>
+                    <div class="qa-desc">전체 게시글 조회</div>
+                </a>
+                <a href="/admin/comments" class="qa-item">
+                    <div class="qa-icon">💭</div>
+                    <div class="qa-label">댓글 관리</div>
+                    <div class="qa-desc">블라인드 · 삭제</div>
+                </a>
+                <a href="/admin/members" class="qa-item">
+                    <div class="qa-icon">🔒</div>
+                    <div class="qa-label">회원 제재</div>
+                    <div class="qa-desc">정지 · 삭제 처리</div>
+                </a>
+                <a href="/admin/projects" class="qa-item">
+                    <div class="qa-icon">🗑</div>
+                    <div class="qa-label">프로젝트 삭제</div>
+                    <div class="qa-desc">부적절 게시 처리</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW 3: 신고+문의 / 공지 / 시스템 -->
+    <div class="g3">
+
+        <!-- 신고 & 문의 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--rose)"></div>
+                    신고 · 문의 현황
+                </div>
+            </div>
+            <div class="ri-grid" style="padding:12px 14px;gap:12px;">
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🚨 미처리 신고</div>
+                    <div class="ri-row" style="padding:8px 0;">
+                        <span class="ri-idx">1</span>
+                        <div class="ri-body">
+                            <div class="ri-msg">허위 전문가 신청</div>
+                            <div class="ri-meta">신고자: 이민준 · 06.16</div>
+                        </div>
+                        <span class="b b-report">처리중</span>
+                    </div>
+                    <div class="ri-row" style="padding:8px 0;">
+                        <span class="ri-idx">2</span>
+                        <div class="ri-body">
+                            <div class="ri-msg">부적절한 홍보 게시글</div>
+                            <div class="ri-meta">신고자: 박서연 · 06.15</div>
+                        </div>
+                        <span class="b b-report">접수</span>
+                    </div>
+                    <div class="ri-row" style="padding:8px 0;">
+                        <span class="ri-idx">3</span>
+                        <div class="ri-body">
+                            <div class="ri-msg">리뷰 허위 작성 의심</div>
+                            <div class="ri-meta">신고자: 최유진 · 06.14</div>
+                        </div>
+                        <span class="b b-report">접수</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">💬 미답변 문의</div>
+                    <div class="ri-row" style="padding:8px 0;">
+                        <span class="ri-idx">1</span>
+                        <div class="ri-body">
+                            <div class="ri-msg">결제 취소 방법 문의</div>
+                            <div class="ri-meta">작성자: 강지훈 · 06.16</div>
+                        </div>
+                        <span class="b b-no-ans">미답변</span>
+                    </div>
+                    <div class="ri-row" style="padding:8px 0;">
+                        <span class="ri-idx">2</span>
+                        <div class="ri-body">
+                            <div class="ri-msg">전문가 승인 지연 문의</div>
+                            <div class="ri-meta">작성자: 홍길동 · 06.15</div>
+                        </div>
+                        <span class="b b-no-ans">미답변</span>
+                    </div>
+                    <div class="ri-row" style="padding:8px 0;">
+                        <span class="ri-idx">3</span>
+                        <div class="ri-body">
+                            <div class="ri-msg">계정 정지 사유 확인</div>
+                            <div class="ri-meta">작성자: 김도현 · 06.14</div>
+                        </div>
+                        <span class="b b-ans">처리중</span>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:0 16px 14px;display:flex;gap:8px;">
+                <a href="/admin/reports" class="act-btn ab-rose" style="flex:1;justify-content:center;">신고 관리 →</a>
+                <a href="/admin/inquiry" class="act-btn ab-amber" style="flex:1;justify-content:center;background:rgba(245,158,11,0.10);color:#fcd34d;border-color:rgba(245,158,11,0.28);">문의 관리 →</a>
+            </div>
+        </div>
+
+        <!-- 공지사항 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--v4)"></div>
+                    최근 공지사항
+                </div>
+                <a href="/admin/notices/write" class="act-btn ab-v">+ 작성</a>
+            </div>
+            <div class="notice-list">
+                <div class="notice-row">
+                    <span class="notice-pin">📌</span>
+                    <div style="flex:1;min-width:0;">
+                        <div class="notice-title">서버 점검 안내 (6/20)</div>
+                        <div class="notice-date">06.16</div>
+                    </div>
+                    <span class="notice-new">NEW</span>
+                </div>
+                <div class="notice-row">
+                    <span class="notice-pin">📌</span>
+                    <div style="flex:1;min-width:0;">
+                        <div class="notice-title">전문가 인증 기준 강화 안내</div>
+                        <div class="notice-date">06.12</div>
+                    </div>
+                    <span class="notice-new">NEW</span>
+                </div>
+                <div class="notice-row">
+                    <span class="notice-pin">📢</span>
+                    <div style="flex:1;min-width:0;">
+                        <div class="notice-title">개인정보처리방침 개정 안내</div>
+                        <div class="notice-date">06.08</div>
+                    </div>
+                </div>
+                <div class="notice-row">
+                    <span class="notice-pin">📢</span>
+                    <div style="flex:1;min-width:0;">
+                        <div class="notice-title">에스크로 결제 시스템 업데이트</div>
+                        <div class="notice-date">06.01</div>
+                    </div>
+                </div>
+                <div class="notice-row">
+                    <span class="notice-pin">📢</span>
+                    <div style="flex:1;min-width:0;">
+                        <div class="notice-title">5월 플랫폼 이용 통계 공개</div>
+                        <div class="notice-date">05.31</div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:10px 18px;text-align:right;">
+                <a href="/admin/notices" class="act-btn ab-v">전체 공지 보기 →</a>
+            </div>
+        </div>
+
+        <!-- 시스템 현황 -->
+        <div class="gc">
+            <div class="gc-hd">
+                <div class="gc-title">
+                    <div class="gc-title-dot" style="background:var(--emerald)"></div>
+                    시스템 현황
+                </div>
+                <span style="font-size:11px;color:var(--emerald);font-weight:700;">● 정상</span>
+            </div>
+            <div class="sys-list">
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>Spring Boot</span>
+                    <span class="sys-val ok">운영 중</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>DB 연결</span>
+                    <span class="sys-val ok">정상</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>세션 인터셉터</span>
+                    <span class="sys-val ok">활성</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>알림 서비스</span>
+                    <span class="sys-val ok">활성</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>에스크로</span>
+                    <span class="sys-val ok">정상</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>어드민 인터셉터</span>
+                    <span class="sys-val ok">활성</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-warn"></div>캐시 메모리</span>
+                    <span class="sys-val warn">74% 사용</span>
+                </div>
+                <div class="sys-row">
+                    <span class="sys-key"><div class="sys-dot sys-ok"></div>업타임</span>
+                    <span class="sys-val info">14일 07:23</span>
+                </div>
+            </div>
+            <!-- 게시판·댓글 링크 -->
+            <div style="padding:14px 16px;border-top:1px solid var(--bdr);display:flex;gap:8px;">
+                <a href="/admin/boards" class="act-btn ab-v" style="flex:1;justify-content:center;">📝 게시판</a>
+                <a href="/admin/comments" class="act-btn ab-v" style="flex:1;justify-content:center;">💭 댓글</a>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+</div>
+<!-- ═══ END ═══ -->
+</body>
+</html>
