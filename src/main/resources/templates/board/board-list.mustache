@@ -123,20 +123,17 @@
 
             <div class="board-action">
                 <span class="board-count">총 <strong>{{boardCount}}</strong>의 공지</span>
-                {{#isAdmin}}
-                    <a href="/boards/save?boardType=NOTICE" class="btn btn-primary btn-sm">공지 작성</a>
-                {{/isAdmin}}
-
             </div>
 
-            <div class="board-search">
-                <input type="text" class="board-search-input" placeholder="검색어를 입력하세요..."/>
-                <button class="board-search-btn">검색</button>
-            </div>
+            <form action="/boards" method="get" class="board-search">
+                <input type="hidden" name="boardType" value="{{boardType}}"/>
+                <input type="text" name="keyword" class="board-search-input" placeholder="검색어를 입력하세요..." value="{{keyword}}"/>
+                <button type="submit" class="board-search-btn">검색</button>
+            </form>
 
-            {{! 공지 있을 때 — 하드코딩 데이터 }}
-            {{#boards}}
-                <div class="board-table">
+
+            <div class="board-table">
+                {{#boards}}
                     <a href="/boards/{{id}}" class="board-table-row pinned col-free">
                         <span class="cell-num">📌</span>
                         <span class="cell-title">{{title}}</span>
@@ -144,10 +141,10 @@
                         <span class="cell-date">{{createdAt}}</span>
                         <span class="cell-view">{{viewCount}}</span>
                     </a>
-                </div>
-            {{/boards}}
+                {{/boards}}
+            </div>
 
-            {{! 공지 없을 때 }}
+
             {{^boards}}
                 <div class="empty-state">
                     <p class="empty-msg">등록된 공지사항이 없습니다.</p>
@@ -162,8 +159,6 @@
                 <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
             {{/pageList}}
             {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
-        </div>
-
         </div>
     </section>
 {{/isNotice}}

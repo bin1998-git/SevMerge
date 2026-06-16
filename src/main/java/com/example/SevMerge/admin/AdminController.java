@@ -29,6 +29,21 @@ public class AdminController {
     private final BoardService boardService;
     private final BoardRepository boardRepository;
 
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard() {
+        return "admin/admin-dashboard";
+    }
+
+    @GetMapping("/admin/dashboard2")
+    public String adminDashboard2() {
+        return "admin/admin-dashboard2";
+    }
+
+    @GetMapping("/admin/dashboard3")
+    public String adminDashboard3() {
+        return "admin/admin-dashboard3";
+    }
+
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model) {
 

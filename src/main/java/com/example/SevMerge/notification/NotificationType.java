@@ -8,7 +8,8 @@ public enum NotificationType {
     EXPERT_APPROVED("전문가 승인"),     ///  전문가 | 관리자가 전문가 신청 승인
     EXPERT_REJECTED("전문가 거절"),     ///  전문가 | 관리자가 전문가 신청 거부
     PAYMENT_COMPLETED("결제 완료"),     ///  전문가 | 결제 완료 (작업 시작 가능)
-    MESSAGE_RECEIVED("새 쪽지 도착");   ///  수신자 | 새 쪽지 도착
+    MESSAGE_RECEIVED("새 쪽지 도착"),   ///  수신자 | 새 쪽지 도착
+    EXPERT_SUSPENDED("전문가 계정 정지");///  의뢰인 | 진행 중인 전문가 계정 정지됨
 
     private final String label;
     NotificationType(String label) {

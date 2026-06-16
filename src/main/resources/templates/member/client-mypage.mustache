@@ -114,13 +114,16 @@
             <nav class="cm-menu">
                 <div class="cm-group">내 활동</div>
                 <a href="/my-pages?tab=projects" class="cm-link {{#isProjects}}active{{/isProjects}}"><span class="cm-icon">📋</span>내 프로젝트</a>
+                <a href="/my-pages?tab=messages" class="cm-link {{#isMessages}}active{{/isMessages}}"><span class="cm-icon">💬</span>쪽지함 {{#messageCount}}<span style="background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">{{messageCount}}</span>{{/messageCount}}</a>
+                <a href="/my-pages?tab=chats" class="cm-link {{#isChats}}active{{/isChats}}"><span class="cm-icon">🗨️</span>1:1 채팅</a>
                 <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon">📝</span>내 게시글</a>
                 <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon">⭐</span>리뷰</a>
 
                 <div class="cm-group">포인트 / 결제</div>
-                <a href="/my-pages?tab=charge" class="cm-link {{#isCharge}}active{{/isCharge}}"><span class="cm-icon">💰</span>포인트 충전<span class="cm-soon">준비중</span></a>
-                <a href="/my-pages?tab=withdraw" class="cm-link {{#isWithdraw}}active{{/isWithdraw}}"><span class="cm-icon">🏦</span>포인트 출금<span class="cm-soon">준비중</span></a>
-                <a href="/my-pages?tab=payments" class="cm-link {{#isPayments}}active{{/isPayments}}"><span class="cm-icon">🧾</span>결제 내역<span class="cm-soon">준비중</span></a>
+                <a href="/charge/form" class="cm-link"><span class="cm-icon">💰</span>포인트 충전</a>
+                <a href="/my-pages?tab=chargeHistory" class="cm-link {{#isChargeHistory}}active{{/isChargeHistory}}"><span class="cm-icon">📑</span>충전 내역</a>
+                <a href="/my-pages?tab=refundHistory" class="cm-link {{#isRefundHistory}}active{{/isRefundHistory}}"><span class="cm-icon">↩️</span>환불 내역</a>
+                <a href="/my-pages?tab=payments" class="cm-link {{#isPayments}}active{{/isPayments}}"><span class="cm-icon">🧾</span>결제 내역</a>
 
                 <div class="cm-group">계정</div>
                 <a href="/my-pages?tab=edit" class="cm-link {{#isEdit}}active{{/isEdit}}"><span class="cm-icon">⚙️</span>계정 / 정보 수정</a>
@@ -213,6 +216,125 @@
                     {{^reviews}}<div class="cm-empty">작성한 리뷰가 없습니다.</div>{{/reviews}}
                 {{/isReviews}}
 
+                {{! ===== 쪽지함 ===== }}
+                {{#isMessages}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">쪽지함</div>
+                        <div class="cm-content-sub">받은 쪽지를 확인해요.</div>
+                    </div>
+                    {{#messages}}
+                        <a href="/messages/{{id}}?redirect=/my-pages?tab=messages" class="cm-item" style="{{#read}}opacity:0.6;{{/read}}">
+                            <div class="cm-item-body">
+            <span class="cm-item-cat" style="{{#read}}background:#f3f4f8;color:#9ca3af;border:none;{{/read}}">
+                {{#read}}읽음{{/read}}{{#unread}}새 쪽지{{/unread}}
+            </span>
+                                <div class="cm-item-title">{{title}}</div>
+                                <div class="cm-item-meta">{{senderName}} · {{createdAt}}</div>
+                            </div>
+                            {{#unread}}
+                                <div class="cm-item-right">
+                                    <span class="cm-item-status st-open">NEW</span>
+                                </div>
+                            {{/unread}}
+                        </a>
+                    {{/messages}}
+                    {{^messages}}<div class="cm-empty">받은 쪽지가 없습니다.</div>{{/messages}}
+                    <div style="text-align:right; margin-top:12px;">
+                        <a href="/messages" class="cm-btn cm-btn-primary">쪽지함 전체보기</a>
+                    </div>
+                {{/isMessages}}
+
+                {{! ===== 1:1 채팅 여기 쓰시면 됩니다! ===== }}
+                {{#isChats}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">1:1 채팅</div>
+                        <div class="cm-content-sub">전문가와 실시간으로 대화해요.</div>
+                    </div>
+                    <div class="cm-soon-box">
+                        <div class="cm-soon-icon">🗨️</div>
+                        <div class="cm-soon-title">1:1 채팅</div>
+                        <div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div>
+                    </div>
+                {{/isChats}}
+
+                {{! ===== 결제 내역 ===== }}
+                {{#isPayments}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">결제 내역</div>
+                        <div class="cm-content-sub">에스크로 결제 내역이에요.</div>
+                    </div>
+                    {{#payments}}
+                        <div class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">에스크로</span>
+                                <div class="cm-item-title">프로젝트 #{{projectId}}</div>
+                                <div class="cm-item-meta">{{paidAt}}</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <div class="cm-item-price">{{amount}}원</div>
+                                <span class="cm-item-status {{#isPaid}}st-open{{/isPaid}}{{#isSettled}}st-done{{/isSettled}}{{#isRefunded}}st-closed{{/isRefunded}}">
+                                    {{#isPaid}}에스크로 보관중{{/isPaid}}
+                                    {{#isSettled}}정산완료{{/isSettled}}
+                                    {{#isRefunded}}환불완료{{/isRefunded}}
+                                </span>
+                                {{#isPaid}}
+                                    <button type="button" class="cm-btn" style="background:#fff;border:1.5px solid #ef4444;color:#ef4444;display:block;margin-top:6px;" onclick="requestRefund({{id}})">환불 신청</button>
+                                {{/isPaid}}
+                            </div>
+                        </div>
+                    {{/payments}}
+                    {{^payments}}<div class="cm-empty">결제 내역이 없습니다.</div>{{/payments}}
+                {{/isPayments}}
+
+                {{! ===== 충전 내역 ===== }}
+                {{#isChargeHistory}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">충전 내역</div>
+                        <div class="cm-content-sub">토스페이먼츠로 충전한 내역이에요.</div>
+                    </div>
+                    {{#chargeHistories}}
+                        <div class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">포인트 충전</span>
+                                <div class="cm-item-title">잔액 충전</div>
+                                <div class="cm-item-meta">{{createdAt}}</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <div class="cm-item-price" style="color:#2563eb;">+{{amount}}원</div>
+                                <span class="cm-item-status st-done">충전완료</span>
+                            </div>
+                        </div>
+                    {{/chargeHistories}}
+                    {{^chargeHistories}}
+                        <div class="cm-empty">충전 내역이 없습니다.</div>
+                    {{/chargeHistories}}
+                    <div style="text-align:right; margin-top:12px;">
+                        <a href="/charge/form" class="cm-btn cm-btn-primary">포인트 충전하기</a>
+                    </div>
+                {{/isChargeHistory}}
+
+                {{! ===== 환불 내역 ===== }}
+                {{#isRefundHistory}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">환불 내역</div>
+                        <div class="cm-content-sub">환불 처리된 에스크로 내역이에요.</div>
+                    </div>
+                    {{#refunds}}
+                        <div class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">환불</span>
+                                <div class="cm-item-title">프로젝트 #{{projectId}}</div>
+                                <div class="cm-item-meta">{{paidAt}}</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <div class="cm-item-price">{{amount}}원</div>
+                                <span class="cm-item-status st-closed">환불완료</span>
+                            </div>
+                        </div>
+                    {{/refunds}}
+                    {{^refunds}}<div class="cm-empty">환불 내역이 없습니다.</div>{{/refunds}}
+                {{/isRefundHistory}}
+
                 {{!  정보 수정  }}
                 {{#isEdit}}
                     <div class="cm-content-head">
@@ -220,6 +342,22 @@
                         <div class="cm-content-sub">기본 정보와 비밀번호를 변경할 수 있어요.</div>
                     </div>
                     <form class="cm-form" id="editForm">
+                        <div class="cm-fg">
+                            <label class="cm-flabel">프로필 이미지</label>
+                            <div style="display:flex; align-items:center; gap:16px;">
+                                {{#member.profileImage}}
+                                    <div id="imgPreview" style="width:64px;height:64px;border-radius:50%;background-image:url('{{member.profileImageUrl}}');background-size:cover;background-position:center;border:2px solid #bfdbfe;flex-shrink:0;"></div>
+                                {{/member.profileImage}}
+                                {{^member.profileImage}}
+                                    <div id="imgPreview" style="width:64px;height:64px;border-radius:50%;background:#eff6ff;border:2px solid #bfdbfe;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👤</div>
+                                {{/member.profileImage}}
+                                <div style="display:flex;flex-direction:column;gap:6px;">
+                                    <input type="file" id="profileImageFile" accept="image/*" style="display:none;" onchange="previewImage(this)"/>
+                                    <button type="button" class="cm-btn cm-btn-primary" style="margin-top:0;" onclick="document.getElementById('profileImageFile').click()">이미지 변경</button>
+                                    <span style="font-size:11px;color:#9ca3af;">JPG, PNG, GIF (5MB 이하)</span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="cm-fg">
                             <label class="cm-flabel">이름</label>
                             <input type="text" id="updateName" name="name" class="cm-finput" value="{{member.name}}"/>
@@ -271,9 +409,6 @@
                 {{#isWithdraw}}
                     <div class="cm-soon-box"><div class="cm-soon-icon">🏦</div><div class="cm-soon-title">포인트 출금</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
                 {{/isWithdraw}}
-                {{#isPayments}}
-                    <div class="cm-soon-box"><div class="cm-soon-icon">🧾</div><div class="cm-soon-title">결제 내역</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
-                {{/isPayments}}
 
             </section>
         </div>
@@ -281,47 +416,69 @@
 </div>
 
 <script>
-    function updateMyInfo() {
-        const nameVal = document.getElementById("updateName").value;
-        const pwEl = document.getElementById("updatePassword");
-        const pwConfirmEl = document.getElementById("updatePasswordConfirm");
-        const passwordVal = pwEl ? pwEl.value : "";       // 소셜이면 칸이 없음
-        const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
-        const phoneVal = document.getElementById("updatePhone").value.trim();
-        const originalPhone = "{{member.phone}}";
+    function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById("imgPreview");
+        preview.style.backgroundImage = `url('${e.target.result}')`;
+        preview.style.backgroundSize = "cover";
+        preview.style.backgroundPosition = "center";
+        preview.textContent = "";  // 👤 이모지 제거
+    };
+    reader.readAsDataURL(input.files[0]);
+}
 
-        if (!nameVal.trim()) { alert("이름을 입력해 주세요."); return; }
+function updateMyInfo() {
+    const nameVal = document.getElementById("updateName").value.trim();
+    const pwEl = document.getElementById("updatePassword");
+    const pwConfirmEl = document.getElementById("updatePasswordConfirm");
+    const passwordVal = pwEl ? pwEl.value : "";
+    const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
+    const phoneVal = document.getElementById("updatePhone").value.trim();
+    const originalPhone = "{{member.phone}}";
 
-        // 비밀번호 입력했을 때만 검사 (소셜은 passwordVal이 빈 값)
-        if (passwordVal) {
-            const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-            if (!pwRegex.test(passwordVal)) {
-                alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
-                return;
-            }
-            if (passwordVal !== confirmVal) {
-                alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-                return;
-            }
-        }
+    if (!nameVal) { alert("이름을 입력해 주세요."); return; }
 
-        if (phoneVal !== originalPhone && !phoneVerified) {
-            alert("변경한 휴대폰 번호는 인증이 필요합니다.");
+    if (passwordVal) {
+        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+        if (!pwRegex.test(passwordVal)) {
+            alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
             return;
         }
-
-        const updateData = { name: nameVal, phone: phoneVal, newPassword: passwordVal };
-        fetch('/my-pages', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updateData)
-        })
-        .then(response => {
-            if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
-            else { alert("회원 정보 수정에 실패했습니다."); }
-        })
-        .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+        if (passwordVal !== confirmVal) {
+            alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            return;
+        }
     }
+
+    if (phoneVal !== originalPhone && !phoneVerified) {
+        alert("변경한 휴대폰 번호는 인증이 필요합니다.");
+        return;
+    }
+
+    // FormData로 전송 (이미지 + JSON 같이)
+    const formData = new FormData();
+    formData.append("data", new Blob(
+        [JSON.stringify({ name: nameVal, phone: phoneVal, newPassword: passwordVal })],
+        { type: "application/json" }
+    ));
+
+    const imageFile = document.getElementById("profileImageFile").files[0];
+    if (imageFile) {
+        formData.append("profileImageFile", imageFile);
+    }
+
+    fetch('/my-pages', {
+        method: 'PUT',
+        body: formData   // Content-Type 헤더 직접 설정 X (브라우저가 multipart로 자동 설정)
+    })
+    .then(response => {
+        if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
+        else { response.text().then(t => alert("수정 실패: " + t)); }
+    })
+    .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+}
 
     // ===== 비밀번호 확인 =====
     const pwInput = document.getElementById("updatePassword");
@@ -422,17 +579,20 @@
         .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
     }
 
-    // ===== 회원 탈퇴 =====
-    function withdrawMember(e) {
-        e.preventDefault();
-        if (!confirm("정말 탈퇴하시겠습니까? 탈퇴 후에는 복구할 수 없습니다.")) return;
-        fetch('/my-pages/withdraw', { method: 'DELETE' })
-        .then(response => {
-            if (response.ok) { alert("회원 탈퇴가 완료되었습니다."); window.location.href = "/"; }
-            else { alert("회원 탈퇴에 실패했습니다."); }
+    function requestRefund(paymentId) {
+    if (!confirm("정말 환불 신청하시겠습니까?\n진행 중인 프로젝트는 취소되고 잔액으로 환불됩니다.")) return;
+    fetch(`/payment/${paymentId}/refund`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("환불이 완료되었습니다.");
+                window.location.href = "/my-pages?tab=payments";
+            } else {
+                alert("환불 실패: " + (data.message || "알 수 없는 오류"));
+            }
         })
-        .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
-    }
+        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+}
 </script>
 
 {{> layout/footer}}
