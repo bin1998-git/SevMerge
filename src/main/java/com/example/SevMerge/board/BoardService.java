@@ -50,15 +50,16 @@ public class BoardService {
         List<BoardResponse.ListDTO> inquiryBoards;
 
         if (member.getRole().equals(Role.ADMIN)) {
-           inquiryBoards = boardRepository.findAllByBoardTypeIsActive(boardType)
-                   .stream()
-                   .map(BoardResponse.ListDTO::new)
-                   .toList();
-        } else {
-            inquiryBoards = boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType,memberEntity.getId())
+            inquiryBoards = boardRepository.findAllByBoardTypeIsActive(boardType)
                     .stream()
                     .map(BoardResponse.ListDTO::new)
-                    .toList();;
+                    .toList();
+        } else {
+            inquiryBoards = boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType, memberEntity.getId())
+                    .stream()
+                    .map(BoardResponse.ListDTO::new)
+                    .toList();
+            ;
         }
 
         return inquiryBoards;
@@ -92,7 +93,7 @@ public class BoardService {
                 () -> new NotFoundException("게시글을 찾을 수 없습니다.")
         );
 
-        if(!boardEntity.getMember().getId().equals(memberId)) {
+        if (!boardEntity.getMember().getId().equals(memberId)) {
             throw new UnauthorizedException("수정 권한이 없습니다.");
         }
 
@@ -109,7 +110,7 @@ public class BoardService {
                 () -> new NotFoundException("게시글을 찾을 수 없습니다.")
         );
 
-        if(!boardEntity.getMember().getId().equals(memberId)) {
+        if (!boardEntity.getMember().getId().equals(memberId)) {
             throw new UnauthorizedException("삭제 권한이 없습니다.");
         }
 
@@ -139,6 +140,17 @@ public class BoardService {
                 () -> new NotFoundException("게시글을 찾을 수 없습니다.")
         );
         boardEntity.softDelete();
+    }
+
+    // 관리자 공지사항 작성
+    @Transactional
+    public void createNotice(String title, String content, Long memberId) {
+        Member adminMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자입니다. id = " + memberId));
+
+        Board board = new Board(BoardType.NOTICE, title, content, 0, null, adminMember, true);
+
+        boardRepository.save(board);
     }
 
     // 관리자 공지사항 수정
