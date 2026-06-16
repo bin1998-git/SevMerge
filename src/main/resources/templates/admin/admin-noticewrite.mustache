@@ -1,0 +1,80 @@
+{{> layout/header}}
+
+<style>
+    /* ── BOARD EDIT ── */
+    .save-section { padding: 52px 28px 80px; }
+    .save-inner { max-width: 760px; margin: 0 auto; }
+    .save-header { margin-bottom: 32px; }
+    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .save-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
+    .save-form { display: flex; flex-direction: column; gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input::placeholder { color: #c4c9d9; }
+    .form-input:focus { border-color: #2563eb; }
+    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
+    .form-textarea::placeholder { color: #c4c9d9; }
+    .form-textarea:focus { border-color: #2563eb; }
+    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+</style>
+
+
+{{#isAdmin}}
+    <section class="save-section">
+        <div class="save-inner">
+
+            <div class="save-header">
+                {{#isFree}}
+                    <h1 class="save-title">자유게시판 수정</h1>
+                    <p class="save-desc">게시글을 수정합니다.</p>
+                {{/isFree}}
+                {{#isNotice}}
+                    <h1 class="save-title">공지사항 작성</h1>
+                    <p class="save-desc">공지사항을 작성합니다.</p>
+                {{/isNotice}}
+            </div>
+
+            <form class="save-form" action="/admin/notices/write" method="POST">
+
+                <div class="form-group">
+                    <label class="form-label">제목</label>
+                    <input
+                            type="text"
+                            name="title"
+                            class="form-input"
+                    value="{{board.title}}{{^board.title}}{{/board.title}}"
+                    placeholder="제목을 입력하세요"
+                    maxlength="100"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">내용</label>
+                    <textarea
+                            name="content"
+                            class="form-textarea"
+                            placeholder="내용을 입력하세요"
+                    >{{board.content}}{{^board.content}}{{/board.content}}</textarea>
+                </div>
+
+                <div class="form-btns">
+                    <a href="/admin/notices" class="btn btn-outline">취소</a>
+
+                    <button type="submit" class="btn btn-primary">작성완료</button>
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+{{/isAdmin}}
+
+{{^isAdmin}}
+    <script>
+        alert("관리자만 접근할 수 있는 페이지입니다.");
+        location.href = "/login";
+    </script>
+{{/isAdmin}}
+
+{{> layout/footer}}
