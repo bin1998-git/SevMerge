@@ -4,6 +4,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 
 @Data
@@ -40,6 +41,20 @@ public class ProjectRequestDTO {
             }
             if (deadline == null) {
                 throw new BadRequestException("마감일을 입력해주세요");
+            }
+
+            if(category == null || category.isBlank()) {
+                throw new BadRequestException("카테고리를 선택하세요.");
+            }
+
+            if(deadline != null && !deadline.isBlank()) {
+                LocalDate today = LocalDate.now();
+                LocalDate selectDate = LocalDate.parse(deadline);
+
+                if(!selectDate.isAfter(today)) {
+                    throw new BadRequestException("마감 기한은 오늘 날자 이후여야 합니다.");
+                }
+
             }
         }
     }
