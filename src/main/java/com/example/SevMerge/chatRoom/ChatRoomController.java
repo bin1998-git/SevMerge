@@ -1,21 +1,26 @@
-//package com.example.SevMerge.chatRoom;
-//
-//import com.example.SevMerge.core.exception.UnauthorizedException;
-//import com.example.SevMerge.core.util.ApiResponse;
-//import com.example.SevMerge.member.Member;
-//import jakarta.servlet.http.HttpSession;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@Controller
-//@RequiredArgsConstructor
-//public class ChatRoomController {
-//
+package com.example.SevMerge.chatRoom;
+
+import com.example.SevMerge.core.exception.UnauthorizedException;
+import com.example.SevMerge.core.util.ApiResponse;
+import com.example.SevMerge.member.Member;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Controller
+@RequiredArgsConstructor
+public class ChatRoomController {
+
+    @GetMapping("/chat/room")
+    public String showChatRoom() {
+        return "chatRoom/chatRoom-list";
+    }
+
 //    private final ChatRoomService chatRoomService;
 //
 //    // 채팅방 페이지 렌더링
@@ -57,5 +62,5 @@
 //                ApiResponse.ok(chatRoomService.createRoom(request))
 //        );
 //    }
-//
-//}
+
+}

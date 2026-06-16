@@ -39,19 +39,40 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 로그인 체크
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/users/**", "/my-pages", "/my-pages/**", "/projects/save-form", "/messages/** ", "/notifications/**", "/boards/**")
+                .addPathPatterns("/members/**",
+                        "/my-pages/**",
+                        "/projects/save-form",
+                        "/messages/** ",
+                        "/notifications/**",
+                        "/boards/**",
+                        "/admin/**",
+                        "/bids/**,",
+                        "/charge/**",
+                        "/experts/**",
+                        "/comments/**",
+                        "/faqs/**",
+                        "/logout",
+                        "/messages/**",
+                        "/payments/**",
+                        "/portfolio/**",
+                        "/report/**",
+                        "/reviews/**",
+                        "/withdrawal/**"
+
+                        )
                 .excludePathPatterns(
                         "/",
                         "/login",
                         "/join",
-                        "/logout",
                         "/boards",
                         "/boards/{id}",
                         "/projects",
+                        "/portfolios",
                         "/projects/{id}",
                         "/google-redirect",    // 구글 로그인 통과
                         "/kakao-redirect",     // 카카오 로그인 통과
-                        "/social-role",        // 소셜 가입 페이지 통과
+                        "/social-role",// 소셜 가입 페이지 통과
+                        "/html/**",
                         "/css/**",
                         "/js/**",
                         "/images/**",
@@ -60,7 +81,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 관리자 체크
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**")
+                .addPathPatterns("/admin/**",
+                        "/faqs/**")
                 .excludePathPatterns(
                         "/admin/comments/{id}/report"
                         );
