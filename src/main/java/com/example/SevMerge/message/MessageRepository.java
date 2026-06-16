@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message,Long> {
@@ -45,5 +44,7 @@ public interface MessageRepository extends JpaRepository<Message,Long> {
                                              @Param("keyword") String keyword,
                                              Pageable pageable);
 
-
+    // 마이페이지 메시지 카운트
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.receiver = :receiver AND m.isRead = false AND m.isDeletedByReceiver = false")
+    long countUnreadMessages(@Param("receiver") Member receiver);
 }

@@ -18,4 +18,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     // PAY-006: 전문가 정산 내역 조회
     List<Payment> findByExpertId(Long expertId);
+
+    // 두 회원 간 완료된 거래 여부 확인 (리뷰 작성 검증용)
+    boolean existsByClientIdAndExpertIdAndStatus(Long clientId, Long expertId, PaymentStatus status);
 }
