@@ -1,0 +1,116 @@
+{{> layout/header}}
+
+<style>
+    .page-section { padding: 48px 28px 80px; }
+    .page-inner { max-width: 560px; margin: 0 auto; }
+
+    .rf-notice { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 16px; margin-bottom: 28px; font-size: 13px; color: #92400e; line-height: 1.6; }
+    .rf-notice strong { font-weight: 700; }
+
+    .form-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 32px; }
+    .form-title { font-size: 20px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 28px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 7px; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-select, .form-input, .form-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-select:focus, .form-input:focus, .form-textarea:focus { border-color: #2563eb; }
+    .form-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: #9ca3af; margin-top: 5px; }
+    .char-count { font-size: 12px; color: #c4c9d9; text-align: right; margin-top: 4px; }
+
+    .rf-effect-box { background: #f8f9fc; border-radius: 10px; padding: 16px; margin-bottom: 24px; font-size: 13px; color: #4b5563; line-height: 1.7; }
+    .rf-effect-box li { margin-bottom: 4px; }
+
+    .submit-btn { width: 100%; padding: 14px; background: #ef4444; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; transition: background .15s; margin-top: 8px; }
+    .submit-btn:hover { background: #dc2626; }
+
+    .bottom-link { text-align: center; margin-top: 20px; font-size: 13px; color: #9ca3af; }
+    .bottom-link a { color: #2563eb; font-weight: 600; text-decoration: none; }
+
+    .error-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #ef4444; font-weight: 600; margin-bottom: 20px; }
+</style>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="rf-notice">
+            ⚠️ <strong>환불 신청 안내</strong><br>
+            환불 신청은 관리자 검토 후 처리됩니다. 검토에는 1~2영업일이 소요될 수 있어요.
+        </div>
+
+        {{#errorMsg}}
+            <div class="error-box">{{errorMsg}}</div>
+        {{/errorMsg}}
+
+        <div class="form-card">
+            <h1 class="form-title">💸 환불 신청</h1>
+
+            <div class="rf-effect-box">
+                환불이 승인되면 아래와 같이 처리돼요.
+                <ul style="margin:8px 0 0 18px; padding:0;">
+                    <li>진행 중인 프로젝트 계약이 즉시 취소돼요.</li>
+                    <li>결제하신 금액이 잔액으로 환원돼요.</li>
+                    <li>담당 전문가에게 계약 취소 사실이 알림으로 전달돼요.</li>
+                </ul>
+            </div>
+
+            <form action="/refund-applications" method="POST" id="refundForm">
+                <input type="hidden" name="paymentId" value="{{paymentId}}"/>
+
+                <div class="form-group">
+                    <label class="form-label">환불 사유 <span class="required">*</span></label>
+                    <select name="reasonCategory" class="form-select" required>
+                        <option value="" disabled selected>사유를 선택하세요</option>
+                        <option value="WORK_DELAYED">작업 진행이 지연되고 있어요</option>
+                        <option value="QUALITY_ISSUE">작업 결과물의 품질이 기대와 달라요</option>
+                        <option value="COMMUNICATION_ISSUE">전문가와 연락/소통이 어려워요</option>
+                        <option value="REQUIREMENT_CHANGE">제 사정으로 프로젝트가 취소되었어요</option>
+                        <option value="DUPLICATE_PAYMENT">중복 결제 또는 결제 오류예요</option>
+                        <option value="ETC">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">상세 내용 <span class="required">*</span></label>
+                    <textarea name="reason" id="reasonText" class="form-textarea"
+                              placeholder="환불을 신청하시는 구체적인 사유를 작성해 주세요. 상세하게 작성할수록 빠른 검토가 가능해요."
+                              maxlength="500" required></textarea>
+                    <div class="char-count"><span id="charCount">0</span>/500</div>
+                    <p class="form-hint">증빙이 필요한 경우(스크린샷, 대화 내역 등) 검토 중 관리자가 추가로 요청드릴 수 있어요.</p>
+                </div>
+
+                <button type="submit" class="submit-btn">환불 신청하기</button>
+            </form>
+        </div>
+
+        <div class="bottom-link">
+            <a href="/my-pages?tab=payments">← 결제 내역으로 돌아가기</a>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    const reasonText = document.getElementById("reasonText");
+    const charCount = document.getElementById("charCount");
+    reasonText.addEventListener("input", function () {
+        charCount.textContent = reasonText.value.length;
+    });
+
+    document.getElementById("refundForm").addEventListener("submit", function (e) {
+        const category = this.reasonCategory.value;
+        const reason = reasonText.value.trim();
+        if (!category) { e.preventDefault(); alert("환불 사유를 선택해 주세요."); return; }
+        if (!reason || reason.length < 10) {
+            e.preventDefault();
+            alert("상세 내용을 10자 이상 작성해 주세요.");
+            return;
+        }
+        if (!confirm("환불을 신청하시겠습니까?\n신청 후에는 관리자 검토를 통해서만 취소할 수 있어요.")) {
+            e.preventDefault();
+        }
+    });
+</script>
+
+{{> layout/footer}}

@@ -6,11 +6,11 @@ import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.message.MessageRepository;
 import com.example.SevMerge.message.MessageService;
-import com.example.SevMerge.payment.PaymentResponse;
 import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.refund.RefundApplicationService;
 import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
@@ -45,6 +45,7 @@ public class MemberController {
     private final MessageRepository messageRepository;
     private final PaymentService paymentService;
     private final ChargeService chargeService;
+    private final RefundApplicationService refundApplicationService;
 
     @GetMapping("/join-start")
     public String joinStart(Model model) {
@@ -198,8 +199,7 @@ public class MemberController {
             }
         }else if (tab.equals("refundHistory")) {
             try {
-                List<PaymentResponse> all = paymentService.getClientPayments(loginMember.getId());
-                model.addAttribute("refunds", all.stream().filter(PaymentResponse::isRefunded).toList());
+                model.addAttribute("refunds", refundApplicationService.getMyApplications(loginMember.getId()));
             } catch (Exception e) {
                 log.warn("환불 내역 조회 실패 - {}", e.getMessage());
                 model.addAttribute("refunds", List.of());

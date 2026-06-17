@@ -31,4 +31,8 @@ public class ChargeResponse {
                 .isFailed("FAILED".equals(s))
                 .build();
     }
+
+    public String getDisplayAmount() {
+        return amount == null ? "0" : String.format("%,d", amount);
+    }
 }

@@ -420,7 +420,14 @@
                         </div>
                     </div>
 
-                    <a href="/admin/experts" class="admin-main-item">전문가 승인</a>
+                    <!-- 전문가 승인 관리-->
+                    <div class="admin-dropdown-container" style="position: relative; display: inline-block;">
+                        <span class="admin-dropdown-trigger" style="cursor: pointer;">승인 관리</span>
+                        <div class="nav-submenu">
+                            <a href="/admin/experts" class="submenu-link">전문가 승인</a>
+                            <a href="/admin/refund-applications" class="submenu-link">환불 요청 관리</a>
+                        </div>
+                    </div>
                 {{/isAdmin}}
 
                 <!-- 2. 기존 일반 회원용 메뉴 -->
@@ -532,7 +539,7 @@
                     const isBoardMatch = linkHref.includes("boards") && (currentPath.includes("board") || currentPath.includes("boards"));
                     const isNoticeMatch = linkHref.includes("notices") && (currentPath.includes("notice") || currentPath.includes("notices"));
 
-                    if (isBoardMatch || isNoticeMatch) {
+                    if (isBoardMatch || isNoticeMatch || isExpertMatch || isRefundMatch) {
                         link.classList.add("active-link");
 
                         const parentSubmenu = link.closest(".nav-submenu");
