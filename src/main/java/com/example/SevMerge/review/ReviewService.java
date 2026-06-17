@@ -121,6 +121,7 @@ public class ReviewService {
                 .toList();
     }
 
+    // 평균 별점 조회
     public Double avgRating(Long targetId) {
         return reviewRepository.avgRating(targetId);
     }

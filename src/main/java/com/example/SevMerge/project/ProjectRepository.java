@@ -93,4 +93,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     @Modifying
     @Query("UPDATE Project p SET p.isDeleted = true WHERE p.id = :id")
     void deleteProjectByAdmin(@Param("id") Long id);
+
 }
