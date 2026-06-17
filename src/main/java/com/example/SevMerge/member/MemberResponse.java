@@ -46,6 +46,10 @@ public class MemberResponse {
         return this.role == Role.EXPERT;
     }
 
+    public boolean isClient() {
+        return this.role == Role.CLIENT;
+    }
+
     public boolean isSocial() {
         return provider != null && !provider.isBlank();
     }

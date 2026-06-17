@@ -108,9 +108,6 @@ public class MemberController {
             return "redirect:/banned-info";
         }
 
-        if (member.getRole() == Role.ADMIN) {
-            return "main";
-        }
         return "redirect:/exmain";
     }
 

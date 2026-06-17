@@ -37,6 +37,7 @@ public class main {
             model.addAttribute("isLoggedIn", true);
             model.addAttribute("sessionUser", loginMember);
             model.addAttribute("isExpert", loginMember.isExpert());
+            model.addAttribute("isClient", loginMember.isClient());
         } else {
             model.addAttribute("isLoggedIn", false);
         }
