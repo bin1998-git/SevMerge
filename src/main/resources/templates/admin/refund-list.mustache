@@ -1,0 +1,177 @@
+{{> layout/header}}
+
+<style>
+    .ar-wrap { max-width: 1100px; margin: 0 auto; padding: 36px 28px 80px; }
+    .ar-head { margin-bottom: 24px; }
+    .ar-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
+    .ar-sub { font-size: 14px; color: #9ca3af; }
+
+    .ar-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .ar-tab { padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; color: #4b5563; background: #fff; border: 1.5px solid #e2e5ef; transition: all .15s; }
+    .ar-tab:hover { border-color: #93c5fd; color: #2563eb; }
+    .ar-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+    .ar-card { background: #fff; border: 1px solid #e2e7f0; border-radius: 16px; padding: 22px 26px; margin-bottom: 14px; transition: box-shadow .15s; }
+    .ar-card:hover { box-shadow: 0 4px 16px rgba(37,99,235,.06); }
+    .ar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+    .ar-people { font-size: 14px; color: #1c1e26; }
+    .ar-people strong { font-weight: 800; }
+    .ar-arrow { color: #c4c9d9; margin: 0 6px; }
+    .ar-meta { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+    .ar-cat { display: inline-block; font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 9px; border-radius: 5px; margin-bottom: 8px; }
+    .ar-reason { font-size: 13.5px; color: #374151; background: #f8f9fc; padding: 12px 14px; border-radius: 10px; line-height: 1.6; }
+    .ar-comment { font-size: 12.5px; color: #6b7280; margin-top: 8px; padding-left: 2px; }
+
+    .ar-status { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
+    .ar-status.pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .ar-status.approved { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .ar-status.rejected { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
+
+    .ar-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #f3f4f8; }
+    .ar-btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
+    .ar-btn-approve { background: #2563eb; color: #fff; }
+    .ar-btn-approve:hover { background: #1d4ed8; }
+    .ar-btn-reject { background: #fff; border: 1.5px solid #ef4444; color: #ef4444; }
+    .ar-btn-reject:hover { background: #fff3f3; }
+
+    .ar-empty { text-align: center; padding: 80px 0; color: #c4c9d9; font-size: 15px; }
+
+    /* 모달 */
+    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9999; align-items: center; justify-content: center; }
+    .ar-modal-bg.open { display: flex; }
+    .ar-modal { background: #fff; border-radius: 16px; padding: 28px; max-width: 440px; width: 90%; }
+    .ar-modal-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
+    .ar-modal-sub { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
+    .ar-modal-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 90px; }
+    .ar-modal-textarea:focus { outline: none; border-color: #2563eb; }
+    .ar-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .ar-modal-cancel { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #f3f4f8; color: #4b5563; border: none; cursor: pointer; font-family: inherit; }
+    .ar-modal-confirm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; color: #fff; }
+</style>
+
+<div class="ar-wrap">
+    <div class="ar-head">
+        <h1 class="ar-title">환불 신청 관리</h1>
+        <p class="ar-sub">의뢰인의 환불 신청을 검토하고 승인 또는 거절을 처리하세요.</p>
+    </div>
+
+    <div class="ar-tabs">
+        <a href="/admin/refund-applications?status=pending" class="ar-tab {{#isPendingFilter}}active{{/isPendingFilter}}">대기중만 보기</a>
+        <a href="/admin/refund-applications" class="ar-tab {{^isPendingFilter}}active{{/isPendingFilter}}">전체보기</a>
+    </div>
+
+    {{#applications}}
+        <div class="ar-card">
+            <div class="ar-row">
+                <div>
+                    <span class="ar-cat">{{reasonCategoryLabel}}</span>
+                    <div class="ar-people">의뢰인 <strong>{{clientName}}</strong><span class="ar-arrow">→</span>전문가 <strong>{{expertName}}</strong> · 결제 #{{paymentId}}</div>
+                    <div class="ar-meta">{{createdAt}}</div>
+                </div>
+                <span class="ar-status {{#isPending}}pending{{/isPending}}{{#isApproved}}approved{{/isApproved}}{{#isRejected}}rejected{{/isRejected}}">
+                    {{#isPending}}대기중{{/isPending}}
+                    {{#isApproved}}승인완료{{/isApproved}}
+                    {{#isRejected}}거절됨{{/isRejected}}
+                </span>
+            </div>
+            <div class="ar-reason">{{reason}}</div>
+            {{#adminComment}}<div class="ar-comment">💬 처리 의견: {{adminComment}}</div>{{/adminComment}}
+
+            {{#isPending}}
+                <div class="ar-actions">
+                    <button type="button" class="ar-btn ar-btn-approve" onclick="openModal({{id}}, 'approve')">승인</button>
+                    <button type="button" class="ar-btn ar-btn-reject" onclick="openModal({{id}}, 'reject')">거절</button>
+                </div>
+            {{/isPending}}
+        </div>
+    {{/applications}}
+    {{^applications}}
+        <div class="ar-empty">환불 신청 내역이 없습니다.</div>
+    {{/applications}}
+</div>
+
+<!-- 승인/거절 모달 -->
+<div class="ar-modal-bg" id="arModalBg">
+    <div class="ar-modal">
+        <h3 class="ar-modal-title" id="arModalTitle">처리 의견 입력</h3>
+        <p class="ar-modal-sub" id="arModalSub"></p>
+        <textarea id="arModalComment" class="ar-modal-textarea" placeholder="의견을 입력해 주세요."></textarea>
+        <div class="ar-modal-btns">
+            <button type="button" class="ar-modal-cancel" onclick="closeModal()">취소</button>
+            <button type="button" class="ar-modal-confirm" id="arModalConfirmBtn" onclick="submitModal()">처리</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRefundId = null;
+    let currentAction = null; // 'approve' or 'reject'
+
+    function openModal(id, action) {
+        currentRefundId = id;
+        currentAction = action;
+        document.getElementById("arModalComment").value = "";
+
+        const title = document.getElementById("arModalTitle");
+        const sub = document.getElementById("arModalSub");
+        const confirmBtn = document.getElementById("arModalConfirmBtn");
+
+        if (action === "approve") {
+            title.textContent = "환불 승인";
+            sub.textContent = "승인 시 즉시 환불 처리되고 전문가에게 알림이 발송됩니다. 의견은 선택사항이에요.";
+            confirmBtn.textContent = "승인하기";
+            confirmBtn.style.background = "#2563eb";
+        } else {
+            title.textContent = "환불 거절";
+            sub.textContent = "거절 사유는 의뢰인에게 전달돼요. 반드시 입력해 주세요.";
+            confirmBtn.textContent = "거절하기";
+            confirmBtn.style.background = "#ef4444";
+        }
+
+        document.getElementById("arModalBg").classList.add("open");
+    }
+
+    function closeModal() {
+        document.getElementById("arModalBg").classList.remove("open");
+        currentRefundId = null;
+        currentAction = null;
+    }
+
+    function submitModal() {
+        const comment = document.getElementById("arModalComment").value.trim();
+
+        if (currentAction === "reject" && !comment) {
+            alert("거절 사유는 필수입니다.");
+            return;
+        }
+
+        const id = currentRefundId;
+        const action = currentAction;
+        const params = new URLSearchParams();
+        if (comment) params.append("comment", comment);
+
+        fetch(`/admin/refund-applications/${id}/${action}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(action === "approve" ? "승인 처리되었습니다." : "거절 처리되었습니다.");
+                location.reload();
+            } else {
+                alert("처리 실패: " + (data.message || "알 수 없는 오류"));
+            }
+        })
+        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); })
+        .finally(closeModal);
+    }
+
+    // 배경 클릭 시 닫기
+    document.getElementById("arModalBg").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+    });
+</script>
+
+{{> layout/footer}}
