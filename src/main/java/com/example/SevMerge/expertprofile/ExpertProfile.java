@@ -1,6 +1,7 @@
 package com.example.SevMerge.expertprofile;
 
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.review.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,12 +42,6 @@ public class ExpertProfile {
 
     @Column(nullable = true)
     private String contactEmail;
-
-    @Column(nullable = false, precision = 3, scale = 2, columnDefinition = "DECIMAL(3,2) DEFAULT 0.00")
-    private BigDecimal avgRating;
-
-    @Column(nullable = false)
-    private int totalReviews;
 
     @Column(nullable = false)
     private boolean isCertified;
