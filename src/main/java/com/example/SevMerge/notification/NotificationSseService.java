@@ -1,7 +1,5 @@
 package com.example.SevMerge.notification;
 
-import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
