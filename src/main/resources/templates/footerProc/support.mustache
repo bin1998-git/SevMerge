@@ -240,7 +240,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">이메일</label>
-                        <input type="email" name="email" class="form-input" placeholder="example@company.com" required>
+                        <input type="email" name="email" class="form-input" placeholder="답변해드릴 당담자 이메일을 입력해 주세요" required>
                     </div>
                         <div class="form-group">
                             <label class="form-label">파일첨부</label>
@@ -250,12 +250,24 @@
                         <label class="form-label">제휴 내용</label>
                         <textarea name="content" class="form-textarea" placeholder="제안하고 싶은 제휴 내용을 작성해 주세요." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">제휴 문의 보내기</button>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" onclick="partner(event)">제휴 문의 보내기</button>
                 </form>
             </div>
         </div>
     {{/isPartnership}}
 
 </section>
+
+<script>
+    function partner(event) {
+        if(!confirm("제휴문의를 보내시겠습니까?")){
+            event.preventDefault();
+        }
+
+        alert("제휴문의를 메일로 보냈습니다.")
+
+    }
+
+</script>
 
 {{> layout/footer}}

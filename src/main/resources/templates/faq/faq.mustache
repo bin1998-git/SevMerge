@@ -251,7 +251,7 @@
         background: var(--brand-mist);
     }
 
-    .faq-question .badge {
+    .badge {
         flex-shrink: 0;
         width: 28px;
         height: 28px;
@@ -265,8 +265,7 @@
         align-items: center;
         justify-content: center;
     }
-
-    .faq-question .badge.a-badge {
+    .badge.a-badge {
         background: var(--brand-mist);
         color: var(--brand-muted);
     }
@@ -291,7 +290,7 @@
         display: none;
         align-items: flex-start;
         gap: 14px;
-        padding: 0 24px 22px 24px;
+        padding: 8px 24px 20px 24px;
         font-family: 'Space Grotesk', sans-serif;
         font-size: 13.5px;
         color: var(--brand-slate);
@@ -305,26 +304,47 @@
 
     .faq-answer-body {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px; /* 원하는 간격으로 조절 */
+    }
+
+    .faq-answer-row {
+        margin-top: 7px; /* a 텍스트 와 전체 질문상자 사이의 간격 */
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 0 0 6px 0;
+    }
+
+    .a-text {
+        flex: 1;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--brand-slate);
+        line-height: 1.9;
+        white-space: pre-line;
     }
 
     .faq-admin-inline {
         display: flex;
-        gap: 6px;
-        margin-top: 12px;
+        margin-top: -8px; /* 음수로 버튼만 위로 당기기 */
     }
 
     .faq-edit-btn,
     .faq-delete-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 4px;
-        padding: 6px 14px;
+        padding: 10px 14px;
         border-radius: 8px;
         background: var(--brand-white);
         font-family: 'Space Grotesk', sans-serif;
         font-size: 12px;
         font-weight: 700;
-        line-height: 1;
+        line-height: 1;          /* normal → 1 */
         border: 1px solid var(--brand-line);
         cursor: pointer;
         color: var(--brand-slate);
@@ -336,6 +356,8 @@
     .faq-delete-btn svg {
         width: 13px;
         height: 13px;
+        display: block;
+        /* position, top 완전 제거 */
     }
 
     .faq-edit-btn:hover {
@@ -517,7 +539,7 @@
 
         {{#isAdmin}}
             <div class="faq-toolbar">
-                <a href="/faqs/new" class="faq-new-btn">
+                <a href="/faqs/save" class="faq-new-btn">
                     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -537,17 +559,21 @@
                         </svg>
                     </div>
                     <div class="faq-answer">
-                        <span class="badge a-badge">A</span>
                         <div class="faq-answer-body">
-                            {{answer}}
+                            <div class="faq-answer-row">
+                                <span class="badge a-badge">A</span>
+                                <span class="a-text">{{answer}}</span>
+                            </div>
                             {{#isAdmin}}
                                 <div class="faq-admin-inline">
                                     <form action="/faqs/edit/{{id}}" method="get" style="display:inline;">
                                         <button type="submit" class="faq-edit-btn">
-                                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                            수정
+                                            <div style="display:flex; align-items:center;">
+                                                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                <span>수정</span>
+                                            </div>
                                         </button>
                                     </form>
                                     <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
@@ -555,7 +581,7 @@
                                             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M4 5.5h12M8 5.5V3.5h4v2M5.5 5.5l.7 10a1 1 0 001 1h5.6a1 1 0 001-1l.7-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
-                                            삭제
+                                            <span>삭제</span>
                                         </button>
                                     </form>
                                 </div>
