@@ -43,9 +43,9 @@ public class ProjectCustomRepository {
             query.setParameter("category", Category.valueOf(category));
         }
 
-        // CLOSED와 DONE을 리스트로 넘겨서 처리
+        // CLOSED와 DONE을 리스트로 넘겨서 처리 COMPLETED추가
         if (statusFilter != null && "CLOSED".equals(statusFilter)) {
-            query.setParameter("statusList", List.of(ProjectStatus.CLOSED, ProjectStatus.DONE));
+            query.setParameter("statusList", List.of(ProjectStatus.IN_PROGRESS, ProjectStatus.COMPLETED, ProjectStatus.DONE));
         }
 
         if (bidFilter != null && !bidFilter.isBlank()) {
