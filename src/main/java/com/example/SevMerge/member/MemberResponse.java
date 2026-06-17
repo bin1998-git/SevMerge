@@ -130,5 +130,10 @@ public class MemberResponse {
         return "/images/" + profileImage;
     }
 
+    // 포맷팅용
+    public String getDisplayBalance() {
+        return balance == null ? "0" : String.format("%,d", balance);
+    }
+
 
 }

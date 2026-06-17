@@ -80,6 +80,8 @@ public class ProjectController {
             model.addAttribute("sessionUser", sessionUser);
         }
 
+        log.info("요청된 statusFilter 값: {}", statusFilter);
+
         return "project/project-list";
     }
 
