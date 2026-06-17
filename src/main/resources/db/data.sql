@@ -1,23 +1,23 @@
 -- Member 샘플데이터
 -- 1번 샘플: 프로젝트를 발주하고 대금을 결제하는 의뢰인 (CLIENT)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('client01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '김의뢰', '010-1234-5678',
-        'CLIENT', 'ACTIVE', false, NOW());
+        'CLIENT', 'ACTIVE', false, NOW(), 0);
 
 -- 2번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 1 (EXPERT - 개발자)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('expert01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '홍길동', '010-9876-5432',
-        'EXPERT', 'ACTIVE', false, NOW());
+        'EXPERT', 'ACTIVE', false, NOW(), 0);
 
 -- 3번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 2 (EXPERT - 디자이너)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('expert02@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '김디자', '010-5555-4444',
-        'EXPERT', 'ACTIVE', false, NOW());
+        'EXPERT', 'ACTIVE', false, NOW(), 0);
 
 -- 4번 샘플: 플랫폼을 관리하고 분쟁을 조정하는 최고 관리자 (ADMIN)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at)
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('admin@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '최관리', '010-0000-0000',
-        'ADMIN', 'ACTIVE', false, NOW());
+        'ADMIN', 'ACTIVE', false, NOW(), 0);
 
 
 -- Board 샘플데이터
@@ -132,19 +132,6 @@ VALUES (1, 3, '오... 기능명세서 초안을 역으로 제안하는 방식은
 INSERT INTO comment_tb (board_id, member_id, content, created_at, is_deleted)
 VALUES (1, 4, '작성자님, 혹시 클라이언트가 요구사항을 아예 한 줄로만 적어둔 경우에도 이 방식이 통할까요? 기획 방향 잡기가 너무 어렵네요 ㅠㅠ', NOW(), false);
 
-
--- 댓글신고 샘플데이터
-INSERT INTO comment_report_tb (comment_id, reporter_id, reason, content_detail, created_at)
-VALUES (1, 2, '욕설 / 비속어 및 혐오 표현', '1번 댓글(개발자의 공감 댓글)에 대한 욕설 신고 내용입니다.', NOW());
-
--- 2번째 샘플 데이터 (2번 댓글에 대한 스팸 홍보 신고)
-INSERT INTO comment_report_tb (comment_id, reporter_id, reason, content_detail, created_at)
-VALUES (2, 3, '스팸 광고 / 홍보성 도배', '2번 댓글(주니어 프리랜서 질문)에 대한 홍보성 도배 신고 내용입니다.', NOW());
-
--- 3번째 샘플 데이터 오류 수정 (존재하는 1번이나 2번 댓글로 매칭 변경)
--- 기존 3번 댓글은 없으므로 1번 댓글을 다른 사람이 또 신고한 것으로 변경합니다.
-INSERT INTO comment_report_tb (comment_id, reporter_id, reason, content_detail, created_at)
-VALUES (1, 1, '타인 비방 및 명예훼손', '1번 댓글에 대한 타인 비방 추가 신고 내용입니다.', NOW());
 
 
 -- [2번 게시글: '스타트업 MVP 앱 외주 비용 질문' 글에 달린 댓글들]

@@ -1,5 +1,6 @@
 package com.example.SevMerge.Report;
 
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
@@ -14,13 +15,12 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin")
 public class ReportController {
 
     private final ReportService reportService;
 
     // 관리자 댓글 신고 관리 화면 띄우기
-    @GetMapping("/reports")
+    @GetMapping("/admin/reports")
     public String showAdminReport(@RequestParam(name = "keyword", required = false) String keyword,
                                   Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
@@ -58,7 +58,7 @@ public class ReportController {
                     "alert('신고가 완료되었습니다.');" +
                     "location.href='/boards/" + boardId + "';" +
                     "</script>";
-        } catch (IllegalArgumentException e) {
+        } catch (BadRequestException e) {
             return "<script>" +
                     "alert('" + e.getMessage() + "');" +
                     "history.back();" +
@@ -67,11 +67,11 @@ public class ReportController {
     }
 
     // 신고 댓글 삭제 처리
-    @PostMapping("/reports/{commentId}/delete")
+    @PostMapping("admin/reports/{commentId}/delete")
     public String deleteReport(@PathVariable(name = "commentId") Long commentId,
                                 HttpSession session) {
 
-        // 관리가 권한 검증
+        // 관리자 권한 검증
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
@@ -82,7 +82,7 @@ public class ReportController {
     }
 
     // 신고 반려 처리
-    @PostMapping("/reports/{id}/reject")
+    @PostMapping("admin/reports/{id}/reject")
     public String rejectReport(@PathVariable(name = "id") Long reportId,
                                HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);

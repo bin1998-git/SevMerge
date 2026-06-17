@@ -130,12 +130,10 @@
     }
 
     .admin-table-head, .admin-table-row {
-        display: flex !important;
-        align-items: center !important;
-        gap: 15px !important;
-        padding: 15px 22px !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 22px;
     }
 
     .admin-table-head {
@@ -175,6 +173,8 @@
         background: #fff !important;
     }
 
+
+
     .admin-table-head > *:nth-child(1),
     .cell-id {
         width: 60px !important;
@@ -199,65 +199,13 @@
         text-align: center !important;
     }
 
+
     .admin-table-row:last-child {
         border-bottom: none;
     }
 
     .admin-table-row:hover {
         background: #f8f9ff;
-    }
-
-    .report-cell-id {
-        width: 60px !important;
-        flex-shrink: 0 !important;
-        text-align: center !important;
-    }
-
-    .report-cell-title {
-        flex: 2.2 !important;
-        min-width: 0 !important;
-        text-align: left !important;
-        padding-left: 5px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    .report-cell-reason {
-        width: 150px !important;
-        flex-shrink: 0 !important;
-        text-align: center !important;
-    }
-
-    .report-cell-detail {
-        flex: 1.8 !important;
-        min-width: 0 !important;
-        text-align: left !important;
-        padding-left: 5px !important;
-        color: #4b5563 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    .report-cell-name {
-        width: 100px !important;
-        flex-shrink: 0 !important;
-        text-align: center !important;
-    }
-
-    .report-cell-date {
-        width: 140px !important;
-        flex-shrink: 0 !important;
-        text-align: center !important;
-    }
-
-    .report-cell-action {
-        width: 80px !important;
-        flex-shrink: 0 !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
     }
 
     .cell-id {
@@ -367,29 +315,10 @@
     }
 
     .sidebar-submenu {
-        display: none; /* !important를 뺐습니다 */
+        display: none !important;
         flex-direction: column !important;
         width: 100% !important;
         background: #f8f9ff !important;
-    }
-
-    .sidebar-submenu.active {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        max-height: 500px !important;
-        height: auto !important;
-    }
-
-    .sidebar-dropdown-group:hover .sidebar-submenu {
-        display: flex !important;
-    }
-
-    .sidebar-submenu .submenu-link.selected {
-        color: #2563eb !important;
-        font-weight: bold !important;
-        background-color: #e0f2fe !important;
-        border-left-color: #2563eb !important;
     }
 
     .sidebar-dropdown-group:hover .dropdown-trigger {
@@ -398,11 +327,8 @@
         border-left-color: #2563eb !important;
     }
 
-    .sidebar-link.dropdown-trigger.active {
-        color: #2563eb !important;
-        background: #eff6ff !important;
-        border-left-color: #2563eb !important;
-        font-weight: bold !important;
+    .sidebar-dropdown-group:hover .sidebar-submenu {
+        display: flex !important;
     }
 
     .admin-sidebar:has(.sidebar-dropdown-group:hover) .sidebar-link.active {
@@ -432,87 +358,82 @@
 
 <div class="admin-wrap">
     <main class="admin-content">
-
         <div class="admin-header">
             <div>
-                <h1 class="admin-title">댓글 신고 관리</h1>
-                <p class="admin-desc">사용자들이 제기한 댓글 신고 내역을 모니터링하고 조치합니다.</p>
+                <h1 class="admin-title">블랙리스트 관리</h1>
+                <p class="admin-desc">신고 누적으로 차단된 회원 및 이력을 관리합니다.</p>
             </div>
         </div>
 
-        <form action="/admin/reports" method="get" class="search-bar">
-            <input type="text" class="search-input" name="keyword" placeholder="댓글 내용, 신고자, 사유 검색..."
-                   value=""/>
+        <form action="/admin/blacklists" method="get" class="search-bar">
+            <input type="text" class="search-input" name="keyword" placeholder="회원명 또는 사유 검색..." value="{{keyword}}"/>
             <button type="submit" class="search-btn">검색</button>
         </form>
 
-
-        <div class="admin-table-wrap"
-             style="width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;">
-
-            <div class="report-table-head-fix"
-                 style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 15px 22px !important; background: #f8f9fc !important; border-bottom: 1px solid #eaecf4 !important; width: 100% !important; box-sizing: border-box !important; font-size: 11px !important; font-weight: 700 !important; color: #9ca3af !important; letter-spacing: .5px !important;">
-                <span style="width: 50px !important; flex-shrink: 0 !important; text-align: center !important;">No</span>
-                <span style="flex: 1.8 !important; min-width: 0 !important; text-align: center !important;">신고 댓글 원문</span>
-                <span style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">신고 분류</span>
-                <span style="flex: 1.2 !important; min-width: 0 !important; text-align: center !important;">상세 신고 사유</span>
-                <span style="width: 90px !important; flex-shrink: 0 !important; text-align: center !important;">피신고자</span>
-                <span style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">신고일자</span>
-                <span style="width: 70px !important; flex-shrink: 0 !important; text-align: center !important;">조치</span>
-                <span style="width: 40px !important; flex-shrink: 0 !important; text-align: center !important;"></span>
+        <div class="admin-table-wrap" style="width: 100% !important; box-sizing: border-box !important;">
+            <!-- 1. 헤더 영역 -->
+            <div class="admin-table-head" style="display: flex !important; flex-direction: row !important; width: 100% !important; font-weight: bold !important; background-color: #f8f9fa !important; padding: 12px 0 !important; border-bottom: 2px solid #dee2e6 !important; box-sizing: border-box !important;">
+                <div style="width: 10% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">No</div>
+                <div style="width: 20% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">대상 회원</div>
+                <div style="width: 30% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">차단 사유</div>
+                <div style="width: 15% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">누적 신고 ID</div>
+                <div style="width: 15% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">정지 만료일</div>
+                <div style="width: 10% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">관리</div>
             </div>
 
-            {{#reports}}
-                <div class="admin-table-row"
-                     style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 15px 22px !important; border-bottom: 1px solid #eaecf4 !important; width: 100% !important; box-sizing: border-box !important; font-size: 13px !important;">
+            {{#blacklistLogs}}
+                <!-- 2. 데이터 행 영역 -->
+                <div class="admin-table-row" style="display: flex !important; flex-direction: row !important; width: 100% !important; align-items: center !important; padding: 15px 0 !important; border-bottom: 1px solid #eee !important; box-sizing: border-box !important;">
 
-        <span class="cell-id report-cell-id"
-              style="width: 50px !important; flex-shrink: 0 !important; text-align: center !important;">{{id}}</span>
+                    <!-- 1) 번호 -->
+                    <div class="cell-id" style="width: 10% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">
+                        {{id}}
+                    </div>
 
-                    <a href="/boards/{{boardId}}" class="cell-title report-cell-title"
-                       style="flex: 1.8 !important; min-width: 0 !important; text-align: center !important; color: #2563eb; text-decoration: none; font-weight: 600; white-space: normal !important; word-break: break-all !important;">
-                        {{commentContent}}
-                    </a>
+                    <!-- 2) 대상 회원 -->
+                    <div class="cell-member" style="width: 20% !important; text-align: center !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; font-weight: 500 !important; line-height: 1.4 !important;">
+                        <span>{{member.name}}</span>
+                        <small style="color: #888 !important; font-size: 0.8rem !important;">({{member.email}})</small>
+                    </div>
 
-                    <span class="report-cell-reason"
-                          style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important; color: #dc3545; font-weight: 700;">
+                    <!-- 3) 차단 사유 -->
+                    <div class="cell-reason" style="width: 30% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 0 10px !important; word-break: break-all !important; box-sizing: border-box !important;">
                         {{reason}}
-                    </span>
+                    </div>
 
-                    <span class="report-cell-detail"
-                          style="flex: 1.2 !important; min-width: 0 !important; text-align: center !important; white-space: normal !important; word-break: break-all !important;">
-                        {{contentDetail}}
-                    </span>
+                    <!-- 4) 누적 신고 ID -->
+                    <div class="cell-reports" style="width: 15% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; color: #e74c3c !important; font-weight: bold !important;">
+                        {{reportIds}}
+                    </div>
 
-                    <span class="cell-name report-cell-name"
-                          style="width: 90px !important; flex-shrink: 0 !important; text-align: center !important;">{{commentWriterName}}</span>
+                    <!-- 5) 정지 만료일 -->
+                    <div class="cell-date" style="width: 15% !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">
+                        {{expiredAt}}
+                    </div>
 
-                    <span class="cell-date report-cell-date"
-                          style="width: 150px !important; flex-shrink: 0 !important; text-align: center !important;">{{createdAt}}</span>
-
-                    <span class="report-cell-action"
-                          style="width: 70px !important; flex-shrink: 0 !important; text-align: center !important;">
-
-                    <form action="/admin/reports/{{commentId}}/delete" method="post" style="display:inline;"
-                          onsubmit="return confirm('정말 이 댓글을 삭제 처리하시겠습니까?');">
-                        <button type="submit" class="del-btn">삭제</button>
-                    </form>
-        </span>
-
-                    <span class="report-cell-cancel"
-                          style="width: 40px !important; flex-shrink: 0 !important; text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important;">
-            <form action="/admin/reports/{{id}}/reject" method="POST"
-                  style="display:inline; margin: 0 !important;" onsubmit="return confirm('이 신고 건을 반려하고 목록에서 제거하시겠습니까?\n(원본 댓글은 삭제되지 않습니다.)');">
-                <button type="submit" class="cancel-btn"
-                        style="background: none !important; border: none !important; color: #9ca3af !important; font-size: 20px !important; font-weight: bold !important; cursor: pointer !important; padding: 0 !important; line-height: 1 !important;"
-                        title="신고 반려">
-                    &times;
-                </button>
-            </form>
-                    </span>
+                    <!-- 6) 관리 버튼 -->
+                    <div class="cell-action" style="width: 10% !important; display: flex !important; justify-content: center !important; align-items: center !important;">
+                        {{#isActive}}
+                            <form action="/admin/blacklist/release/{{member.id}}" method="post" onsubmit="return confirm('이 회원의 정지를 해제하시겠습니까?');" style="margin: 0 !important;">
+                                <button type="submit" class="release-btn" style="background-color: #2ecc71 !important; color: white !important; border: none !important; padding: 6px 12px !important; border-radius: 4px !important; cursor: pointer !important; font-weight: bold !important; font-size: 0.85rem !important;">
+                                    정지 해제
+                                </button>
+                            </form>
+                        {{/isActive}}
+                        {{^isActive}}
+                            <span style="color: #95a5a6 !important; font-size: 0.85rem !important; font-weight: 500 !important;">해제 완료</span>
+                        {{/isActive}}
+                    </div>
                 </div>
-            {{/reports}}
+            {{/blacklistLogs}}
+
+            {{^blacklistLogs}}
+                <div style="display: flex !important; justify-content: center !important; align-items: center !important; height: 180px !important; color: #888 !important; font-size: 0.95rem !important; font-weight: 500 !important; width: 100% !important;">
+                    현재 차단된 회원 내역이 없습니다.
+                </div>
+            {{/blacklistLogs}}
         </div>
     </main>
 </div>
+
 {{> layout/footer}}
