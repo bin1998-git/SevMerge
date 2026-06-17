@@ -5,6 +5,7 @@ import com.example.SevMerge.Report.BlacklistRepository;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.charge.ChargeService;
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.message.MessageRepository;
 import com.example.SevMerge.message.MessageService;
@@ -275,9 +276,13 @@ public class MemberController {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
 
-        memberService.updateMyInfo(loginMember.getId(), request, profileImageFile);
-        session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
-        return ResponseEntity.ok().body("정보 변경 완료");
+        try {
+            memberService.updateMyInfo(loginMember.getId(), request, profileImageFile);
+            session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
+            return ResponseEntity.ok().body("정보 변경 완료");
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // 회원 목록
