@@ -1,16 +1,18 @@
 package com.example.SevMerge.member;
 
+import com.example.SevMerge.Report.BlackList;
+import com.example.SevMerge.Report.BlacklistRepository;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.message.MessageRepository;
 import com.example.SevMerge.message.MessageService;
-import com.example.SevMerge.payment.PaymentResponse;
 import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.refund.RefundApplicationService;
 import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -44,7 +47,9 @@ public class MemberController {
     private final MessageService messageService;
     private final MessageRepository messageRepository;
     private final PaymentService paymentService;
+    private final BlacklistRepository blacklistRepository;
     private final ChargeService chargeService;
+    private final RefundApplicationService refundApplicationService;
 
     @GetMapping("/join-start")
     public String joinStart(Model model) {
@@ -97,6 +102,12 @@ public class MemberController {
             return "redirect:/expert-rejected";
         }
 
+        // 3회 신고 누적으로 정지된 회원은 정지안내 페이지로 가게 만들기
+        if (member.getStatus() == Status.SUSPENDED) {
+            session.setAttribute("suspendedMemberId", member.getId());
+            return "redirect:/banned-info";
+        }
+
         if (member.getRole() == Role.ADMIN) {
             return "main";
         }
@@ -108,6 +119,29 @@ public class MemberController {
         memberService.logout(session);
         log.info("로그아웃완료");
         return "redirect:/";
+    }
+
+    // 정지화면 안내 페이지 조회
+    @GetMapping("/banned-info")
+    public String bannedInfoPage(Model model, HttpSession session) {
+        Long suspendedMemberId = (Long) session.getAttribute("suspendedMemberId");
+        if (suspendedMemberId == null) {
+            return "redirect:/login";
+        }
+
+        BlackList latestBanLog = blacklistRepository.findFirstByMemberIdAndIsActiveTrueOrderByIdDesc(suspendedMemberId)
+                .orElse(null);
+
+        String banReason = (latestBanLog != null) ? latestBanLog.getReason() : "운영정책 위반으로 인한 정지";
+        String expiredAt = (latestBanLog != null && latestBanLog.getExpiredAt() != null)
+                ? latestBanLog.getExpiredAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : "기한 제한 없음";
+
+        model.addAttribute("banReason", banReason);
+        model.addAttribute("expiredAt", expiredAt);
+
+        session.invalidate();
+        return "member/banned";
     }
 
 //    // 클라이언트 대시보드
@@ -198,8 +232,7 @@ public class MemberController {
             }
         }else if (tab.equals("refundHistory")) {
             try {
-                List<PaymentResponse> all = paymentService.getClientPayments(loginMember.getId());
-                model.addAttribute("refunds", all.stream().filter(PaymentResponse::isRefunded).toList());
+                model.addAttribute("refunds", refundApplicationService.getMyApplications(loginMember.getId()));
             } catch (Exception e) {
                 log.warn("환불 내역 조회 실패 - {}", e.getMessage());
                 model.addAttribute("refunds", List.of());

@@ -45,7 +45,8 @@ public class main {
 
         // 섹션 1 — 오분대기조: avgRating 높은 순 상위 6명
         List<ExpertProfileResponse> fastExperts = all.stream()
-                .sorted(Comparator.comparing(ExpertProfileResponse::getAvgRating).reversed())
+                .sorted(Comparator.comparing(ExpertProfileResponse::getAvgRating,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .limit(6)
                 .toList();
 
@@ -58,7 +59,8 @@ public class main {
         // 섹션 3 — 만족 취조실: isCertified 우선 정렬, 그 다음 avgRating 순
         List<ExpertProfileResponse> asExperts = all.stream()
                 .sorted(Comparator.comparing(ExpertProfileResponse::isCertified).reversed()
-                        .thenComparing(Comparator.comparing(ExpertProfileResponse::getAvgRating).reversed()))
+                        .thenComparing(Comparator.comparing(ExpertProfileResponse::getAvgRating,
+                                Comparator.nullsLast(Comparator.naturalOrder())).reversed()))
                 .limit(6)
                 .toList();
 

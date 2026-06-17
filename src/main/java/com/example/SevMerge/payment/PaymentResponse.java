@@ -50,4 +50,7 @@ public class PaymentResponse {
                 .isRefunded("REFUNDED".equals(statusName))
                 .build();
     }
+    public String getDisplayAmount() {
+        return amount == null ? "0" : String.format("%,d", amount);
+    }
 }

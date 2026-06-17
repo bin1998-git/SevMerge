@@ -55,6 +55,7 @@ public class PaymentRequest {
 
     /**
      * PAY-005: 환불 요청 DTO
+     * ->refund로 옮김
      */
     @Data
     public static class RefundRequest {

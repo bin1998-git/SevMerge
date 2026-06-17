@@ -1,0 +1,48 @@
+<table>
+    <thead>
+        <tr>
+            <th>요청자</th>
+            <th>출금 금액</th>
+            <th>은행 정보</th>
+            <th>요청일</th>
+            <th>상태</th>
+            <th>관리</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#withdrawals}}
+        <tr>
+            <td>{{name}} ({{email}})</td>
+            <td>{{amount}} 원</td>
+            <td>{{bankName}} {{accountNumber}}</td>
+            <td>{{requestDate}}</td>
+            <td>{{status}}</td>
+            <td>
+                {{#isPending}}
+                <button onclick="processWithdraw({{id}}, 'APPROVE')">입금완료</button>
+                <button onclick="processWithdraw({{id}}, 'REJECT')">거절</button>
+                {{/isPending}}
+            </td>
+        </tr>
+        {{/withdrawals}}
+    </tbody>
+</table>
+
+<script>
+function processWithdraw(withdrawId, action) {
+    if (!confirm(action === 'APPROVE' ? "입금 완료 처리하시겠습니까?" : "거절하시겠습니까?")) return;
+
+    fetch(`/api/admin/withdraw/${withdrawId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action })
+    }).then(res => {
+        if (res.ok) {
+            alert("처리되었습니다.");
+            location.reload(); // 새로고침
+        } else {
+            alert("처리 실패");
+        }
+    });
+}
+</script>

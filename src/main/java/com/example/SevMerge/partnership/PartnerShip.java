@@ -29,6 +29,4 @@ public class PartnerShip {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-
-
 }

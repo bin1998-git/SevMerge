@@ -308,4 +308,42 @@ public class BidService {
     public Optional<Bid> findSelectedBidByProjectId(Long projectId) {
         return bidRepository.findSelectedBidByProjectId(projectId, BidStatus.SELECTED);
     }
+
+
+    // 작업 완료 신고 (전문가 -> 의뢰인 확인 요청)
+    @Transactional
+    public void completeBid(Long bidId, Member session) {
+        log.info("작업 완료 신고 서비스 시작 - bidId: {}", bidId);
+
+        if (!session.isExpert()) {
+            throw new ForbiddenException("작업 완료 신고는 전문가만 가능합니다");
+        }
+
+        Bid bid = bidRepository.findById(bidId).orElseThrow(
+                () -> new NotFoundException("존재하지 않는 제안서입니다"));
+
+        if (!bid.getExpert().getId().equals(session.getId())) {
+            throw new ForbiddenException("본인이 낙찰된 제안서만 완료 처리할 수 있습니다");
+        }
+
+        if (bid.getStatus() != BidStatus.SELECTED) {
+            throw new BadRequestException("낙찰된 제안서만 완료 처리할 수 있습니다");
+        }
+
+        Project project = bid.getProject();
+        if (project.getProjectStatus() != ProjectStatus.IN_PROGRESS) {
+            throw new BadRequestException("작업 진행중인 프로젝트만 완료 처리할 수 있습니다");
+        }
+
+        project.updateStatus(ProjectStatus.COMPLETED);
+
+        notificationService.notify(
+                project.getMember(),
+                com.example.SevMerge.notification.NotificationType.PAYMENT_COMPLETED, // 적절한 타입 없으면 새로 추가 권장
+                session.getName() + " 전문가님이 '" + project.getTitle() + "' 프로젝트 작업을 완료했습니다. 확인 후 결제를 승인해 주세요.",
+                "/my-pages?tab=projects"
+        );
+
+        log.info("작업 완료 신고 완료 - bidId: {}, projectId: {}", bidId, project.getId());
+    }
 }

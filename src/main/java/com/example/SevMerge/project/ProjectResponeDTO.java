@@ -25,6 +25,7 @@ public class ProjectResponeDTO {
         private String projectStatus; // // OPEN, CLOSED
         private boolean isDone;
         private boolean isClosed; // 머스태치 파일용 불리언타(낙찰완료 확인용)
+        private boolean isCompleted;
 
         private boolean privateProject;
         private Integer viewCount;
@@ -48,7 +49,7 @@ public class ProjectResponeDTO {
             this.projectStatus = project.getProjectStatus().name();
             this.isDone = project.getProjectStatus() == ProjectStatus.DONE;
             this.privateProject = project.isPrivate();
-            this.isClosed = project.getProjectStatus() == ProjectStatus.CLOSED; // 프로젝트 상태가 CLOSED(낙찰 완료)인지 확인하는 용도
+            this.isClosed = project.getProjectStatus() == ProjectStatus.IN_PROGRESS; // 프로젝트 상태가 CLOSED(낙찰 완료)인지 확인하는 용도
             this.viewCount = project.getViewCount();
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
@@ -57,6 +58,7 @@ public class ProjectResponeDTO {
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
             this.isUrgent = this.dDay <= 3;
             this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
+            this.isCompleted = project.getProjectStatus() == ProjectStatus.COMPLETED;
         }
 
     }

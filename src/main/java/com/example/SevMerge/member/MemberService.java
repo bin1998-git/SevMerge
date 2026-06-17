@@ -121,8 +121,6 @@ public class MemberService {
         if (request.getRole() == Role.EXPERT) {
             expertProfileRepository.save(ExpertProfile.builder()
                     .member(member)
-                    .avgRating(BigDecimal.ZERO)
-                    .totalReviews(0)
                     .isCertified(false)
                     .profileImage(savedImage != null ? savedImage : "default.png")
                     .intro(request.getIntro())
@@ -152,7 +150,7 @@ public class MemberService {
             throw new BadRequestException("비밀번호가 올바르지 않습니다.");
 
         if (member.getStatus() == Status.SUSPENDED)
-            throw new BadRequestException("정지된 계정입니다.");
+            return member;
 
         if (member.getStatus() == Status.PENDING)
             throw new BadRequestException("관리자 승인 대기 중인 계정입니다. 승인 후 로그인할 수 있습니다.");
@@ -633,8 +631,6 @@ public class MemberService {
                 .githubUrl(req.getGithubUrl())
                 .contactEmail(req.getEmail())
                 .speciality(req.getSpeciality() != null ? req.getSpeciality() : "")
-                .avgRating(BigDecimal.ZERO)
-                .totalReviews(0)
                 .isCertified(false)
                 .build());
     }

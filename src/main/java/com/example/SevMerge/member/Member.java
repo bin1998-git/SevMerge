@@ -61,7 +61,11 @@ public class Member {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    // 지갑 잔액 (충전 후 차감 방식)
+    /**
+     * 지갑 잔액 (충전 후 차감 방식)
+     * 충전된 돈을 플랫폼 안에서 가상 화폐처럼 쌓아두고(balance),
+     * 그 잔액으로 프로젝트 결제·정산·환불을 처리하는 구조
+     */
     @Builder.Default
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer balance = 0;
@@ -69,6 +73,11 @@ public class Member {
     // 이미지
     @Column(length = 500)
     private String profileImage;
+
+    // 신고 카운트
+    @Builder.Default
+    @Column(nullable = false)
+    private int reportCount = 0; // 신고 누적 횟수
 
     //연관관계
 
@@ -105,6 +114,7 @@ public class Member {
         this.status = (status != null) ? status : Status.ACTIVE;
         this.isDeleted = false; // 소프트삭제
         this.balance = 0;
+        this.reportCount = 0;
     }
 
     public void reapply() {
@@ -200,5 +210,24 @@ public class Member {
     // 포맷팅
     public String getDisplayBalance() {
         return String.format("%,d", this.balance);
+    }
+
+    public void addReport() {
+        this.reportCount++;
+    }
+
+    // 상태 바꿔주는 메소드 차단해제시켜준다던지 머 그런거
+    public void changeStatusByBlacklist(Status nextStatus) {
+        this.status = nextStatus;
+    }
+
+    // 정지인지 영구삭제인지
+    public boolean isBlacklisted() {
+        return this.status == Status.BLACKLISTED || this.status == Status.SUSPENDED;
+    }
+
+    // 누적 신고 횟수를 다시 0으로 리셋시키기
+    public void resetReportCount() {
+        this.reportCount = 0;
     }
 }
