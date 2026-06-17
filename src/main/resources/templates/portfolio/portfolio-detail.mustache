@@ -74,7 +74,7 @@
                         <a href="/portfolios/{{portfolio.id}}/edit" class="btn btn-outline btn-sm">수정</a>
                         <form action="/portfolios/{{portfolio.id}}/delete" method="POST" style="display:inline;">
                             <input type="hidden" name="expertId" value="{{portfolio.expertId}}" />
-                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="deleteButton(event)">삭제</button>
                         </form>
                     </div>
                     {{/isOwner}}
@@ -85,6 +85,14 @@
     </div>
 </section>
 <script>
+
+    function deleteButton(event) {
+        if(!confirm("정말 삭제 하시겠습니까?")){
+            event.preventDefault();
+        }
+
+    }
+
     function handleImageError(image) {
         // 이미지를 감싸고 있는 부모 div를 찾아서
         const container = image.parentElement;

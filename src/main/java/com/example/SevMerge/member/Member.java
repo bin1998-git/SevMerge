@@ -196,4 +196,9 @@ public class Member {
         }
         return "/images/" + profileImage;
     }
+
+    // 포맷팅
+    public String getDisplayBalance() {
+        return String.format("%,d", this.balance);
+    }
 }

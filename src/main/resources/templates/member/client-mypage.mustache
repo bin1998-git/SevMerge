@@ -139,7 +139,7 @@
                 <div class="cm-stat"><div class="cm-stat-icon ic-blue">📋</div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">등록 프로젝트</div></div></div>
                 <div class="cm-stat"><div class="cm-stat-icon ic-green">✅</div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료 프로젝트</div></div></div>
                 <div class="cm-stat"><div class="cm-stat-icon ic-amber">💬</div><div><div class="cm-stat-val">{{messageCount}}</div><div class="cm-stat-lbl">새 메시지</div></div></div>
-                <div class="cm-stat"><div class="cm-stat-icon ic-violet">💰</div><div><div class="cm-stat-val">{{member.balance}}</div><div class="cm-stat-lbl">보유 포인트</div></div></div>
+                <div class="cm-stat"><div class="cm-stat-icon ic-violet">💰</div><div><div class="cm-stat-val">{{member.displayBalance}}</div><div class="cm-stat-lbl">보유 포인트</div></div></div>
             </div>
 
             <!-- 콘텐츠 -->
@@ -300,7 +300,7 @@
                                 <div class="cm-item-meta">{{createdAt}}</div>
                             </div>
                             <div class="cm-item-right">
-                                <div class="cm-item-price" style="color:#2563eb;">+{{amount}}원</div>
+                                <div class="cm-item-price" style="color:#2563eb;">+{{displayAmount}}원</div>
                                 <span class="cm-item-status st-done">충전완료</span>
                             </div>
                         </div>
@@ -327,7 +327,7 @@
                                 <div class="cm-item-meta">{{paidAt}}</div>
                             </div>
                             <div class="cm-item-right">
-                                <div class="cm-item-price">{{amount}}원</div>
+                                <div class="cm-item-price">{{displayAmount}}원</div>
                                 <span class="cm-item-status st-closed">환불완료</span>
                             </div>
                         </div>
