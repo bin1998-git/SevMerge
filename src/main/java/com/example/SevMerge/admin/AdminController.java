@@ -215,4 +215,17 @@ public class AdminController {
 
 
     }
+
+    // 출금요청 관리 페이지
+    @GetMapping("/admin/experts/withdraw")
+    public String adminExpertWithdraw(Model model) {
+        // 여기에 출금 요청 목록을 가져오는 로직 추가 예정 )  memberService.getWithdrawList
+        return "admin/admin-withdraw";
+    }
+
+
+    @GetMapping("/admin/experts/grade")
+    public String adminExpertGrade() {
+        return "admin/admin-expert"; // 일단 기존 화면으로 연결
+    }
 }
