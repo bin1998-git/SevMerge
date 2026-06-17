@@ -1,14 +1,12 @@
 package com.example.SevMerge.expertprofile;
 
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.review.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "expert_profile")
@@ -45,4 +43,9 @@ public class ExpertProfile {
 
     @Column(nullable = false)
     private boolean isCertified;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    @Builder.Default
+    private Grade expertGrade=Grade.NORMAL;
 }
