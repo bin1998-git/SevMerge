@@ -120,12 +120,12 @@ public class MemberController {
     // 정지화면 안내 페이지 조회
     @GetMapping("/banned-info")
     public String bannedInfoPage(Model model, HttpSession session) {
-        Long sessionUser = (Long) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) {
+        Long suspendedMemberId = (Long) session.getAttribute("suspendedMemberId");
+        if (suspendedMemberId == null) {
             return "redirect:/login";
         }
 
-        BlackList latestBanLog = blacklistRepository.findFirstByMemberIdAndIsActiveTrueOrderByIdDesc(sessionUser)
+        BlackList latestBanLog = blacklistRepository.findFirstByMemberIdAndIsActiveTrueOrderByIdDesc(suspendedMemberId)
                 .orElse(null);
 
         String banReason = (latestBanLog != null) ? latestBanLog.getReason() : "운영정책 위반으로 인한 정지";
