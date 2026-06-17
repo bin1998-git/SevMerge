@@ -504,7 +504,18 @@
         <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
         <nav class="header-nav">
             {{#isLoggedIn}}
-                <a href="{{#isExpert}}/experts/dashboard{{/isExpert}}{{^isExpert}}/my-pages{{/isExpert}}" class="btn-h btn-h-ghost">대시보드</a>
+
+                {{#isAdmin}}
+                    <a href="/admin/main" class="btn-h btn-h-ghost">대시보드</a>
+                {{/isAdmin}}
+
+                {{#isExpert}}
+                <a href="/experts/dashboard" class="btn-h btn-h-ghost">대시보드</a>
+                {{/isExpert}}
+
+                {{#isClient}}
+                    <a href="/my-pages" class="btn-h btn-h-ghost">대시보드</a>
+                {{/isClient}}
                 <span class="h-username">{{sessionUser.name}}님</span>
                 <a href="/logout" class="btn-h-logout">로그아웃</a>
             {{/isLoggedIn}}

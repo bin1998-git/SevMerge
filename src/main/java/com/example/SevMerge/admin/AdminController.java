@@ -41,15 +41,6 @@ public class AdminController {
         return "admin/admin-dashboard";
     }
 
-    @GetMapping("/admin/dashboard2")
-    public String adminDashboard2() {
-        return "admin/admin-dashboard2";
-    }
-
-    @GetMapping("/admin/dashboard3")
-    public String adminDashboard3() {
-        return "admin/admin-dashboard3";
-    }
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model) {
@@ -75,7 +66,7 @@ public class AdminController {
         model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
 
 
-        return "admin/admin-main";
+        return "admin/admin-dashboard";
     }
 
     // 관리자 공지사항 관리
