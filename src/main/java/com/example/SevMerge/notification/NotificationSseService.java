@@ -16,7 +16,11 @@ public class NotificationSseService {
     private final Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
     public SseEmitter createConnection(Long memberId) {
-        SseEmitter emitter = new SseEmitter(60 * 1000L);
+
+        SseEmitter old = emitterMap.remove(memberId);
+        if (old != null) old.complete();
+
+        SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 
         emitterMap.put(memberId, emitter);
 

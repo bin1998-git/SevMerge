@@ -43,12 +43,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/my-pages/**",
                         "/projects/save-form",
                         "/messages",
-                        "/messages/** ",
+                        "/messages/**",
                         "/notifications",
                         "/notifications/**",
                         "/boards/**",
                         "/admin/**",
-                        "/bids/**,",
+                        "/bids/**",
                         "/charge/**",
                         "/experts/**",
                         "/comments/**",
@@ -60,7 +60,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/report/**",
                         "/reviews/**",
                         "/withdrawal/**"
-
                         )
                 .excludePathPatterns(
                         "/",
@@ -79,7 +78,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/favicon.ico"
+                        "/favicon.ico",
+                        "/notifications/subscribe"
                 );
 
         // 관리자 체크

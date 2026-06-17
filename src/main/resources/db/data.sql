@@ -363,3 +363,30 @@ VALUES (3, 'BID_SELECTED', '축하합니다! ''기업 리브랜딩을 위한 랜
         '/bids/my-orders', false, false, DATE_SUB(NOW(), INTERVAL 5 HOUR)),
        (3, 'BID_REJECTED', '''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제출한 제안서가 아쉽게도 선정되지 않았습니다.', '/bids/my-list', true,
         false, DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+
+INSERT INTO notification_tb (receiver_id, type, content, url, is_read, is_deleted, created_at)
+VALUES
+    -- [삭제 대상 1] 35일 지난 알림 (created_at < 30일)
+    (1, 'NEW_BID', '[스케줄러테스트] 35일 지난 알림 — 삭제돼야 함', '/projects/1', true, false,
+     DATE_SUB(NOW(), INTERVAL 35 DAY)),
+
+    -- [삭제 대상 2] 100일 지난 알림
+    (1, 'MESSAGE_RECEIVED', '[스케줄러테스트] 100일 지난 알림 — 삭제돼야 함', '/messages', true, false,
+     DATE_SUB(NOW(), INTERVAL 100 DAY)),
+
+    -- [삭제 대상 3] 최근이지만 소프트삭제됨 (is_deleted=true)
+    (1, 'BID_SELECTED', '[스케줄러테스트] 소프트삭제된 알림 — 삭제돼야 함', '/bids/my-orders', true, true,
+     DATE_SUB(NOW(), INTERVAL 1 HOUR)),
+
+    -- [삭제 대상 4] 딱 경계 넘김 (31일)
+    (2, 'EXPERT_APPROVED', '[스케줄러테스트] 31일 지난 알림 — 삭제돼야 함', '/experts/dashboard', true, false,
+     DATE_SUB(NOW(), INTERVAL 31 DAY)),
+
+    -- [생존 대상 1] 29일 — 30일 안 지남, 안 지워져야 함 (경계 확인)
+    (1, 'NEW_BID', '[스케줄러테스트] 29일 지난 알림 — 남아야 함', '/projects/1', true, false,
+     DATE_SUB(NOW(), INTERVAL 29 DAY)),
+
+    -- [생존 대상 2] 최근 + 미삭제
+    (1, 'MESSAGE_RECEIVED', '[스케줄러테스트] 1일 지난 알림 — 남아야 함', '/messages', false, false,
+     DATE_SUB(NOW(), INTERVAL 1 DAY));

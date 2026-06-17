@@ -69,6 +69,11 @@ public class NotificationController {
     @GetMapping(value = "/notifications/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter createEmitter(HttpSession session) {
         Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) {
+            SseEmitter emitter = new SseEmitter(0L);
+            emitter.complete();
+            return emitter;
+        }
         return notificationSseService.createConnection(sessionMember.getId());
     }
 

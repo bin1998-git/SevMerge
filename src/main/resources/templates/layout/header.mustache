@@ -542,6 +542,11 @@
             }
         });
 
+        // 페이지 떠날 때 SSE 연결 종료 (연결 누적 방지)
+        window.addEventListener('beforeunload', function () {
+            sse.close();
+        });
+
         function showNotiToast(data) {
             const toast = document.createElement('div');
             toast.className = 'noti-toast';

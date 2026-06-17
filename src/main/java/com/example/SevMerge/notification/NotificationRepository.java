@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -36,4 +37,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
            UPDATE Notification n SET n.isDeleted = true WHERE n.receiver = :receiver AND n.isDeleted = false
            """)
     void changeAllDeleted(@Param("receiver") Member receiver);
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+           DELETE FROM Notification n
+           WHERE n.isDeleted = true OR n.createdAt < :threshold
+           """)
+    int hardDeleteOldNotifications(@Param("threshold") Timestamp threshold);
 }
