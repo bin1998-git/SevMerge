@@ -1,13 +1,15 @@
 package com.example.SevMerge.admin;
 
+import com.example.SevMerge.Report.BlackList;
+import com.example.SevMerge.Report.BlacklistRepository;
+import com.example.SevMerge.Report.ReportService;
 import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.MemberResponse;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
-import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +28,13 @@ import java.util.Map;
 public class AdminController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final ProjectService projectService;
     private final BoardService boardService;
     private final BoardRepository boardRepository;
+    private final BlacklistRepository blacklistRepository;
+    private final ReportService reportService;
+
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model) {
@@ -149,7 +156,7 @@ public class AdminController {
             memberService.approveExpert(memberId);
         } else if ("REJECT".equals(action)) {
             String reason = body.get("reason"); // 거절사유 추가
-            memberService.rejectExpert(memberId,reason);
+            memberService.rejectExpert(memberId, reason);
         } else {
             throw new IllegalArgumentException("잘못된 요청 액션입니다.");
         }
@@ -157,4 +164,40 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    // 블랙리스트 관리 페이지 조회
+    @GetMapping("/admin/blacklists")
+    public String blacklistPage(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+        List<BlackList> allblacklist = blacklistRepository.findAllWithMemberOrderByIdDesc();
+        List<BlackList> blackListLogs = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            for (BlackList blackList : allblacklist) {
+                if (blackList.getReason().contains(keyword) || blackList.getMember().getName().contains(keyword)) {
+                    blackListLogs.add(blackList);
+                }
+            }
+        } else {
+            blackListLogs = allblacklist;
+        }
+
+        model.addAttribute("blacklistLogs", blackListLogs);
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+
+        return "admin/admin-blacklist";
+    }
+
+    // 블랙리스트 차단회원 정지해제
+    @PostMapping("/admin/blacklist/release/{memberId}")
+    public String releaseBlacklistMember(@PathVariable(name = "memberId") Long memberId,
+                                         HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+
+        reportService.releaseMember(memberId);
+        return "redirect:/admin/blacklists";
+
+
+    }
 }

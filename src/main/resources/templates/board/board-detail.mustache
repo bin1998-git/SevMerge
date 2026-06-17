@@ -410,7 +410,7 @@
                                         {{^isCommentAdmin}}
                                             <div class="comment-actions" style="display:inline-block;">
                                                 <button type="button" class="comment-btn report"
-                                                        onclick="openReportModal('{{id}}', '{{boardId}}')"
+                                                        onclick="openReportModal({{id}}, {{boardId}})"
                                                         style="background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
                                                     신고
                                                 </button>
@@ -502,7 +502,6 @@
         <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">해당 댓글을 신고하는 사유와 상세 내용을 작성해 주세요.</p>
 
         <form id="reportForm" action="" method="POST">
-            <!-- 히든 인풋 태그에 현재 게시글 ID를 자바스크립트가 채워 넣습니다 -->
             <input type="hidden" id="modalBoardId" name="boardId" value="">
 
             <div style="margin-bottom: 16px;">
@@ -522,7 +521,6 @@
             <div style="margin-bottom: 24px;">
                 <label style="display: block; font-size: 13px; font-weight: 700; color: #4b5563; margin-bottom: 6px;">상세
                     내용 입력</label>
-                <!-- 💡 [여기만 바꿨습니다] name 속성을 "detail"에서 자바 DTO와 완벽 매칭되는 "contentDetail"로 수정 완료! -->
                 <textarea name="contentDetail" placeholder="신고 사유에 대한 구체적인 내용을 입력해 주세요. (최대 300자)" maxlength="300"
                           required
                           style="width: 100%; height: 120px; padding: 12px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; resize: none; outline: none; box-sizing: border-box; color: #1c1e26;"></textarea>
@@ -548,7 +546,7 @@
         const form = document.getElementById('reportForm');
         const hiddenBoardInput = document.getElementById('modalBoardId');
 
-        form.action = "/admin/comments/" + commentId + "/report";
+        form.action = "/comments/" + commentId + "/report";
         hiddenBoardInput.value = boardId;
 
         modal.style.display = "flex";
@@ -557,7 +555,7 @@
     function closeReportModal() {
         const modal = document.getElementById('reportModal');
         modal.style.display = "none";
-        document.getElementById('reportForm').reset(); // 폼 초기화
+        document.getElementById('reportForm').reset();
     }
 
     window.onclick = function (event) {

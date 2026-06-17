@@ -70,6 +70,11 @@ public class Member {
     @Column(length = 500)
     private String profileImage;
 
+    // 신고 카운트
+    @Builder.Default
+    @Column(nullable = false)
+    private int reportCount = 0; // 신고 누적 횟수
+
     //연관관계
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
@@ -105,6 +110,7 @@ public class Member {
         this.status = (status != null) ? status : Status.ACTIVE;
         this.isDeleted = false; // 소프트삭제
         this.balance = 0;
+        this.reportCount = 0;
     }
 
     public void reapply() {
@@ -195,5 +201,24 @@ public class Member {
             return profileImage;
         }
         return "/images/" + profileImage;
+    }
+
+    public void addReport() {
+        this.reportCount++;
+    }
+
+    // 상태 바꿔주는 메소드 차단해제시켜준다던지 머 그런거
+    public void changeStatusByBlacklist(Status nextStatus) {
+        this.status = nextStatus;
+    }
+
+    // 정지인지 영구삭제인지
+    public boolean isBlacklisted() {
+        return this.status == Status.BLACKLISTED || this.status == Status.SUSPENDED;
+    }
+
+    // 누적 신고 횟수를 다시 0으로 리셋시키기
+    public void resetReportCount() {
+        this.reportCount = 0;
     }
 }
