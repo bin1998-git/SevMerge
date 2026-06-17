@@ -946,123 +946,156 @@
 {{>layout/footer}}
 
 <script>
-function initCarousel(section) {
-    const track     = section.querySelector('.c-track');
-    const realCards = Array.from(section.querySelectorAll('.biz-card'));
-    const realCount = realCards.length;
-    const GAP       = 16;
-    let   idx       = 0;
-    let   busy      = false;
+    function getStars(rating) {
+        if (rating === 0 || isNaN(rating)) return '<span style="color:rgba(255,255,255,.3);font-size:11px;">평점없음</span>';
+        const full = Math.floor(rating);
+        const decimal = rating - full;
+        const empty = 5 - full - (decimal > 0 ? 1 : 0);
+        const pct = Math.round(decimal * 100);
+        const uid = Math.random().toString(36).slice(2, 7);
+        let html = '';
 
-    realCards.slice(0, 3).forEach(c => {
-        const cl = c.cloneNode(true);
-        cl.setAttribute('aria-hidden', 'true');
-        track.appendChild(cl);
-    });
+        for (let i = 0; i < full; i++) {
+            html += `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#f59e0b"/>
+            </svg>`;
+        }
 
-    function cardW() { return track.querySelector('.biz-card').getBoundingClientRect().width; }
+        if (decimal > 0) {
+            html += `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;">
+                <defs>
+                    <linearGradient id="g-${uid}" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="${pct}%" stop-color="#f59e0b"/>
+                        <stop offset="${pct}%" stop-color="rgba(255,255,255,0.15)"/>
+                    </linearGradient>
+                </defs>
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#g-${uid})"/>
+            </svg>`;
+        }
 
-    function moveTo(i, animate) {
-        track.style.transition = animate ? 'transform 0.65s cubic-bezier(0.4,0,0.2,1)' : 'none';
-        track.style.transform  = `translateX(-${i * (cardW() + GAP)}px)`;
+        for (let i = 0; i < empty; i++) {
+            html += `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="rgba(255,255,255,0.15)"/>
+            </svg>`;
+        }
+
+        return html;
     }
 
-    function next() {
-        if (busy) return;
-        busy = true;
-        idx++;
-        moveTo(idx, true);
-        if (idx >= realCount) {
-            track.addEventListener('transitionend', function once() {
-                track.removeEventListener('transitionend', once);
-                moveTo(0, false);
-                idx  = 0;
-                busy = false;
-            });
-        } else {
+    function initCarousel(section) {
+        const track     = section.querySelector('.c-track');
+        const realCards = Array.from(section.querySelectorAll('.biz-card'));
+        const realCount = realCards.length;
+        const GAP       = 16;
+        let   idx       = 0;
+        let   busy      = false;
+
+        realCards.slice(0, 3).forEach(c => {
+            const cl = c.cloneNode(true);
+            cl.setAttribute('aria-hidden', 'true');
+            track.appendChild(cl);
+        });
+
+        function cardW() { return track.querySelector('.biz-card').getBoundingClientRect().width; }
+
+        function moveTo(i, animate) {
+            track.style.transition = animate ? 'transform 0.65s cubic-bezier(0.4,0,0.2,1)' : 'none';
+            track.style.transform  = `translateX(-${i * (cardW() + GAP)}px)`;
+        }
+
+        function next() {
+            if (busy) return;
+            busy = true;
+            idx++;
+            moveTo(idx, true);
+            if (idx >= realCount) {
+                track.addEventListener('transitionend', function once() {
+                    track.removeEventListener('transitionend', once);
+                    moveTo(0, false);
+                    idx  = 0;
+                    busy = false;
+                });
+            } else {
+                setTimeout(() => { busy = false; }, 700);
+            }
+        }
+        function prev() {
+            if (busy || idx === 0) return;
+            busy = true;
+            idx--;
+            moveTo(idx, true);
             setTimeout(() => { busy = false; }, 700);
         }
+
+        let timer = setInterval(next, 3800);
+        section.querySelector('.c-arrow-right').addEventListener('click', () => { clearInterval(timer); next(); timer = setInterval(next, 3800); });
+        section.querySelector('.c-arrow-left').addEventListener('click',  () => { clearInterval(timer); prev(); timer = setInterval(next, 3800); });
+        section.addEventListener('mouseenter', () => clearInterval(timer));
+        section.addEventListener('mouseleave', () => { timer = setInterval(next, 3800); });
     }
-    function prev() {
-        if (busy || idx === 0) return;
-        busy = true;
-        idx--;
-        moveTo(idx, true);
-        setTimeout(() => { busy = false; }, 700);
-    }
 
-    let timer = setInterval(next, 3800);
-    section.querySelector('.c-arrow-right').addEventListener('click', () => { clearInterval(timer); next(); timer = setInterval(next, 3800); });
-    section.querySelector('.c-arrow-left').addEventListener('click',  () => { clearInterval(timer); prev(); timer = setInterval(next, 3800); });
-    section.addEventListener('mouseenter', () => clearInterval(timer));
-    section.addEventListener('mouseleave', () => { timer = setInterval(next, 3800); });
-}
+    (function() {
+        function getNextSunday() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = day === 0 ? 7 : 7 - day;
+            const end = new Date(now);
+            end.setDate(now.getDate() + diff);
+            end.setHours(23, 59, 59, 0);
+            return end;
+        }
+        const endTime = getNextSunday();
+        const pad = n => String(n).padStart(2, '0');
 
-// ── 프로모션 카운트다운 (이번 주 일요일 자정까지) ──
-(function() {
-    function getNextSunday() {
-        const now = new Date();
-        const day = now.getDay(); // 0=일
-        const diff = day === 0 ? 7 : 7 - day;
-        const end = new Date(now);
-        end.setDate(now.getDate() + diff);
-        end.setHours(23, 59, 59, 0);
-        return end;
-    }
-    const endTime = getNextSunday();
-    const pad = n => String(n).padStart(2, '0');
+        function tick() {
+            const now = new Date();
+            const diff = Math.max(0, endTime - now);
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            const dEl = document.getElementById('promo-d');
+            const hEl = document.getElementById('promo-h');
+            const mEl = document.getElementById('promo-m');
+            const sEl = document.getElementById('promo-s');
+            if (dEl) dEl.textContent = pad(d);
+            if (hEl) hEl.textContent = pad(h);
+            if (mEl) mEl.textContent = pad(m);
+            if (sEl) sEl.textContent = pad(s);
+        }
+        tick();
+        setInterval(tick, 1000);
+    })();
 
-    function tick() {
-        const now = new Date();
-        const diff = Math.max(0, endTime - now);
-        const d = Math.floor(diff / 86400000);
-        const h = Math.floor((diff % 86400000) / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
-        const dEl = document.getElementById('promo-d');
-        const hEl = document.getElementById('promo-h');
-        const mEl = document.getElementById('promo-m');
-        const sEl = document.getElementById('promo-s');
-        if (dEl) dEl.textContent = pad(d);
-        if (hEl) hEl.textContent = pad(h);
-        if (mEl) mEl.textContent = pad(m);
-        if (sEl) sEl.textContent = pad(s);
-    }
-    tick();
-    setInterval(tick, 1000);
-})();
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.biz-card[data-member-id]').forEach(card => {
+            const rating    = card.dataset.rating || '0.0';
+            const jobs      = card.dataset.jobs   || '0건';
+            const href      = card.getAttribute('href') || '#';
+            const ratingNum = parseFloat(rating);
+            const stars     = getStars(ratingNum);
 
-document.addEventListener('DOMContentLoaded', () => {
-    // ── 1. OVERLAY INJECTION (must run BEFORE carousel clones) ──
-    document.querySelectorAll('.biz-card[data-member-id]').forEach(card => {
-        const rating = card.dataset.rating || '0.0';
-        const jobs   = card.dataset.jobs   || '0건';
-        const href   = card.getAttribute('href') || '#';
-        const ratingNum = parseFloat(rating);
-        const stars  = ratingNum >= 4.8 ? '★★★★★' : ratingNum >= 4.0 ? '★★★★☆' : '★★★☆☆';
-
-        const overlay = document.createElement('div');
-        overlay.className = 'biz-overlay';
-        overlay.innerHTML = `
-            <div class="ov-stats">
-                <div class="ov-stat">
-                    <span class="ov-stat-val"><span class="ov-stars">${stars}</span> ${rating}</span>
-                    <span class="ov-stat-label">평점</span>
+            const overlay = document.createElement('div');
+            overlay.className = 'biz-overlay';
+            overlay.innerHTML = `
+                <div class="ov-stats">
+                    <div class="ov-stat">
+                        <span class="ov-stat-val">${stars} ${rating}</span>
+                        <span class="ov-stat-label">평점</span>
+                    </div>
+                    <div class="ov-divider"></div>
+                    <div class="ov-stat">
+                        <span class="ov-stat-val">${jobs}</span>
+                        <span class="ov-stat-label">완료</span>
+                    </div>
                 </div>
-                <div class="ov-divider"></div>
-                <div class="ov-stat">
-                    <span class="ov-stat-val">${jobs}</span>
-                    <span class="ov-stat-label">완료</span>
-                </div>
-            </div>
-            <a class="ov-cta" href="${href}">프로필 보기 →</a>
-        `;
-        card.appendChild(overlay);
+                <a class="ov-cta" href="${href}">프로필 보기 →</a>
+            `;
+            card.appendChild(overlay);
+        });
+
+        document.querySelectorAll('.carousel-section').forEach(initCarousel);
     });
-
-    // ── 2. CAROUSEL INIT (cloneNode copies overlays too) ──
-    document.querySelectorAll('.carousel-section').forEach(initCarousel);
-});
 </script>
 </body>
 </html>

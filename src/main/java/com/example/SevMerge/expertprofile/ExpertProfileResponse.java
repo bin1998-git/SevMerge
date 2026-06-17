@@ -43,8 +43,6 @@ public class ExpertProfileResponse {
                 .skillList(parseSkills(profile.getSpeciality()))
                 .githubUrl(profile.getGithubUrl())
                 .contactEmail(profile.getContactEmail())
-                .avgRating(profile.getAvgRating())
-                .totalReviews(profile.getTotalReviews())
                 .isCertified(profile.isCertified())
                 .build();
     }
