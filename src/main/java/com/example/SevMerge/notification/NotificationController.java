@@ -7,9 +7,11 @@ import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /**
  * GET  /notifications                    → 쪽지함 목록 페이지
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class NotificationController {
 
+    private final NotificationSseService notificationSseService;
     private final NotificationService notificationService;
 
     @GetMapping("/notifications")
@@ -62,4 +65,11 @@ public class NotificationController {
         notificationService.deleteAllNotifications(sessionMember);
         return "redirect:/notifications";
     }
+
+    @GetMapping(value = "/notifications/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter createEmitter(HttpSession session) {
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        return notificationSseService.createConnection(sessionMember.getId());
+    }
+
 }

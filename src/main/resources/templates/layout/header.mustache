@@ -525,35 +525,6 @@
         {{/isExpert}}
     </div>
 </header>
-
-{{#isLoggedIn}}
-    <script>
-        const sse = new EventSource('/notifications/subscribe');
-
-        sse.addEventListener('notification', function (e) {
-            const data = JSON.parse(e.data);
-            showNotiToast(data);
-
-            const bell = document.querySelector('.nav-bell');
-            if (bell && !bell.querySelector('.nav-bell-dot')) {
-                const dot = document.createElement('span');
-                dot.className = 'nav-bell-dot';
-                bell.appendChild(dot);
-            }
-        });
-
-        function showNotiToast(data) {
-            const toast = document.createElement('div');
-            toast.className = 'noti-toast';
-            toast.innerHTML =
-                    '<div class="noti-toast-label">' + data.typeLabel + '</div>' +
-                    '<div class="noti-toast-content">' + data.content + '</div>';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
-    </script>
-{{/isLoggedIn}}
-
 <script>
     function toggleProfileMenu(e, dropdownId) {
         e.stopPropagation();
@@ -567,7 +538,7 @@
             }
         });
     });
-    document.addEventListener("DOMContentLoaded", function () {
+     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".profile-thumb-default").forEach(function (el) {
             const name = el.textContent.trim();
             if (name) el.textContent = name.charAt(0);  // 첫 글자만

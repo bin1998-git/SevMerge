@@ -6,12 +6,15 @@ import com.example.SevMerge.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
+    private final NotificationSseService notificationSseService;
     private final NotificationRepository notificationRepository;
 
     // 기능별 알림
@@ -102,15 +105,6 @@ public class NotificationService {
         notificationRepository.changeAllRead(receiver);
     }
 
-    @Transactional
-    public void notify(Member receiver, NotificationType type, String content, String url) {
-        notificationRepository.save(Notification.builder()
-                        .receiver(receiver)
-                        .content(content)
-                        .type(type)
-                        .url(url)
-                        .build());
-    }
 
     @Transactional
     public void deleteNotification(Long id, Member sessionMember) {
@@ -127,6 +121,25 @@ public class NotificationService {
     @Transactional
     public void deleteAllNotifications(Member receiver) {
         notificationRepository.changeAllDeleted(receiver);
+    }
+
+    @Transactional
+    public void notify(Member receiver, NotificationType type, String content, String url) {
+        Notification saved = notificationRepository.save(Notification.builder()
+                .receiver(receiver)
+                .content(content)
+                .type(type)
+                .url(url)
+                .build());
+
+        NotificationResponse.ListDTO dto = new NotificationResponse.ListDTO(saved);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                notificationSseService.sendNotification(receiver.getId(), dto);
+            }
+        });
     }
 
     // 전문가 계정 정지 → 진행 중 프로젝트 의뢰인
