@@ -39,7 +39,6 @@ import java.util.List;
 public class ExpertProfileViewController {
 
     private final ExpertProfileService expertProfileService;
-    private final PortfolioService portfolioService;
     private final ReviewService reviewService;
     private final ProjectService projectService;
 
@@ -126,6 +125,9 @@ public class ExpertProfileViewController {
         model.addAttribute("keyword", keyword != null ? keyword : "");
 
         // 카테고리 탭 활성화 플래그
+        model.addAttribute("reviews",reviewService.findMyReviews(sessionUser.getId()));
+        Double avg = reviewService.avgRating(sessionUser.getId());
+        model.addAttribute("avgRating", avg != null ? String.format("%.1f", avg) : "0.0");
         model.addAttribute("isAll",   category == null && (keyword == null || keyword.isBlank()));
         model.addAttribute("isWeb",   "WEB".equals(category));
         model.addAttribute("isApp",   "APP".equals(category));

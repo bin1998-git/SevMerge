@@ -84,6 +84,14 @@ public class ProjectService {
     // 중복 체크
     public List<ProjectResponeDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
 
+        // [수정 포인트] statusFilter가 CLOSED인 경우, 커스텀 레포지토리를 거치지 않고 직접 조회
+        if ("CLOSED".equals(statusFilter)) {
+            return projectRepository.findByStatus(ProjectStatus.IN_PROGRESS).stream()
+                    .map(ProjectResponeDTO.ListDTO::new)
+                    .collect(Collectors.toList());
+        }
+
+
         List<Project> projectList = projectCustomRepository.findByFilters(keyword,category, statusFilter, bidFilter);
 
         return projectList.stream()
@@ -96,7 +104,7 @@ public class ProjectService {
         log.info("project 낙찰 완료(CLOSED) 상태별 조회 서비스 시작");
 
         // CLOSED 상태인 프로젝트 엔티티들을 조회
-        List<Project> projectList = projectRepository.findByStatus(ProjectStatus.CLOSED);
+        List<Project> projectList = projectRepository.findByStatus(ProjectStatus.IN_PROGRESS);
 
 
         return projectList.stream()
@@ -223,7 +231,7 @@ public class ProjectService {
         if (!project.getMember().getId().equals(session.getId())) {
             throw new ForbiddenException("검토확인 권한이 없습니다");
         }
-        if (project.getProjectStatus() != ProjectStatus.CLOSED) {
+        if (project.getProjectStatus() != ProjectStatus.IN_PROGRESS) {
             throw new BadRequestException("낙찰 완료된 프로젝트만 검토확인 가능합니다");
         }
         project.updateStatus(ProjectStatus.DONE);

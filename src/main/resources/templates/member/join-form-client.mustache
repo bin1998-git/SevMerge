@@ -239,16 +239,82 @@
     sendCodeBtn.addEventListener("click", async function () {
         const email = emailInput.value.trim();
         if (!email) { alert("이메일을 입력해주세요."); return; }
-        const res = await fetch("/api/email/send", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email })
-        });
-        if (res.ok) {
-            alert("인증 코드가 발송되었습니다.");
-            codeGroup.style.display = "flex";
-            codeGroup.style.flexDirection = "column";
-        } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
+
+        sendCodeBtn.disabled = true;
+        showSendingToast("이메일 발송중입니다");
+        try {
+            const res = await fetch("/api/email/send", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email })
+            });
+            if (res.ok) {
+                alert("인증 코드가 발송되었습니다.");
+                codeGroup.style.display = "flex";
+                codeGroup.style.flexDirection = "column";
+            } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
+        } catch (e) {
+            alert("발송에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            hideSendingToast();
+            sendCodeBtn.disabled = false;
+        }
     });
+
+    // 이메일 발송중 오버레이 (중앙 원형 점 스피너)
+    function showSendingToast(message) {
+        let overlay = document.getElementById("sendingOverlay");
+        if (!overlay) {
+            // 스피너 점 8개를 원형으로 배치
+            let dots = "";
+            const total = 8;
+            for (let i = 0; i < total; i++) {
+                const angle = i * (360 / total);
+                const opacity = 0.15 + (0.85 * i / (total - 1)); // 연함→진함
+                dots +=
+                    '<span style="position:absolute;top:50%;left:50%;width:15px;height:15px;margin:-7.5px;' +
+                    'border-radius:50%;background:#2563eb;opacity:' + opacity.toFixed(2) + ';' +
+                    'transform:rotate(' + angle + 'deg) translateY(-32px);"></span>';
+            }
+
+            overlay = document.createElement("div");
+            overlay.id = "sendingOverlay";
+            overlay.style.cssText =
+                "position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;" +
+                "align-items:center;justify-content:center;gap:26px;" +
+                "background:rgba(245,246,250,.78);backdrop-filter:blur(2px);font-family:inherit;";
+            overlay.innerHTML =
+                '<div style="position:relative;width:80px;height:80px;animation:sendingSpin .8s steps(8) infinite;">' +
+                dots +
+                '</div>' +
+                '<div style="font-size:16px;font-weight:700;color:#1c1e26;letter-spacing:-0.3px;">' +
+                '<span id="sendingOverlayMsg"></span>' +
+                '<span id="sendingOverlayDots" style="display:inline-block;width:1.2em;text-align:left;"></span>' +
+                '</div>';
+            document.body.appendChild(overlay);
+
+            const style = document.createElement("style");
+            style.textContent = "@keyframes sendingSpin{to{transform:rotate(360deg)}}";
+            document.head.appendChild(style);
+        }
+        // 메시지는 고정, 점만 칸 안에서 늘어남 (. → .. → ...)
+        document.getElementById("sendingOverlayMsg").textContent = message;
+        const dotEl = document.getElementById("sendingOverlayDots");
+        let step = 1;
+        dotEl.textContent = ".";
+        clearInterval(window._sendingDotTimer);
+        window._sendingDotTimer = setInterval(function () {
+            step = (step % 3) + 1;
+            dotEl.textContent = ".".repeat(step);
+        }, 400);
+
+        overlay.style.display = "flex";
+    }
+
+    function hideSendingToast() {
+        clearInterval(window._sendingDotTimer);
+        const overlay = document.getElementById("sendingOverlay");
+        if (overlay) overlay.style.display = "none";
+    }
 
     verifyCodeBtn.addEventListener("click", async function () {
         const email = emailInput.value.trim();

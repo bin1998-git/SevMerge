@@ -33,6 +33,7 @@ public class ExpertProfileController {
   /**
    * 전문가 프로필 조회
    * GET /expert-profile/{memberId}
+   * GET /expert-profile/{memberId}
    */
   @GetMapping("/{memberId}")
   public ResponseEntity<ApiResponse<ExpertProfileResponse>> get(

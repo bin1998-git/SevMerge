@@ -125,7 +125,4 @@ public class MessageService {
         }
         return isSender;
     }
-
-
-
 }
