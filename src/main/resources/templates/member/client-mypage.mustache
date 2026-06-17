@@ -162,11 +162,11 @@
                             <div class="cm-item-right">
                                 <div class="cm-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
                                 <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}</span>
-                                {{#isClosed}}
+                                {{#isCompleted}}
                                     <form action="/projects/{{id}}/done" method="POST">
-                                        <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">검토확인</button>
+                                        <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">결제 승인</button>
                                     </form>
-                                {{/isClosed}}
+                                {{/isCompleted}}
                                 {{#isDone}}
                                     <a href="/reviews/save?targetId={{selectedExpertId}}" class="cm-btn cm-btn-primary" style="display:block;">리뷰 작성</a>
                                 {{/isDone}}
@@ -271,14 +271,14 @@
                                 <div class="cm-item-meta">{{paidAt}}</div>
                             </div>
                             <div class="cm-item-right">
-                                <div class="cm-item-price">{{amount}}원</div>
+                                <div class="cm-item-price">{{displayAmount}}원</div>
                                 <span class="cm-item-status {{#isPaid}}st-open{{/isPaid}}{{#isSettled}}st-done{{/isSettled}}{{#isRefunded}}st-closed{{/isRefunded}}">
-                                    {{#isPaid}}에스크로 보관중{{/isPaid}}
+                    {{#isPaid}}에스크로 보관중{{/isPaid}}
                                     {{#isSettled}}정산완료{{/isSettled}}
                                     {{#isRefunded}}환불완료{{/isRefunded}}
-                                </span>
+                </span>
                                 {{#isPaid}}
-                                    <button type="button" class="cm-btn" style="background:#fff;border:1.5px solid #ef4444;color:#ef4444;display:block;margin-top:6px;" onclick="requestRefund({{id}})">환불 신청</button>
+                                    <a href="/refund-applications/form?paymentId={{id}}" class="cm-btn" style="background:#fff;border:1.5px solid #ef4444;color:#ef4444;display:block;margin-top:6px;text-decoration:none;text-align:center;">환불 신청</a>
                                 {{/isPaid}}
                             </div>
                         </div>
@@ -317,22 +317,27 @@
                 {{#isRefundHistory}}
                     <div class="cm-content-head">
                         <div class="cm-content-title">환불 내역</div>
-                        <div class="cm-content-sub">환불 처리된 에스크로 내역이에요.</div>
+                        <div class="cm-content-sub">환불 신청 및 처리 현황이에요.</div>
                     </div>
                     {{#refunds}}
                         <div class="cm-item">
                             <div class="cm-item-body">
-                                <span class="cm-item-cat">환불</span>
-                                <div class="cm-item-title">프로젝트 #{{projectId}}</div>
-                                <div class="cm-item-meta">{{paidAt}}</div>
+                                <span class="cm-item-cat">{{reasonCategoryLabel}}</span>
+                                <div class="cm-item-title">{{expertName}} 전문가 · 결제 #{{paymentId}}</div>
+                                <div class="cm-item-meta">{{reason}}</div>
+                                {{#adminComment}}<div class="cm-item-meta">관리자 의견: {{adminComment}}</div>{{/adminComment}}
+                                <div class="cm-item-meta">{{createdAt}}</div>
                             </div>
                             <div class="cm-item-right">
-                                <div class="cm-item-price">{{displayAmount}}원</div>
-                                <span class="cm-item-status st-closed">환불완료</span>
+                <span class="cm-item-status {{#isPending}}st-closed{{/isPending}}{{#isApproved}}st-done{{/isApproved}}{{#isRejected}}st-closed{{/isRejected}}">
+                    {{#isPending}}검토중{{/isPending}}
+                    {{#isApproved}}승인완료{{/isApproved}}
+                    {{#isRejected}}거절됨{{/isRejected}}
+                </span>
                             </div>
                         </div>
                     {{/refunds}}
-                    {{^refunds}}<div class="cm-empty">환불 내역이 없습니다.</div>{{/refunds}}
+                    {{^refunds}}<div class="cm-empty">환불 신청 내역이 없습니다.</div>{{/refunds}}
                 {{/isRefundHistory}}
 
                 {{!  정보 수정  }}

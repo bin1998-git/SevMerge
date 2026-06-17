@@ -164,4 +164,19 @@ public class BidController {
         bidService.rejectBid(id, sessionUser);
         return ResponseEntity.ok().build();
     }
+
+    // 11. 전문가 작업 완료 신고
+    @PostMapping("/bids/{id}/complete")
+    @ResponseBody
+    public ResponseEntity<?> complete(@PathVariable Long id, HttpSession session) {
+        log.info("전문가 작업 완료 신고 요청 - bidId: {}", id);
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return ResponseEntity.status(401).build();
+        try {
+            bidService.completeBid(id, sessionUser);
+            return ResponseEntity.ok().build();
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }
