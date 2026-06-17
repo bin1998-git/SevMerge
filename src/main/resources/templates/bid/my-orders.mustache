@@ -72,7 +72,7 @@
                 <span class="cell cell-actions">
                     <a href="/projects/{{projectId}}" class="btn-view">보기</a>
                     {{#isInProgress}}
-                    <button class="btn-done" data-project-id="{{projectId}}">✓ 완료</button>
+                        <button class="btn-done" data-bid-id="{{id}}">✓ 완료</button>
                     {{/isInProgress}}
                 </span>
             </div>
@@ -90,22 +90,22 @@
 </section>
 
 <script>
-document.querySelectorAll('.btn-done').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const projectId = this.dataset.projectId;
-        if (!confirm('작업 완료 처리하시겠습니까?\n의뢰인에게 승인 요청이 전송됩니다.')) return;
-        fetch(`/projects/${projectId}/done`, { method: 'POST' })
-            .then(res => {
-                if (res.ok) {
-                    alert('작업 완료 처리되었습니다. 의뢰인의 승인을 기다려주세요.');
-                    location.reload();
-                } else {
-                    alert('처리 중 오류가 발생했습니다.');
-                }
-            })
-            .catch(() => alert('서버와 통신 중 오류가 발생했습니다.'));
+    document.querySelectorAll('.btn-done').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const bidId = this.dataset.bidId;
+            if (!confirm('작업 완료 처리하시겠습니까?\n의뢰인에게 승인 요청이 전송됩니다.')) return;
+            fetch(`/bids/${bidId}/complete`, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) {
+                        alert('작업 완료 신고가 전송되었습니다. 의뢰인의 승인을 기다려주세요.');
+                        location.reload();
+                    } else {
+                        res.json().then(d => alert(d.message || '처리 중 오류가 발생했습니다.'));
+                    }
+                })
+                .catch(() => alert('서버와 통신 중 오류가 발생했습니다.'));
+        });
     });
-});
 </script>
 
 {{> layout/footer}}

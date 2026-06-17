@@ -162,11 +162,11 @@
                             <div class="cm-item-right">
                                 <div class="cm-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
                                 <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}</span>
-                                {{#isClosed}}
+                                {{#isCompleted}}
                                     <form action="/projects/{{id}}/done" method="POST">
-                                        <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">검토확인</button>
+                                        <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">결제 승인</button>
                                     </form>
-                                {{/isClosed}}
+                                {{/isCompleted}}
                                 {{#isDone}}
                                     <a href="/reviews/save?targetId={{selectedExpertId}}" class="cm-btn cm-btn-primary" style="display:block;">리뷰 작성</a>
                                 {{/isDone}}

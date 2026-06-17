@@ -223,7 +223,7 @@ public class ProjectService {
         if (!project.getMember().getId().equals(session.getId())) {
             throw new ForbiddenException("검토확인 권한이 없습니다");
         }
-        if (project.getProjectStatus() != ProjectStatus.CLOSED) {
+        if (project.getProjectStatus() != ProjectStatus.COMPLETED) {
             throw new BadRequestException("낙찰 완료된 프로젝트만 검토확인 가능합니다");
         }
         project.updateStatus(ProjectStatus.DONE);
