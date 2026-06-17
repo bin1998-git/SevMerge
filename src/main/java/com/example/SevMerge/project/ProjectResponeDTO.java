@@ -48,7 +48,7 @@ public class ProjectResponeDTO {
             this.projectStatus = project.getProjectStatus().name();
             this.isDone = project.getProjectStatus() == ProjectStatus.DONE;
             this.privateProject = project.isPrivate();
-            this.isClosed = project.getProjectStatus() == ProjectStatus.CLOSED; // 프로젝트 상태가 CLOSED(낙찰 완료)인지 확인하는 용도
+            this.isClosed = project.getProjectStatus() == ProjectStatus.IN_PROGRESS; // 프로젝트 상태가 CLOSED(낙찰 완료)인지 확인하는 용도
             this.viewCount = project.getViewCount();
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
