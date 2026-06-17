@@ -91,18 +91,6 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
-    //  낙찰 완료된 프로젝트만 필터링하여 조회하는 서비스 메서드 추가
-    public List<ProjectResponeDTO.ListDTO> findByStatusClosed() {
-        log.info("project 낙찰 완료(CLOSED) 상태별 조회 서비스 시작");
-
-        // CLOSED 상태인 프로젝트 엔티티들을 조회
-        List<Project> projectList = projectRepository.findByStatus(ProjectStatus.CLOSED);
-
-
-        return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
-                .collect(Collectors.toList());
-    }
 
     // 내 프로젝트 목록 조회
     public List<ProjectResponeDTO.ListDTO> myProjects(Member sessionMember) {
