@@ -61,7 +61,11 @@ public class Member {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    // 지갑 잔액 (충전 후 차감 방식)
+    /**
+     * 지갑 잔액 (충전 후 차감 방식)
+     * 충전된 돈을 플랫폼 안에서 가상 화폐처럼 쌓아두고(balance),
+     * 그 잔액으로 프로젝트 결제·정산·환불을 처리하는 구조
+     */
     @Builder.Default
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer balance = 0;
