@@ -8,6 +8,7 @@ import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
 import com.example.SevMerge.payment.PaymentResponse;
 import com.example.SevMerge.payment.PaymentService;
+import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class ProjectController {
     private final BidService bidService;
     private final BidRepository bidRepository;
     private final PaymentService paymentService;
+    private final ReviewService reviewService;
 
     // 프로젝트 등록 폼
     @GetMapping("/projects/save-form")
@@ -198,8 +200,6 @@ public class ProjectController {
         }
         return "redirect:/my-pages?tab=projects";
     }
-
-
 
 
     // 프로젝트 임시저장(비동기)

@@ -23,6 +23,7 @@ public class ExpertProfileResponse {
     private String contactEmail;
     private BigDecimal avgRating;
     private int totalReviews;
+    private String grade;
     private boolean isCertified;
 
     // Mustache용 포맷 필드 — {{ratingDisplay}} 로 접근
@@ -44,6 +45,7 @@ public class ExpertProfileResponse {
                 .githubUrl(profile.getGithubUrl())
                 .contactEmail(profile.getContactEmail())
                 .isCertified(profile.isCertified())
+                .grade(profile.getExpertGrade().toString())
                 .build();
     }
 

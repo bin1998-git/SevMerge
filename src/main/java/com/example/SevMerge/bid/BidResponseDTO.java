@@ -1,9 +1,10 @@
 package com.example.SevMerge.bid;
 
+import com.example.SevMerge.expertprofile.ExpertProfile;
+import com.example.SevMerge.member.Member;
 import com.example.SevMerge.payment.Payment;
 import com.example.SevMerge.project.ProjectStatus;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
