@@ -58,15 +58,6 @@ public class ReviewService {
 
         reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity));
 
-        // ExpertProfile avgRating / totalReviews 갱신
-        expertProfileRepository.findByMemberId(targetEntity.getId()).ifPresent(profile -> {
-            Double avg = reviewRepository.avgRating(targetEntity.getId());
-            int count = reviewRepository.countByTargeterId(targetEntity.getId());
-            profile.setAvgRating(avg != null
-                    ? BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP)
-                    : BigDecimal.ZERO);
-            profile.setTotalReviews(count);
-        });
     }
 
     // 리뷰조회

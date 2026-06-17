@@ -121,8 +121,6 @@ public class MemberService {
         if (request.getRole() == Role.EXPERT) {
             expertProfileRepository.save(ExpertProfile.builder()
                     .member(member)
-                    .avgRating(BigDecimal.ZERO)
-                    .totalReviews(0)
                     .isCertified(false)
                     .profileImage(savedImage != null ? savedImage : "default.png")
                     .intro(request.getIntro())
@@ -633,8 +631,6 @@ public class MemberService {
                 .githubUrl(req.getGithubUrl())
                 .contactEmail(req.getEmail())
                 .speciality(req.getSpeciality() != null ? req.getSpeciality() : "")
-                .avgRating(BigDecimal.ZERO)
-                .totalReviews(0)
                 .isCertified(false)
                 .build());
     }

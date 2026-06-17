@@ -3,10 +3,13 @@ package com.example.SevMerge.expertprofile;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.review.ReviewRepository;
+import com.example.SevMerge.review.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -15,6 +18,7 @@ import java.util.List;
 public class ExpertProfileService {
 
   private final ExpertProfileRepository expertProfileRepository;
+  private final ReviewRepository reviewRepository;
 
   /**
    * 전문가 프로필 등록
@@ -33,8 +37,6 @@ public class ExpertProfileService {
         .speciality(req.getSpeciality())
         .githubUrl(req.getGithubUrl())
         .contactEmail(req.getContactEmail())
-        .avgRating(java.math.BigDecimal.ZERO)
-        .totalReviews(0)
         .isCertified(false)
         .build();
 
@@ -47,9 +49,16 @@ public class ExpertProfileService {
    */
   public List<ExpertProfileResponse> getAll() {
     return expertProfileRepository.findByExpert()
-        .stream()
-        .map(ExpertProfileResponse::from)
-        .toList();
+            .stream()
+            .map(profile -> {
+              Double avg = reviewRepository.avgRating(profile.getMember().getId());
+              int count = reviewRepository.countByTargeterId(profile.getMember().getId());
+              ExpertProfileResponse res = ExpertProfileResponse.from(profile);
+              res.setAvgRating(avg != null ? BigDecimal.valueOf(avg) : BigDecimal.ZERO);
+              res.setTotalReviews(count);
+              return res;
+            })
+            .toList();
   }
 
   /**
