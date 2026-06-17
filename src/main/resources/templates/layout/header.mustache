@@ -318,6 +318,40 @@
             display: none !important;
         }
 
+        .noti-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #eff6ff;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 14px;
+            padding: 16px 20px;
+            z-index: 9999;
+            animation: notiToastFade 4s ease forwards;
+            max-width: 320px;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, .12);
+        }
+
+        .noti-toast-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 4px;
+        }
+
+        .noti-toast-content {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        @keyframes notiToastFade {
+            0%   { opacity: 0; transform: translateY(10px); }
+            15%  { opacity: 1; transform: translateY(0); }
+            80%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         /* ── FOOTER ── */
         .footer {
             background: #f5f6fa;
@@ -491,6 +525,35 @@
         {{/isExpert}}
     </div>
 </header>
+
+{{#isLoggedIn}}
+    <script>
+        const sse = new EventSource('/notifications/subscribe');
+
+        sse.addEventListener('notification', function (e) {
+            const data = JSON.parse(e.data);
+            showNotiToast(data);
+
+            const bell = document.querySelector('.nav-bell');
+            if (bell && !bell.querySelector('.nav-bell-dot')) {
+                const dot = document.createElement('span');
+                dot.className = 'nav-bell-dot';
+                bell.appendChild(dot);
+            }
+        });
+
+        function showNotiToast(data) {
+            const toast = document.createElement('div');
+            toast.className = 'noti-toast';
+            toast.innerHTML =
+                    '<div class="noti-toast-label">' + data.typeLabel + '</div>' +
+                    '<div class="noti-toast-content">' + data.content + '</div>';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+    </script>
+{{/isLoggedIn}}
+
 <script>
     function toggleProfileMenu(e, dropdownId) {
         e.stopPropagation();
@@ -504,7 +567,7 @@
             }
         });
     });
-     document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".profile-thumb-default").forEach(function (el) {
             const name = el.textContent.trim();
             if (name) el.textContent = name.charAt(0);  // 첫 글자만

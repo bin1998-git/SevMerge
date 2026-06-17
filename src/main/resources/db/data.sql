@@ -363,3 +363,7 @@ VALUES (3, 'BID_SELECTED', '축하합니다! ''기업 리브랜딩을 위한 랜
         '/bids/my-orders', false, false, DATE_SUB(NOW(), INTERVAL 5 HOUR)),
        (3, 'BID_REJECTED', '''스타트업 전용 중고 부품 거래 매칭 플랫폼 구축'' 프로젝트에 제출한 제안서가 아쉽게도 선정되지 않았습니다.', '/bids/my-list', true,
         false, DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+-- FAQ 데이터
+INSERT INTO faq_tb (question, answer)
+VALUES ('질문 내용을 입력하세요', '답변 내용을 입력하세요');

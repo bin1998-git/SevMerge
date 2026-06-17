@@ -927,8 +927,10 @@
             location.href = '/experts/dashboard';
         } else {
             alert('전문가 회원만 이용할 수 있습니다. 로그인 후 이용해주세요.');
-            location.href = '/logout';
-            location.href = '/login';
+            fetch('/logout', { method: 'GET' })
+                    .finally(() => {
+                        location.href = '/login';
+                    });
         }
     }
 </script>

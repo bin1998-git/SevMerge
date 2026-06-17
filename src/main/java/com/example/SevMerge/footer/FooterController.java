@@ -53,12 +53,7 @@ public class FooterController {
         return "footerProc/operation";
     }
 
-//    // 제휴문의 기능 이메일 보내기
-//    @PostMapping("/partnership/inquiry")
-//    public String inquiry(Model model) {
-//
-//
-//    }
+
 
 
 }
