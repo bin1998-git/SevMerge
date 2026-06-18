@@ -228,6 +228,15 @@ public class MemberService {
         }
     }
 
+    // 비밀번호 검증 메서드
+    @Transactional(readOnly = true)
+    public boolean verifyPassword(Long memberId, String rawPassword) {
+        Member member = findMemberById(memberId);
+        if (rawPassword == null || rawPassword.isBlank()) return false;
+        if (member.getProvider() != null && !member.getProvider().isBlank()) return false;
+        return passwordEncoder.matches(rawPassword, member.getPassword());
+    }
+
     @Transactional
     public void changePassword(Long memberId, MemberRequest.ChangePassword request) {
         Member member = findMemberById(memberId);
