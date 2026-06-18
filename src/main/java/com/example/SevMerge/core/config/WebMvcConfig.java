@@ -59,7 +59,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/portfolio/**",
                         "/report/**",
                         "/reviews/**",
-                        "/withdrawal/**"
+                        "/withdrawal/**",
+                        "/refund-applications",
+                        "/refund-applications/**"
                         )
                 .excludePathPatterns(
                         "/",
