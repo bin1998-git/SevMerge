@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -279,6 +280,22 @@ public class MemberController {
             return ResponseEntity.ok().body("정보 변경 완료");
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    // 비밀번호 확인api
+    @PostMapping("/api/member/verify-password")
+    @ResponseBody
+    public ResponseEntity<?> verifyCurrentPassword(@RequestBody Map<String, String> body, HttpSession session) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember == null) return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+
+        String currentPassword = body.get("currentPassword");
+        boolean matches = memberService.verifyPassword(loginMember.getId(), currentPassword);
+
+        if (matches) {
+            return ResponseEntity.ok().body(Map.of("message", "확인되었습니다."));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("message", "현재 비밀번호가 일치하지 않습니다."));
         }
     }
 

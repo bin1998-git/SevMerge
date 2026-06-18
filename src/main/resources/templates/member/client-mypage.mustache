@@ -84,6 +84,18 @@
     .cm-page { padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e7f0; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; cursor: pointer; text-decoration: none; }
     .cm-page:hover { border-color: #2563eb; color: #2563eb; }
     .cm-page.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+
+    /* 비밀번호 확인 모달 (추가) */
+    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9999; align-items: center; justify-content: center; }
+    .ar-modal-bg.open { display: flex; }
+    .ar-modal { background: #fff; border-radius: 16px; padding: 28px; max-width: 420px; width: 90%; }
+    .ar-modal-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
+    .ar-modal-sub { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
+    .ar-modal-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; }
+    .ar-modal-textarea:focus { outline: none; border-color: #2563eb; }
+    .ar-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .ar-modal-cancel { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #f3f4f8; color: #4b5563; border: none; cursor: pointer; font-family: inherit; }
+    .ar-modal-confirm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; color: #fff; }
 </style>
 
 <div class="cm-wrap">
@@ -399,13 +411,10 @@
                             <span id="phoneVerifyMsg" style="font-size:12px; margin-top:4px;"></span>
                         </div>
                         {{^member.isSocial}}
-                            <div class="cm-fg">
-                                <label class="cm-flabel">현재 비밀번호</label>
-                                <input type="password" id="updateCurrentPassword" name="currentPassword" class="cm-finput" placeholder="비밀번호 변경 시 입력"/>
-                            </div>
+                            <input type="hidden" id="updateCurrentPassword"/>
                             <div class="cm-fg">
                                 <label class="cm-flabel">새 비밀번호</label>
-                                <input type="password" id="updatePassword" name="newPassword" class="cm-finput" placeholder="변경할 경우만 입력"/>
+                                <input type="password" id="updatePassword" name="newPassword" class="cm-finput" placeholder="현재 비밀번호 확인 후 입력 가능" readonly onclick="openPwVerifyModal()" style="cursor:pointer;"/>
                             </div>
                             <div class="cm-fg">
                                 <label class="cm-flabel">새 비밀번호 확인</label>
@@ -429,7 +438,21 @@
             </section>
         </div>
     </div>
+    <!-- 비밀번호 변경 - 현재 비밀번호 확인  -->
+    <div class="ar-modal-bg" id="pwVerifyModalBg">
+        <div class="ar-modal">
+            <h3 class="ar-modal-title">비밀번호 변경</h3>
+            <p class="ar-modal-sub">변경하려면 현재 비밀번호를 먼저 확인해 주세요.</p>
+            <input type="password" id="pwVerifyInput" class="ar-modal-textarea" style="min-height:auto; padding:12px 14px;" placeholder="현재 비밀번호를 입력하세요" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmCurrentPassword();}"/>
+            <span id="pwVerifyModalMsg" style="font-size:12px; margin-top:6px; display:block;"></span>
+            <div class="ar-modal-btns">
+                <button type="button" class="ar-modal-cancel" onclick="closePwVerifyModal()">취소</button>
+                <button type="button" class="ar-modal-confirm" id="pwVerifyConfirmBtn" style="background:#2563eb;" onclick="confirmCurrentPassword()">확인</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <script>
     function previewImage(input) {
@@ -618,6 +641,63 @@ function updateMyInfo() {
         })
         .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
 }
+
+    let currentPasswordVerified = false;
+
+function openPwVerifyModal() {
+    if (currentPasswordVerified) return; // 이미 확인됐으면 모달 안 띄움
+    document.getElementById("pwVerifyInput").value = "";
+    document.getElementById("pwVerifyModalMsg").textContent = "";
+    document.getElementById("pwVerifyModalBg").classList.add("open");
+    setTimeout(() => document.getElementById("pwVerifyInput").focus(), 100);
+}
+
+function closePwVerifyModal() {
+    document.getElementById("pwVerifyModalBg").classList.remove("open");
+}
+
+function confirmCurrentPassword() {
+    const currentPw = document.getElementById("pwVerifyInput").value;
+    const msg = document.getElementById("pwVerifyModalMsg");
+
+    if (!currentPw) {
+        msg.textContent = "현재 비밀번호를 입력해 주세요.";
+        msg.style.color = "#ef4444";
+        return;
+    }
+
+    fetch('/api/member/verify-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: currentPw })
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+        if (ok) {
+            currentPasswordVerified = true;
+            document.getElementById("updateCurrentPassword").value = currentPw;
+            const pwInput = document.getElementById("updatePassword");
+            pwInput.readOnly = false;   // disabled = false → readOnly = false 로 변경
+            pwInput.placeholder = "새 비밀번호를 입력하세요";
+            pwInput.style.cursor = "text";
+            closePwVerifyModal();
+            pwInput.focus();
+        } else {
+            msg.textContent = data.message;
+            msg.style.color = "#ef4444";
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        msg.textContent = "통신 오류가 발생했습니다.";
+        msg.style.color = "#ef4444";
+    });
+}
+
+// 배경 클릭 시 닫기
+document.getElementById("pwVerifyModalBg").addEventListener("click", function(e) {
+    if (e.target === this) closePwVerifyModal();
+});
 </script>
 
 {{> layout/footer}}
