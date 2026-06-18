@@ -29,6 +29,17 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
     """)
     Double avgRating(@Param("targetId") Long targetId);
 
+    // 전문가 등급 계산에서 리뷰수가 적은 전문가의 신뢰성을 보장하기위한 전체 전문가의 평균
+    @Query(value = """
+    SELECT AVG(avg_star) FROM (
+        SELECT ep.id, COALESCE(AVG(r.count_star), 0.0) as avg_star
+        FROM expert_profile ep
+        LEFT JOIN review_tb r ON r.targeter_id = ep.member_id
+        GROUP BY ep.id
+    ) sub
+    """, nativeQuery = true)
+    Optional<Double> globalRating();
+
     // 리뷰 건수 — ExpertProfile.totalReviews 갱신용
     @Query("SELECT COUNT(r) FROM Review r WHERE r.targeter.id = :targetId AND r.isDelete = false")
     int countByTargeterId(@Param("targetId") Long targetId);
