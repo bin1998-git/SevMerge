@@ -7,11 +7,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.sql.Timestamp;
 
 /**
- * RefundApplication Entity
+ * Entity
  *
- * [충돌 방지 전략]
- * - Payment(박효균), Member(최원종) 등 타 도메인 Entity를 직접 참조하지 않고
- *   FK를 Long 타입으로만 보관합니다. (@ManyToOne 미사용)
+ * 충돌 방지
+ *  Payment, Member 등 다른 도메인 Entity를 직접 참조하지 않고
+ *   FK를 Long 타입으로만 보관함. @ManyToOne 미사용
  */
 @Entity
 @Table(name = "refund_application_tb")
@@ -53,7 +53,7 @@ public class RefundApplication {
     @Column(name = "reason_category", length = 50)
     private String reasonCategory;
 
-    // ── 비즈니스 메서드 ──
+    // 비즈니스 메서드
 
     public void approve(String comment) {
         if (this.status != RefundApplicationStatus.PENDING) {
