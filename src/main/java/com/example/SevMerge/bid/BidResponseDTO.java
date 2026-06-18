@@ -26,6 +26,7 @@ public class BidResponseDTO {
         private Long estimatedDays;
         private Long proposedPrice;
         private String status;
+        private String avgRating;
         private boolean isPending;
         private boolean isSelected;
         private boolean isRejected;

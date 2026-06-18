@@ -1,5 +1,6 @@
 package com.example.SevMerge.expertprofile;
 
+import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
@@ -23,7 +24,7 @@ public class ExpertProfileService {
 
     private final ExpertProfileRepository expertProfileRepository;
     private final ReviewRepository reviewRepository;
-    private final ProjectRepository projectRepository;
+    private final BidRepository bidRepository;
 
     /**
      * 전문가 프로필 등록
@@ -58,7 +59,6 @@ public class ExpertProfileService {
                 .map(profile -> {
                     Double avg = reviewRepository.avgRating(profile.getMember().getId());
                     int count = reviewRepository.countByTargeterId(profile.getMember().getId());
-                    manageExpertGrade(profile.getMember());
                     ExpertProfileResponse res = ExpertProfileResponse.from(profile);
                     res.setAvgRating(avg != null ? BigDecimal.valueOf(avg).setScale(1, RoundingMode.HALF_UP) : BigDecimal.ZERO);
                     res.setTotalReviews(count);
@@ -96,31 +96,26 @@ public class ExpertProfileService {
         return ExpertProfileResponse.from(profile);
     }
 
-    public void manageExpertGrade(Member expert) {
+    @Transactional
+    public void manageExpertGrade(Long expertId) {
 
-        if (!expert.getRole().equals(Role.EXPERT)) {
+        ExpertProfile expert = expertProfileRepository.findByMemberId(expertId)
+                .orElseThrow(() -> new NotFoundException("전문가를 찾을 수 없습니다."));
+
+        if (!expert.getMember().getRole().equals(Role.EXPERT)) {
             throw new BadRequestException("전문가가 아닙니다.");
         }
 
         // 리뷰 평균 별점 조회, 프로젝트 완료 건수를 찾아
-        Double avgRate = reviewRepository.avgRating(expert.getId());
-
-
-        double rating = avgRate != null ? avgRate : 0.0;
-
-
-        Grade grade;
-        if (rating >= 4.5) {
-            grade = Grade.MASTER;
-        } else if (rating >= 4.0) {
-            grade = Grade.SKILLED;
-        } else {
-            grade = Grade.NORMAL;
-        }
+        Double avgRate = reviewRepository.avgRating(expert.getId()) != null ? reviewRepository.avgRating(expert.getId()) : 0.0;
+        Integer reviewCount = reviewRepository.findMyReviews(expert.getId()).size();
+        Integer donCount = bidRepository.doneProjectsByExpert(expert.getId());
+        Double globalAvg = reviewRepository.globalRating().orElse(3.5);
 
         expertProfileRepository.findByMemberId(expert.getId())
                 .ifPresent(ep -> {
-                    ep.setExpertGrade(grade);
+                    ep.checkGrade(avgRate, reviewCount, donCount, globalAvg);
+                    expertProfileRepository.save(ep); // 명시적 save 추가
                 });
     }
 }
