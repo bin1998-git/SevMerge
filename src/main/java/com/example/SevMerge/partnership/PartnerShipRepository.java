@@ -14,8 +14,8 @@ public interface PartnerShipRepository extends JpaRepository<PartnerShip, Long> 
     // 현재 시각
     @Modifying
     @Query("""
-        DELETE  FROM PartnerShip p WHERE p.deletedAt < :now AND :now IS NOT NULL
+        DELETE  FROM PartnerShip p WHERE p.deletedAt < :now AND p.deletedAt IS NOT NULL
     """)
 
-    void deletedAtByTime(@Param("deletedAt") Timestamp now);
+    void deletedAtByTime(@Param("now") Timestamp now);
 }

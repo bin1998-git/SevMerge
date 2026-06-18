@@ -63,8 +63,15 @@ public class PartnerShipService {
         partnerShipMailService.sendPartnerShipMailReject(partnerShipEntity.getEmail());
         partnerShipEntity.setStatus(PartnerShipStatus.REJECTED);
         partnerShipEntity.deleteAt();
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        partnerShipRepository.deletedAtByTime(now);
+        // 스케줄러 표시된 메서드는 알아서 스프링부트가 설정된 시간마다 메서드를 불러오기에 따로 호출 안해도 된다.
+//        deleteRejected();
     }
+
+//    @Scheduled(fixedDelay = 1000)
+//    @Transactional
+//    public void deleteRejected() {
+//        Timestamp now = new Timestamp(System.currentTimeMillis());
+//        partnerShipRepository.deletedAtByTime(now);
+//    }
 
 }

@@ -20,11 +20,30 @@ public class PartnerShipMailService {
             helper.setTo("dkswnsgus88@naver.com");
             helper.setReplyTo(request.getEmail()); // 발송한 메일에 답장하면 다시 내게오지않고 되돌아가는기능
             helper.setText(
-                    "[제휴문의] \n" +
-                            "회사이름: " + request.getCompanyName() + "\n" +
-                            "문의자 메일: " + request.getEmail() + "\n" +
-                            "제휴내용:\n" + request.getContent()
-            );
+                    "<div style='font-family:Arial, sans-serif; max-width:600px; margin:auto; padding:30px; border:1px solid #e0e0e0; border-radius:8px;'>" +
+                            "  <h2 style='color:#2196F3;'>📩 제휴 문의가 접수되었습니다.</h2>" +
+                            "  <table style='width:100%; border-collapse:collapse;'>" +
+                            "    <tr style='border-bottom:1px solid #e0e0e0;'>" +
+                            "      <td style='padding:12px; color:#888; width:30%;'>회사명</td>" +
+                            "      <td style='padding:12px;'>" + request.getCompanyName() + "</td>" +
+                            "    </tr>" +
+                            "    <tr style='border-bottom:1px solid #e0e0e0;'>" +
+                            "      <td style='padding:12px; color:#888;'>담당자명</td>" +
+                            "      <td style='padding:12px;'>" + request.getManagerName() + "</td>" +
+                            "    </tr>" +
+                            "    <tr style='border-bottom:1px solid #e0e0e0;'>" +
+                            "      <td style='padding:12px; color:#888;'>문의자 메일</td>" +
+                            "      <td style='padding:12px;'>" + request.getEmail() + "</td>" +
+                            "    </tr>" +
+                            "    <tr>" +
+                            "      <td style='padding:12px; color:#888;'>문의 내용</td>" +
+                            "      <td style='padding:12px;'>" + request.getContent() + "</td>" +
+                            "    </tr>" +
+                            "  </table>" +
+                            "  <hr style='border:none; border-top:1px solid #e0e0e0; margin-top:20px;'/>" +
+                            "  <p style='color:#888; font-size:12px;'>본 메일은 자동 발송된 메일입니다.</p>" +
+                            "</div>"
+            ,true);
             if (request.getPartnerFile() != null && !request.getPartnerFile().isEmpty()) {
                 helper.addAttachment(
                         request.getPartnerFile().getOriginalFilename(),
