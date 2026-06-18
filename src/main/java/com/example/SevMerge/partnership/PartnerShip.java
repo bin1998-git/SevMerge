@@ -58,10 +58,10 @@ public class PartnerShip {
     }
 
 
-    @Scheduled(fixedDelay = 10000)
+
     public void deleteAt() {
 
-        deletedAt = new Timestamp(System.currentTimeMillis() + 20000);
-
+        final Long DELETE_TIME = 10000L;
+        deletedAt = new Timestamp(System.currentTimeMillis() + DELETE_TIME); // 거절후 삭제되기까지 시간
     }
 }
