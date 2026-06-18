@@ -136,12 +136,19 @@
 
             <!-- 통계 -->
             <div class="cm-stats">
-                <div class="cm-stat"><div class="cm-stat-icon ic-blue">📋</div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">등록 프로젝트</div></div></div>
-                <div class="cm-stat"><div class="cm-stat-icon ic-green">✅</div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료 프로젝트</div></div></div>
-                <div class="cm-stat"><div class="cm-stat-icon ic-amber">💬</div><div><div class="cm-stat-val">{{messageCount}}</div><div class="cm-stat-lbl">새 메시지</div></div></div>
-                <div class="cm-stat"><div class="cm-stat-icon ic-violet">💰</div><div><div class="cm-stat-val">{{member.displayBalance}}</div><div class="cm-stat-lbl">보유 포인트</div></div></div>
+                <a href="/my-pages?tab=projects" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-blue">📋</div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">등록 프로젝트</div></div>
+                </a>
+                <a href="/my-pages?tab=projects" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-green">✅</div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료 프로젝트</div></div>
+                </a>
+                <a href="/my-pages?tab=messages" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-amber">💬</div><div><div class="cm-stat-val">{{messageCount}}</div><div class="cm-stat-lbl">새 메시지</div></div>
+                </a>
+                <a href="/my-pages?tab=chargeHistory" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-violet">💰</div><div><div class="cm-stat-val">{{member.displayBalance}}</div><div class="cm-stat-lbl">보유 포인트</div></div>
+                </a>
             </div>
-
             <!-- 콘텐츠 -->
             <section class="cm-content">
 
@@ -393,6 +400,10 @@
                         </div>
                         {{^member.isSocial}}
                             <div class="cm-fg">
+                                <label class="cm-flabel">현재 비밀번호</label>
+                                <input type="password" id="updateCurrentPassword" name="currentPassword" class="cm-finput" placeholder="비밀번호 변경 시 입력"/>
+                            </div>
+                            <div class="cm-fg">
                                 <label class="cm-flabel">새 비밀번호</label>
                                 <input type="password" id="updatePassword" name="newPassword" class="cm-finput" placeholder="변경할 경우만 입력"/>
                             </div>
@@ -436,8 +447,10 @@
 
 function updateMyInfo() {
     const nameVal = document.getElementById("updateName").value.trim();
+    const currentPwEl = document.getElementById("updateCurrentPassword");
     const pwEl = document.getElementById("updatePassword");
     const pwConfirmEl = document.getElementById("updatePasswordConfirm");
+    const currentPasswordVal = currentPwEl ? currentPwEl.value : "";
     const passwordVal = pwEl ? pwEl.value : "";
     const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
     const phoneVal = document.getElementById("updatePhone").value.trim();
@@ -446,6 +459,10 @@ function updateMyInfo() {
     if (!nameVal) { alert("이름을 입력해 주세요."); return; }
 
     if (passwordVal) {
+        if (!currentPasswordVal) {
+            alert("현재 비밀번호를 입력해 주세요.");
+            return;
+        }
         const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
         if (!pwRegex.test(passwordVal)) {
             alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
@@ -455,6 +472,10 @@ function updateMyInfo() {
             alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             return;
         }
+        if (passwordVal === currentPasswordVal) {
+            alert("기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
+            return;
+        }
     }
 
     if (phoneVal !== originalPhone && !phoneVerified) {
@@ -462,11 +483,10 @@ function updateMyInfo() {
         return;
     }
 
-    // FormData로 전송 (이미지 + JSON 같이)
     const formData = new FormData();
     formData.append("data", new Blob(
-        [JSON.stringify({ name: nameVal, phone: phoneVal, newPassword: passwordVal })],
-        { type: "application/json" }
+    [JSON.stringify({ name: nameVal, phone: phoneVal, currentPassword: currentPasswordVal, newPassword: passwordVal })],
+    { type: "application/json" }
     ));
 
     const imageFile = document.getElementById("profileImageFile").files[0];
@@ -476,7 +496,7 @@ function updateMyInfo() {
 
     fetch('/my-pages', {
         method: 'PUT',
-        body: formData   // Content-Type 헤더 직접 설정 X (브라우저가 multipart로 자동 설정)
+        body: formData
     })
     .then(response => {
         if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }

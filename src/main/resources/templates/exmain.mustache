@@ -595,7 +595,12 @@
                     <span class="promo-label">SECS</span>
                 </div>
             </div>
-            <a href="/join-start" class="promo-cta">지금 시작하기</a>
+            {{#isLoggedIn}}
+                <a href="/projects/save-form" class="promo-cta">지금 시작하기</a>
+            {{/isLoggedIn}}
+            {{^isLoggedIn}}
+                <a href="/join-start" class="promo-cta">지금 시작하기</a>
+            {{/isLoggedIn}}
         </div>
     </div>
 
