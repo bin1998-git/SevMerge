@@ -443,7 +443,6 @@
                     <a href="/admin/members" class="admin-main-item">회원 관리</a>
                     <a href="/admin/projects" class="admin-main-item">프로젝트 관리</a>
 
-
                     <div class="admin-dropdown-container" style="position: relative; display: inline-block;">
                         <span class="admin-dropdown-trigger" style="cursor: pointer;">게시판 관리</span>
                         <div class="nav-submenu">
@@ -454,14 +453,15 @@
                         </div>
                     </div>
 
-                    <a href="/admin/experts" class="admin-main-item">전문가 승인</a>
                     <a href="/admin/blacklists" class="admin-main-item">블랙리스트</a>
+
                     <div class="admin-dropdown-container" style="position: relative; display: inline-block;">
                         <span class="admin-dropdown-trigger" style="cursor: pointer;">전문가 승인</span>
                         <div class="nav-submenu">
                             <a href="/admin/experts/withdraw" class="submenu-link">출금 요청 관리</a>
                             <a href="/admin/experts?status=PENDING" class="submenu-link">전문가 승인 관리</a>
                             <a href="/admin/experts/grade" class="submenu-link">등급별 전문가 관리</a>
+                            <a href="/admin/refund-applications" class="submenu-link">환불 요청 관리</a>
                         </div>
                     </div>
                 {{/isAdmin}}
@@ -617,7 +617,8 @@
                    const isExpertMatch = (
                        (linkHref.includes("withdraw") && currentPath.includes("/admin/experts/withdraw")) ||
                        (linkHref.includes("status=PENDING") && currentPath.includes("/admin/experts") && !currentPath.includes("withdraw") && !currentPath.includes("grade")) ||
-                       (linkHref.includes("grade") && currentPath.includes("/admin/experts/grade"))
+                       (linkHref.includes("grade") && currentPath.includes("/admin/experts/grade")) ||
+                       (linkHref.includes("refund-applications") && currentPath.includes("/admin/refund-applications"))
                    );
 
                     if (isBoardMatch || isNoticeMatch || isExpertMatch) {

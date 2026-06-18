@@ -200,10 +200,21 @@ public class MemberService {
         member.updateInfo(request.getName(), phone);
 
         if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
+            if (member.getProvider() != null && !member.getProvider().isBlank()) {
+                throw new BadRequestException("소셜 로그인 계정은 비밀번호를 변경할 수 없습니다.");
+            }
+            if (request.getCurrentPassword() == null || request.getCurrentPassword().isBlank()) {
+                throw new BadRequestException("현재 비밀번호를 입력해 주세요.");
+            }
+            if (!passwordEncoder.matches(request.getCurrentPassword(), member.getPassword())) {
+                throw new BadRequestException("현재 비밀번호가 일치하지 않습니다.");
+            }
+            if (passwordEncoder.matches(request.getNewPassword(), member.getPassword())) {
+                throw new BadRequestException("기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
+            }
             member.changePassword(passwordEncoder.encode(request.getNewPassword()));
         }
 
-        // 프로필 이미지 변경
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
             if (!FileUtil.isImageFile(profileImageFile)) {
                 throw new BadRequestException("이미지 파일만 업로드할 수 있습니다.");
@@ -215,6 +226,15 @@ public class MemberService {
                 throw new BadRequestException("이미지 업로드에 실패했습니다.");
             }
         }
+    }
+
+    // 비밀번호 검증 메서드
+    @Transactional(readOnly = true)
+    public boolean verifyPassword(Long memberId, String rawPassword) {
+        Member member = findMemberById(memberId);
+        if (rawPassword == null || rawPassword.isBlank()) return false;
+        if (member.getProvider() != null && !member.getProvider().isBlank()) return false;
+        return passwordEncoder.matches(rawPassword, member.getPassword());
     }
 
     @Transactional
