@@ -102,6 +102,24 @@ public class GlobalExceptionHandler {
                 """.formatted(message);
     }
 
+    @ExceptionHandler(CalculateException.class)
+    @ResponseBody
+    public String calculateException(CalculateException e, HttpServletRequest request) {
+        log.warn("=== CalculateException ===");
+        log.warn("요청 URL : {}", request.getRequestURL());
+        log.warn("에러 메시지 : {}", e.getMessage());
+
+        String message = e.getMessage().replace("'", "\\'");
+
+        return """
+                <script>
+                    alert('%s');
+                    history.back();
+                </script>
+                """.formatted(message);
+    }
+
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String dataIntegrity(DataIntegrityViolationException e, HttpServletRequest request) {
         log.warn("=== DB 제약조건 위반 ===");

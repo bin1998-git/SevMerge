@@ -2,6 +2,7 @@ package com.example.SevMerge.project;
 
 import com.example.SevMerge.bid.Bid;
 import com.example.SevMerge.bid.BidRepository;
+import com.example.SevMerge.bid.BidResponseDTO;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
@@ -102,7 +103,7 @@ public class ProjectController {
 
 
         // 일반 전문가도 빈 리스트나 전체 리스트를 안전하게 가져옵니다.
-        List<Bid> bids = bidRepository.findByProjectId(id);
+        List<BidResponseDTO.ListDTO> bids = bidService.findByProjectId(id,sessionUser);
         model.addAttribute("bids", bids);
 
         // 로그인한 사용자가 프로젝트 작성자인지 확인
