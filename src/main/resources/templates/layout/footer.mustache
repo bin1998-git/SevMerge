@@ -934,5 +934,419 @@
         }
     }
 </script>
+
+<!-- ▼▼▼ AI 챗봇 영역 ▼▼▼ -->
+<style>
+    .chatbot-toggle {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+        z-index: 1000;
+        border: none;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .chatbot-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
+    }
+
+    .chatbot-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* 처음 등장할 때 살짝 펄스로 시선 끌기 */
+    .chatbot-toggle::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid #60a5fa;
+        opacity: 0;
+        animation: chatbot-pulse 2.4s ease-out infinite;
+    }
+
+    @keyframes chatbot-pulse {
+        0% { opacity: .6; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.45); }
+    }
+
+    .chatbot-window {
+        position: fixed;
+        bottom: 98px;
+        right: 28px;
+        width: 360px;
+        height: 500px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 16px 48px rgba(15, 23, 42, 0.18);
+        border: 1px solid #eaecf4;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+        pointer-events: none;
+        transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .chatbot-window.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .chatbot-header {
+        background: #fff;
+        border-bottom: 1px solid #eaecf4;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chatbot-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .chatbot-avatar svg {
+        width: 18px;
+        height: 18px;
+        color: #fff;
+    }
+
+    .chatbot-header-text {
+        flex: 1;
+    }
+
+    .chatbot-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1c1e26;
+        letter-spacing: -0.2px;
+    }
+
+    .chatbot-status {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .chatbot-status::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+    }
+
+    .chatbot-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #9ca3af;
+        padding: 4px;
+        display: flex;
+        border-radius: 6px;
+        transition: background .15s, color .15s;
+    }
+
+    .chatbot-close:hover {
+        background: #f3f4f8;
+        color: #1c1e26;
+    }
+
+    .chatbot-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #f8f9fc;
+    }
+
+    .chatbot-messages::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .chatbot-messages::-webkit-scrollbar-thumb {
+        background: #e2e5ef;
+        border-radius: 10px;
+    }
+
+    .chat-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .chat-row.user {
+        flex-direction: row-reverse;
+    }
+
+    .chat-bubble {
+        max-width: 78%;
+        padding: 11px 14px;
+        border-radius: 14px;
+        font-size: 13px;
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    .chat-row.bot .chat-bubble {
+        background: #fff;
+        color: #1c1e26;
+        border: 1px solid #eaecf4;
+        border-bottom-left-radius: 4px;
+    }
+
+    .chat-row.user .chat-bubble {
+        background: #2563eb;
+        color: #fff;
+        border-bottom-right-radius: 4px;
+    }
+
+    /* 타이핑 인디케이터 */
+    .typing-dots {
+        display: flex;
+        gap: 4px;
+        padding: 12px 14px;
+    }
+
+    .typing-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #c4c9d9;
+        animation: typing-bounce 1.2s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(2) { animation-delay: .15s; }
+    .typing-dots span:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes typing-bounce {
+        0%, 60%, 100% { transform: translateY(0); opacity: .5; }
+        30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    .chatbot-suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0 16px 14px;
+        background: #f8f9fc;
+    }
+
+    .suggestion-chip {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 20px;
+        padding: 6px 12px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background .15s, border-color .15s;
+    }
+
+    .suggestion-chip:hover {
+        background: #dbeafe;
+        border-color: #93c5fd;
+    }
+
+    .chatbot-input-area {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px;
+        border-top: 1px solid #eaecf4;
+        background: #fff;
+    }
+
+    .chatbot-input-area input {
+        flex: 1;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 22px;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color .15s, background .15s;
+        background: #f8f9fc;
+    }
+
+    .chatbot-input-area input:focus {
+        border-color: #2563eb;
+        background: #fff;
+    }
+
+    .chatbot-send-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #2563eb;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background .15s;
+    }
+
+    .chatbot-send-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .chatbot-send-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    @media (max-width: 480px) {
+        .chatbot-window {
+            width: calc(100vw - 32px);
+            right: 16px;
+            height: 70vh;
+        }
+        .chatbot-toggle {
+            right: 16px;
+            bottom: 16px;
+        }
+    }
+</style>
+
+<button class="chatbot-toggle" onclick="toggleChatbot()" aria-label="AI 도우미 열기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+</button>
+
+<div class="chatbot-window" id="chatbotWindow">
+    <div class="chatbot-header">
+        <div class="chatbot-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"/>
+                <path d="M5 20v-2a7 7 0 0 1 14 0v2"/>
+            </svg>
+        </div>
+        <div class="chatbot-header-text">
+            <div class="chatbot-title">SevMerge AI 도우미</div>
+            <div class="chatbot-status">온라인</div>
+        </div>
+        <button class="chatbot-close" onclick="toggleChatbot()" aria-label="닫기">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="chatbot-messages" id="chatbotMessages">
+        <div class="chat-row bot">
+            <div class="chat-bubble">안녕하세요! SevMerge 이용 중 궁금한 점이나, 프로젝트 등록을 도와드릴게요.</div>
+        </div>
+    </div>
+
+    <div class="chatbot-suggestions">
+        <div class="suggestion-chip" onclick="sendSuggestion('프로젝트는 어떻게 등록하나요?')">프로젝트 등록 방법</div>
+        <div class="suggestion-chip" onclick="sendSuggestion('입찰은 어떻게 참여하나요?')">입찰 참여 방법</div>
+    </div>
+
+    <div class="chatbot-input-area">
+        <input type="text" id="chatbotInput" placeholder="질문을 입력하세요" onkeydown="if(event.key==='Enter' && !event.isComposing) sendChatMessage()">
+        <button class="chatbot-send-btn" onclick="sendChatMessage()" aria-label="전송">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    function toggleChatbot() {
+        document.getElementById('chatbotWindow').classList.toggle('active');
+    }
+
+    function sendSuggestion(text) {
+        document.getElementById('chatbotInput').value = text;
+        sendChatMessage();
+    }
+
+    function appendMessage(role, text) {
+        const messagesDiv = document.getElementById('chatbotMessages');
+        const row = document.createElement('div');
+        row.className = 'chat-row ' + role;
+        row.innerHTML = `<div class="chat-bubble">${text}</div>`;
+        messagesDiv.appendChild(row);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return row;
+    }
+
+    function showTyping() {
+        const messagesDiv = document.getElementById('chatbotMessages');
+        const row = document.createElement('div');
+        row.className = 'chat-row bot';
+        row.id = 'typingIndicator';
+        row.innerHTML = `<div class="chat-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+        messagesDiv.appendChild(row);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function removeTyping() {
+        const el = document.getElementById('typingIndicator');
+        if (el) el.remove();
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chatbotInput');
+        const question = input.value.trim();
+        if (!question) return;
+
+        appendMessage('user', question);
+        input.value = '';
+        showTyping();
+
+        try {
+            const response = await fetch('/api/project/ai/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+
+            const data = await response.json();
+            removeTyping();
+            appendMessage('bot', data.answer);
+        } catch (error) {
+            removeTyping();
+            appendMessage('bot', '오류가 발생했어요. 다시 시도해주세요.');
+        }
+    }
+</script>
+<!-- ▲▲▲ AI 챗봇 영역 끝 ▲▲▲ -->
 </body>
 </html>
