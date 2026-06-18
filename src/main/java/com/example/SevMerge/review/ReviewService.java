@@ -5,6 +5,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
+import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.payment.PaymentRepository;
@@ -26,7 +27,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
-    private final ExpertProfileRepository expertProfileRepository;
+    private final ExpertProfileService expertProfileService;
 
     // 리뷰작성
     @Transactional
@@ -58,6 +59,7 @@ public class ReviewService {
 
         reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity));
 
+        expertProfileService.manageExpertGrade(reviewDTO.getTargetId());
     }
 
     // 리뷰조회
@@ -125,4 +127,5 @@ public class ReviewService {
     public Double avgRating(Long targetId) {
         return reviewRepository.avgRating(targetId);
     }
+
 }

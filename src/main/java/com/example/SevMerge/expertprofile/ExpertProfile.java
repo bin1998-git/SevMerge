@@ -1,5 +1,7 @@
 package com.example.SevMerge.expertprofile;
 
+import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.core.exception.CalculateException;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,8 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @Builder
 public class ExpertProfile {
+
+    private static final Double MIN_RELIABLE_REVIEWS = 5.0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,4 +52,34 @@ public class ExpertProfile {
     @Column(nullable = true)
     @Builder.Default
     private Grade expertGrade=Grade.NORMAL;
+
+    // 전문가 등급 측정을 위한 편의 메서드
+    public void checkGrade(Double avgRating, Integer reviewCount ,Integer doneCount, Double globalAvg) {
+
+        if(reviewCount <= 0) {
+            this.expertGrade=Grade.NORMAL;
+            return;
+        }
+
+        if(globalAvg <3.5) {
+            globalAvg = 3.5;
+        }
+
+        Double bayesianScore = (reviewCount.doubleValue()/(reviewCount.doubleValue()+MIN_RELIABLE_REVIEWS)) * avgRating
+                + (MIN_RELIABLE_REVIEWS/(reviewCount.doubleValue()+MIN_RELIABLE_REVIEWS)) * globalAvg;
+        Double workScore = 5.0 / (1+Math.exp(-0.05 * (doneCount.doubleValue()-50)));
+
+        Double score = (bayesianScore*0.7) + (workScore * 0.3);
+
+        if(score < 0 || score > 5.0) {
+            throw new CalculateException("점수 산출에 실패했습니다. 관리자에게 문의하세요.");
+        } else if (score >= 0 && score < 2.5) {
+            this.expertGrade = Grade.NORMAL;
+        } else if(score >= 2.5 && score < 4.0) {
+            this.expertGrade = Grade.SKILLED;
+        } else if (score > 4.0) {
+            this.expertGrade = Grade.MASTER;
+        }
+
+    }
 }
