@@ -17,6 +17,17 @@ repositories {
     mavenCentral()
 }
 
+
+ext {
+    set('springAiVersion', "1.1.1")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
+
 dependencies {
 
     implementation 'org.springframework.security:spring-security-crypto'
@@ -29,6 +40,11 @@ dependencies {
 
     // SOLAPI 문자, 카톡등 SMS 전송 라이브러리
     implementation 'com.solapi:sdk:1.0.3'
+
+    // Spring AI - Gemini 챗봇
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+
+
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.apache.commons:commons-lang3:3.12.0'

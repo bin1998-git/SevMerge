@@ -13,6 +13,7 @@ import com.example.SevMerge.project.BidFilter;
 import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
 import com.example.SevMerge.project.ProjectStatus;
+import com.example.SevMerge.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class BidService {
     private final PaymentService paymentService;
     private final NotificationService notificationService;
     private final ExpertProfileRepository expertProfileRepository;
+    private final ReviewRepository reviewRepository;
 
     // 제안서 작성
     @Transactional
@@ -91,12 +93,14 @@ public class BidService {
     public List<BidResponseDTO.ListDTO> findByProjectId(Long projectId, Member session) {
         log.info("제안서 조회 서비스 시작");
         // 의뢰인 여부 체크
-        if (!session.isClient() && !session.isAdmin()) {
-            throw new ForbiddenException("의뢰인만 제안서 목록을 조회할 수 있습니다.");
-        }
         List<Bid> bidList = bidRepository.findByProjectId(projectId);
         return bidList.stream()
-                .map(BidResponseDTO.ListDTO::new)
+                .map(bid -> {
+                    BidResponseDTO.ListDTO dto = new BidResponseDTO.ListDTO(bid);
+                    Double avg = reviewRepository.avgRating(bid.getExpert().getId());
+                    dto.setAvgRating(avg != null ? String.format("%.1f", avg) : "0.0");
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

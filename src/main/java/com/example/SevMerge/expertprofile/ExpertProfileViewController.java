@@ -49,6 +49,7 @@ public class ExpertProfileViewController {
      */
     @GetMapping
     public String list(HttpSession session ,Model model) {
+
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("expertProfiles", expertProfileService.getAll());
         model.addAttribute("doneProject",projectService.getDoneProjectsCount());
