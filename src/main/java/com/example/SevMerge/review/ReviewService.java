@@ -10,6 +10,8 @@ import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.payment.PaymentRepository;
 import com.example.SevMerge.payment.PaymentStatus;
+import com.example.SevMerge.project.Project;
+import com.example.SevMerge.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
     private final ExpertProfileService expertProfileService;
+    private final ProjectRepository projectRepository;
 
     // 리뷰작성
     @Transactional
@@ -43,6 +46,9 @@ public class ReviewService {
                 () -> new NotFoundException("대상자를 찾을 수 없습니다.")
         );
 
+        Project project = projectRepository.findById(reviewDTO.getProjectId())
+                .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다."));
+
         // 완료된 거래가 있는지 확인 (의뢰인→전문가 또는 전문가→의뢰인 양방향 체크)
         boolean hasSettledTransaction =
                 paymentRepository.existsByClientIdAndExpertIdAndStatus(reviewer.getId(), targetEntity.getId(), PaymentStatus.SETTLED)
@@ -53,11 +59,15 @@ public class ReviewService {
         }
 
         // 동일 대상 중복 리뷰 방지
-        if (reviewRepository.existsByReviewerAndTargeter(reviewer.getId(), targetEntity.getId())) {
-            throw new BadRequestException("이미 해당 사용자에게 리뷰를 작성했습니다.");
+        if (reviewRepository.existsByReviewerAndTargeterAndProject(reviewer.getId(), targetEntity.getId(), reviewDTO.getProjectId())) {
+            throw new BadRequestException("이미 해당 프로젝트에 리뷰를 작성했습니다.");
         }
 
-        reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity));
+        System.out.println("projectId: " + reviewDTO.getProjectId());
+        System.out.println("reviewerId: " + reviewer.getId());
+        System.out.println("targeterId: " + targetEntity.getId());
+
+        reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity,project));
 
         expertProfileService.manageExpertGrade(reviewDTO.getTargetId());
     }

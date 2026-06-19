@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -80,11 +80,10 @@ public class ProjectService {
     }
 
 
-
     // 중복 체크
     public List<ProjectResponeDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
 
-        List<Project> projectList = projectCustomRepository.findByFilters(keyword,category, statusFilter, bidFilter);
+        List<Project> projectList = projectCustomRepository.findByFilters(keyword, category, statusFilter, bidFilter);
 
         return projectList.stream()
                 .map(ProjectResponeDTO.ListDTO::new)
@@ -250,5 +249,74 @@ public class ProjectService {
     public void deleteProjectByAdmin(Long id) {
         log.info("관리자 프로젝트 소프트삭제 서비스 시작 - 대상 ID : {}", id);
         projectRepository.deleteProjectByAdmin(id);
+    }
+
+    // 관리자 실시간 그래프통계
+    public List<Integer> getPast7DaysProjectTrend() {
+        List<Object[]> rawData = projectRepository.findRecent7DaysProjectCount();
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        LocalDate today = LocalDate.now();
+
+        // 일단 7일동안 발생한 총 등록수 합을 구함
+        int sumInPast7Days = 0;
+        for (int i = 0; i < 7; i++) {
+            String targetDate = today.minusDays(i).format(formatter);
+            sumInPast7Days += dateCountMap.getOrDefault(targetDate, 0);
+        }
+
+        int cumulativeCount = findAllProjects().size() - sumInPast7Days;
+
+        // 6일전부터 오늘까지 그날의 등록수를 더해줌
+        List<Integer> trendData = new ArrayList<>();
+        for (int i = 6; i >= 0; i--) {
+            String targetDate = today.minusDays(i).format(formatter);
+            // 그날 새로 등록된만큼 누적 합산함
+            cumulativeCount += dateCountMap.getOrDefault(targetDate, 0);
+            trendData.add(cumulativeCount);
+        }
+        return trendData;
+    }
+
+    // 최근 7일간 일자별 프로젝트 실시간 완료 띄우기
+    public List<Integer> getPast7DaysCompletedTrend() {
+        List<Object[]> rawData = projectRepository.findRecent7DaysCompletedCount();
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        LocalDate today = LocalDate.now();
+
+        int sumInPast7Days = 0;
+        for (int i = 0; i < 7; i++) {
+            String targetDate = today.minusDays(i).format(formatter);
+            sumInPast7Days += dateCountMap.getOrDefault(targetDate, 0);
+        }
+
+        int cumulativeCount = (int) getDoneProjectsCount() - sumInPast7Days;
+
+        List<Integer> trendData = new ArrayList<>();
+        for (int i = 6; i >= 0; i--) {
+            String targetDate = today.minusDays(i).format(formatter);
+            cumulativeCount += dateCountMap.getOrDefault(targetDate, 0);
+            trendData.add(cumulativeCount);
+        }
+        return trendData;
     }
 }

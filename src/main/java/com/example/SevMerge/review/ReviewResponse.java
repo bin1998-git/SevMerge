@@ -32,12 +32,14 @@ public class ReviewResponse {
     public static class SaveDTO {
         private Long reviewerId;
         private Long targeterId;
+        private Long projectId;
         private String reviewerName;
         private String targeterName;
 
         public SaveDTO(Review review) {
             this.reviewerId = review.getReviewer().getId();
             this.targeterId = review.getTargeter().getId();
+            this.projectId = review.getProject().getId();
             this.reviewerName = review.getReviewer().getName();
             this.targeterName = review.getTargeter().getName();
         }

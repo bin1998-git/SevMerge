@@ -49,21 +49,17 @@ public class ReviewController {
     // 리뷰작성 화면
     @GetMapping("/reviews/save")
     public String saveReviewForm(Model model, HttpSession session,
-                                 @RequestParam(required = false) Long targetId
-    ) {
+                                 @RequestParam(required = false) Long targetId,
+                                 @RequestParam(required = false) Long projectId) {
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) {
-            return "login-form";
-        }
+        if (sessionUser == null) return "login-form";
 
         Member targeter = memberService.findMemberById(targetId);
 
-        System.out.println(targeter.getName());
-
-
         model.addAttribute("targeter", targeter);
         model.addAttribute("reviewer", sessionUser);
+        model.addAttribute("projectId", projectId);
 
         return "review/review-save";
     }
@@ -72,15 +68,15 @@ public class ReviewController {
     // 리뷰 작성 후 저장
     @PostMapping("/reviews/save")
     public String saveReview(ReviewRequest.SaveReviewDTO reviewDTO, HttpSession session, Model model,
-                             @RequestParam(required = false) Long targetId) {
+                             @RequestParam(required = false) Long targetId,
+                             @RequestParam(required = false) Long projectId) {
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER); // 누가 쓸건지 특정
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "login-form";
 
-        if (sessionUser == null) {
-            return "login-form";
-        }
+        reviewDTO.setProjectId(projectId);  // DTO에 projectId 세팅
+
         Member targeter = memberService.findMemberById(targetId);
-
         model.addAttribute("targeter", targeter);
         model.addAttribute("reviewer", sessionUser);
 

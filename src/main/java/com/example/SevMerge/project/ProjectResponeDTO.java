@@ -22,6 +22,7 @@ public class ProjectResponeDTO {
         private Integer budgetMin;
         private Integer budgetMax;
         private Timestamp deadline;
+        private boolean hasReview;
         private String projectStatus; // // OPEN, CLOSED
         private boolean isDone;
         private boolean isClosed; // 머스태치 파일용 불리언타(낙찰완료 확인용)

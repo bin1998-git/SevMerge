@@ -2,6 +2,7 @@ package com.example.SevMerge.review;
 
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +35,10 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "targeter_id" )
     private Member targeter; // 리뷰 수신자
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @CreationTimestamp
     private Timestamp createdAt; // 작성일

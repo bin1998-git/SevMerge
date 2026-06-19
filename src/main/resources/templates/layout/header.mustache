@@ -91,6 +91,7 @@
             align-items: center;
             flex-shrink: 0;
         }
+
         .nav-logo img {
             display: block;
             height: 30px;
@@ -178,7 +179,6 @@
         }
 
 
-
         /* ── 전문가 전용 탭 네비 ── */
         .nav-links.expert-links {
             flex: 1;
@@ -188,7 +188,10 @@
             overflow-x: auto;
             scrollbar-width: none;
         }
-        .nav-links.expert-links::-webkit-scrollbar { display: none; }
+
+        .nav-links.expert-links::-webkit-scrollbar {
+            display: none;
+        }
 
         .expert-nav-tab {
             padding: 0 18px;
@@ -203,39 +206,225 @@
             transition: color .15s, border-color .15s;
         }
 
-        .expert-nav-tab:hover { color: #1c1e26; border-color: #d1d5db; }
-        .expert-nav-tab.active { color: #2563eb; border-color: #2563eb; }
+        .expert-nav-tab:hover {
+            color: #1c1e26;
+            border-color: #d1d5db;
+        }
+
+        .expert-nav-tab.active {
+            color: #2563eb;
+            border-color: #2563eb;
+        }
 
         /* 잔액 위젯 */
-        .nav-balance-wrap { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 6px 12px; flex-shrink: 0; white-space: nowrap; }
-        .nav-balance-label { font-size: 11px; font-weight: 600; color: #3b82f6; }
-        .nav-balance-amount { font-size: 14px; font-weight: 900; color: #1d4ed8; }
-        .nav-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; transition: background .15s; white-space: nowrap; }
-        .nav-charge-btn:hover { background: #1d4ed8; }
-        .nav-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; color: #6b7280; transition: background .15s,
-        color .15s; }
-        .nav-bell:hover { background: #eff6ff; color: #2563eb; }
-        .nav-bell svg { width: 21px; height: 21px; }
-        .nav-bell-dot { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; background: #22c55e; border: 2px solid #fff; border-radius: 50%; }
+        .nav-balance-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 6px 12px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .nav-balance-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .nav-balance-amount {
+            font-size: 14px;
+            font-weight: 900;
+            color: #1d4ed8;
+        }
+
+        .nav-charge-btn {
+            font-size: 11px;
+            font-weight: 700;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 6px;
+            padding: 3px 9px;
+            text-decoration: none;
+            transition: background .15s;
+            white-space: nowrap;
+        }
+
+        .nav-charge-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .nav-bell {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            color: #6b7280;
+            transition: background .15s,
+            color .15s;
+        }
+
+        .nav-bell:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .nav-bell svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .nav-bell-dot {
+            position: absolute;
+            top: 8px;
+            right: 9px;
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border: 2px solid #fff;
+            border-radius: 50%;
+        }
 
 
-        .profile-menu { position: relative; }
-        .profile-trigger { background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
-        .profile-thumb { width: 44px; height: 44px; border-radius: 50%; background-size: cover; background-position: center; background-color: #eff6ff; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 0; overflow: hidden; flex-shrink: 0; }
-        .profile-thumb-default { font-size: 14px; font-weight: 800; color: #2563eb; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
-        .profile-dropdown { display: none; position: absolute; top: 50px; right: 0; min-width: 180px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.1); padding: 6px; z-index: 9999; }
-        .profile-dropdown.open { display: block; }
-        .pd-head { padding: 10px 12px 8px; border-bottom: 1px solid #f3f4f8; margin-bottom: 6px; }
-        .pd-name { font-size: 14px; font-weight: 800; color: #1c1e26; }
-        .pd-item { display: block; padding: 10px 12px; font-size: 13px; font-weight: 600; color: #4b5563; text-decoration: none; border-radius: 8px; transition: background .12s; }
-        .pd-item:hover { background: #f8f9ff; color: #2563eb; }
-        .pd-logout { color: #ef4444; }
-        .pd-logout:hover { background: #fff3f3; color: #ef4444; }
-        .pd-balance-row { display: flex; align-items: center; gap: 6px; padding: 10px 12px; margin-bottom: 4px; background: #eff6ff; border-radius: 8px; }
-        .pd-balance-label { font-size: 11px; font-weight: 600; color: #3b82f6; }
-        .pd-balance-amount { font-size: 13px; font-weight: 900; color: #1d4ed8; flex: 1; }
-        .pd-charge-btn { font-size: 11px; font-weight: 700; background: #2563eb; color: #fff; border-radius: 6px; padding: 3px 9px; text-decoration: none; white-space: nowrap; }
-        .pd-charge-btn:hover { background: #1d4ed8; }
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-trigger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-color: #eff6ff;
+            border: 1.5px solid #bfdbfe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .profile-thumb-default {
+            font-size: 14px;
+            font-weight: 800;
+            color: #2563eb;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 4px;
+        }
+
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            min-width: 180px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .1);
+            padding: 6px;
+            z-index: 9999;
+        }
+
+        .profile-dropdown.open {
+            display: block;
+        }
+
+        .pd-head {
+            padding: 10px 12px 8px;
+            border-bottom: 1px solid #f3f4f8;
+            margin-bottom: 6px;
+        }
+
+        .pd-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1c1e26;
+        }
+
+        .pd-item {
+            display: block;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background .12s;
+        }
+
+        .pd-item:hover {
+            background: #f8f9ff;
+            color: #2563eb;
+        }
+
+        .pd-logout {
+            color: #ef4444;
+        }
+
+        .pd-logout:hover {
+            background: #fff3f3;
+            color: #ef4444;
+        }
+
+        .pd-balance-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            background: #eff6ff;
+            border-radius: 8px;
+        }
+
+        .pd-balance-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .pd-balance-amount {
+            font-size: 13px;
+            font-weight: 900;
+            color: #1d4ed8;
+            flex: 1;
+        }
+
+        .pd-charge-btn {
+            font-size: 11px;
+            font-weight: 700;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 6px;
+            padding: 3px 9px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .pd-charge-btn:hover {
+            background: #1d4ed8;
+        }
+
         .admin-dropdown-trigger {
             font-size: inherit;
             font-weight: inherit;
@@ -285,6 +474,7 @@
             color: #2563eb !important;
             background-color: #eff6ff !important;
         }
+
         .nav-submenu .submenu-link.active-link::before {
             content: "";
             position: absolute;
@@ -314,6 +504,7 @@
             background-color: transparent !important;
             color: #6b7280 !important;
         }
+
         .nav-submenu:hover .submenu-link.active-link:not(:hover)::before {
             display: none !important;
         }
@@ -346,10 +537,20 @@
         }
 
         @keyframes notiToastFade {
-            0%   { opacity: 0; transform: translateY(10px); }
-            15%  { opacity: 1; transform: translateY(0); }
-            80%  { opacity: 1; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            15% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
         }
 
         /* ── FOOTER ── */
@@ -382,15 +583,22 @@
         {{#isExpert}}
             {{#isExpert}}
                 <!-- 전문가 전용 탭 네비 -->
-                <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+                {{#isAdmin}}
+                    <!-- 관리자가 클릭하면 대시보드로 이동 -->
+                    <a href="/admin/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+                {{/isAdmin}}
+                {{^isAdmin}}
+                    <!-- 일반 전문가나 회원이 클릭하면 정상적으로 메인 화면으로 이동 -->
+                    <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+                {{/isAdmin}}
                 <nav class="nav-links expert-links">
-                    <a href="/bids/my-list"     class="expert-nav-tab">제안서 관리</a>
-                    <a href="/bids/my-orders"   class="expert-nav-tab">주문 관리</a>
-                    <a href="/payment/my"       class="expert-nav-tab">수익 &amp; 정산</a>
-                    <a href="/reviews/my"       class="expert-nav-tab">평가 및 리뷰</a>
-                    <a href="/experts/my/form"  class="expert-nav-tab">프로필 수정</a>
-                    <a href="/boards"           class="expert-nav-tab">게시판</a>
-                    <a href="/messages"         class="expert-nav-tab">쪽지함</a>
+                    <a href="/bids/my-list" class="expert-nav-tab">제안서 관리</a>
+                    <a href="/bids/my-orders" class="expert-nav-tab">주문 관리</a>
+                    <a href="/payment/my" class="expert-nav-tab">수익 &amp; 정산</a>
+                    <a href="/reviews/my" class="expert-nav-tab">평가 및 리뷰</a>
+                    <a href="/experts/my/form" class="expert-nav-tab">프로필 수정</a>
+                    <a href="/boards" class="expert-nav-tab">게시판</a>
+                    <a href="/messages" class="expert-nav-tab">쪽지함</a>
                 </nav>
 
                 <!-- 우측: 잔액 + 알림 + 프로필 -->
@@ -415,16 +623,20 @@
 
                 <!-- 프로필 드롭다운 (전문가) -->
                 <div class="profile-menu" id="profileMenuExpert">
-                    <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownExpert')" aria-label="내 메뉴">
+                    <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownExpert')"
+                            aria-label="내 메뉴">
                         {{#sessionUser.profileImage}}
-                            <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
+                            <span class="profile-thumb"
+                                  style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
                         {{/sessionUser.profileImage}}
                         {{^sessionUser.profileImage}}
                             <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
                         {{/sessionUser.profileImage}}
                     </button>
                     <div class="profile-dropdown" id="profileDropdownExpert">
-                        <div class="pd-head"><div class="pd-name">{{sessionUser.name}}님</div></div>
+                        <div class="pd-head">
+                            <div class="pd-name">{{sessionUser.name}}님</div>
+                        </div>
                         <a href="/experts/dashboard" class="pd-item">🏠 대시보드</a>
                         <a href="/experts/my/form" class="pd-item">⚙️ 프로필 수정</a>
                         <a href="/logout" class="pd-item pd-logout">🚪 로그아웃</a>
@@ -439,7 +651,6 @@
             <nav class="nav-links">
                 <!-- 1. 관리자 전용 메뉴 -->
                 {{#isAdmin}}
-                    <a href="/admin/main" class="admin-main-item">대시보드</a>
                     <a href="/admin/members" class="admin-main-item">회원 관리</a>
                     <a href="/admin/projects" class="admin-main-item">프로젝트 관리</a>
 
@@ -498,25 +709,26 @@
                     </a>
 
                     <div class="profile-menu" id="profileMenuUser">
-                        <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownUser')" aria-label="내 메뉴">
+                        <button class="profile-trigger" onclick="toggleProfileMenu(event, 'profileDropdownUser')"
+                                aria-label="내 메뉴">
                             {{#sessionUser.profileImage}}
-                                <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
+                                <span class="profile-thumb"
+                                      style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
                             {{/sessionUser.profileImage}}
                             {{^sessionUser.profileImage}}
                                 <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
                             {{/sessionUser.profileImage}}
                         </button>
                         <div class="profile-dropdown" id="profileDropdownUser">
-                            <div class="pd-head"><div class="pd-name">{{sessionUser.name}}님</div></div>
+                            <div class="pd-head">
+                                <div class="pd-name">{{sessionUser.name}}님</div>
+                            </div>
                             {{^isAdmin}}
                                 <div class="pd-balance-row">
                                     <span class="pd-balance-label">잔액</span>
                                     <span class="pd-balance-amount">{{headerBalance}}원</span>
                                     <a href="/charge/form" class="pd-charge-btn">충전</a>
                                 </div>
-                            {{/isAdmin}}
-                            {{#isAdmin}}
-                                <a href="/admin/main" class="pd-item">🛠️ 관리자 페이지</a>
                             {{/isAdmin}}
                             {{^isAdmin}}
                                 <a href="/my-pages" class="pd-item">🏠 마이페이지</a>
@@ -560,8 +772,8 @@
             const toast = document.createElement('div');
             toast.className = 'noti-toast';
             toast.innerHTML =
-                '<div class="noti-toast-label">' + data.typeLabel + '</div>' +
-                '<div class="noti-toast-content">' + data.content + '</div>';
+                    '<div class="noti-toast-label">' + data.typeLabel + '</div>' +
+                    '<div class="noti-toast-content">' + data.content + '</div>';
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 4000);
         }
@@ -569,10 +781,24 @@
 {{/isLoggedIn}}
 
 <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        // 1. 화면에 관리자 전용 메뉴(대시보드 등)가 노출되고 있는지 클래스명으로 확인합니다.
+        const isAdminMenuVisible = document.querySelector('.admin-main-item, .admin-dropdown-trigger');
+
+        // 2. 관리자 메뉴가 하나라도 보이는 '관리자 상태'라면, 로고 주소를 대시보드로 고정합니다.
+        if (isAdminMenuVisible) {
+            const navLogos = document.querySelectorAll('.nav-logo');
+            navLogos.forEach(logo => {
+                logo.setAttribute('href', '/admin/main');
+            });
+        }
+    });
+
     function toggleProfileMenu(e, dropdownId) {
         e.stopPropagation();
         document.getElementById(dropdownId).classList.toggle("open");
     }
+
     document.addEventListener("click", function (e) {
         document.querySelectorAll(".profile-dropdown.open").forEach(function (dd) {
             const menu = dd.closest(".profile-menu");
@@ -581,7 +807,7 @@
             }
         });
     });
-     document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".profile-thumb-default").forEach(function (el) {
             const name = el.textContent.trim();
             if (name) el.textContent = name.charAt(0);  // 첫 글자만
@@ -613,13 +839,13 @@
                     const isNoticeMatch = linkHref.includes("notices") && (currentPath.includes("notice") || currentPath.includes("notices"));
 
 
-                   // [수정된 전문가 승인 관리 매칭 로직]
-                   const isExpertMatch = (
-                       (linkHref.includes("withdraw") && currentPath.includes("/admin/experts/withdraw")) ||
-                       (linkHref.includes("status=PENDING") && currentPath.includes("/admin/experts") && !currentPath.includes("withdraw") && !currentPath.includes("grade")) ||
-                       (linkHref.includes("grade") && currentPath.includes("/admin/experts/grade")) ||
-                       (linkHref.includes("refund-applications") && currentPath.includes("/admin/refund-applications"))
-                   );
+                    // [수정된 전문가 승인 관리 매칭 로직]
+                    const isExpertMatch = (
+                            (linkHref.includes("withdraw") && currentPath.includes("/admin/experts/withdraw")) ||
+                            (linkHref.includes("status=PENDING") && currentPath.includes("/admin/experts") && !currentPath.includes("withdraw") && !currentPath.includes("grade")) ||
+                            (linkHref.includes("grade") && currentPath.includes("/admin/experts/grade")) ||
+                            (linkHref.includes("refund-applications") && currentPath.includes("/admin/refund-applications"))
+                    );
 
                     if (isBoardMatch || isNoticeMatch || isExpertMatch) {
                         link.classList.add("active-link");

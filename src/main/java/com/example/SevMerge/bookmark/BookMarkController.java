@@ -19,10 +19,12 @@ public class BookMarkController {
 
     private final BookMarkService bookMarkService;
 
-    @GetMapping("/bookmarks/{expertId}")
-    public String redirect() {
 
-        return "redirect:/my-pages?tab=bookmarks";
+    @PostMapping("/bookmarks/toggle")
+    public String toggleBookmark(){
+
+
+        return "redirect:/bookmarks";
     }
 
 

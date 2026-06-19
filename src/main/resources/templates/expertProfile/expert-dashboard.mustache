@@ -124,7 +124,13 @@
     .proj-mini-budget { font-size: 12px; font-weight: 900; color: #1c1e26; }
     .proj-mini-dday   { font-size: 11px; font-weight: 600; color: #c4c9d9; }
     .proj-mini-dday.urgent { color: #ef4444; }
+
+    .grade-badge { display: inline-flex; align-items: center; padding: 0; border: none; background: transparent; }
+.grade-badge-img { width: 114px; height: 48px; object-fit: contain; flex-shrink: 0; margin-bottom:10px;}
+.grade-badge-wrap { display: flex; justify-content: center; margin: 0; }
+
 </style>
+
 
 <!-- ── 4컬럼 대시보드 ── -->
 <section class="dash-section">
@@ -141,7 +147,23 @@
                     <div class="dash-card-body">
                         <div class="expert-avatar">👨‍💻</div>
                         <div class="expert-name">{{sessionUser.name}}</div>
-                        <span class="expert-role-badge">{{expertProfile.grade}}</span>
+                        <div class="grade-badge-wrap">
+                            {{#expertProfile.normal}}
+                                <div class="grade-badge">
+                                    <img src="/normal.png" class="grade-badge-img" alt="일반 전문가"/>
+                                </div>
+                            {{/expertProfile.normal}}
+                            {{#expertProfile.skilled}}
+                                <div class="grade-badge">
+                                    <img src="/skilled.png" class="grade-badge-img" alt="숙련 전문가"/>
+                                </div>
+                            {{/expertProfile.skilled}}
+                            {{#expertProfile.master}}
+                                <div class="grade-badge">
+                                    <img src="/master.png" class="grade-badge-img" alt="마스터 전문가"/>
+                                </div>
+                            {{/expertProfile.master}}
+                        </div>
                         <div class="expert-stats">
                             <div class="expert-stat">
                                 <span class="expert-stat-val">{{reviews.size}}</span>

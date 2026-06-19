@@ -9,7 +9,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name = "book_mark_tb")
+@Table(name = "book_mark_tb",uniqueConstraints = {
+@UniqueConstraint(columnNames = {"member_id", "expert_id"})
+})
+
 @Entity
 @NoArgsConstructor
 @Data
