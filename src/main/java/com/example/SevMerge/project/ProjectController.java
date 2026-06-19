@@ -1,6 +1,5 @@
 package com.example.SevMerge.project;
 
-import com.example.SevMerge.bid.Bid;
 import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.bid.BidResponseDTO;
 import com.example.SevMerge.bid.BidService;
@@ -63,7 +62,7 @@ public class ProjectController {
         if (bidFilter != null && bidFilter.isBlank()) bidFilter = null;
 
         // 2. 서비스 호출
-        List<ProjectResponeDTO.ListDTO> projects =
+        List<ProjectResponseDTO.ListDTO> projects =
                 projectService.findByFilters(keyword, category, statusFilter, bidFilter);
 
         // 3. 모델 세팅 (기존과 동일)
@@ -98,7 +97,7 @@ public class ProjectController {
         projectService.increase(id);
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
+        ProjectResponseDTO.DetailDTO project = projectService.findProjectById(id);
         model.addAttribute("project", project);
 
 
@@ -140,7 +139,7 @@ public class ProjectController {
         log.info("project 수정 폼 요청");
 
         // 데이터 조회
-        ProjectResponeDTO.DetailDTO project = projectService.findProjectById(id);
+        ProjectResponseDTO.DetailDTO project = projectService.findProjectById(id);
         model.addAttribute("project", project);
         model.addAttribute("isWeb", "WEB".equals(project.getCategoryName()));
         model.addAttribute("isApp", "APP".equals(project.getCategoryName()));
@@ -227,7 +226,7 @@ public class ProjectController {
             return ResponseEntity.status(401).body("로그인이 필요합니다");
         }
 
-        ProjectResponeDTO.DetailDTO dto = projectService.getMyDraft(sessionUser.getId());
+        ProjectResponseDTO.DetailDTO dto = projectService.getMyDraft(sessionUser.getId());
         return ResponseEntity.ok(dto);
     }
 
@@ -241,7 +240,7 @@ public class ProjectController {
         Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
 
-        List<ProjectResponeDTO.ListDTO> adminProjects;
+        List<ProjectResponseDTO.ListDTO> adminProjects;
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             adminProjects = projectService.findAdminProjectsByKeyword(keyword.trim());

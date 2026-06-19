@@ -10,6 +10,11 @@
     .profile-info { flex: 1; }
     .profile-name { font-size: 22px; font-weight: 900; color: #1c1e26; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
     .cert-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+
+    /* 찜 버튼 스타일 */
+    .wish-btn { border: none; background: none; cursor: pointer; font-size: 22px; transition: transform 0.2s; outline: none; }
+    .wish-btn:hover { transform: scale(1.1); }
+
     .profile-career { font-size: 13px; color: #6b7280; line-height: 1.6; margin-bottom: 10px; }
     .profile-stars { color: #f59e0b; font-size: 15px; }
     .profile-stars span { color: #9ca3af; font-size: 13px; font-weight: 500; }
@@ -28,23 +33,10 @@
     .section-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 24px; margin-bottom: 16px; }
     .section-card-title { font-size: 15px; font-weight: 800; color: #1c1e26; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #f3f4f8; }
     .introduce-text { font-size: 14px; color: #374151; line-height: 1.9; white-space: pre-wrap; }
-    .skills-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
-    .skill-tag { padding: 6px 14px; background: #f8f9fc; border: 1px solid #e2e5ef; border-radius: 20px; font-size: 13px; font-weight: 600; color: #374151; }
-    .portfolio-link { display: inline-flex; align-items: center; gap: 6px; color: #2563eb; font-size: 14px; font-weight: 600; text-decoration: none; }
-    .portfolio-link:hover { text-decoration: underline; }
-
-    .review-list { display: flex; flex-direction: column; gap: 14px; }
-    .review-item { padding: 18px; background: #f8f9fc; border-radius: 12px; border: 1px solid #eaecf4; }
-    .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .review-author { font-size: 13px; font-weight: 700; color: #1c1e26; }
-    .review-stars { color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
-    .review-content { font-size: 13px; color: #6b7280; line-height: 1.7; }
-    .empty-review { text-align: center; padding: 30px 0; font-size: 14px; color: #c4c9d9; }
 </style>
 
 <section class="detail-section">
     <div class="detail-inner">
-
         <div class="profile-header">
             <div class="profile-top">
                 <div class="profile-avatar">👨‍💻</div>
@@ -52,6 +44,10 @@
                     <div class="profile-name">
                         {{expertProfile.memberName}}
                         {{#expertProfile.isCertified}}<span class="cert-badge">⭐ 인증 전문가</span>{{/expertProfile.isCertified}}
+
+                        <button id="wishBtn" type="button" class="wish-btn" data-expert-id="{{expertProfile.memberId}}">
+                            <span id="wishIcon">{{#isWished}}♥{{/isWished}}{{^isWished}}♡{{/isWished}}</span>
+                        </button>
                     </div>
                     <div class="profile-career">{{expertProfile.career}}</div>
                     <div class="profile-stars">★ <span>{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
@@ -90,38 +86,35 @@
             <div class="section-card-title">자기소개</div>
             <div class="introduce-text">{{expertProfile.intro}}</div>
         </div>
-
-        <div class="section-card">
-            <div class="section-card-title">기술 스택</div>
-            <div class="skills-wrap">
-                {{#expertProfile.skillList}}
-                    <span class="skill-tag">{{.}}</span>
-                {{/expertProfile.skillList}}
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-card-title">포트폴리오</div>
-            <a href="/portfolios?expertId={{expertProfile.memberId}}" class="portfolio-link">🔗 포트폴리오 보기</a>
-        </div>
-
-        <div class="section-card">
-            <div class="section-card-title">리뷰 ({{reviews.size}})</div>
-            <div class="review-list">
-                {{#reviews}}
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="review-author">{{reviewerName}}</span>
-                            <span class="review-stars">{{star}}</span>
-                        </div>
-                        <div class="review-content">{{content}}</div>
-                    </div>
-                {{/reviews}}
-                {{^reviews}}<div class="empty-review">아직 리뷰가 없습니다.</div>{{/reviews}}
-            </div>
-        </div>
-
     </div>
 </section>
+
+<script>
+    document.getElementById('wishBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const expertId = this.getAttribute('data-expert-id');
+        const icon = document.getElementById('wishIcon');
+
+        // 서버에 찜하기 요청
+        fetch(`/experts/wish/${expertId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            // 401 에러는 무조건 로그인 페이지로
+            if (response.status === 401) {
+                alert("로그인이 필요한 기능입니다.");
+                window.location.href = "/login";
+            }
+            // 200 OK 인 경우에만 하트 토글 (색깔 변경)
+            else if (response.ok) {
+                icon.innerText = (icon.innerText === '♥') ? '♡' : '♥';
+            } else {
+                alert("처리 중 오류가 발생했습니다.");
+            }
+        })
+        .catch(err => console.error("통신 에러:", err));
+    });
+</script>
 
 {{> layout/footer}}

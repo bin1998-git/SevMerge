@@ -1,26 +1,21 @@
 package com.example.SevMerge.expertprofile;
 
-import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.expertwish.ExpertWishRepository;
+import com.example.SevMerge.expertwish.ExpertWishService;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.portfolio.PortfolioResponse;
-import com.example.SevMerge.portfolio.PortfolioService;
-import com.example.SevMerge.project.ProjectResponeDTO;
+import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
-import com.example.SevMerge.review.Review;
-import com.example.SevMerge.review.ReviewResponse;
 import com.example.SevMerge.review.ReviewService;
 import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,6 +36,8 @@ public class ExpertProfileViewController {
     private final ExpertProfileService expertProfileService;
     private final ReviewService reviewService;
     private final ProjectService projectService;
+    private final ExpertWishRepository expertWishRepository;
+    private final ExpertWishService expertWishService;
 
     /**
      * 전문가 목록 페이지
@@ -71,7 +68,16 @@ public class ExpertProfileViewController {
         ExpertProfileResponse profile = expertProfileService.getByMemberId(memberId);
         model.addAttribute("expertProfile", profile);
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
+        // 추가된 찜여부 확인
+        boolean isWished = false;
+        if (sessionUser != null) {
+            isWished = expertWishRepository.existsByMemberIdAndExpertId(sessionUser.getId(), memberId);
+        }
+        model.addAttribute("isWished", isWished);
+
+
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
 
         model.addAttribute("avgRating", String.format("%.1f", reviewService.avgRating(memberId)));
@@ -107,7 +113,7 @@ public class ExpertProfileViewController {
         }
 
         // 프로젝트 목록 — keyword/category 조건에 따라 분기
-        List<ProjectResponeDTO.ListDTO> projects;
+        List<ProjectResponseDTO.ListDTO> projects;
         if (keyword != null && !keyword.isBlank()) {
             projects = projectService.findByKeyword(keyword);
         } else if (category != null && !category.isBlank()) {
@@ -117,7 +123,7 @@ public class ExpertProfileViewController {
         }
 
         // 최신 6건만 대시보드 미니 그리드에 표시
-        List<ProjectResponeDTO.ListDTO> recentProjects = projects.stream()
+        List<ProjectResponseDTO.ListDTO> recentProjects = projects.stream()
                 .limit(6)
                 .collect(java.util.stream.Collectors.toList());
 
@@ -189,5 +195,27 @@ public class ExpertProfileViewController {
         }
 
         return "redirect:/experts/dashboard";
+    }
+
+    // ... 기존 코드 아래에 추가
+
+    // POST /experts/wish/{expertId}
+
+    @PostMapping("/wish/{expertId}")
+    @ResponseBody
+    public ResponseEntity<?> toggleWish(@PathVariable Long expertId, HttpSession session) {
+        // 1. 세션에서 로그인한 유저 확인
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+
+        // 2. 로그인되지 않았다면 401 Unauthorized 응답 반환
+        if (sessionUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        // 3. 서비스 호출
+        expertWishService.toggleWish(sessionUser.getId(), expertId);
+
+        // 4. 성공 응답 반환
+        return ResponseEntity.ok("success");
     }
 }
