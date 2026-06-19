@@ -65,6 +65,7 @@
 
         {{#expertProfiles}}
             <a href="/experts/{{memberId}}" class="expert-card">
+
                 <div class="expert-top">
                     <div class="expert-avatar">👨‍💻</div>
                     <div class="expert-info">
@@ -84,6 +85,11 @@
                 </div>
                 <div class="expert-bottom">
                     <span class="expert-stat">완료 {{doneProject}}건</span>
+                    <!-- 추가 -->
+                    <button class="bookmark-btn" onclick="toggleBookmark(event, {{id}}, this)">
+                        {{#bookmarked}}⭐{{/bookmarked}}
+                        {{^bookmarked}}☆{{/bookmarked}}
+                    </button>
                 </div>
             </a>
         {{/expertProfiles}}
@@ -102,5 +108,16 @@
 
     </div>
 </section>
+<script>
+    function toggleBookmark(event, expertId, btn) {
+        event.preventDefault(); // 카드 링크 이동 막기
+        event.stopPropagation(); // 이벤트 전파 막기
+
+        fetch(`/bookmark/${expertId}`, { method: 'POST' })
+                .then(() => {
+                    btn.textContent = btn.textContent.trim() === '☆' ? '⭐' : '☆';
+                });
+    }
+</script>
 
 {{> layout/footer}}

@@ -379,3 +379,10 @@ VALUES
     -- [생존 대상 2] 최근 + 미삭제
     (1, 'MESSAGE_RECEIVED', '[스케줄러테스트] 1일 지난 알림 — 남아야 함', '/messages', false, false,
      DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+-- 북마크 데이터
+INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);
+INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);
+INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);
+INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);
+INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);

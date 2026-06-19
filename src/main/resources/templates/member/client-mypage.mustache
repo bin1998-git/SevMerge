@@ -130,6 +130,7 @@
                 <a href="/my-pages?tab=chats" class="cm-link {{#isChats}}active{{/isChats}}"><span class="cm-icon">🗨️</span>1:1 채팅</a>
                 <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon">📝</span>내 게시글</a>
                 <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon">⭐</span>리뷰</a>
+                <a href="/my-pages?tab=bookmarks" class="cm-link {{#isBookmarks}}active{{/isBookmarks}}"><span class="cm-icon">⭐</span>북마크</a>
 
                 <div class="cm-group">포인트 / 결제</div>
                 <a href="/charge/form" class="cm-link"><span class="cm-icon">💰</span>포인트 충전</a>
@@ -234,6 +235,36 @@
                     {{/reviews}}
                     {{^reviews}}<div class="cm-empty">작성한 리뷰가 없습니다.</div>{{/reviews}}
                 {{/isReviews}}
+
+                {{! ===== 북마크 ===== }}
+                {{#isBookmarks}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">북마크</div>
+                        <div class="cm-content-sub">찜한 전문가 목록이에요.</div>
+                    </div>
+                    <form style="display:flex;gap:10px;margin-bottom:20px;" method="get" action="/my-pages">
+                        <input type="hidden" name="tab" value="bookmarks"/>
+                        <input type="text" name="keyword" class="cm-finput" style="flex:1;" placeholder="전문가 이름으로 검색..." value="{{#keyword}}{{keyword}}{{/keyword}}"/>
+                        <button type="submit" class="cm-btn cm-btn-primary" style="margin-top:0;padding:0 18px;">검색</button>
+                    </form>
+                    {{#bookMarks}}
+                        <div class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">전문가</span>
+                                <a href="/experts/{{expertProfile.member.id}}" style="text-decoration:none;color:inherit;">
+                                    <div class="cm-item-title">{{expertProfile.member.name}}</div>
+                                </a>
+                                <div class="cm-item-meta">{{expertProfile.career}}</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <form method="post" action="/bookmarks/{{expertProfile.id}}">
+                                    <button type="submit" class="cm-btn" style="background:#fff;border:1.5px solid #e2e5ef;color:#6b7280;">북마크 취소</button>
+                                </form>
+                            </div>
+                        </div>
+                    {{/bookMarks}}
+                    {{^bookMarks}}<div class="cm-empty">북마크한 전문가가 없습니다.</div>{{/bookMarks}}
+                {{/isBookmarks}}
 
                 {{! ===== 쪽지함 ===== }}
                 {{#isMessages}}
@@ -434,7 +465,6 @@
                 {{#isWithdraw}}
                     <div class="cm-soon-box"><div class="cm-soon-icon">🏦</div><div class="cm-soon-title">포인트 출금</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
                 {{/isWithdraw}}
-
             </section>
         </div>
     </div>

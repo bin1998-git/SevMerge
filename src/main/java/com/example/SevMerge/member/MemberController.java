@@ -4,6 +4,7 @@ import com.example.SevMerge.Report.BlackList;
 import com.example.SevMerge.Report.BlacklistRepository;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
+import com.example.SevMerge.bookmark.BookMarkService;
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
@@ -52,6 +53,7 @@ public class MemberController {
     private final BlacklistRepository blacklistRepository;
     private final ChargeService chargeService;
     private final RefundApplicationService refundApplicationService;
+    private final BookMarkService bookMarkService;
 
     @GetMapping("/join-start")
     public String joinStart(Model model) {
@@ -165,6 +167,7 @@ public class MemberController {
     // 마이페이지 (의뢰인 전용)
     @GetMapping("/my-pages")
     public String mypage(@RequestParam(required = false) String tab,
+                         @RequestParam(required = false) String keyword,
                          HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
@@ -200,6 +203,8 @@ public class MemberController {
         long unreadMessageCount = messageRepository.countUnreadMessages(loginMember);
         model.addAttribute("messageCount", unreadMessageCount);
         model.addAttribute("isMessages", tab.equalsIgnoreCase("messages"));
+        // 북마크
+        model.addAttribute("isBookmarks", tab.equalsIgnoreCase("bookmarks"));
         // 탭별 데이터
         if (tab.equals("projects")) {
             model.addAttribute("projects", myProjects);
@@ -229,13 +234,20 @@ public class MemberController {
                 log.warn("충전 내역 조회 실패 - {}", e.getMessage());
                 model.addAttribute("chargeHistories", List.of());
             }
-        }else if (tab.equals("refundHistory")) {
+        } else if (tab.equals("refundHistory")) {
             try {
                 model.addAttribute("refunds", refundApplicationService.getMyApplications(loginMember.getId()));
             } catch (Exception e) {
                 log.warn("환불 내역 조회 실패 - {}", e.getMessage());
                 model.addAttribute("refunds", List.of());
             }
+        } else if (tab.equals("bookmarks")) {
+            if (keyword != null && !keyword.isBlank()) {
+                model.addAttribute("bookMarks", bookMarkService.filterBookMarks(loginMember.getId(), keyword));
+            } else {
+                model.addAttribute("bookMarks", bookMarkService.findAllMyBookMarks(loginMember.getId()));
+            }
+            model.addAttribute("keyword", keyword);
         }
 
         return "member/client-mypage";
@@ -282,6 +294,7 @@ public class MemberController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     // 비밀번호 확인api
     @PostMapping("/api/member/verify-password")
     @ResponseBody
