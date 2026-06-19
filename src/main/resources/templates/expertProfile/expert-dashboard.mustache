@@ -124,7 +124,82 @@
     .proj-mini-budget { font-size: 12px; font-weight: 900; color: #1c1e26; }
     .proj-mini-dday   { font-size: 11px; font-weight: 600; color: #c4c9d9; }
     .proj-mini-dday.urgent { color: #ef4444; }
+
+    /* ── 뱃지 ── */
+    .grade-badge-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom:10px;
+    }
+
+    .grade-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px 2px 2px;
+        border-radius: 40px;
+        border: 1px solid transparent;
+    }
+
+    .grade-badge-img {
+        width: 30px;
+        height: 22px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .grade-badge-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+    }
+
+    .grade-badge-level {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+    }
+
+    .grade-badge-name {
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    /* NORMAL */
+    .grade-badge-normal {
+        background: #f8f9fc;
+        border-color: #e2e5ef;
+    }
+    .grade-badge-normal .grade-badge-level { color: #9ca3af; }
+    .grade-badge-normal .grade-badge-name  { color: #6b7280; }
+
+    /* SKILLED */
+    .grade-badge-skilled {
+        background: #fffbeb;
+        border-color: #ebe4bc;
+        box-shadow: 0 0 10px rgba(212, 168, 67, 0.15);
+    }
+    .grade-badge-skilled .grade-badge-level {
+        color: #c4a848;
+        letter-spacing: 0.18em;
+    }
+    .grade-badge-skilled .grade-badge-name {
+        color: #e8c96a;
+        font-weight: 900;
+    }
+
+    /* MASTER */
+    .grade-badge-master {
+        background: #0f0f1a;
+        border-color: #f59e0b;
+    }
+    .grade-badge-master .grade-badge-level { color: #f59e0b; }
+    .grade-badge-master .grade-badge-name  { color: #fcd34d; }
+
 </style>
+
 
 <!-- ── 4컬럼 대시보드 ── -->
 <section class="dash-section">
@@ -141,7 +216,37 @@
                     <div class="dash-card-body">
                         <div class="expert-avatar">👨‍💻</div>
                         <div class="expert-name">{{sessionUser.name}}</div>
-                        <span class="expert-role-badge">{{expertProfile.grade}}</span>
+                        <div class="grade-badge-wrap">
+                            {{#expertProfile.normal}}
+                                <div class="grade-badge grade-badge-normal">
+                                    <img src="/badge-normal.png" class="grade-badge-img" alt="일반 전문가"/>
+                                    <div class="grade-badge-info">
+                                        <span class="grade-badge-level">LEVEL 1</span>
+                                        <span class="grade-badge-name">일반 전문가</span>
+                                    </div>
+                                </div>
+                            {{/expertProfile.normal}}
+
+                            {{#expertProfile.skilled}}
+                                <div class="grade-badge grade-badge-skilled">
+                                    <img src="/badge-skilled.png" class="grade-badge-img" alt="숙련 전문가"/>
+                                    <div class="grade-badge-info">
+                                        <span class="grade-badge-level">LEVEL 2</span>
+                                        <span class="grade-badge-name">숙련 전문가</span>
+                                    </div>
+                                </div>
+                            {{/expertProfile.skilled}}
+
+                            {{#expertProfile.master}}
+                                <div class="grade-badge grade-badge-master">
+                                    <img src="/badge-master.png" class="grade-badge-img" alt="마스터 전문가"/>
+                                    <div class="grade-badge-info">
+                                        <span class="grade-badge-level">LEVEL 3</span>
+                                        <span class="grade-badge-name">마스터 전문가</span>
+                                    </div>
+                                </div>
+                            {{/expertProfile.master}}
+                        </div>
                         <div class="expert-stats">
                             <div class="expert-stat">
                                 <span class="expert-stat-val">{{reviews.size}}</span>

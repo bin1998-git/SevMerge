@@ -172,18 +172,18 @@ VALUES (2, '댓글 신고 3회 누적 자동 정지 처리 (홍보성 스팸 도
 
 -- ExpertProfile 샘플데이터
 -- 1번 샘플: 평점 높은 7년 차 풀스택 개발자 프로필 (member_id: 2)
-INSERT INTO expert_profile (member_id, profile_image, intro, career, speciality,is_certified,expert_grade)
+INSERT INTO expert_profile (member_id, profile_image, intro, career, speciality,is_certified)
 VALUES (2, 'https://sevmerge.com/storage/profiles/expert_01.png',
         '안녕하세요! 대기업 출신 프리랜서 풀스택 개발자 홍길동입니다. 대규모 트래픽 처리 및 쇼핑몰, 커뮤니티 웹/앱 개발 전문입니다. 안정적이고 확장성 있는 아키텍처를 약속드립니다.',
         '- 前 카카오 백엔드 개발자 (3년)\n- 프리랜서 외주 개발 진행 (4년)\n- SevMerge 누적 프로젝트 20건 이상 완료',
-        'Spring Boot, Java, AWS, React, Next.js', true,'NORMAL');
+        'Spring Boot, Java, AWS, React, Next.js', true);
 
 -- 2번 샘플: 스타트업 전문 UI/UX 디자이너 프로필 (member_id: 3)
-INSERT INTO expert_profile (member_id, profile_image, intro, career, speciality, is_certified,expert_grade)
+INSERT INTO expert_profile (member_id, profile_image, intro, career, speciality, is_certified)
 VALUES (3, 'https://sevmerge.com/storage/profiles/expert_02.png',
         '의뢰인님의 추상적인 아이디어를 트렌디하고 직관적인 화면으로 시각화해 드립니다. 와이어프레임 기획부터 피그마 고도화 프로토타입까지 책임지고 가이드해 드립니다.',
         '- 대형 IT 에이전시 수석 디자이너 (4년)\n- 스타트업 MVP 디자인 전담 프리랜서 활동 중',
-        'Figma, UI/UX Design, Adobe XD, GUI, Branding', true,'SKILLED');
+        'Figma, UI/UX Design, Adobe XD, GUI, Branding', true);
 
 
 
