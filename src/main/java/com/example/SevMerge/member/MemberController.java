@@ -11,7 +11,7 @@ import com.example.SevMerge.message.MessageRepository;
 import com.example.SevMerge.message.MessageService;
 import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.portfolio.PortfolioService;
-import com.example.SevMerge.project.ProjectResponeDTO;
+import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.refund.RefundApplicationService;
 import com.example.SevMerge.review.ReviewRepository;
@@ -191,10 +191,10 @@ public class MemberController {
         model.addAttribute("isChargeHistory", tab.equalsIgnoreCase("chargeHistory"));
         model.addAttribute("isRefundHistory", tab.equalsIgnoreCase("refundHistory"));
         // 통계 (등록 프로젝트 수, 완료 프로젝트 수)
-        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
+        List<ProjectResponseDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
         model.addAttribute("projectCount", myProjects.size());
         model.addAttribute("completedCount", myProjects.stream()
-                .filter(ProjectResponeDTO.ListDTO::isDone).count());
+                .filter(ProjectResponseDTO.ListDTO::isDone).count());
 
         //  메시지 카운트
         long unreadMessageCount = messageRepository.countUnreadMessages(loginMember);

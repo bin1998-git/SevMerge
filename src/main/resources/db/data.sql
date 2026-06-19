@@ -20,6 +20,15 @@ VALUES ('admin@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jF
         'ADMIN', 'ACTIVE', false, NOW(), 0);
 
 
+-- 찜 샘플 데이터 (AI 인기 전문가 테스트를 위해 2번에게 찜 몰아준상태입니다)
+-- 1번 회원이 2번 전문가 찜
+INSERT INTO expert_wish_tb (member_id, expert_id, created_at) VALUES (1, 2, NOW());
+-- 3번 회원이 2번 전문가 찜
+INSERT INTO expert_wish_tb (member_id, expert_id, created_at) VALUES (3, 2, NOW());
+
+-- 1번 회원이 3번 전문가 찜
+INSERT INTO expert_wish_tb (member_id, expert_id, created_at) VALUES (1, 3, NOW());
+
 -- Board 샘플데이터
 -- 1번 샘플 (자유게시판): 프리랜서 전문가의 제안서 작성 노하우 공유
 INSERT INTO board_tb (board_type, title, content, view_count, is_active, member_id, created_at)
@@ -172,14 +181,14 @@ VALUES (2, '댓글 신고 3회 누적 자동 정지 처리 (홍보성 스팸 도
 
 -- ExpertProfile 샘플데이터
 -- 1번 샘플: 평점 높은 7년 차 풀스택 개발자 프로필 (member_id: 2)
-INSERT INTO expert_profile (member_id, profile_image, intro, career, speciality,is_certified,expert_grade)
+INSERT INTO expert_profile_tb (member_id, profile_image, intro, career, speciality,is_certified,expert_grade)
 VALUES (2, 'https://sevmerge.com/storage/profiles/expert_01.png',
         '안녕하세요! 대기업 출신 프리랜서 풀스택 개발자 홍길동입니다. 대규모 트래픽 처리 및 쇼핑몰, 커뮤니티 웹/앱 개발 전문입니다. 안정적이고 확장성 있는 아키텍처를 약속드립니다.',
         '- 前 카카오 백엔드 개발자 (3년)\n- 프리랜서 외주 개발 진행 (4년)\n- SevMerge 누적 프로젝트 20건 이상 완료',
         'Spring Boot, Java, AWS, React, Next.js', true,'NORMAL');
 
 -- 2번 샘플: 스타트업 전문 UI/UX 디자이너 프로필 (member_id: 3)
-INSERT INTO expert_profile (member_id, profile_image, intro, career, speciality, is_certified,expert_grade)
+INSERT INTO expert_profile_tb (member_id, profile_image, intro, career, speciality, is_certified,expert_grade)
 VALUES (3, 'https://sevmerge.com/storage/profiles/expert_02.png',
         '의뢰인님의 추상적인 아이디어를 트렌디하고 직관적인 화면으로 시각화해 드립니다. 와이어프레임 기획부터 피그마 고도화 프로토타입까지 책임지고 가이드해 드립니다.',
         '- 대형 IT 에이전시 수석 디자이너 (4년)\n- 스타트업 MVP 디자인 전담 프리랜서 활동 중',
@@ -379,3 +388,4 @@ VALUES
     -- [생존 대상 2] 최근 + 미삭제
     (1, 'MESSAGE_RECEIVED', '[스케줄러테스트] 1일 지난 알림 — 남아야 함', '/messages', false, false,
      DATE_SUB(NOW(), INTERVAL 1 DAY));
+
