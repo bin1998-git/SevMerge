@@ -1,5 +1,6 @@
-package com.example.SevMerge.project;
+package com.example.SevMerge.ai;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +12,15 @@ public class ProjectAiService {
     // Spring AI가 application-dev.yml 설정(spring.ai.google.genai...)을 읽어서
     // 자동으로 ChatClient.Builder를 빈으로 등록
     private final ChatClient chatClient;
+    private final ExpertToolService expertToolService;
 
     // (이걸 "의존성 주입"이라고 부름 - Repository 주입받는 거랑 똑같은 원리)
-    public ProjectAiService(ChatClient.Builder builder) {
-        this.chatClient = builder.build();
+    public ProjectAiService(ChatClient.Builder builder, ExpertToolService expertToolService) {
+        this.expertToolService = expertToolService;
+
+        this.chatClient = builder
+                .defaultTools(expertToolService)
+                .build();
     }
 
 

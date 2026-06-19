@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 
 
-public class ProjectResponeDTO {
+public class ProjectResponseDTO {
 
     // 목록 조회 응답 DTO
     @Data
