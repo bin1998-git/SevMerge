@@ -59,9 +59,14 @@ public class ExpertProfileService {
                 .map(profile -> {
                     Double avg = reviewRepository.avgRating(profile.getMember().getId());
                     int count = reviewRepository.countByTargeterId(profile.getMember().getId());
+                    Integer doneCount = bidRepository.doneProjectsByExpert(profile.getMember().getId());
+                    Double globalAvg = reviewRepository.globalRating().orElse(3.5);
+
                     ExpertProfileResponse res = ExpertProfileResponse.from(profile);
                     res.setAvgRating(avg != null ? BigDecimal.valueOf(avg).setScale(1, RoundingMode.HALF_UP) : BigDecimal.ZERO);
                     res.setTotalReviews(count);
+                    Grade grade = profile.checkGrade(avg, count, doneCount, globalAvg);
+                    res.setGrade(grade.toString());
                     return res;
                 })
                 .toList();
@@ -74,8 +79,16 @@ public class ExpertProfileService {
         ExpertProfile profile = expertProfileRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new NotFoundException("전문가 프로필을 찾을 수 없습니다."));
 
+        Double avg = reviewRepository.avgRating(memberId);
+        int count = reviewRepository.countByTargeterId(memberId);
+        Integer doneCount = bidRepository.doneProjectsByExpert(memberId);
+        Double globalAvg = reviewRepository.globalRating().orElse(3.5);
 
-        return ExpertProfileResponse.from(profile);
+        ExpertProfileResponse res = ExpertProfileResponse.from(profile);
+        res.setAvgRating(avg != null ? BigDecimal.valueOf(avg).setScale(1, RoundingMode.HALF_UP) : BigDecimal.ZERO);
+        res.setTotalReviews(count);
+        res.setGrade(profile.checkGrade(avg, count, doneCount, globalAvg).toString());
+        return res;
     }
 
     /**

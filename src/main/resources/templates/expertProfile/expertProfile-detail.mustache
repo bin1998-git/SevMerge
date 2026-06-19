@@ -40,6 +40,73 @@
     .review-stars { color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
     .review-content { font-size: 13px; color: #6b7280; line-height: 1.7; }
     .empty-review { text-align: center; padding: 30px 0; font-size: 14px; color: #c4c9d9; }
+
+    .grade-badge-wrap { display: inline-flex; align-items: center; }
+
+    .grade-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px 4px 4px;
+        border-radius: 40px;
+        border: 1px solid transparent;
+    }
+
+    .grade-badge-img {
+        width: 52px;      /* 가로 더 넓게 */
+        height: 36px;     /* 높이 줄임 */
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .grade-badge-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .grade-badge-level {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+    }
+
+    .grade-badge-name {
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* NORMAL */
+    .grade-badge-normal {
+        background: #f8f9fc;
+        border-color: #e2e5ef;
+    }
+    .grade-badge-normal .grade-badge-level { color: #9ca3af; }
+    .grade-badge-normal .grade-badge-name  { color: #6b7280; }
+
+    /* SKILLED */
+    .grade-badge-skilled {
+        background: #fffbeb;
+        border-color: #ebe4bc;
+        box-shadow: 0 0 10px rgba(212, 168, 67, 0.15);
+    }
+    .grade-badge-skilled .grade-badge-level {
+        color: #c4a848;
+        letter-spacing: 0.18em;
+    }
+    .grade-badge-skilled .grade-badge-name {
+        color: #e8c96a;
+        font-weight: 900;
+    }
+
+    /* MASTER */
+    .grade-badge-master {
+        background: #0f0f1a;
+        border-color: #f59e0b;
+    }
+    .grade-badge-master .grade-badge-level { color: #f59e0b; }
+    .grade-badge-master .grade-badge-name  { color: #fcd34d; }
 </style>
 
 <section class="detail-section">
@@ -51,7 +118,37 @@
                 <div class="profile-info">
                     <div class="profile-name">
                         {{expertProfile.memberName}}
-                        {{#expertProfile.isCertified}}<span class="cert-badge">⭐ 인증 전문가</span>{{/expertProfile.isCertified}}
+                        <div class="grade-badge-wrap">
+                            {{#expertProfile.normal}}
+                                <div class="grade-badge grade-badge-normal">
+                                    <img src="/badge-normal.png" class="grade-badge-img" alt="일반 전문가"/>
+                                    <div class="grade-badge-info">
+                                        <span class="grade-badge-level">LEVEL 1</span>
+                                        <span class="grade-badge-name">일반 전문가</span>
+                                    </div>
+                                </div>
+                            {{/expertProfile.normal}}
+
+                            {{#expertProfile.skilled}}
+                                <div class="grade-badge grade-badge-skilled">
+                                    <img src="/badge-skilled.png" class="grade-badge-img" alt="숙련 전문가"/>
+                                    <div class="grade-badge-info">
+                                        <span class="grade-badge-level">LEVEL 2</span>
+                                        <span class="grade-badge-name">숙련 전문가</span>
+                                    </div>
+                                </div>
+                            {{/expertProfile.skilled}}
+
+                            {{#expertProfile.master}}
+                                <div class="grade-badge grade-badge-master">
+                                    <img src="/badge-master.png" class="grade-badge-img" alt="마스터 전문가"/>
+                                    <div class="grade-badge-info">
+                                        <span class="grade-badge-level">LEVEL 3</span>
+                                        <span class="grade-badge-name">마스터 전문가</span>
+                                    </div>
+                                </div>
+                            {{/expertProfile.master}}
+                        </div>
                     </div>
                     <div class="profile-career">{{expertProfile.career}}</div>
                     <div class="profile-stars">★ <span>{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
@@ -117,7 +214,8 @@
                         <div class="review-content">{{content}}</div>
                     </div>
                 {{/reviews}}
-                {{^reviews}}<div class="empty-review">아직 리뷰가 없습니다.</div>{{/reviews}}
+                {{^reviews}}
+                    <div class="empty-review">아직 리뷰가 없습니다.</div>{{/reviews}}
             </div>
         </div>
 
