@@ -1,10 +1,9 @@
 package com.example.SevMerge;
 
 import com.example.SevMerge.core.util.Define;
-import com.example.SevMerge.expertprofile.ExpertProfileResponse;
-import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.Role;
+import com.example.SevMerge.project.ProjectResponeDTO;
+import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class main {
 
-    private final ExpertProfileService expertProfileService;
+    private final ProjectService projectService;
 
     @GetMapping("/")
     public String introPage(HttpSession session) {
@@ -30,7 +29,7 @@ public class main {
     }
 
     @GetMapping("/exmain")
-    public String exmainPage(HttpSession session,Model model) {
+    public String exmainPage(HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
 
         if (loginMember != null) {
@@ -42,32 +41,33 @@ public class main {
             model.addAttribute("isLoggedIn", false);
         }
 
-        List<ExpertProfileResponse> all = expertProfileService.getAll();
+        List<ProjectResponeDTO.ListDTO> all = projectService.findAllProjects()
+                .stream()
+                .filter(p -> "OPEN".equals(p.getProjectStatus()))
+                .toList();
 
-        // 섹션 1 — 오분대기조: avgRating 높은 순 상위 6명
-        List<ExpertProfileResponse> fastExperts = all.stream()
-                .sorted(Comparator.comparing(ExpertProfileResponse::getAvgRating,
-                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+        // 섹션 1 — 마감 임박 의뢰: dDay 오름차순 상위 6개
+        List<ProjectResponeDTO.ListDTO> urgentProjects = all.stream()
+                .filter(p -> p.getDDay() >= 0)
+                .sorted(Comparator.comparingInt(ProjectResponeDTO.ListDTO::getDDay))
                 .limit(6)
                 .toList();
 
-        // 섹션 2 — 바가지 수사대: totalReviews(완료 건수) 많은 순 상위 6명
-        List<ExpertProfileResponse> valueExperts = all.stream()
-                .sorted(Comparator.comparingInt(ExpertProfileResponse::getTotalReviews).reversed())
+        // 섹션 2 — 합리적인 예산 의뢰: budgetMax 오름차순 상위 6개
+        List<ProjectResponeDTO.ListDTO> budgetProjects = all.stream()
+                .sorted(Comparator.comparingInt(ProjectResponeDTO.ListDTO::getBudgetMax))
                 .limit(6)
                 .toList();
 
-        // 섹션 3 — 만족 취조실: isCertified 우선 정렬, 그 다음 avgRating 순
-        List<ExpertProfileResponse> asExperts = all.stream()
-                .sorted(Comparator.comparing(ExpertProfileResponse::isCertified).reversed()
-                        .thenComparing(Comparator.comparing(ExpertProfileResponse::getAvgRating,
-                                Comparator.nullsLast(Comparator.naturalOrder())).reversed()))
+        // 섹션 3 — 최신 의뢰: createdAt 최신순 상위 6개
+        List<ProjectResponeDTO.ListDTO> latestProjects = all.stream()
+                .sorted(Comparator.comparing(ProjectResponeDTO.ListDTO::getCreatedAt).reversed())
                 .limit(6)
                 .toList();
 
-        model.addAttribute("fastExperts", fastExperts);
-        model.addAttribute("valueExperts", valueExperts);
-        model.addAttribute("asExperts", asExperts);
+        model.addAttribute("urgentProjects", urgentProjects);
+        model.addAttribute("budgetProjects", budgetProjects);
+        model.addAttribute("latestProjects", latestProjects);
         return "exmain";
     }
 }

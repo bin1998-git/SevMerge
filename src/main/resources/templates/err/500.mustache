@@ -1,0 +1,18 @@
+{{> layout/header}}
+
+<style>
+    .err-section { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; padding: 60px 20px; text-align: center; }
+    .err-code { font-size: 80px; font-weight: 900; color: #ef4444; letter-spacing: -2px; }
+    .err-title { font-size: 22px; font-weight: 700; color: #1c1e26; margin: 12px 0 8px; }
+    .err-desc { font-size: 14px; color: #9ca3af; margin-bottom: 28px; }
+    .err-btn { display: inline-block; padding: 12px 28px; background: #2563eb; color: #fff; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
+</style>
+
+<section class="err-section">
+    <div class="err-code">500</div>
+    <div class="err-title">서버 오류가 발생했습니다</div>
+    <div class="err-desc">잠시 후 다시 시도해 주세요.</div>
+    <a href="/" class="err-btn">홈으로 돌아가기</a>
+</section>
+
+{{> layout/footer}}

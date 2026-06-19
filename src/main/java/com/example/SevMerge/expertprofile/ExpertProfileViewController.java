@@ -3,6 +3,8 @@ package com.example.SevMerge.expertprofile;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRequest;
+import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.portfolio.PortfolioResponse;
 import com.example.SevMerge.portfolio.PortfolioService;
 import com.example.SevMerge.project.ProjectResponeDTO;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +44,7 @@ public class ExpertProfileViewController {
     private final ExpertProfileService expertProfileService;
     private final ReviewService reviewService;
     private final ProjectService projectService;
+    private final MemberService memberService;
 
     /**
      * 전문가 목록 페이지
@@ -140,54 +144,74 @@ public class ExpertProfileViewController {
         return "expertProfile/expert-dashboard";
     }
 
-    /**
-     * 내 프로필 등록/수정 폼
-     * GET /experts/my/form
-     * → templates/expertProfile/expertProfile-form.mustache
-     */
+    // ──────────────────────────────────────────────────
+    // 전문가 프로필 수정 (GET /experts/my/form)
+    // ──────────────────────────────────────────────────
     @GetMapping("/my/form")
     public String form(HttpSession session, Model model) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
         if (!sessionUser.isExpert()) return "redirect:/";
 
-        // 기존 프로필이 있으면 데이터 채워서 수정 폼으로, 없으면 빈 등록 폼으로
-        try {
-            ExpertProfileResponse profile = expertProfileService.getByMemberId(sessionUser.getId());
-            model.addAttribute("expertProfile", profile);
+        Long memberId = sessionUser.getId();
+        if (expertProfileService.existsByMemberId(memberId)) {
+            model.addAttribute("expertProfile", expertProfileService.getByMemberId(memberId));
             model.addAttribute("isUpdate", true);
-        } catch (Exception e) {
+        } else {
             model.addAttribute("isUpdate", false);
         }
-
         return "expertProfile/expertProfile-form";
     }
 
-    /**
-     * 내 프로필 등록/수정 처리
-     * POST /experts/my/form
-     * → 성공 시 대시보드로 리다이렉트
-     */
+    // ──────────────────────────────────────────────────
+    // 전문가 프로필 수정 처리 (POST /experts/my/form)
+    // ──────────────────────────────────────────────────
     @PostMapping("/my/form")
-    public String submitForm(ExpertProfileRequest.SaveRequest req, HttpSession session) {
+    public String submitForm(@ModelAttribute ExpertProfileRequest.SaveRequest req,
+                             HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
         if (!sessionUser.isExpert()) return "redirect:/";
 
-        boolean hasProfile = false;
-        try {
-            expertProfileService.getByMemberId(sessionUser.getId());
-            hasProfile = true;
-        } catch (Exception e) {
-            // 프로필 없음
-        }
-
-        if (hasProfile) {
-            expertProfileService.update(sessionUser.getId(), req);
+        Long memberId = sessionUser.getId();
+        if (expertProfileService.existsByMemberId(memberId)) {
+            expertProfileService.update(memberId, req);
         } else {
             expertProfileService.save(sessionUser, req);
         }
+        return "redirect:/experts/dashboard";
+    }
 
+    // ──────────────────────────────────────────────────
+    // 개인정보 수정 폼 (GET /experts/my/info-edit)
+    // ──────────────────────────────────────────────────
+    @GetMapping("/my/info-edit")
+    public String infoEditForm(HttpSession session, Model model) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
+        if (!sessionUser.isExpert()) return "redirect:/";
+
+        model.addAttribute("member", memberService.getMyInfo(sessionUser.getId()));
+        return "expertProfile/expert-info-edit";
+    }
+
+    // ──────────────────────────────────────────────────
+    // 개인정보 수정 처리 (POST /experts/my/info-edit)
+    // ──────────────────────────────────────────────────
+    @PostMapping("/my/info-edit")
+    public String infoEditSubmit(@ModelAttribute MemberRequest.Update req,
+                                 HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
+        if (!sessionUser.isExpert()) return "redirect:/";
+
+        try {
+            memberService.updateMyInfo(sessionUser.getId(), req, null);
+            session.setAttribute(Define.SESSION_USER,
+                    memberService.findMemberById(sessionUser.getId()));
+        } catch (BadRequestException e) {
+            log.warn("개인정보 수정 실패 (memberId={}): {}", sessionUser.getId(), e.getMessage());
+        }
         return "redirect:/experts/dashboard";
     }
 }

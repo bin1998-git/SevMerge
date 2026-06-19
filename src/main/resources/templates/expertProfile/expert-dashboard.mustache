@@ -136,7 +136,10 @@
                 <div class="dash-card">
                     <div class="dash-card-header">
                         <span class="dash-card-title">전문가 정보</span>
-                        <a href="/experts/my/form" class="dash-card-more">편집 →</a>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <a href="/experts/my/info-edit" class="dash-card-more" style="color:#6b7280;">개인정보 →</a>
+                            <a href="/experts/my/form" class="dash-card-more">프로필 →</a>
+                        </div>
                     </div>
                     <div class="dash-card-body">
                         <div class="expert-avatar">👨‍💻</div>
@@ -158,11 +161,11 @@
                 <div class="dash-card">
                     <div class="dash-card-header">
                         <span class="dash-card-title">기술스택 &amp; 약력</span>
-                        <a href="/experts/my/form" class="dash-card-more">수정 →</a>
                     </div>
                     <div class="dash-card-body">
                         <div class="quick-links">
-                            <a href="/experts/my/form"      class="quick-link"><span class="quick-link-icon">📝</span>프로필 등록 / 수정</a>
+                            <a href="/experts/my/info-edit" class="quick-link"><span class="quick-link-icon">👤</span>개인정보 수정</a>
+                            <a href="/experts/my/form"      class="quick-link"><span class="quick-link-icon">📝</span>전문가 프로필 수정</a>
                             <a href="/portfolios?expertId={{expertProfile.memberId}}" class="quick-link"><span class="quick-link-icon">🎨</span>포트폴리오 관리</a>
                             <a href="/portfolios/save?expertId={{expertProfile.memberId}}" class="quick-link"><span class="quick-link-icon">➕</span>포트폴리오 등록</a>
                         </div>
