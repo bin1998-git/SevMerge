@@ -7,7 +7,6 @@ import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,11 +30,11 @@ public class ProjectService {
     private final MemberRepository memberRepository;
 
     // 프로젝트 전체조회 서비스
-    public List<ProjectResponeDTO.ListDTO> findAllProjects() {
+    public List<ProjectResponseDTO.ListDTO> findAllProjects() {
         log.info("project 전체 조회 서비스 시작");
         List<Project> projectList = projectRepository.findAllProjects();
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -62,42 +61,42 @@ public class ProjectService {
 
 
     // 프로젝트 상세조회 서비스
-    public ProjectResponeDTO.DetailDTO findProjectById(Long id) {
+    public ProjectResponseDTO.DetailDTO findProjectById(Long id) {
         log.info("project 상세 서비스 시작");
         Project project = projectRepository.findByProjectId(id)
                 .orElseThrow(() -> new NotFoundException("없는 프로젝트 입니다"));
         project.increaseViewCount(); // 조회수 증가
-        return new ProjectResponeDTO.DetailDTO(project);
+        return new ProjectResponseDTO.DetailDTO(project);
     }
 
     // 카테고리별 조회
-    public List<ProjectResponeDTO.ListDTO> findByCategory(String category) {
+    public List<ProjectResponseDTO.ListDTO> findByCategory(String category) {
         log.info("project 카테고리별 조회 서비스 시작");
         List<Project> projectList = projectRepository.findByCategory(Category.valueOf(category));
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
 
     // 중복 체크
-    public List<ProjectResponeDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
+    public List<ProjectResponseDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
 
         List<Project> projectList = projectCustomRepository.findByFilters(keyword, category, statusFilter, bidFilter);
 
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
 
     // 내 프로젝트 목록 조회
-    public List<ProjectResponeDTO.ListDTO> myProjects(Member sessionMember) {
+    public List<ProjectResponseDTO.ListDTO> myProjects(Member sessionMember) {
         log.info("내 project 조회 서비스 시작");
         List<Project> projectList = projectRepository.findAllProjectByMemberId(sessionMember.getId());
         return projectList.stream()
                 .map(p -> {
-                    ProjectResponeDTO.ListDTO dto = new ProjectResponeDTO.ListDTO(p);
+                    ProjectResponseDTO.ListDTO dto = new ProjectResponseDTO.ListDTO(p);
                     //입찰 수 카운트 추가
                     dto.setBidCount((int) bidRepository.countByProjectId(p.getId()));
                     bidRepository.findSelectedBidByProjectId(p.getId(), BidStatus.SELECTED)
@@ -108,21 +107,21 @@ public class ProjectService {
     }
 
     // 입찰 필터 조회
-    public List<ProjectResponeDTO.ListDTO> findByBidFilter(String bidFilter) {
+    public List<ProjectResponseDTO.ListDTO> findByBidFilter(String bidFilter) {
         log.info("findByBidFilter 서비스 시작 - bidFilter: {}", bidFilter);
         List<Project> projectList = projectRepository.findByBidFilter(BidFilter.valueOf(bidFilter));
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
 
     }
 
     // 키워드 검색
-    public List<ProjectResponeDTO.ListDTO> findByKeyword(String keyword) {
+    public List<ProjectResponseDTO.ListDTO> findByKeyword(String keyword) {
         log.info("project 키워드 검색 서비스 시작");
         List<Project> projectList = projectRepository.findByKeyword(keyword);
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -174,7 +173,7 @@ public class ProjectService {
     }
 
     //  임시저장 데이터 불러오기
-    public ProjectResponeDTO.DetailDTO getMyDraft(Long memberId) {
+    public ProjectResponseDTO.DetailDTO getMyDraft(Long memberId) {
         log.info("임시저장 프로젝트 조회 서비스 시작 - memberId: {}", memberId);
         // 엔티티 조회
         Project draft = projectRepository.findByMemberIdAndProjectStatus(memberId, ProjectStatus.DRAFT).orElse(null);
@@ -184,7 +183,7 @@ public class ProjectService {
             return null;
         }
 
-        return new ProjectResponeDTO.DetailDTO(draft);
+        return new ProjectResponseDTO.DetailDTO(draft);
     }
 
 
@@ -234,13 +233,13 @@ public class ProjectService {
     }
 
     // 관리자 전용 프로젝트 키워드 검색
-    public List<ProjectResponeDTO.ListDTO> findAdminProjectsByKeyword(String keyword) {
+    public List<ProjectResponseDTO.ListDTO> findAdminProjectsByKeyword(String keyword) {
         log.info("관리자 전용 - 프로젝트 키워드 검색 서비스 시작 - 검색어 : [{}] ", keyword);
 
         List<Project> projectList = projectRepository.findAdminProjectsByKeyword(keyword);
 
         return projectList.stream()
-                .map(ProjectResponeDTO.ListDTO::new)
+                .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
 
