@@ -37,5 +37,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmailAndIsDeletedFalse(String email);
     List<Member> findAllByIsDeletedFalse();
 
-    //
+    // 최근 7일간 가입자 수 조회
+    @Query(value = """
+        SELECT DATE_FORMAT(created_at, '%m-%d') as date, COUNT(*) as count 
+        FROM member_tb 
+        WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE_FORMAT(created_at, '%m-%d')
+        ORDER BY date ASC
+        """, nativeQuery = true)
+    List<Object[]> findRecent7DaysRegistrationCount();
 }
