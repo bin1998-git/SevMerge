@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -124,5 +125,10 @@ public class MessageService {
             message.deleteByReceiver();
         }
         return isSender;
+    }
+
+    private void saveFiles(Message message, List<MultipartFile> files) {
+        if (files == null) return;
+
     }
 }
