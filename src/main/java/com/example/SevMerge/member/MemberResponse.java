@@ -7,7 +7,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberResponse {
@@ -23,6 +23,10 @@ public class MemberResponse {
     private Integer balance;
     private String provider;
 
+    // 관리자 회원관리 - 순서대로 보여줄 가상번호를 넣어줘야함
+    @Setter
+    private int virtualNo;
+
     public static MemberResponse from(Member member) {
         return MemberResponse.builder()
                 .id(member.getId())
@@ -35,6 +39,7 @@ public class MemberResponse {
                 .profileImage(member.getProfileImage())
                 .balance(member.getBalance())
                 .provider(member.getProvider())
+                .virtualNo(0)
                 .build();
     }
 

@@ -127,6 +127,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // 추후 C:upload/
                 // C:\\upload
                 .addResourceLocations("file:"+externalPath);
+
+        // 뱃지 이미지용 별도 핸들러
+        registry.addResourceHandler("/badges/**")
+                .addResourceLocations("classpath:/static/images/");
     }
     @Bean
     public PasswordEncoder passwordEncoder() {

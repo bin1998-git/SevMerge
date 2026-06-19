@@ -2,40 +2,64 @@
 
 <style>
     .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
-    .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc { font-size: 14px; color: #9ca3af; }
-    .list-section { padding: 36px 28px 80px; }
-    .list-inner { max-width: 1140px; margin: 0 auto; }
-    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
-    .tab:hover { border-color: #2563eb; color: #2563eb; }
-    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
-    .search-bar { display: flex; gap: 10px; margin-bottom: 24px; }
-    .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
-    .search-input:focus { border-color: #2563eb; outline: none; }
-    .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .expert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
-    .expert-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 24px; text-decoration: none; color: inherit; display: block; transition: border-color .2s, transform .15s; }
-    .expert-card:hover { border-color: #bfdbfe; transform: translateY(-3px); }
-    .expert-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-    .expert-avatar { width: 52px; height: 52px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-    .expert-info { flex: 1; }
-    .expert-name { font-size: 15px; font-weight: 800; color: #1c1e26; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
-    .cert-badge { font-size: 10px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 5px; font-weight: 700; }
-    .expert-career { font-size: 12px; color: #9ca3af; font-weight: 600; }
-    .expert-stars { color: #f59e0b; font-size: 13px; }
-    .expert-stars span { color: #9ca3af; font-size: 11px; font-weight: 500; }
-    .expert-introduce { font-size: 13px; color: #6b7280; line-height: 1.7; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .expert-skills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-    .skill-tag { padding: 4px 10px; background: #f8f9fc; border: 1px solid #e2e5ef; border-radius: 20px; font-size: 11px; font-weight: 600; color: #374151; }
-    .expert-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f8; padding-top: 14px; font-size: 12px; color: #9ca3af; }
-    .expert-stat { display: flex; align-items: center; gap: 4px; font-weight: 600; }
-    .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #c4c9d9; }
-    .paging { display: flex; justify-content: center; gap: 6px; }
-    .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
-    .page-btn:hover { border-color: #2563eb; color: #2563eb; }
-    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+ .page-header-inner { max-width: 1140px; margin: 0 auto; }
+ .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
+ .page-desc { font-size: 14px; color: #9ca3af; }
+ .list-section { padding: 36px 28px 80px; }
+ .list-inner { max-width: 1140px; margin: 0 auto; }
+ .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+ .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
+ .tab:hover { border-color: #2563eb; color: #2563eb; }
+ .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+ .search-bar { display: flex; gap: 10px; margin-bottom: 24px; }
+ .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
+ .search-input:focus { border-color: #2563eb; }
+ .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+ .expert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
+
+ .expert-card {
+    background: #f8f9ff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 16px;
+    padding: 22px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform .15s, box-shadow .2s;
+}
+.expert-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(37,99,235,.08);
+    border-color: #93c5fd;
+}
+
+ .expert-avatar-wrap { position: relative; flex-shrink: 0; }
+ .expert-avatar { width: 48px; height: 48px; border-radius: 50%; background: #eff6ff; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+ .expert-badge-icon { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; object-fit: contain; }
+
+ .expert-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+ .expert-info { flex: 1; min-width: 0; }
+ .expert-name { font-size: 14px; font-weight: 800; color: #1c1e26; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+ .expert-career { font-size: 11px; color: #9ca3af; font-weight: 500; }
+
+ .expert-rating { text-align: right; flex-shrink: 0; }
+ .expert-rating-num { font-size: 20px; font-weight: 900; color: #f59e0b; line-height: 1; }
+ .expert-rating-sub { font-size: 10px; color: #c4c9d9; margin-top: 2px; }
+
+ .expert-introduce { font-size: 12px; color: #6b7280; line-height: 1.7; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+ .expert-skills { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+ .skill-tag { padding: 3px 9px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 10px; font-weight: 600; color: #1d4ed8; }
+
+ .expert-bottom { border-top: 1px solid #e0e7ff; padding-top: 10px; font-size: 11px; color: #9ca3af; }
+ .expert-stat { font-weight: 600; }
+
+ .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #c4c9d9; }
+ .paging { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
+ .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
+ .page-btn:hover { border-color: #2563eb; color: #2563eb; }
+ .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
 </style>
 
 <div class="page-header">
@@ -63,36 +87,47 @@
             <a href="/experts?certified=true" class="tab" style="border-color:#fde68a; color:#b45309;">⭐ 인증 전문가만</a>
         </div>
 
-        {{#expertProfiles}}
-            <a href="/experts/{{memberId}}" class="expert-card">
-
-                <div class="expert-top">
-                    <div class="expert-avatar">👨‍💻</div>
-                    <div class="expert-info">
-                        <div class="expert-name">
-                            {{memberName}}
-                            <span class="cert-badge">{{grade}}</span>
+        <div class="expert-grid">
+            {{#expertProfiles}}
+                <a href="/experts/{{memberId}}" class="expert-card">
+                    <div class="expert-top">
+                        <div class="expert-avatar-wrap">
+                            <div class="expert-avatar">👨‍💻</div>
+                            {{#normal}}<img src="/normal-badge.png" class="expert-badge-icon" alt="일반"/>{{/normal}}
+                            {{#skilled}}<img src="/skilled-badge.png" class="expert-badge-icon" alt="숙련"/>{{/skilled}}
+                            {{#master}}<img src="/master-badge.png" class="expert-badge-icon" alt="마스터"/>{{/master}}
                         </div>
-                        <div class="expert-career">{{career}}</div>
-                        <div class="expert-stars">★ <span>{{avgRating}} ({{totalReviews}})</span></div>
+                        <div class="expert-info">
+                            <div class="expert-name">
+                                {{memberName}}
+                                {{#normal}}<img src="/normal.png" style="width:101px; height:74px; object-fit:contain;"/>{{/normal}}
+                                {{#skilled}}<img src="/skilled.png" style="width:101px; height:74px; object-fit:contain;"/>{{/skilled}}
+                                {{#master}}<img src="/master.png" style="width:101px; height:74px; object-fit:contain;"/>{{/master}}
+                            </div>
+                            <div class="expert-career">{{career}}</div>
+                        </div>
+                        <div class="expert-rating">
+                            <div class="expert-rating-num">{{avgRating}}</div>
+                            <div class="expert-rating-sub">★ ({{totalReviews}}개)</div>
+                        </div>
                     </div>
-                </div>
-                <div class="expert-introduce">{{intro}}</div>
-                <div class="expert-skills">
-                    {{#speciality}}
-                        <span class="skill-tag">{{speciality}}</span>
-                    {{/speciality}}
-                </div>
-                <div class="expert-bottom">
-                    <span class="expert-stat">완료 {{doneProject}}건</span>
-                    <!-- 추가 -->
-                    <button class="bookmark-btn" onclick="toggleBookmark(event, {{id}}, this)">
-                        {{#bookmarked}}⭐{{/bookmarked}}
-                        {{^bookmarked}}☆{{/bookmarked}}
-                    </button>
-                </div>
-            </a>
-        {{/expertProfiles}}
+                    <div class="expert-introduce">{{intro}}</div>
+                    <div class="expert-skills">
+                        {{#speciality}}
+                            <span class="skill-tag">{{speciality}}</span>
+                        {{/speciality}}
+                    </div>
+                    <div class="expert-bottom">
+                        <span class="expert-stat">완료 {{doneProject}}건</span>
+                        <form action=""></form>
+                        <button class="bookmark-btn" onclick="toggleBookmark(event, {{id}}, this)">
+                            {{#bookmarked}}⭐{{/bookmarked}}
+                            {{^bookmarked}}☆{{/bookmarked}}
+                        </button>
+                    </div>
+                </a>
+            {{/expertProfiles}}
+        </div>
 
         {{^expertProfiles}}
             <div class="empty-state">검색 결과가 없습니다.</div>
