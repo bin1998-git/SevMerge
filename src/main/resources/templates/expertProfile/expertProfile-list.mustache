@@ -55,11 +55,6 @@
  .expert-bottom { border-top: 1px solid #e0e7ff; padding-top: 10px; font-size: 11px; color: #9ca3af; }
  .expert-stat { font-weight: 600; }
 
- .grade-text { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; border: 1px solid transparent; flex-shrink: 0; }
- .grade-text-normal  { background: #f8f9fc; border-color: #e2e5ef; color: #6b7280; }
- .grade-text-skilled { background: #fffbeb; border-color: #ebe4bc; color: #c4a848; }
- .grade-text-master  { background: #0f0f1a; border-color: #f59e0b; color: #fcd34d; }
-
  .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #c4c9d9; }
  .paging { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
  .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
@@ -98,16 +93,16 @@
                     <div class="expert-top">
                         <div class="expert-avatar-wrap">
                             <div class="expert-avatar">👨‍💻</div>
-                            {{#normal}}<img src="/badge-normal.png" class="expert-badge-icon" alt="일반"/>{{/normal}}
-                            {{#skilled}}<img src="/badge-skilled.png" class="expert-badge-icon" alt="숙련"/>{{/skilled}}
-                            {{#master}}<img src="/badge-master.png" class="expert-badge-icon" alt="마스터"/>{{/master}}
+                            {{#normal}}<img src="/normal-badge.png" class="expert-badge-icon" alt="일반"/>{{/normal}}
+                            {{#skilled}}<img src="/skilled-badge.png" class="expert-badge-icon" alt="숙련"/>{{/skilled}}
+                            {{#master}}<img src="/master-badge.png" class="expert-badge-icon" alt="마스터"/>{{/master}}
                         </div>
                         <div class="expert-info">
                             <div class="expert-name">
                                 {{memberName}}
-                                {{#normal}}<span class="grade-text grade-text-normal">일반 전문가</span>{{/normal}}
-                                {{#skilled}}<span class="grade-text grade-text-skilled">숙련 전문가</span>{{/skilled}}
-                                {{#master}}<span class="grade-text grade-text-master">마스터 전문가</span>{{/master}}
+                                {{#normal}}<img src="/normal.png" style="width:101px; height:74px; object-fit:contain;"/>{{/normal}}
+                                {{#skilled}}<img src="/skilled.png" style="width:101px; height:74px; object-fit:contain;"/>{{/skilled}}
+                                {{#master}}<img src="/master.png" style="width:101px; height:74px; object-fit:contain;"/>{{/master}}
                             </div>
                             <div class="expert-career">{{career}}</div>
                         </div>
