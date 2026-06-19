@@ -202,7 +202,18 @@ public class MemberController {
         model.addAttribute("isMessages", tab.equalsIgnoreCase("messages"));
         // 탭별 데이터
         if (tab.equals("projects")) {
-            model.addAttribute("projects", myProjects);
+            List<ProjectResponeDTO.ListDTO> projects = myProjects.stream()
+                    .map(project -> {
+                        if (project.getSelectedExpertId() != null) {
+                            boolean hasReview = reviewRepository.existsByReviewerAndTargeterAndProject(
+                                    loginMember.getId(), project.getSelectedExpertId(), project.getId()
+                            );
+                            project.setHasReview(hasReview);
+                        }
+                        return project;
+                    })
+                    .toList();
+            model.addAttribute("projects", projects);
         } else if (tab.equals("boards")) {
             model.addAttribute("boards", boardService.findAllByMyBoard(loginMember.getId()));
         } else if (tab.equals("reviews")) {

@@ -23,6 +23,7 @@ public class MemberResponse {
     private Integer balance;
     private String provider;
 
+
     public static MemberResponse from(Member member) {
         return MemberResponse.builder()
                 .id(member.getId())
