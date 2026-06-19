@@ -3,13 +3,13 @@ package com.example.SevMerge.message;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.project.Project;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -50,6 +50,19 @@ public class Message {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    // mappedBy = "message" → MessageAttachment.message 필드가 주인
+    // cascade = ALL → 쪽지 저장/삭제 시 첨부도 같이
+    // orphanRemoval → 리스트에서 빠지면 DB에서도 삭제
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<MessageFiles> messageFiles =  new ArrayList<>();
+
+    public void addMessageFile(MessageFiles messageFile){
+        this.messageFiles.add(messageFile);
+        messageFile.setMessage(this);
+    }
 
     @Builder
     public Message(Member sender, Member receiver, Project project,
