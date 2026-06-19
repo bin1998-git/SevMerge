@@ -187,7 +187,18 @@
                                     </form>
                                 {{/isCompleted}}
                                 {{#isDone}}
-                                    <a href="/reviews/save?targetId={{selectedExpertId}}" class="cm-btn cm-btn-primary" style="display:block;">리뷰 작성</a>
+                                    {{^hasReview}}
+                                        <a href="/reviews/save?targetId={{selectedExpertId}}&projectId={{id}}"
+                                        class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
+                                            리뷰 작성
+                                        </a>
+                                        <a href="/my-pages?tab=projects" style="font-size:11px; color:#9ca3af; display:block; margin-top:4px; text-align:center;">
+                                            건너뛰기
+                                        </a>
+                                    {{/hasReview}}
+                                    {{#hasReview}}
+                                        <span style="font-size:12px; color:#059669; display:block; margin-top:8px;">✓ 리뷰 완료</span>
+                                    {{/hasReview}}
                                 {{/isDone}}
                             </div>
                         </div>

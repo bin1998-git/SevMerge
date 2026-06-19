@@ -3,6 +3,7 @@ package com.example.SevMerge.review;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.project.Project;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,15 +14,17 @@ public class ReviewRequest {
     public static class SaveReviewDTO {
         private Long reviewerId;
         private Long targetId;
+        private Long projectId;
         private Integer rating;
         private String content;
 
-        public Review toEntity(Member reviewer, Member targeter) {
+        public Review toEntity(Member reviewer, Member targeter, Project project) {
             return Review.builder()
                     .reviewer(reviewer)
                     .targeter(targeter)
                     .content(content)
                     .countStar(rating)
+                    .project(project)  // project 세팅 추가
                     .build();
         }
 
