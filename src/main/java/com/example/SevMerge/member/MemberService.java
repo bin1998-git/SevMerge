@@ -12,6 +12,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -416,13 +419,19 @@ public class MemberService {
 
     // 회원 검색
     @Transactional(readOnly = true)
-    public List<MemberResponse> searchMembers(String keyword) {
-        //  탈퇴하지 않은 유저만 필터링 추가
-        return memberRepository.searchByKeyword(keyword)
-                .stream()
-                .filter(m -> !m.isDeleted())
-                .map(MemberResponse::from)
-                .toList();
+    public Page<MemberResponse> searchMembers(String keyword, Pageable pageable) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return memberRepository.searchByKeyword(keyword.trim(), pageable).map(MemberResponse::from);
+        }
+        return memberRepository.findByIsDeletedFalse(pageable).map(MemberResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MemberResponse> searchMembersOrderByCreatedAt(String keyword, Pageable pageable) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return memberRepository.searchByKeywordOrderByCreatedAt(keyword.trim(), pageable).map(MemberResponse::from);
+        }
+        return memberRepository.findByIsDeletedFalseOrderByCreatedAt(pageable).map(MemberResponse::from);
     }
 
     // 대기중 전문가 목록 조회

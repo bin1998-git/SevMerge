@@ -20,6 +20,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +113,10 @@ public class MemberController {
         if (member.getStatus() == Status.SUSPENDED) {
             session.setAttribute("suspendedMemberId", member.getId());
             return "redirect:/banned-info";
+        }
+
+        if ("ADMIN".equals(String.valueOf(member.getRole()))) {
+            return "redirect:/admin/main";
         }
 
         return "redirect:/exmain";
@@ -229,7 +238,7 @@ public class MemberController {
                 log.warn("충전 내역 조회 실패 - {}", e.getMessage());
                 model.addAttribute("chargeHistories", List.of());
             }
-        }else if (tab.equals("refundHistory")) {
+        } else if (tab.equals("refundHistory")) {
             try {
                 model.addAttribute("refunds", refundApplicationService.getMyApplications(loginMember.getId()));
             } catch (Exception e) {
@@ -282,6 +291,7 @@ public class MemberController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     // 비밀번호 확인api
     @PostMapping("/api/member/verify-password")
     @ResponseBody
@@ -308,19 +318,38 @@ public class MemberController {
 
     // 관리자 - 회원 관리
     @GetMapping("/admin/members")
-    public String adminMembers(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
-        List<MemberResponse> memberList;
+    public String adminMembers(@RequestParam(value = "keyword", required = false) String keyword,
+                               @RequestParam(value = "sort", defaultValue = "desc") String sort,
+                               @RequestParam(value = "page", defaultValue = "0") int page,
+                               Model model) {
+        Sort.Direction direction = "asc".equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(direction, "createdAt"));
+        Page<MemberResponse> memberPage = memberService.searchMembers(keyword, pageable);
+        List<MemberResponse> content = new ArrayList<>(memberPage.getContent());
 
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            memberList = memberService.searchMembers(keyword.trim());
-        } else {
-            memberList = memberService.getAllMembers();
+        int startNo = (page * 10) + 1;
+        for (int i = 0; i < content.size(); i++) {
+            content.get(i).setVirtualNo(startNo + i);
         }
 
-        model.addAttribute("members", memberList);
+        model.addAttribute("members", content);
         model.addAttribute("keyword", keyword != null ? keyword : "");
         model.addAttribute("isAdmin", true);
+        model.addAttribute("sort", sort);
+        model.addAttribute("isNewSort","asc".equalsIgnoreCase(sort));
+
+        int currentPage = memberPage.getNumber();
+        int totalPages = memberPage.getTotalPages();
+        int displayTotalPages = totalPages == 0 ? 1 : totalPages;
+
+        model.addAttribute("displayPage", currentPage + 1);
+        model.addAttribute("totalPages", displayTotalPages);
+        model.addAttribute("totalElements", memberPage.getTotalElements());
+        model.addAttribute("hasNext", memberPage.hasNext());
+        model.addAttribute("hasPrev", memberPage.hasPrevious());
+        model.addAttribute("prevPage", currentPage - 1);
+        model.addAttribute("nextPage", currentPage + 1);
 
         return "admin/admin-member";
     }
