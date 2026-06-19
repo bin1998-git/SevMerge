@@ -96,7 +96,9 @@ public class ChargeService {
     public Integer getBalance(Long memberId) {
         return (Integer) em.createQuery("SELECT m.balance FROM Member m WHERE m.id = :id")
                 .setParameter("id", memberId)
-                .getSingleResult();
+                .getResultStream()
+                .findFirst()
+                .orElse(0);
     }
 
     // ── Toss API ──

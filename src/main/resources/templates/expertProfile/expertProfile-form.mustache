@@ -1,52 +1,79 @@
 {{> layout/header}}
 
 <style>
-    .save-section { padding: 52px 28px 80px; }
-    .save-inner { max-width: 760px; margin: 0 auto; }
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; }
-    .notice-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #2563eb; font-weight: 500; margin-bottom: 28px; line-height: 1.7; }
-    .save-form { display: flex; flex-direction: column; gap: 22px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-label .required { color: #ef4444; margin-left: 2px; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input::placeholder { color: #c4c9d9; }
+    .edit-tab-header { background: #fff; border-bottom: 1px solid #eaecf4; }
+    .edit-tab-inner  { max-width: 760px; margin: 0 auto; padding: 0 28px; display: flex; align-items: flex-end; gap: 0; }
+    .edit-tab-title  { font-size: 15px; font-weight: 900; color: #1c1e26; padding: 20px 24px 0 0; margin-right: 8px; white-space: nowrap; align-self: center; }
+    .edit-tab        { padding: 18px 20px 16px; font-size: 14px; font-weight: 600; color: #9ca3af; border-bottom: 2.5px solid transparent; text-decoration: none; transition: color .15s, border-color .15s; white-space: nowrap; }
+    .edit-tab:hover  { color: #1c1e26; }
+    .edit-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+    .save-section    { padding: 40px 28px 80px; }
+    .save-inner      { max-width: 760px; margin: 0 auto; }
+    .notice-box      { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #2563eb; font-weight: 500; margin-bottom: 28px; line-height: 1.7; }
+    .save-form       { display: flex; flex-direction: column; gap: 22px; }
+    .form-group      { display: flex; flex-direction: column; gap: 8px; }
+    .form-label      { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label .req { color: #ef4444; margin-left: 2px; }
+    .form-input      { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
     .form-input:focus { border-color: #2563eb; }
-    .form-select { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; cursor: pointer; }
+    .form-input::placeholder { color: #c4c9d9; }
+    .form-select     { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; cursor: pointer; }
     .form-select:focus { border-color: #2563eb; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 180px; line-height: 1.7; transition: border-color .15s; }
-    .form-textarea::placeholder { color: #c4c9d9; }
+    .form-textarea   { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 180px; line-height: 1.7; transition: border-color .15s; }
     .form-textarea:focus { border-color: #2563eb; }
-    .form-hint { font-size: 12px; color: #9ca3af; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary { background: #2563eb; color: #fff; }
+    .form-textarea::placeholder { color: #c4c9d9; }
+    .form-hint       { font-size: 12px; color: #9ca3af; }
+    .form-btns       { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    .btn             { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary     { background: #2563eb; color: #fff; }
     .btn-primary:hover { background: #1d4ed8; }
-    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
-    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+    .btn-outline     { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .btn-lg          { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+
+    .stack-box  { background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; padding: 16px; display: none; }
+    .stack-box.visible { display: block; }
+    .stack-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .stack-chip { display: flex; align-items: center; cursor: pointer; }
+    .stack-chip input[type="checkbox"] { display: none; }
+    .stack-chip-label {
+        padding: 6px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        border: 1.5px solid #e2e5ef; background: #fff; color: #6b7280;
+        cursor: pointer; transition: all .15s; user-select: none;
+    }
+    .stack-chip input:checked + .stack-chip-label { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .stack-chip-label:hover { border-color: #2563eb; color: #2563eb; }
+    .stack-preview { margin-top: 10px; font-size: 12px; color: #6b7280; min-height: 18px; }
 </style>
+
+<!-- 탭 헤더 -->
+<div class="edit-tab-header">
+    <div class="edit-tab-inner">
+        <span class="edit-tab-title">내 정보 수정</span>
+        <a href="/experts/my/info-edit" class="edit-tab">개인정보 수정</a>
+        <a href="/experts/my/form"      class="edit-tab active">전문가 프로필 수정</a>
+    </div>
+</div>
+
+<!-- 서버 데이터 전달용 (JS에서 data 속성으로 읽음, JS string literal에 Mustache 삽입 금지) -->
+<div id="profileData"
+     data-career="{{expertProfile.career}}"
+     data-speciality="{{expertProfile.speciality}}"
+     style="display:none"></div>
 
 <section class="save-section">
     <div class="save-inner">
 
-        <div class="save-header">
-            <h1 class="save-title">⭐ 인증 전문가 신청</h1>
-            <p class="save-desc">전문가 프로필을 작성하고 인증 전문가에 도전하세요.</p>
-        </div>
-
         <div class="notice-box">
-            📋 인증 심사 안내<br>
+            인증 심사 안내<br>
             제출된 프로필은 관리자 검토 후 승인됩니다. 승인까지 최대 3 영업일이 소요될 수 있습니다.
         </div>
 
-        <form class="save-form" action="/experts/my/form" method="POST">
+        <form class="save-form" id="profileForm" action="/experts/my/form" method="POST">
 
             <div class="form-group">
-                <label class="form-label">직종 / 전문 분야 <span class="required">*</span></label>
-                <select name="career" class="form-select">
+                <label class="form-label">직종 / 전문 분야 <span class="req">*</span></label>
+                <select name="career" id="careerSelect" class="form-select">
                     <option value="">선택하세요</option>
                     <option value="풀스택">풀스택 개발자</option>
                     <option value="백엔드">백엔드 개발자</option>
@@ -61,15 +88,18 @@
 
             <div class="form-group">
                 <label class="form-label">주요 기술 스택</label>
-                <input type="text" name="speciality" class="form-input"
-                       value="{{expertProfile.speciality}}"
-                       placeholder="예: Java, Spring Boot, React (콤마로 구분)" />
-                <span class="form-hint">콤마(,)로 구분하여 입력하세요.</span>
+                <div class="stack-box" id="stackBox">
+                    <div class="stack-grid" id="stackGrid"></div>
+                    <div class="stack-preview" id="stackPreview">기술 스택을 선택하세요.</div>
+                </div>
+                <input type="hidden" name="speciality" id="specialityInput" />
+                <span class="form-hint">직종 선택 후 해당 기술을 체크하세요.</span>
             </div>
 
             <div class="form-group">
-                <label class="form-label">자기소개 <span class="required">*</span></label>
-                <textarea name="intro" class="form-textarea" placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 소개해주세요.">{{expertProfile.intro}}</textarea>
+                <label class="form-label">자기소개 <span class="req">*</span></label>
+                <textarea name="intro" class="form-textarea"
+                          placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 소개해주세요.">{{expertProfile.intro}}</textarea>
             </div>
 
             <div class="form-group">
@@ -88,12 +118,100 @@
             </div>
 
             <div class="form-btns">
-                <a href="/my-pages" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary btn-lg">{{#isUpdate}}수정 완료{{/isUpdate}}{{^isUpdate}}신청서 제출{{/isUpdate}}</button>
+                <a href="/experts/dashboard" class="btn btn-outline">취소</a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    {{#isUpdate}}수정 완료{{/isUpdate}}{{^isUpdate}}신청서 제출{{/isUpdate}}
+                </button>
             </div>
 
         </form>
     </div>
 </section>
+
+<script>
+(function () {
+    var STACKS = {
+        '풀스택':    ['Java','Spring Boot','Node.js','React','Vue','TypeScript','Python','Docker','MySQL','MongoDB','PostgreSQL','AWS'],
+        '백엔드':    ['Java','Spring Boot','Node.js','Python','Django','FastAPI','Express','MySQL','PostgreSQL','Redis','Docker','AWS'],
+        '프론트엔드': ['React','Vue','Angular','TypeScript','Next.js','Nuxt.js','Tailwind CSS','SCSS','JavaScript','HTML/CSS','Webpack','Vite'],
+        '앱개발':    ['Flutter','React Native','Swift','Kotlin','Android','iOS','Firebase','Dart'],
+        'UI/UX':    ['Figma','Adobe XD','Sketch','Zeplin','Framer','Principle','Photoshop','Illustrator'],
+        '데이터':    ['Python','Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','R'],
+        '영상편집':  ['Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender'],
+        '기타':     ['WordPress','Shopify','Git','Linux','Nginx','Jenkins','Kubernetes','Figma']
+    };
+
+    var careerSelect    = document.getElementById('careerSelect');
+    var stackBox        = document.getElementById('stackBox');
+    var stackGrid       = document.getElementById('stackGrid');
+    var stackPreview    = document.getElementById('stackPreview');
+    var specialityInput = document.getElementById('specialityInput');
+    var profileForm     = document.getElementById('profileForm');
+    var profileData     = document.getElementById('profileData');
+
+    function getChecked() {
+        return Array.from(stackGrid.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(function (cb) { return cb.value; });
+    }
+
+    function syncHidden() {
+        var checked = getChecked();
+        specialityInput.value = checked.join(', ');
+        stackPreview.textContent = checked.length
+            ? '선택됨: ' + checked.join(', ')
+            : '기술 스택을 선택하세요.';
+    }
+
+    function renderStacks(career, preChecked) {
+        var list = STACKS[career] || [];
+        stackGrid.innerHTML = '';
+        if (!list.length) {
+            stackBox.classList.remove('visible');
+            syncHidden();
+            return;
+        }
+        list.forEach(function (tech) {
+            var label = document.createElement('label');
+            label.className = 'stack-chip';
+
+            var cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = tech;
+            cb.checked = preChecked.indexOf(tech) !== -1;
+            cb.addEventListener('change', syncHidden);
+
+            var span = document.createElement('span');
+            span.className = 'stack-chip-label';
+            span.textContent = tech;
+
+            label.appendChild(cb);
+            label.appendChild(span);
+            stackGrid.appendChild(label);
+        });
+        stackBox.classList.add('visible');
+        syncHidden();
+    }
+
+    careerSelect.addEventListener('change', function () {
+        renderStacks(this.value, []);
+    });
+
+    profileForm.addEventListener('submit', function () {
+        specialityInput.value = getChecked().join(', ');
+    });
+
+    // 수정 모드: data 속성에서 서버 값 읽어 복원 (JS string literal에 Mustache 삽입 불가)
+    var savedCareer    = profileData ? profileData.getAttribute('data-career')    || '' : '';
+    var savedSpeciality = profileData ? profileData.getAttribute('data-speciality') || '' : '';
+
+    if (savedCareer) {
+        careerSelect.value = savedCareer;
+        var preChecked = savedSpeciality
+            ? savedSpeciality.split(',').map(function (s) { return s.trim(); }).filter(Boolean)
+            : [];
+        renderStacks(savedCareer, preChecked);
+    }
+}());
+</script>
 
 {{> layout/footer}}

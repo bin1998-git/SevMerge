@@ -64,9 +64,17 @@ public class SessionInterceptor implements HandlerInterceptor {
                     modelAndView.addObject("sessionUser", member);
                     modelAndView.addObject("isExpert", member.isExpert());
                     modelAndView.addObject("isAdmin", member.isAdmin());
-                    modelAndView.addObject("headerBalance", chargeService.getBalance(member.getId()));
-                    modelAndView.addObject("hasNewNotification",
-                            notificationService.countUnRead(member) > 0);
+                    try {
+                        modelAndView.addObject("headerBalance", chargeService.getBalance(member.getId()));
+                    } catch (Exception e) {
+                        modelAndView.addObject("headerBalance", 0);
+                    }
+                    try {
+                        modelAndView.addObject("hasNewNotification",
+                                notificationService.countUnRead(member) > 0);
+                    } catch (Exception e) {
+                        modelAndView.addObject("hasNewNotification", false);
+                    }
                 } else {
                     modelAndView.addObject("isLoggedIn", false);
                     modelAndView.addObject("isExpert", false);

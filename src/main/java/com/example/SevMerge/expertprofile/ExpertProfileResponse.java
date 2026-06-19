@@ -49,6 +49,7 @@ public class ExpertProfileResponse {
                 .githubUrl(profile.getGithubUrl())
                 .contactEmail(profile.getContactEmail())
                 .isCertified(profile.isCertified())
+                .grade(profile.getExpertGrade() != null ? profile.getExpertGrade().toString() : Grade.NORMAL.toString())
                 .build();
     }
 

@@ -160,16 +160,18 @@
         /* Card bottom — person info */
         .biz-body { }
         .biz-name-line {
-            display: flex; align-items: baseline; gap: 10px;
-            margin-bottom: 10px; flex-wrap: wrap;
+            display: flex; flex-direction: column; gap: 6px;
+            margin-bottom: 12px;
         }
         .biz-name {
-            font-size: 26px; font-weight: 700; color: #ffffff;
-            letter-spacing: -.03em; line-height: 1;
+            font-size: 16px; font-weight: 700; color: #ffffff;
+            letter-spacing: -.02em; line-height: 1.35;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
         .biz-role {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 13px; font-weight: 500; color: var(--brand-sky);
+            font-size: 12px; font-weight: 500; color: var(--brand-sky);
+            white-space: nowrap;
         }
         .biz-contacts { display: flex; flex-direction: column; gap: 5px; }
         .biz-ct {
@@ -604,25 +606,25 @@
         </div>
     </div>
 
-    <!-- ① 오분대기조 (avgRating 상위) -->
+    <!-- ① 마감 임박 의뢰 -->
     <div class="expert-block">
         <div class="block-head">
             <div class="block-head-left">
-                <span class="block-kw kw-blue">Fast Delivery</span>
-                <span class="block-sub">작업 기한이 빠른 전문가</span>
+                <span class="block-kw kw-blue">Urgent</span>
+                <span class="block-sub">빠른 작업이 필요한 의뢰</span>
             </div>
-            <a href="/experts" class="block-more">VIEW ALL →</a>
+            <a href="/projects" class="block-more">VIEW ALL →</a>
         </div>
         <div class="carousel-section" id="cs-1">
             <div class="c-viewport">
                 <div class="c-track">
 
-                    {{#fastExperts}}
-                    <a href="/experts/{{memberId}}" class="biz-card"
-                       data-member-id="{{memberId}}"
-                       data-rating="{{ratingDisplay}}"
-                       data-jobs="{{totalReviews}}건"
-                       data-speciality="{{speciality}}">
+                    {{#urgentProjects}}
+                    <a href="/projects/{{id}}" class="biz-card"
+                       data-project-id="{{id}}"
+                       data-dday="D-{{dDay}}"
+                       data-budget="{{budgetMin}}~{{budgetMax}}만원"
+                       data-category="{{categoryName}}">
                         <div class="biz-inner">
                             <div class="biz-brand">
                                 <img src="/app-icon.svg" class="biz-app-icon" alt="">
@@ -630,23 +632,23 @@
                             </div>
                             <div class="biz-body">
                                 <div class="biz-name-line">
-                                    <span class="biz-name">{{memberName}}</span>
-                                    <span class="biz-role">{{speciality}}</span>
+                                    <span class="biz-name">{{title}}</span>
+                                    <span class="biz-role">{{categoryName}}</span>
                                 </div>
                                 <div class="biz-contacts">
-                                    {{#contactEmail}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> {{contactEmail}}</span>{{/contactEmail}}
-                                    {{#githubUrl}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> {{githubUrl}}</span>{{/githubUrl}}
-                                    {{#isCertified}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> 아이코드유 인증 전문가</span>{{/isCertified}}
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> D-{{dDay}}일 마감</span>
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> 예산 {{budgetMin}}~{{budgetMax}}만원</span>
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> 의뢰인 {{memberName}}</span>
                                 </div>
                             </div>
                         </div>
                     </a>
-                    {{/fastExperts}}
-                    {{^fastExperts}}
+                    {{/urgentProjects}}
+                    {{^urgentProjects}}
                     <div class="biz-card" style="display:flex;align-items:center;justify-content:center;">
-                        <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 전문가가 없습니다</span>
+                        <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 의뢰가 없습니다</span>
                     </div>
-                    {{/fastExperts}}
+                    {{/urgentProjects}}
 
                 </div>
             </div>
@@ -655,25 +657,25 @@
         </div>
     </div>
 
-    <!-- ② 바가지 수사대 (totalReviews 상위) -->
+    <!-- ② 합리적인 예산 의뢰 -->
     <div class="expert-block">
         <div class="block-head">
             <div class="block-head-left">
-                <span class="block-kw kw-amber">Best Value</span>
-                <span class="block-sub">합리적인 가격의 전문가</span>
+                <span class="block-kw kw-amber">Budget</span>
+                <span class="block-sub">예산이 합리적인 의뢰</span>
             </div>
-            <a href="/experts" class="block-more">VIEW ALL →</a>
+            <a href="/projects" class="block-more">VIEW ALL →</a>
         </div>
         <div class="carousel-section" id="cs-2">
             <div class="c-viewport">
                 <div class="c-track">
 
-                    {{#valueExperts}}
-                    <a href="/experts/{{memberId}}" class="biz-card"
-                       data-member-id="{{memberId}}"
-                       data-rating="{{ratingDisplay}}"
-                       data-jobs="{{totalReviews}}건"
-                       data-speciality="{{speciality}}">
+                    {{#budgetProjects}}
+                    <a href="/projects/{{id}}" class="biz-card"
+                       data-project-id="{{id}}"
+                       data-dday="D-{{dDay}}"
+                       data-budget="{{budgetMin}}~{{budgetMax}}만원"
+                       data-category="{{categoryName}}">
                         <div class="biz-inner">
                             <div class="biz-brand">
                                 <img src="/app-icon.svg" class="biz-app-icon" alt="">
@@ -681,23 +683,23 @@
                             </div>
                             <div class="biz-body">
                                 <div class="biz-name-line">
-                                    <span class="biz-name">{{memberName}}</span>
-                                    <span class="biz-role">{{speciality}}</span>
+                                    <span class="biz-name">{{title}}</span>
+                                    <span class="biz-role">{{categoryName}}</span>
                                 </div>
                                 <div class="biz-contacts">
-                                    {{#contactEmail}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> {{contactEmail}}</span>{{/contactEmail}}
-                                    {{#githubUrl}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> {{githubUrl}}</span>{{/githubUrl}}
-                                    {{#isCertified}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> 아이코드유 인증 전문가</span>{{/isCertified}}
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> D-{{dDay}}일 마감</span>
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> 예산 {{budgetMin}}~{{budgetMax}}만원</span>
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> 의뢰인 {{memberName}}</span>
                                 </div>
                             </div>
                         </div>
                     </a>
-                    {{/valueExperts}}
-                    {{^valueExperts}}
+                    {{/budgetProjects}}
+                    {{^budgetProjects}}
                     <div class="biz-card" style="display:flex;align-items:center;justify-content:center;">
-                        <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 전문가가 없습니다</span>
+                        <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 의뢰가 없습니다</span>
                     </div>
-                    {{/valueExperts}}
+                    {{/budgetProjects}}
 
                 </div>
             </div>
@@ -706,25 +708,25 @@
         </div>
     </div>
 
-    <!-- ③ 만족 취조실 형사 (isCertified + avgRating) -->
+    <!-- ③ 최신 등록 의뢰 -->
     <div class="expert-block">
         <div class="block-head">
             <div class="block-head-left">
-                <span class="block-kw kw-green">A/S Guarantee</span>
-                <span class="block-sub">사후 지원에 한계가 없는 전문가</span>
+                <span class="block-kw kw-green">Latest</span>
+                <span class="block-sub">최신 등록된 의뢰</span>
             </div>
-            <a href="/experts" class="block-more">VIEW ALL →</a>
+            <a href="/projects" class="block-more">VIEW ALL →</a>
         </div>
         <div class="carousel-section" id="cs-3">
             <div class="c-viewport">
                 <div class="c-track">
 
-                    {{#asExperts}}
-                    <a href="/experts/{{memberId}}" class="biz-card"
-                       data-member-id="{{memberId}}"
-                       data-rating="{{ratingDisplay}}"
-                       data-jobs="{{totalReviews}}건"
-                       data-speciality="{{speciality}}">
+                    {{#latestProjects}}
+                    <a href="/projects/{{id}}" class="biz-card"
+                       data-project-id="{{id}}"
+                       data-dday="D-{{dDay}}"
+                       data-budget="{{budgetMin}}~{{budgetMax}}만원"
+                       data-category="{{categoryName}}">
                         <div class="biz-inner">
                             <div class="biz-brand">
                                 <img src="/app-icon.svg" class="biz-app-icon" alt="">
@@ -732,23 +734,23 @@
                             </div>
                             <div class="biz-body">
                                 <div class="biz-name-line">
-                                    <span class="biz-name">{{memberName}}</span>
-                                    <span class="biz-role">{{speciality}}</span>
+                                    <span class="biz-name">{{title}}</span>
+                                    <span class="biz-role">{{categoryName}}</span>
                                 </div>
                                 <div class="biz-contacts">
-                                    {{#contactEmail}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> {{contactEmail}}</span>{{/contactEmail}}
-                                    {{#githubUrl}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> {{githubUrl}}</span>{{/githubUrl}}
-                                    {{#isCertified}}<span class="biz-ct"><span class="biz-ct-dot">✦</span> 아이코드유 인증 전문가</span>{{/isCertified}}
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> D-{{dDay}}일 마감</span>
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> 예산 {{budgetMin}}~{{budgetMax}}만원</span>
+                                    <span class="biz-ct"><span class="biz-ct-dot">✦</span> 의뢰인 {{memberName}}</span>
                                 </div>
                             </div>
                         </div>
                     </a>
-                    {{/asExperts}}
-                    {{^asExperts}}
+                    {{/latestProjects}}
+                    {{^latestProjects}}
                     <div class="biz-card" style="display:flex;align-items:center;justify-content:center;">
-                        <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 전문가가 없습니다</span>
+                        <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 의뢰가 없습니다</span>
                     </div>
-                    {{/asExperts}}
+                    {{/latestProjects}}
 
                 </div>
             </div>
@@ -1084,28 +1086,26 @@
     })();
 
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.biz-card[data-member-id]').forEach(card => {
-            const rating    = card.dataset.rating || '0.0';
-            const jobs      = card.dataset.jobs   || '0건';
-            const href      = card.getAttribute('href') || '#';
-            const ratingNum = parseFloat(rating);
-            const stars     = getStars(ratingNum);
+        document.querySelectorAll('.biz-card[data-project-id]').forEach(card => {
+            const dday   = card.dataset.dday   || 'D-?';
+            const budget = card.dataset.budget || '미정';
+            const href   = card.getAttribute('href') || '#';
 
             const overlay = document.createElement('div');
             overlay.className = 'biz-overlay';
             overlay.innerHTML = `
                 <div class="ov-stats">
                     <div class="ov-stat">
-                        <span class="ov-stat-val">${stars} ${rating}</span>
-                        <span class="ov-stat-label">평점</span>
+                        <span class="ov-stat-val">${dday}</span>
+                        <span class="ov-stat-label">마감</span>
                     </div>
                     <div class="ov-divider"></div>
                     <div class="ov-stat">
-                        <span class="ov-stat-val">${jobs}</span>
-                        <span class="ov-stat-label">완료</span>
+                        <span class="ov-stat-val">${budget}</span>
+                        <span class="ov-stat-label">예산</span>
                     </div>
                 </div>
-                <a class="ov-cta" href="${href}">프로필 보기 →</a>
+                <a class="ov-cta" href="${href}">의뢰 보기 →</a>
             `;
             card.appendChild(overlay);
         });
