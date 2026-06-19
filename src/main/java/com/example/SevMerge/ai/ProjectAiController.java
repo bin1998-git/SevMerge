@@ -1,4 +1,4 @@
-package com.example.SevMerge.project;
+package com.example.SevMerge.ai;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

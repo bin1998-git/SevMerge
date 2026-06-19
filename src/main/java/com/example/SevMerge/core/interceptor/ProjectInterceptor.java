@@ -1,10 +1,7 @@
 package com.example.SevMerge.core.interceptor;
 
-import com.example.SevMerge.core.exception.ForbiddenException;
-import com.example.SevMerge.core.exception.UnauthorizedException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.project.ProjectResponeDTO;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,9 +9,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
-
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
