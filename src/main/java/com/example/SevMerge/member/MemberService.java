@@ -25,8 +25,14 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -245,6 +251,27 @@ public class MemberService {
         return count == null ? 0L : count;
     }
 
+    // 일자별 가입자 데이터 차트만들기
+    public List<Integer> getPast7DaysMemberTrend() {
+        List<Object[]> rawData = memberRepository.findRecent7DaysRegistrationCount();
+        Map<String, Integer> dateCountMap = new HashMap<>();
+        for (Object[] row : rawData) {
+            String date = (String) row[0];
+            int count =((Number) row[1]).intValue();
+            dateCountMap.put(date, count);
+        }
+
+        List<Integer> trendData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        LocalDate today = LocalDate.now();
+
+        for (int i = 6; i >= 0 ; i--) {
+            String targetDate = today.minusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
+
     // 상태 변경 문자 발송
     private void sendStatusSms(Member member, String message) {
         String phone = member.getPhone();
@@ -349,7 +376,6 @@ public class MemberService {
                 .orElse(null);
     }
 
-
     // 회원 정지처리
     @Transactional
     public void suspendMember(Long memberId) {
@@ -422,7 +448,6 @@ public class MemberService {
                 }
             }
         }
-
         return responseList;
     }
 

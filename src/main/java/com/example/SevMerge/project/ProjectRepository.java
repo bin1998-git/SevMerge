@@ -94,4 +94,19 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     @Query("UPDATE Project p SET p.isDeleted = true WHERE p.id = :id")
     void deleteProjectByAdmin(@Param("id") Long id);
 
+    // 최근 7일간 일자별 프로젝트 등록 수 조회
+    @Query(value = "SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt " +
+            "FROM project_tb " +
+            "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) " +
+            "GROUP BY DATE_FORMAT(created_at, '%m-%d') " +
+            "ORDER BY date_str ASC", nativeQuery = true)
+    List<Object[]> findRecent7DaysProjectCount();
+
+    // 최근 7일간 일자별 프로젝트 완료 수 조회
+    @Query(value = "SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt " +
+            "FROM project_tb " +
+            "WHERE project_status = 'DONE' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) " +
+            "GROUP BY DATE_FORMAT(created_at, '%m-%d') " +
+            "ORDER BY date_str ASC", nativeQuery = true)
+    List<Object[]> findRecent7DaysCompletedCount();
 }
