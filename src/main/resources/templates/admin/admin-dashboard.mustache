@@ -6,6 +6,7 @@
     <title>SevMerge — Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
           rel="stylesheet"/>
+    <script src="https://jsdelivr.net"></script>
     <style>
         :root {
             --bg: #eef2f7;
@@ -60,7 +61,7 @@
 
         /* ─── TOPBAR ─── */
         .tb {
-            height: 52px;
+            height: 65px;
             background: var(--surface);
             border-bottom: 1px solid var(--bdr);
             display: flex;
@@ -79,17 +80,10 @@
         }
 
         .tb-mark {
-            width: 26px;
-            height: 26px;
-            background: var(--blue-8);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 900;
-            color: #fff;
-            letter-spacing: -0.5px;
+            width: 160px;
+            height: 50px;
+            background: none;
+            border-radius: 0;
         }
 
         .tb-name {
@@ -150,41 +144,105 @@
         .tb-admin {
             display: flex;
             align-items: center;
-            gap: 7px;
-            padding: 4px 10px 4px 7px;
-            border: 1px solid var(--bdr);
+            gap: 8px;
+            padding: 6px 14px;
+            border: 1px solid #e2e8f0;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--t2);
-            cursor: default;
+            background-color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tb-admin-container {
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .tb-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 140px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            z-index: 100;
+            transform: translateY(8px);
+        }
+
+        .tb-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+        }
+
+        .tb-dropdown-divider {
+            border: 0;
+            height: 1px;
+            background: #f0f0f0;
+            margin: 8px 0;
+        }
+
+        .tb-dropdown-item {
+            color: #444;
+            padding: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            border-radius: 6px;
+        }
+
+        .tb-dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .tb-dropdown-item.logout {
+            color: #e53935;
+        }
+
+        .tb-admin-container:hover .tb-dropdown {
+            display: block;
         }
 
         .tb-admin-dot {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
+            background-color: #e1edff;
+            color: #0056ff;
             border-radius: 50%;
-            background: var(--blue-1);
-            border: 1.5px solid var(--blue-3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
-            font-weight: 900;
-            color: var(--blue-8);
+            font-size: 11px;
+            font-weight: bold;
         }
 
         /* ─── FEATURE NAV PILL BAR ─── */
         .fnav {
             display: flex;
-            justify-content: center; /* 가로 방향 정중앙 정렬 */
-            align-items: center; /* 세로 방향 정중앙 정렬 (필요시) */
-            gap: 16px; /* 아이템 사이의 간격을 띄우고 싶다면 조절하세요 */
-            width: 100%;
-            padding: 20px 0;
+            align-items: center;
 
-            /* 회색 배경색이 들어가 있다면 배경색도 명시적으로 확인 가능 */
-            background-color: #f4f6fa;
+            /* 💡 [핵심] 양쪽 끝(빨간 선)으로 메뉴를 쫙 찢어서 배치합니다 */
+            justify-content: space-between;
+
+            /* 💡 [핵심] 아래 대시보드 본문과 똑같은 최대 가로폭을 맞춥니다 */
+            max-width: 1200px; /* 👈 중요: 만약 아래 대시보드 내용보다 좁거나 넓으면 이 숫자를 1140px, 1280px 등으로 본문 크기와 똑같이 맞춰주세요! */
+            width: 100%;
+
+            /* 화면 정중앙에 배치하여 위아래 라인을 정렬합니다 */
+            margin: 0 auto;
+
+            /* 양쪽 끝에 여백이 생기지 않도록 좌우 패딩을 0으로 만듭니다 */
+            padding: 16px 0;
         }
 
         .fnav::-webkit-scrollbar {
@@ -192,39 +250,33 @@
         }
 
         .fnav-item {
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--t2);
-            text-decoration: none;
-            white-space: nowrap;
-            transition: all .12s;
-            flex-shrink: 0;
+            gap: 8px;                /* 아이콘과 글자 사이 간격 */
+            white-space: nowrap;     /* 글자 줄바꿈 방지 */
+            padding: 8px 0;
         }
 
         .fnav-item:hover {
-            background: var(--blue-0);
-            color: var(--blue-7);
+            color: #0056ff;
         }
 
         .fnav-item.active {
-            background: var(--blue-1);
-            color: var(--blue-8);
+            color: #0056ff;
         }
 
         .fnav-cnt {
-            font-size: 10px;
-            font-weight: 800;
-            background: var(--bdr);
-            color: var(--t3);
+            font-size: 13px;
+            padding: 2px 8px;
             border-radius: 10px;
-            padding: 1px 6px;
-            min-width: 18px;
-            text-align: center;
+            background-color: #f0f2f5;
+            color: #666;
+            font-weight: bold;
+            margin-left: 4px;
         }
 
         .fnav-cnt.hot {
@@ -238,8 +290,13 @@
         }
 
         .fnav-cnt.blue {
-            background: var(--blue-1);
-            color: var(--blue-7);
+            background-color: #e1edff;
+            color: #0056ff;
+        }
+
+        .fnav-cnt.warn {
+            background-color: #fff3cd;
+            color: #856404;
         }
 
 
@@ -247,6 +304,20 @@
             position: relative;
             display: flex;
             align-items: center;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+            margin-top: 4px;
+            z-index: 10;
+            min-width: 130px;
         }
 
         .fnav-dropdown .dropdown-menu {
@@ -267,6 +338,19 @@
 
         .fnav-dropdown:hover .dropdown-menu {
             display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 8px 16px;
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+            color: #0056ff;
         }
 
         .dropdown-menu .dropdown-item {
@@ -536,6 +620,11 @@
 
         .card-link:hover {
             background: var(--blue-0);
+        }
+
+        .card-chart-container {
+            width: 100%;
+            position: relative;
         }
 
         /* ─── MAIN GRID ROWS ─── */
@@ -1180,42 +1269,42 @@
 <!-- TOPBAR -->
 <header class="tb">
     <div class="tb-brand">
-        <div class="tb-mark">SM</div>
-        <span class="tb-name">SevMerge</span>
-        <span class="tb-slash">/</span>
-        <span class="tb-page">Admin</span>
+        <a href="http://localhost:8080" class="tb-mark"
+           style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <img src="/logo-horizontal.svg" alt="로고" style="width: 100%; height: 100%; object-fit: contain;">
+        </a>
     </div>
     <div class="tb-right">
-        <div class="tb-live">
-            <div class="tb-live-dot"></div>
-            시스템 정상
-        </div>
         <div class="tb-divider"></div>
-        <span class="tb-date">2026. 06. 16 월</span>
-        <div class="tb-divider"></div>
-        <div class="tb-admin">
-            <div class="tb-admin-dot">관</div>
-            관리자
+        <div class="tb-admin-container">
+            <div class="tb-admin">
+                <div class="tb-admin-dot">최</div>
+                최관리님
+            </div>
+
+            <!-- 마우스를 올리거나 클릭했을 때 나타날 드롭다운 메뉴 -->
+            <div class="tb-dropdown">
+                <a href="/logout" class="tb-dropdown-item logout">🚪 로그아웃</a>
+            </div>
         </div>
     </div>
 </header>
 
 <!-- FEATURE NAV -->
 <nav class="fnav">
-    <a href="/admin/members" class="fnav-item active">👥 회원관리 <span class="fnav-cnt blue">1,247</span></a>
-    <a href="/admin/projects" class="fnav-item">📋 프로젝트관리 <span class="fnav-cnt">384</span></a>
-    <a href="/admin/experts" class="fnav-item">🏅 전문가승인 <span class="fnav-cnt warn">12</span></a>
-    <!-- TODO 경로 다시 지정해야함!!!!!!!!!!!! -->
+    <a href="/admin/members" class="fnav-item">👥 회원관리</a>
+    <a href="/admin/projects" class="fnav-item">📋 프로젝트관리 </a>
+    <a href="/admin/experts" class="fnav-item">🏅 전문가승인 </a>
     <div class="fnav-dropdown">
-        <a href="/admin/boards" class="fnav-item">📝 게시판관리 <span class="fnav-cnt">2,891</span></a>
+        <a href="/admin/boards" class="fnav-item">📝 게시판관리</a>
         <div class="dropdown-menu">
             <a href="/admin/boards" class="dropdown-item">자유게시판</a>
-            <a href="/admin/boards/notice" class="dropdown-item">공지사항</a>
-            <a href="/admin/boards/comments" class="dropdown-item">댓글신고관리</a>
-            <a href="/admin/notices" class="dropdown-item">1:1 문의관리</a>
+            <a href="/admin/notices" class="dropdown-item">공지사항</a>
+            <a href="/admin/reports" class="dropdown-item">댓글신고관리</a>
+            <a href="/admin/inquiry" class="dropdown-item">1:1 문의관리</a>
         </div>
     </div>
-    <a href="/admin/notices" class="fnav-item">☠️ 블랙리스트 <span class="fnav-cnt">47</span></a>
+    <a href="/admin/blacklists" class="fnav-item">☠️ 블랙리스트</a>
 </nav>
 
 <!-- MAIN -->
@@ -1233,20 +1322,29 @@
         </div>
     </div>
 
-    <!-- ALERTS -->
-    <div class="alerts">
-        <div class="alert al-red">
-            🚨 <span>미처리 신고 <strong>5건</strong> — 즉시 검토 필요</span>
-            <a href="/admin/reports" class="ab ab-red" style="margin-left:auto;">처리하기 →</a>
+    <div class="main-stock-chart-wrapper" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 1200px; margin: 20px auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+
+        <!-- 주식 앱 상단 스타일 토글 및 현재 수치 정보 -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+                <span style="font-size: 14px; color: #718096; font-weight: bold; display: block; margin-bottom: 4px;">통합 데이터 추이</span>
+                <div style="display: flex; align-items: baseline; gap: 8px;">
+                    <span id="stockChartValue" style="font-size: 32px; font-weight: 900; color: #0056ff; letter-spacing: -1px;">1,247</span>
+                    <span id="stockChartSub" style="font-size: 14px; color: #0056ff; font-weight: bold;">▲ 23 (1.88%)</span>
+                </div>
+            </div>
+
+            <!-- 탭 버튼을 눌러 카드별 주식을 스위칭해서 볼 수 있도록 조절 버튼 제공 -->
+            <div style="display: flex; background: #f7fafc; border-radius: 8px; padding: 4px; gap: 4px;">
+                <button onclick="switchStockData('members')" class="stock-tab-btn active" style="padding: 6px 12px; border: none; background: #0056ff; color: #fff; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">👥 회원수</button>
+                <button onclick="switchStockData('projects')" class="stock-tab-btn" style="padding: 6px 12px; border: none; background: transparent; color: #4a5568; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">📋 프로젝트</button>
+                <button onclick="switchStockData('experts')" class="stock-tab-btn" style="padding: 6px 12px; border: none; background: transparent; color: #4a5568; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">🏅 승인대기</button>
+            </div>
         </div>
-        <div class="alert al-amber">
-            ⏳ <span>전문가 승인 대기 <strong>12명</strong> — 검토 후 처리</span>
-            <a href="/admin/experts?status=PENDING" class="ab ab-ghost"
-               style="margin-left:auto;color:var(--amber);border-color:#fcd34d;">승인 →</a>
-        </div>
-        <div class="alert al-blue">
-            💬 <span>미답변 문의 <strong>8건</strong> — 답변 대기 중</span>
-            <a href="/admin/inquiry" class="ab ab-blue" style="margin-left:auto;">답변 →</a>
+
+        <!-- 📈 대형 주식 그래프 캔버스 (화면 너비에 맞춰 유연하게 조절됨) -->
+        <div style="width: 100%; height: 350px; position: relative;">
+            <canvas id="mainStockChart"></canvas>
         </div>
     </div>
 
@@ -1752,7 +1850,127 @@
             </div>
         </div>
     </div>
-
 </div>
+
+<script>
+    // 💡 1. 주식 그래프 종류별 실제 데이터 셋 정의
+    const stockDataMap = {
+        members: {
+            title: "총 회원수",
+            value: "1,247",
+            sub: "▲ 23 (+1.88%)",
+            color: "#0056ff",
+            fillColor: "rgba(0, 86, 255, 0.15)",
+            labels: ['06.10', '06.11', '06.12', '06.13', '06.14', '06.15', '06.16 월(오늘)'],
+            data: [1180, 1200, 1210, 1225, 1230, 1240, 1247] // 우상향 주식 패턴
+        },
+        projects: {
+            title: "전체 프로젝트",
+            value: "384",
+            sub: "▲ 86 (+28.8%)",
+            color: "#3182ce",
+            fillColor: "rgba(49, 130, 206, 0.15)",
+            labels: ['06.10', '06.11', '06.12', '06.13', '06.14', '06.15', '06.16 월(오늘)'],
+            data: [298, 310, 305, 340, 365, 350, 384] // 등락이 있는 변동 주식 패턴
+        },
+        experts: {
+            title: "전문가 승인 대기",
+            value: "12",
+            sub: "▼ 4 (-25.0%)",
+            color: "#dd6b20",
+            fillColor: "rgba(221, 107, 32, 0.15)",
+            labels: ['06.10', '06.11', '06.12', '06.13', '06.14', '06.15', '06.16 월(오늘)'],
+            data: [20, 18, 15, 22, 19, 14, 12] // 하향 및 조정 주식 패턴
+        }
+    };
+
+    let mainChart = null;
+
+    // 💡 2. 차트 초기 생성 및 주식형 스타일 옵션 선언
+    function initStockChart(key) {
+        const info = stockDataMap[key];
+        const ctx = document.getElementById('mainStockChart').getContext('2d');
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+        gradient.addColorStop(0, info.fillColor);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        mainChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: info.labels,
+                datasets: [{
+                    label: info.title,
+                    data: info.data,
+                    borderColor: info.color,
+                    borderWidth: 3,
+                    pointBackgroundColor: info.color,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    backgroundColor: gradient,
+                    tension: 0.2 // 주식 그래프 느낌의 정밀한 꺾임선 설정
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }, // 불필요한 범례 숨김
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1a202c',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        padding: 10,
+                        cornerRadius: 6
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false } // 주식 차트 스타일을 위해 세로선 제거
+                    },
+                    y: {
+                        position: 'right', // 💡 실제 주식 차트처럼 수치 축을 우측에 배치
+                        grid: { borderDash: [4, 4] } // 가로 점선 처리
+                    }
+                }
+            }
+        });
+    }
+
+    // 💡 3. 버튼 탭 클릭 시 주식 데이터 스위칭 처리 기능
+    function switchStockData(key) {
+        const info = stockDataMap[key];
+
+        // 상단 텍스트 및 인터페이스 수치 업데이트
+        document.getElementById('stockChartValue').innerText = info.value;
+        document.getElementById('stockChartValue').style.color = info.color;
+        document.getElementById('stockChartSub').innerText = info.sub;
+        document.getElementById('stockChartSub').style.color = info.color;
+
+        // 버튼 컴포넌트 활성화 디자인 교체
+        const btns = document.querySelectorAll('.stock-tab-btn');
+        btns.forEach(btn => {
+            btn.style.background = 'transparent';
+            btn.style.color = '#4a5568';
+        });
+
+        const activeBtn = event.currentTarget;
+        activeBtn.style.background = info.color;
+        activeBtn.style.color = '#fff';
+
+        // 기존 그래프 파괴 후 신규 데이터 기반으로 재생성 (부드러운 전환)
+        if (mainChart) mainChart.destroy();
+        initStockChart(key);
+    }
+
+    // 초기 실행문 지정
+    window.addEventListener('DOMContentLoaded', () => {
+        initStockChart('members');
+    });
+</script>
+
 </body>
 </html>

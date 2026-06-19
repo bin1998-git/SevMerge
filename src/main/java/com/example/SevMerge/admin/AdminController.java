@@ -19,9 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,13 +37,6 @@ public class AdminController {
     private final BoardRepository boardRepository;
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
-
-
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
-        return "admin/admin-dashboard";
-    }
-
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model) {
@@ -65,8 +61,22 @@ public class AdminController {
         // 승인 대기 전문가 조회하는 코드
         model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        LocalDate today = LocalDate.now();
+        List<String> chartLabels = IntStream.rangeClosed(0,6)
+                .mapToObj(i -> today.minusDays(6 - i).format(formatter))
+                .toList();
 
-        return "admin/admin-dashboard";
+        List<Integer> memberData = memberService.getPast7DaysMemberTrend();
+        List<Integer> projectData = projectService.getPast7DaysProjectTrend();
+        List<Integer> completeData = projectService.getPast7DaysCompletedTrend();
+
+        model.addAttribute("chartLabels", chartLabels != null ? chartLabels : new ArrayList<>());
+        model.addAttribute("memberData", memberData != null ? memberData : new ArrayList<>());
+        model.addAttribute("projectData", projectData != null ? projectData : new ArrayList<>());
+        model.addAttribute("completedData", completeData != null ? completeData : new ArrayList<>());
+
+        return "admin/admin-main";
     }
 
     // 관리자 공지사항 관리

@@ -42,9 +42,8 @@
     .status-active { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .status-wait { font-size: 11px; background: #f3f4f8; color: #9ca3af; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
 </style>
-
+<script src="/webjars/chart.js/4.4.1/dist/chart.umd.js"></script>
 <div class="admin-wrap">
-
 
 
     <!-- 본문 -->
@@ -54,6 +53,22 @@
             <h1 class="admin-title">관리자 대시보드</h1>
             <p class="admin-desc">SevMerge 플랫폼 현황을 한눈에 확인하세요.</p>
         </div>
+
+        <div class="main-chart-wrapper" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 1200px; margin: 20px auto;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <span style="font-size: 16px; font-weight: bold; color: #1a202c;">📊 현황 통합 통계</span>
+                <div style="display: flex; gap: 16px; font-size: 13px; font-weight: 500;">
+                    <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #0056ff; border-radius: 50%;"></span> 총 회원수</div>
+                    <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #00b4d8; border-radius: 50%;"></span> 전체 프로젝트</div>
+                    <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #03045e; border-radius: 50%;"></span> 완료 프로젝트</div>
+                </div>
+            </div>
+            <div style="width: 100%; height: 350px; min-height: 350px; display: block; position: relative;">
+                <canvas id="integratedDashboardChart" width="1200" height="350"></canvas>
+            </div>
+        </div>
+
 
         <!-- 통계 -->
         <div class="stats-grid">
@@ -121,5 +136,76 @@
 
     </main>
 </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('integratedDashboardChart').getContext('2d');
+
+        // 2. 머스태시 리스트 데이터를 자바스크립트가 온전히 사용할 수 있도록 필터링 및 공백 처리 수정
+        const chartLabels = [ {{#chartLabels}} "{{.}}", {{/chartLabels}} "" ].filter(item => item !== "");
+        const memberData = [ {{#memberData}} {{.}}, {{/memberData}} null ].filter(item => item !== null);
+        const projectData = [ {{#projectData}} {{.}}, {{/projectData}} null ].filter(item => item !== null);
+        const completedData = [ {{#completedData}} {{.}}, {{/completedData}} null ].filter(item => item !== null);
+
+        // 데이터가 백엔드에서 정상적으로 넘어오는지 브라우저 콘솔에서 체크
+        console.log("Labels:", chartLabels);
+        console.log("Members:", memberData);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: '총 회원수',
+                        data: memberData,
+                        borderColor: '#0056ff',
+                        backgroundColor: 'rgba(0, 86, 255, 0.12)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0056ff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: '전체 프로젝트',
+                        data: projectData,
+                        borderColor: '#00b4d8',
+                        backgroundColor: 'rgba(0, 180, 216, 0.12)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#00b4d8',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: '완료 프로젝트',
+                        data: completedData,
+                        borderColor: '#03045e',
+                        backgroundColor: 'rgba(3, 4, 94, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#03045e',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }, // 커스텀 레전드를 사용하므로 기본 레전드는 숨김
+                scales: {
+                    x: { grid: { color: '#f0f2f5' }, ticks: { color: '#718096', font: { size: 11 } } },
+                    y: { grid: { color: '#f0f2f5' }, ticks: { color: '#718096', font: { size: 11 } } }
+                }
+            }
+        });
+    });
+</script>
+
 
 {{> layout/footer}}
