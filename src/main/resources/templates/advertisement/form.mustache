@@ -1,0 +1,108 @@
+{{> layout/header}}
+
+<style>
+    .page-section { padding: 48px 28px 80px; }
+    .page-inner { max-width: 560px; margin: 0 auto; }
+
+    .ad-notice { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 16px; margin-bottom: 28px; font-size: 13px; color: #92400e; line-height: 1.6; }
+
+    .balance-card { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+    .balance-label { font-size: 13px; font-weight: 600; color: #3b82f6; }
+    .balance-amount { font-size: 26px; font-weight: 900; color: #1d4ed8; }
+
+    .form-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 32px; }
+    .form-title { font-size: 20px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 24px; }
+
+    .plan-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .plan-option { border: 1.5px solid #e2e5ef; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all .15s; }
+    .plan-option:hover { border-color: #93c5fd; }
+    .plan-option.selected { border-color: #2563eb; background: #eff6ff; }
+    .plan-option input { display: none; }
+    .plan-row { display: flex; justify-content: space-between; align-items: center; }
+    .plan-name { font-size: 15px; font-weight: 800; color: #1c1e26; }
+    .plan-desc { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+    .plan-price { font-size: 18px; font-weight: 900; color: #2563eb; }
+
+    .submit-btn { width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .submit-btn:hover { background: #1d4ed8; }
+    .submit-btn:disabled { background: #c4c9d9; cursor: not-allowed; }
+
+    .error-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #ef4444; font-weight: 600; margin-bottom: 20px; }
+</style>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="ad-notice">
+            📣 <strong>광고 안내</strong><br>
+            구매한 광고는 메인 화면에 노출돼요. 동일 슬롯을 구매한 다른 전문가와 무작위 순서로 함께 노출됩니다.
+        </div>
+
+        {{#errorMsg}}
+            <div class="error-box">{{errorMsg}}</div>
+        {{/errorMsg}}
+
+        <div class="balance-card">
+            <div>
+                <div class="balance-label">보유 포인트</div>
+                <div class="balance-amount">{{balance}}P</div>
+            </div>
+            <span style="font-size:32px;">📣</span>
+        </div>
+
+        <div class="form-card">
+            <h1 class="form-title">광고 슬롯 구매</h1>
+
+            <form action="/advertisements/purchase" method="POST" id="adForm">
+                <div class="plan-list" id="planList">
+                    {{#placements}}
+                        <label class="plan-option" data-price="{{price}}">
+                            <input type="radio" name="placement" value="{{name}}" required/>
+                            <div class="plan-row">
+                                <div>
+                                    <div class="plan-name">{{label}}</div>
+                                    <div class="plan-desc">{{durationDays}}일간 노출</div>
+                                </div>
+                                <div class="plan-price">{{price}}P</div>
+                            </div>
+                        </label>
+                    {{/placements}}
+                </div>
+
+                <button type="submit" class="submit-btn">광고 신청하기</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll('.plan-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.plan-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+
+    document.getElementById('adForm').addEventListener('submit', function(e) {
+        const selected = document.querySelector('input[name="placement"]:checked');
+        if (!selected) {
+            e.preventDefault();
+            alert('광고 상품을 선택해 주세요.');
+            return;
+        }
+        const price = parseInt(selected.closest('.plan-option').dataset.price);
+        const balance = {{balance}};
+        if (price > balance) {
+            e.preventDefault();
+            alert('잔액이 부족합니다.');
+            return;
+        }
+        if (!confirm(`${price.toLocaleString()}P를 사용해 광고를 신청하시겠습니까?`)) {
+            e.preventDefault();
+        }
+    });
+</script>
+
+{{> layout/footer}}

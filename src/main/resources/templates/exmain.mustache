@@ -89,6 +89,13 @@
         /* ── MAIN ── */
         .main-wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
 
+        .ad-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .ad-card { background: #fff; border: 1.5px solid #fde68a; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform .15s, box-shadow .15s; }
+        .ad-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(245,158,11,.15); }
+        .ad-card-thumb { width: 64px; height: 64px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--brand-mist); margin-bottom: 10px; }
+        .ad-card-name { font-size: 14px; font-weight: 700; color: var(--brand-ink); }
+        .ad-card-spec { font-size: 11px; color: var(--brand-muted); margin-top: 2px; margin-bottom: 8px; }
+        .ad-card-badge { font-size: 9px; font-weight: 700; color: #92400e; background: #fef3c7; padding: 2px 8px; border-radius: 10px; }
         /* ── EXPERT BLOCK ── */
         .expert-block { padding: 48px 0 0; }
         .expert-block + .expert-block { border-top: 1px solid var(--brand-line); }
@@ -605,6 +612,48 @@
             {{/isLoggedIn}}
         </div>
     </div>
+    <!-- 전문가 광고 -->
+    {{#mainAds}}
+        <div class="expert-block">
+            <div class="block-head">
+                <div class="block-head-left">
+                    <span class="block-kw" style="background:#fef3c7;color:#92400e;">AD</span>
+                    <span class="block-sub">지금 주목받는 전문가</span>
+                </div>
+            </div>
+            <div class="carousel-section" id="cs-ad">
+                <div class="c-viewport">
+                    <div class="c-track">
+
+                        {{#mainAds}}
+                            <a href="/experts/{{expertId}}" class="biz-card"
+                               data-member-id="{{expertId}}"
+                               data-speciality="{{speciality}}">
+                                <div class="biz-inner">
+                                    <div class="biz-brand">
+                                        <img src="/app-icon.svg" class="biz-app-icon" alt="">
+                                        <span class="biz-wordmark"><span class="bwm-iu">I</span>CODE<span class="bwm-iu">U</span></span>
+                                    </div>
+                                    <div class="biz-body">
+                                        <div class="biz-name-line">
+                                            <span class="biz-name">{{expertName}}</span>
+                                            <span class="biz-role">{{speciality}}</span>
+                                        </div>
+                                        <div class="biz-contacts">
+                                            <span class="biz-ct"><span class="biz-ct-dot" style="color:#f59e0b;">✦</span> 광고 · {{placementLabel}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        {{/mainAds}}
+
+                    </div>
+                </div>
+                <button class="c-arrow c-arrow-left" aria-label="이전">‹</button>
+                <button class="c-arrow c-arrow-right" aria-label="다음">›</button>
+            </div>
+        </div>
+    {{/mainAds}}
 
     <!-- ① 마감 임박 의뢰 -->
     <div class="expert-block">
