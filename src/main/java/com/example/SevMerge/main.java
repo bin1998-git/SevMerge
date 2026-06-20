@@ -1,8 +1,10 @@
 package com.example.SevMerge;
 
+import com.example.SevMerge.advertisement.AdvertisementPlacement;
+import com.example.SevMerge.advertisement.AdvertisementResponse;
+import com.example.SevMerge.advertisement.AdvertisementService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +21,7 @@ import java.util.List;
 public class main {
 
     private final ProjectService projectService;
+    private final AdvertisementService advertisementService;
 
     @GetMapping("/")
     public String introPage(HttpSession session) {
@@ -41,6 +44,12 @@ public class main {
         } else {
             model.addAttribute("isLoggedIn", false);
         }
+
+        advertisementService.expireOutdatedAds();
+
+        // 광고 배너 조회 (추가)
+        List<AdvertisementResponse> mainAds = advertisementService.getActiveAds(AdvertisementPlacement.MAIN_BANNER);
+        model.addAttribute("mainAds", mainAds);
 
         List<ProjectResponseDTO.ListDTO> all = projectService.findAllProjects()
                 .stream()

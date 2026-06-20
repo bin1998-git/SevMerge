@@ -1,0 +1,51 @@
+{{> layout/header}}
+
+<style>
+    .page-section { padding: 48px 28px 80px; }
+    .page-inner { max-width: 720px; margin: 0 auto; }
+    .page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .page-title { font-size: 22px; font-weight: 900; color: #1c1e26; }
+    .new-ad-btn { padding: 10px 20px; background: #2563eb; color: #fff; border-radius: 9px; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .new-ad-btn:hover { background: #1d4ed8; }
+
+    .ad-item { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 20px 24px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .ad-item-info { flex: 1; }
+    .ad-item-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 4px; }
+    .ad-item-meta { font-size: 12px; color: #9ca3af; }
+    .ad-status { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+    .ad-status.active { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .ad-status.expired { background: #f3f4f8; color: #9ca3af; }
+    .empty-state { text-align: center; padding: 80px 0; color: #c4c9d9; }
+</style>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="page-head">
+            <h1 class="page-title">📣 내 광고 내역</h1>
+            <a href="/advertisements/form" class="new-ad-btn">+ 새 광고 신청</a>
+        </div>
+
+        {{#ads}}
+            <div class="ad-item">
+                <div class="ad-item-info">
+                    <div class="ad-item-title">{{placementLabel}}</div>
+                    <div class="ad-item-meta">{{startDate}} ~ {{endDate}} · {{price}}P</div>
+                </div>
+                <span class="ad-status {{#isActive}}active{{/isActive}}{{#isExpired}}expired{{/isExpired}}">
+                {{#isActive}}노출중{{/isActive}}
+                    {{#isExpired}}종료{{/isExpired}}
+            </span>
+            </div>
+        {{/ads}}
+
+        {{^ads}}
+            <div class="empty-state">
+                아직 신청한 광고가 없습니다.
+            </div>
+        {{/ads}}
+
+    </div>
+</section>
+
+{{> layout/footer}}
