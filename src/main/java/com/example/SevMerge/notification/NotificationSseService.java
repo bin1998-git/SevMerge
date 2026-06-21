@@ -1,6 +1,8 @@
 package com.example.SevMerge.notification;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -50,6 +52,11 @@ public class NotificationSseService {
         }
     }
 
-
+    // 앱 종료 시작 시점(graceful shutdown 대기 전)에 열린 SSE를 모두 닫아 즉시 종료되도록 함
+    @EventListener(ContextClosedEvent.class)
+    public void closeAll() {
+        emitterMap.values().forEach(SseEmitter::complete);
+        emitterMap.clear();
+    }
 
 }

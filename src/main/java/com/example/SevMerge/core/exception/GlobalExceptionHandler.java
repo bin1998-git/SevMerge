@@ -130,4 +130,19 @@ public class GlobalExceptionHandler {
         return "redirect:/";
     }
 
+    @ExceptionHandler(FileException.class)
+    @ResponseBody
+    public String fileException(FileException e, HttpServletRequest request) {
+        log.warn("=== File 전송 오류 ===");
+        log.warn("요청 URL : {}", request.getRequestURL());
+        log.warn("에러 메시지 : {}", e.getMessage());
+        String message = e.getMessage().replace("'", "\\'");
+        return """
+                <script>
+                    alert('%s');
+                    history.back();
+                </script>
+                """.formatted(message);
+    }
+
 }

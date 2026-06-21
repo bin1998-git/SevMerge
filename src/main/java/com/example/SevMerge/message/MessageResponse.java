@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 public class MessageResponse {
 
     // 쪽지 목록
@@ -52,6 +54,7 @@ public class MessageResponse {
         private String projectTitle;  // project nullable이니 String으로
         private String title;
         private String content;
+        private List<fileDTO> files;
         private Boolean isRead;
         private String createdAt;
         public DetailDTO(Message message) {
@@ -65,6 +68,9 @@ public class MessageResponse {
             this.content = message.getContent();
             this.isRead = message.getIsRead();
             this.createdAt = MyDateUtil.timestampFormat(message.getCreatedAt());
+            this.files = message.getMessageFiles().stream()
+                    .map(fileDTO::new)
+                    .toList();
         }
     }
 
@@ -102,6 +108,18 @@ public class MessageResponse {
                     project.getTitle(),
                     isSelected
             );
+        }
+    }
+
+    @Data
+    public static class fileDTO {
+        private Long id;
+        private String originalFilename;
+        private Long fileSize;
+        public fileDTO(MessageFiles messageFiles) {
+            this.id = messageFiles.getId();
+            this.originalFilename = messageFiles.getOriginalFilename();
+            this.fileSize = messageFiles.getFileSize();
         }
     }
 
