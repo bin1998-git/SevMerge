@@ -17,16 +17,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * AdvertisementService — 전문가 광고 슬롯 구매/노출
- *
- * [역할]
- * - 전문가가 포인트로 광고 슬롯 구매 (정액제, 기간제)
- * - exmain 등 화면에 노출할 활성 광고 조회 (랜덤 셔플)
- * - 기간 만료 처리
- *
- * [충돌 방지 전략]
- * - Member.deductBalance()는 기존 메서드 재사용 (잔액 차감 로직 중복 없음)
- * - Member, ExpertProfile은 ID로만 참조, 표시용 정보만 조회해서 DTO에 채움
+ * 전문가 광고 슬롯 구매/노출
+ *  전문가가 포인트로 광고 슬롯 구매 (정액제, 기간제)
  */
 @Slf4j
 @Service
@@ -38,10 +30,10 @@ public class AdvertisementService {
     private final MemberRepository memberRepository;
     private final ExpertProfileRepository expertProfileRepository;
 
-    // ── 구매 ──
-
+    // 구매
     @Transactional
-    public AdvertisementResponse purchase(Long expertId, AdvertisementPlacement placement) {
+    public AdvertisementResponse purchase(Long expertId, AdvertisementPlacement placement,
+                                          String customMessage, String bannerImage) {
         Member expert = memberRepository.findById(expertId)
                 .orElseThrow(() -> new NotFoundException("전문가 정보를 찾을 수 없습니다."));
 
@@ -52,7 +44,7 @@ public class AdvertisementService {
         int price = placement.getPrice();
 
         try {
-            expert.deductBalance(price);   // 기존 Member.deductBalance() 재사용
+            expert.deductBalance(price);
         } catch (IllegalStateException e) {
             throw new BadRequestException("잔액이 부족합니다. (필요 금액: " + price + "P)");
         }
@@ -68,6 +60,8 @@ public class AdvertisementService {
                 .startDate(startDate)
                 .endDate(endDate)
                 .status(AdvertisementStatus.ACTIVE)
+                .customMessage(customMessage)
+                .bannerImage(bannerImage)
                 .build();
 
         advertisementRepository.save(ad);
@@ -76,29 +70,25 @@ public class AdvertisementService {
         return toResponse(ad);
     }
 
-    // ── 노출용 조회 ──
-
+    // 노출용 조회
     public List<AdvertisementResponse> getActiveAds(AdvertisementPlacement placement) {
         List<Advertisement> ads = advertisementRepository
                 .findActiveByPlacement(placement, new Timestamp(System.currentTimeMillis()));
 
         List<AdvertisementResponse> responses = ads.stream().map(this::toResponse).toList();
 
-        // 같은 슬롯을 산 광고들끼리 랜덤 순서로 섞어서 노출 (크몽 방식)
         List<AdvertisementResponse> shuffled = new java.util.ArrayList<>(responses);
         Collections.shuffle(shuffled);
         return shuffled;
     }
 
-    // ── 전문가 본인 광고 내역 ──
-
+    //  전문가 본인 광고 내역
     public List<AdvertisementResponse> getMyAds(Long expertId) {
         return advertisementRepository.findByExpertIdOrderByCreatedAtDesc(expertId)
                 .stream().map(this::toResponse).toList();
     }
 
-    // ── 만료 처리 (스케줄러 또는 조회 시점에 호출) ──
-
+    //  만료 처리 (스케줄러 또는 조회 시점에 호출)
     @Transactional
     public void expireOutdatedAds() {
         List<Advertisement> expired = advertisementRepository
@@ -109,8 +99,7 @@ public class AdvertisementService {
         }
     }
 
-    // ── private ──
-
+    // private
     private AdvertisementResponse toResponse(Advertisement ad) {
         Member expert = memberRepository.findById(ad.getExpertId()).orElse(null);
         String expertName = expert != null ? expert.getName() : "알 수 없음";
