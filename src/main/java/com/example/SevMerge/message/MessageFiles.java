@@ -19,7 +19,7 @@ public class MessageFiles {
     private Message message;
 
     @Column(nullable = false, length = 255)
-    private String filename;
+    private String savedFilename;
 
     @Column(nullable = false, length = 255)
     private String originalFilename;
@@ -27,9 +27,9 @@ public class MessageFiles {
     private Long fileSize;
 
     @Builder
-    public MessageFiles(Message message, String filename, String originalFilename, Long fileSize) {
+    public MessageFiles(Message message, String savedFilename, String originalFilename, Long fileSize) {
         this.message = message;
-        this.filename = filename;
+        this.savedFilename = savedFilename;
         this.originalFilename = originalFilename;
         this.fileSize = fileSize;
     }
