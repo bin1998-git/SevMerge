@@ -1,0 +1,7 @@
+package com.example.SevMerge.core.exception;
+
+public class FileException extends RuntimeException {
+    public FileException(String message) {
+        super(message);
+    }
+}

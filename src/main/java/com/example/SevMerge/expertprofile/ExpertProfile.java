@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name = "expert_profile_tb")
+@Table(name = "expert_profile")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

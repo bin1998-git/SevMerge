@@ -2,22 +2,38 @@ package com.example.SevMerge.message;
 
 import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.bid.BidStatus;
+import com.example.SevMerge.core.exception.FileException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
+import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.notification.NotificationService;
 import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -25,6 +41,7 @@ import java.util.List;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final MessageFilesRepository messageFilesRepository;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
     private final BidRepository bidRepository;
@@ -94,14 +111,18 @@ public class MessageService {
         Project project = reqDTO.getProjectId() != null
                 ? projectRepository.findById(reqDTO.getProjectId()).orElse(null)
                 : null;
-        messageRepository.save(Message
-                .builder()
+
+        Message message = messageRepository.save(Message.builder()
                 .sender(sender)
                 .receiver(receiver)
                 .project(project)
                 .title(reqDTO.getTitle())
                 .content(reqDTO.getContent())
                 .build());
+
+        saveFiles(message, reqDTO.getFiles());
+        messageRepository.save(message);
+
         notificationService.notifyMessageReceived(receiver, sender.getName(), reqDTO.getTitle());
     }
 
@@ -124,5 +145,55 @@ public class MessageService {
             message.deleteByReceiver();
         }
         return isSender;
+    }
+
+    @Transactional
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long messageFilesId, Member sessionMember) {
+
+        MessageFiles messageFiles = messageFilesRepository.findById(messageFilesId)
+                .orElseThrow(() -> new NotFoundException("첨부파일을 찾을 수 없습니다."));
+
+        Message message = messageFiles.getMessage();
+        boolean isSender = message.getSender().getId().equals(sessionMember.getId());
+        boolean isReceiver = message.getReceiver().getId().equals(sessionMember.getId());
+
+        if (!isSender && !isReceiver) {
+            throw new UnauthorizedException("본인의 쪽지 첨부 파일만 다운로드 가능합니다.");
+        }
+
+        Path path = Paths.get(FileUtil.IMAGES_DIR).resolve(messageFiles.getSavedFilename());
+        Resource resource = new FileSystemResource(path);
+        if (!resource.exists()) {
+            throw new NotFoundException("존재 하지 않는 파일입니다.");
+        }
+
+        String encoded = URLEncoder.encode(messageFiles.getOriginalFilename(), StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20");
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encoded + "\"")
+                .body(resource);
+
+    }
+
+
+    private void saveFiles(Message message, List<MultipartFile> files) {
+        if (files == null) return;
+        for (MultipartFile file : files) {
+            if (file == null || file.isEmpty()) { continue; }
+            try {
+                String savedFilename = FileUtil.saveFile(file, FileUtil.IMAGES_DIR);
+
+                MessageFiles savedFile = MessageFiles.builder()
+                        .savedFilename(savedFilename)
+                        .originalFilename(file.getOriginalFilename())
+                        .fileSize(file.getSize())
+                        .build();
+
+                message.addMessageFile(savedFile);
+            } catch (IOException e) {
+                    throw new FileException("파일 저장 실패 : " + file.getOriginalFilename() + "\n[ error ] : " + e.getMessage());
+            }
+        }
     }
 }
