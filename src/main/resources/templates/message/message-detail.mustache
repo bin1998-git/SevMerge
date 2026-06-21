@@ -20,6 +20,10 @@
     .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #9ca3af; text-decoration: none; margin-bottom: 20px; font-weight: 500; }
     .back-link:hover { color: #2563eb; }
 
+    .detail-file { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; background: #f0f4ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 14px; font-size:
+            13px; font-weight: 600; text-decoration: none; }
+    .detail-file:hover { background: #dbeafe; }
+
     /* 답장 폼 */
     .reply-card { background: #fff; border-radius: 16px; border: 1.5px solid #eaecf4; margin-top: 20px; overflow: hidden; }
     .reply-header { padding: 18px 32px; border-bottom: 1px solid #f3f4f8; }
@@ -55,6 +59,12 @@
 
             <div class="detail-body">
                 <p class="detail-content">{{message.content}}</p>
+
+                {{#message.files}}
+                    <a href="/messages/files/{{id}}/download" class="detail-file">
+                        📎 {{originalFilename}}
+                    </a>
+                {{/message.files}}
             </div>
 
             <div class="detail-actions">
@@ -71,7 +81,7 @@
                 <p class="reply-title">답장 보내기</p>
             </div>
             <div class="reply-body">
-                <form action="/messages/send" method="POST">
+                <form action="/messages/send" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="receiverId" value="{{message.senderId}}" />
                     <input type="hidden" name="projectId" value="{{message.projectId}}" />
                     <div class="form-group">
@@ -82,6 +92,12 @@
                         <label class="form-label">내용</label>
                         <textarea name="content" class="form-input form-textarea" placeholder="답장 내용을 입력하세요."></textarea>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">파일 첨부</label>
+                        <input type="file" name="files" class="form-input" multiple />
+                    </div>
+
                     <div class="reply-actions">
                         <button type="submit" class="btn btn-primary btn-sm">답장 보내기</button>
                     </div>
