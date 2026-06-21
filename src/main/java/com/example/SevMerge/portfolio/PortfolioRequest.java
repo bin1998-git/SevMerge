@@ -3,9 +3,11 @@ package com.example.SevMerge.portfolio;
 import com.example.SevMerge.core.exception.BadRequestException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
+@RequiredArgsConstructor
 public class PortfolioRequest {
+
 
     @Data
     @NoArgsConstructor

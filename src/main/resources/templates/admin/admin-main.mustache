@@ -345,6 +345,26 @@
             {{/recentProjects}}
         </div>
 
+        <!-- 제휴 문의 -->
+        <div class="admin-table-wrap">
+            <div class="admin-table-header">
+                <span class="admin-table-title">최근 제휴 문의</span>
+                <a href="/admin/partnerships" class="admin-table-link">전체 보기 →</a>
+            </div>
+            <div class="admin-table-head" style="grid-template-columns: 40px 1fr 120px 100px 80px;">
+                <span>No</span><span>회사명</span><span>담당자</span><span>신청일</span><span>상태</span>
+            </div>
+            {{#recentPartnerships}}
+                <div class="admin-table-row" style="grid-template-columns: 40px 1fr 120px 100px 80px;">
+                    <span class="cell-id">{{id}}</span>
+                    <div><div class="cell-name">{{companyName}}</div><div class="cell-email">{{email}}</div></div>
+                    <span>{{managerName}}</span>
+                    <span class="cell-date">{{createdAt}}</span>
+                    <span><span class="status-wait">{{status}}</span></span>
+                </div>
+            {{/recentPartnerships}}
+        </div>
+
     </main>
 </div>
 
