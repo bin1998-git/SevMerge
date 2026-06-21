@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class BookMarkController {
@@ -20,11 +22,18 @@ public class BookMarkController {
     private final BookMarkService bookMarkService;
 
 
-    @PostMapping("/bookmarks/toggle")
-    public String toggleBookmark(){
+    @PostMapping("/bookmarks/toggle/{expertId}")
+    public Map<String, Boolean> toggleBookmark(@PathVariable(name = "expertId") Long expertId, HttpSession session){
 
+        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
 
-        return "redirect:/bookmarks";
+        if(sessionMember == null){
+            throw new BadRequestException("로그인 먼저 해주세요");
+        }
+
+        boolean bookmarked  = bookMarkService.toggle(sessionMember.getId(),expertId);
+
+        return Map.of("bookmarked", bookmarked);
     }
 
 
