@@ -61,7 +61,6 @@ public class ExpertProfileViewController {
         model.addAttribute("expertProfiles", expertProfileService.getAll());
         model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
-
         return "expertProfile/expertProfile-list";
     }
 

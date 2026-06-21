@@ -39,7 +39,6 @@ public class PartnerShipController {
     @GetMapping("/admin/TEST")
     public String TESTPage(HttpSession session, Model model) {
 
-
         long newMemberCount = memberService.getNewMemberCountThisMonth();
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser);
@@ -86,7 +85,6 @@ public class PartnerShipController {
         if(sessionUser == null){
             throw new BadRequestException("로그인먼저 해주세요");
         }
-
         if( !sessionUser.isAdmin()){
             throw new BadRequestException("관리자만 승인을 할수 있습니다.");
         }
@@ -101,7 +99,6 @@ public class PartnerShipController {
         if(sessionUser == null){
             throw new BadRequestException("로그인먼저 해주세요");
         }
-
         if( !sessionUser.isAdmin()){
             throw new BadRequestException("관리자만 승인을 할수 있습니다.");
         }

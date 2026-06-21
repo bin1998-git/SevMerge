@@ -10,6 +10,7 @@ import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
+import com.example.SevMerge.partnership.PartnerShipService;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class AdminController {
     private final BoardRepository boardRepository;
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
-
+    private final PartnerShipService partnerShipService;
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model) {
 
@@ -75,7 +76,7 @@ public class AdminController {
         model.addAttribute("memberData", memberData != null ? memberData : new ArrayList<>());
         model.addAttribute("projectData", projectData != null ? projectData : new ArrayList<>());
         model.addAttribute("completedData", completeData != null ? completeData : new ArrayList<>());
-
+        model.addAttribute("recentPartnerships",partnerShipService.list());
         return "admin/admin-main";
     }
 
