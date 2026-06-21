@@ -96,6 +96,23 @@
         .ad-card-name { font-size: 14px; font-weight: 700; color: var(--brand-ink); }
         .ad-card-spec { font-size: 11px; color: var(--brand-muted); margin-top: 2px; margin-bottom: 8px; }
         .ad-card-badge { font-size: 9px; font-weight: 700; color: #92400e; background: #fef3c7; padding: 2px 8px; border-radius: 10px; }
+        .ad-biz-card {
+            background: linear-gradient(135deg, #92400e 0%, #b45309 50%, #d97706 100%);
+            border: 1.5px solid #fbbf24;
+            position: relative;
+        }
+        .ad-biz-card::before {
+            content: 'AD';
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(255,255,255,.92); color: #92400e;
+            font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800;
+            letter-spacing: .1em; padding: 3px 8px; border-radius: 5px; z-index: 2;
+        }
+        .ad-biz-card .biz-wordmark { color: rgba(255,255,255,.9); }
+        .ad-biz-card .bwm-iu { color: #fff7ed; }
+        .ad-biz-card .biz-role { color: #fef3c7; }
+        .ad-biz-card .biz-ct { color: rgba(255,255,255,.75); }
+        .ad-custom-msg { font-size: 12px; color: #fff7ed; font-style: italic; margin: 6px 0 8px; line-height: 1.5; }
         /* ── EXPERT BLOCK ── */
         .expert-block { padding: 48px 0 0; }
         .expert-block + .expert-block { border-top: 1px solid var(--brand-line); }
@@ -625,26 +642,31 @@
                 <div class="c-viewport">
                     <div class="c-track">
 
-                        {{#mainAds}}
-                            <a href="/experts/{{expertId}}" class="biz-card"
-                               data-member-id="{{expertId}}"
-                               data-speciality="{{speciality}}">
-                                <div class="biz-inner">
-                                    <div class="biz-brand">
-                                        <img src="/app-icon.svg" class="biz-app-icon" alt="">
-                                        <span class="biz-wordmark"><span class="bwm-iu">I</span>CODE<span class="bwm-iu">U</span></span>
-                                    </div>
-                                    <div class="biz-body">
-                                        <div class="biz-name-line">
-                                            <span class="biz-name">{{expertName}}</span>
-                                            <span class="biz-role">{{speciality}}</span>
-                                        </div>
-                                        <div class="biz-contacts">
-                                            <span class="biz-ct"><span class="biz-ct-dot" style="color:#f59e0b;">✦</span> 광고 · {{placementLabel}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
+
+
+            <a href="/experts/{{expertId}}" class="biz-card ad-biz-card"
+               data-member-id="{{expertId}}"
+               data-speciality="{{speciality}}"
+               style="{{#displayImageUrl}}background-image:linear-gradient(rgba(13,23,40,.55), rgba(13,23,40,.85)), url('{{displayImageUrl}}'); background-size:cover; background-position:center;{{/displayImageUrl}}">
+                <div class="biz-inner">
+                    <div class="biz-brand">
+                        <img src="/app-icon.svg" class="biz-app-icon" alt="">
+                        <span class="biz-wordmark"><span class="bwm-iu">I</span>CODE<span class="bwm-iu">U</span></span>
+                    </div>
+                    <div class="biz-body">
+                        <div class="biz-name-line">
+                            <span class="biz-name">{{expertName}}</span>
+                            <span class="biz-role">{{speciality}}</span>
+                        </div>
+                        {{#customMessage}}
+                            <div class="ad-custom-msg">"{{customMessage}}"</div>
+                        {{/customMessage}}
+                        <div class="biz-contacts">
+                            <span class="biz-ct"><span class="biz-ct-dot" style="color:#fbbf24;">✦</span> 광고 · {{placementLabel}}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
                         {{/mainAds}}
 
                     </div>
@@ -653,7 +675,7 @@
                 <button class="c-arrow c-arrow-right" aria-label="다음">›</button>
             </div>
         </div>
-    {{/mainAds}}
+
 
     <!-- ① 마감 임박 의뢰 -->
     <div class="expert-block">

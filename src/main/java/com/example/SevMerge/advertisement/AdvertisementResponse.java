@@ -3,6 +3,7 @@ package com.example.SevMerge.advertisement;
 import com.example.SevMerge.core.util.MyDateUtil;
 import lombok.Getter;
 
+
 @Getter
 public class AdvertisementResponse {
 
@@ -17,6 +18,8 @@ public class AdvertisementResponse {
     private String startDate;
     private String endDate;
     private String status;
+    private String customMessage;
+    private String bannerImage;
 
     public AdvertisementResponse(Advertisement ad, String expertName, String speciality, String profileImage) {
         this.id = ad.getId();
@@ -30,14 +33,17 @@ public class AdvertisementResponse {
         this.startDate = MyDateUtil.timestampFormat(ad.getStartDate());
         this.endDate = MyDateUtil.timestampFormat(ad.getEndDate());
         this.status = ad.getStatus().name();
+        this.customMessage = ad.getCustomMessage();
+        this.bannerImage = ad.getBannerImage();
     }
 
     public boolean isActive()  { return "ACTIVE".equals(status); }
     public boolean isExpired() { return "EXPIRED".equals(status); }
 
-    public String getProfileImageUrl() {
-        if (profileImage == null || profileImage.isBlank()) return "/images/default.png";
-        if (profileImage.startsWith("http")) return profileImage;
-        return "/images/" + profileImage;
+    public String getDisplayImageUrl() {
+        String img = (bannerImage != null && !bannerImage.isBlank()) ? bannerImage : profileImage;
+        if (img == null || img.isBlank()) return "/images/default.png";
+        if (img.startsWith("http")) return img;
+        return "/images/" + img;
     }
 }

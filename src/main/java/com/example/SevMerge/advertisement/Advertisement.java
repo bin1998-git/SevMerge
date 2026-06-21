@@ -41,6 +41,12 @@ public class Advertisement {
     @Column(name = "end_date", nullable = false)
     private Timestamp endDate;
 
+    @Column(name = "custom_message", length = 100)
+    private String customMessage;   // 홍보 문구용
+
+    @Column(name = "banner_image", length = 500)
+    private String bannerImage;     // 전용 배너 이미지용
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
