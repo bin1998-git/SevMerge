@@ -1,0 +1,323 @@
+{{> layout/header}}
+
+<style>
+    /* ── 탭 헤더 ── */
+    .page-tab-header {
+        background: #fff;
+        border-bottom: 1px solid #eaecf4;
+        padding: 0 28px;
+    }
+    .page-tab-inner {
+        max-width: 900px; margin: 0 auto;
+        display: flex; align-items: center; gap: 0;
+    }
+    .page-tab-title {
+        font-size: 15px; font-weight: 900; color: #1c1e26;
+        padding: 20px 28px 20px 0;
+        border-right: 1px solid #eaecf4;
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+    .tab-btn {
+        padding: 20px 20px;
+        font-size: 14px; font-weight: 600;
+        color: #6b7280; border: none; background: none;
+        cursor: pointer; font-family: inherit;
+        border-bottom: 2px solid transparent;
+        transition: color .15s, border-color .15s;
+        white-space: nowrap;
+    }
+    .tab-btn:hover { color: #1c1e26; }
+    .tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+    /* ── 탭 콘텐츠 ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .page-section { padding: 40px 28px 80px; }
+    .page-inner { max-width: 900px; margin: 0 auto; }
+
+    /* ── 광고 신청 탭 ── */
+    .ad-intro-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 20px; margin-bottom: 32px;
+    }
+    .ad-intro-card {
+        background: #fff; border: 1.5px solid #eaecf4;
+        border-radius: 16px; padding: 24px;
+    }
+    .ad-intro-card-title {
+        font-size: 14px; font-weight: 800; color: #1c1e26;
+        margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .ad-intro-card-desc { font-size: 13px; color: #6b7280; line-height: 1.6; margin-bottom: 14px; }
+    .ad-intro-card-info { display: flex; flex-direction: column; gap: 6px; }
+    .ad-info-row { display: flex; justify-content: space-between; font-size: 13px; }
+    .ad-info-label { color: #9ca3af; }
+    .ad-info-value { font-weight: 700; color: #1c1e26; }
+    .ad-cta-btn {
+        display: block; width: 100%; padding: 10px 0;
+        background: #2563eb; color: #fff; border: none; border-radius: 9px;
+        font-size: 13px; font-weight: 700; text-align: center;
+        cursor: pointer; font-family: inherit; margin-top: 14px;
+        text-decoration: none; transition: background .15s;
+    }
+    .ad-cta-btn:hover { background: #1d4ed8; color: #fff; }
+    .ad-cta-btn.amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .ad-cta-btn.amber:hover { opacity: .92; }
+
+    /* 미리보기 */
+    .preview-section { margin-bottom: 32px; }
+    .preview-title { font-size: 16px; font-weight: 900; color: #1c1e26; margin-bottom: 16px; letter-spacing: -.3px; }
+    .preview-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .preview-tab {
+        padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700;
+        cursor: pointer; border: 1.5px solid #e2e5ef; background: #fff; color: #6b7280;
+        font-family: inherit; transition: all .15s;
+    }
+    .preview-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+    .preview-box { background: #EBEEF4; border-radius: 14px; padding: 20px; overflow: hidden; }
+
+    /* 메인 배너 미리보기 */
+    .preview-main-card {
+        width: 220px;
+        background: #fff; border: 1.5px solid #fde68a; border-radius: 12px;
+        overflow: hidden; margin: 0 auto;
+        box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+    .preview-thumb {
+        height: 110px; background: linear-gradient(135deg, #fef3c7, #fde68a);
+        position: relative; display: flex; align-items: center; justify-content: center;
+        font-size: 28px; color: #92400e;
+    }
+    .preview-ad-badge {
+        position: absolute; top: 8px; right: 8px;
+        background: rgba(255,255,255,.95); color: #92400e;
+        font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px;
+    }
+    .preview-body { padding: 12px 14px; }
+    .preview-name { font-size: 13px; font-weight: 800; color: #1c1e26; margin-bottom: 2px; }
+    .preview-spec { font-size: 10px; color: #9ca3af; margin-bottom: 6px; }
+    .preview-msg { font-size: 10px; color: #78716c; font-style: italic; }
+
+    /* 캐러셀 미리보기 */
+    .preview-carousel-wrap { display: flex; gap: 10px; align-items: stretch; overflow: hidden; }
+    .preview-carousel-card {
+        flex: 0 0 160px; height: 120px;
+        background: #0d1728; border-radius: 10px;
+        position: relative; overflow: hidden;
+        display: flex; align-items: flex-end;
+    }
+    .preview-carousel-card.ad-card {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+    .preview-carousel-ad-badge {
+        position: absolute; top: 8px; right: 8px;
+        background: rgba(255,255,255,.95); color: #92400e;
+        font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px;
+        z-index: 1;
+    }
+    .preview-carousel-ad-icon {
+        font-size: 32px; margin: auto; display: flex; align-items: center; justify-content: center;
+        width: 100%;
+    }
+    .preview-project-inner { padding: 10px; width: 100%; }
+    .preview-project-title { font-size: 10px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .preview-project-cat { font-size: 9px; color: #6BA0FF; }
+    .preview-label { font-size: 11px; color: #6b7280; text-align: center; margin-top: 10px; }
+
+    /* 혜택 */
+    .benefit-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+    .benefit-item { background: #fff; border: 1.5px solid #eaecf4; border-radius: 12px; padding: 18px 14px; text-align: center; }
+    .benefit-icon { font-size: 22px; margin-bottom: 8px; }
+    .benefit-title { font-size: 13px; font-weight: 800; color: #1c1e26; margin-bottom: 4px; }
+    .benefit-desc { font-size: 11px; color: #9ca3af; line-height: 1.5; }
+
+    /* ── 광고 내역 탭 ── */
+    .ad-item { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 20px 24px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .ad-item-info { flex: 1; }
+    .ad-item-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 4px; }
+    .ad-item-meta { font-size: 12px; color: #9ca3af; }
+    .ad-status { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+    .ad-status.active { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .ad-status.expired { background: #f3f4f8; color: #9ca3af; }
+    .empty-state { text-align: center; padding: 80px 0; color: #c4c9d9; font-size: 14px; }
+
+    .new-ad-btn { padding: 10px 20px; background: #2563eb; color: #fff; border-radius: 9px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-block; }
+    .new-ad-btn:hover { background: #1d4ed8; }
+    .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .section-head-title { font-size: 18px; font-weight: 900; color: #1c1e26; }
+</style>
+
+<!-- 탭 헤더 -->
+<div class="page-tab-header">
+    <div class="page-tab-inner">
+        <div class="page-tab-title">📣 광고 신청</div>
+        <button class="tab-btn active" onclick="switchTab('intro')">광고 신청</button>
+        <button class="tab-btn" onclick="switchTab('history')">광고 내역</button>
+    </div>
+</div>
+
+<!-- 탭 1: 광고 신청 -->
+<div id="tab-intro" class="tab-content active">
+    <section class="page-section">
+        <div class="page-inner">
+
+            <!-- 혜택 소개 -->
+            <div class="benefit-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">🚀</div>
+                    <div class="benefit-title">최상단 노출</div>
+                    <div class="benefit-desc">메인 화면 상단에 노출돼 방문자에게 가장 먼저 보여요</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔁</div>
+                    <div class="benefit-title">7일간 지속 노출</div>
+                    <div class="benefit-desc">구매 즉시 시작, 7일 동안 자동으로 노출돼요</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <div class="benefit-title">타겟 노출</div>
+                    <div class="benefit-desc">IT 외주를 찾는 의뢰인에게 집중 노출돼요</div>
+                </div>
+            </div>
+
+            <!-- 미리보기 -->
+            <div class="preview-section">
+                <div class="preview-title">📱 화면 미리보기</div>
+                <div class="preview-tabs">
+                    <button class="preview-tab active" onclick="switchPreview('main', this)">메인 배너</button>
+                    <button class="preview-tab" onclick="switchPreview('carousel', this)">전문가 캐러셀</button>
+                </div>
+
+                <!-- 메인 배너 미리보기 -->
+                <div id="preview-main" class="preview-box">
+                    <p style="font-size:11px;color:#9ca3af;margin-bottom:12px;">▸ 메인 화면 상단 "지금 주목받는 전문가" 섹션에 이렇게 노출돼요</p>
+                    <div class="preview-main-card">
+                        <div class="preview-thumb">
+                            📸
+                            <span class="preview-ad-badge">AD</span>
+                        </div>
+                        <div class="preview-body">
+                            <div class="preview-name">홍길동 (내 이름)</div>
+                            <div class="preview-spec">Spring Boot · AWS · React</div>
+                            <div class="preview-msg">"지금 상담하면 견적서 무료 제공!"</div>
+                        </div>
+                    </div>
+                    <p style="font-size:11px;color:#9ca3af;margin-top:12px;text-align:center;">썸네일 이미지 + 이름 + 전문분야 + 홍보문구가 노출돼요</p>
+                </div>
+
+                <!-- 캐러셀 미리보기 -->
+                <div id="preview-carousel" class="preview-box" style="display:none;">
+                    <p style="font-size:11px;color:#9ca3af;margin-bottom:12px;">▸ 프로젝트 목록 캐러셀 사이에 이렇게 자연스럽게 끼워져 노출돼요</p>
+                    <div class="preview-carousel-wrap">
+                        <div class="preview-carousel-card" style="background:#0d1728;">
+                            <div class="preview-project-inner">
+                                <div class="preview-project-title">React 쇼핑몰 개발</div>
+                                <div class="preview-project-cat">WEB</div>
+                            </div>
+                        </div>
+                        <div class="preview-carousel-card ad-card">
+                            <span class="preview-carousel-ad-badge">AD</span>
+                            <div class="preview-carousel-ad-icon">📸</div>
+                        </div>
+                        <div class="preview-carousel-card" style="background:#0d1728;">
+                            <div class="preview-project-inner">
+                                <div class="preview-project-title">Flutter 앱 개발</div>
+                                <div class="preview-project-cat">APP</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size:11px;color:#9ca3af;margin-top:12px;text-align:center;">썸네일 이미지 + AD 뱃지만 노출돼요 (홍보문구 없음)</p>
+                </div>
+            </div>
+
+            <!-- 상품 선택 -->
+            <div class="preview-title">🛒 광고 상품 선택</div>
+            <div class="ad-intro-grid">
+                <div class="ad-intro-card">
+                    <div class="ad-intro-card-title">🏆 메인 배너</div>
+                    <div class="ad-intro-card-desc">메인 화면 상단에 단독 섹션으로 노출돼요. 썸네일 + 이름 + 전문분야 + 홍보문구까지 모두 표시됩니다.</div>
+                    <div class="ad-intro-card-info">
+                        <div class="ad-info-row"><span class="ad-info-label">노출 기간</span><span class="ad-info-value">7일</span></div>
+                        <div class="ad-info-row"><span class="ad-info-label">노출 위치</span><span class="ad-info-value">메인 상단 AD 섹션</span></div>
+                        <div class="ad-info-row"><span class="ad-info-label">가격</span><span class="ad-info-value" style="color:#d97706;">10,000P</span></div>
+                    </div>
+                    <a href="/advertisements/form?placement=MAIN_BANNER" class="ad-cta-btn amber">메인 배너 신청하기</a>
+                </div>
+                <div class="ad-intro-card">
+                    <div class="ad-intro-card-title">🎯 전문가 캐러셀</div>
+                    <div class="ad-intro-card-desc">프로젝트 목록 사이에 자연스럽게 끼워져 노출돼요. 썸네일 이미지와 AD 뱃지로 표시됩니다.</div>
+                    <div class="ad-intro-card-info">
+                        <div class="ad-info-row"><span class="ad-info-label">노출 기간</span><span class="ad-info-value">7일</span></div>
+                        <div class="ad-info-row"><span class="ad-info-label">노출 위치</span><span class="ad-info-value">프로젝트 캐러셀 사이</span></div>
+                        <div class="ad-info-row"><span class="ad-info-label">가격</span><span class="ad-info-value" style="color:#d97706;">5,000P</span></div>
+                    </div>
+                    <a href="/advertisements/form?placement=EXPERT_CAROUSEL" class="ad-cta-btn amber">전문가 캐러셀 신청하기</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<!-- 탭 2: 광고 내역 -->
+<div id="tab-history" class="tab-content">
+    <section class="page-section">
+        <div class="page-inner">
+            <div class="section-head">
+                <h2 class="section-head-title">광고 내역</h2>
+                <a href="/advertisements/form" class="new-ad-btn">+ 새 광고 신청</a>
+            </div>
+
+            {{#ads}}
+                <div class="ad-item">
+                    <div class="ad-item-info">
+                        <div class="ad-item-title">{{placementLabel}}</div>
+                        <div class="ad-item-meta">{{startDate}} ~ {{endDate}} · {{price}}P</div>
+                    </div>
+                    <span class="ad-status {{#isActive}}active{{/isActive}}{{#isExpired}}expired{{/isExpired}}">
+                    {{#isActive}}노출중{{/isActive}}
+                        {{#isExpired}}종료{{/isExpired}}
+                </span>
+                </div>
+            {{/ads}}
+
+            {{^ads}}
+                <div class="empty-state">
+                    아직 신청한 광고가 없습니다.<br>
+                    <a href="/advertisements/form" style="color:#2563eb;font-weight:700;margin-top:12px;display:inline-block;">첫 광고 신청하기 →</a>
+                </div>
+            {{/ads}}
+
+        </div>
+    </section>
+</div>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', (tab === 'intro' && i === 0) || (tab === 'history' && i === 1));
+        });
+        document.getElementById('tab-intro').classList.toggle('active', tab === 'intro');
+        document.getElementById('tab-history').classList.toggle('active', tab === 'history');
+
+        // URL 해시로 탭 상태 유지
+        history.replaceState(null, '', tab === 'history' ? '#history' : '#');
+    }
+
+    function switchPreview(type, btn) {
+        document.querySelectorAll('.preview-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('preview-main').style.display = type === 'main' ? 'block' : 'none';
+        document.getElementById('preview-carousel').style.display = type === 'carousel' ? 'block' : 'none';
+    }
+
+    // URL 해시로 진입 시 탭 자동 전환
+    if (window.location.hash === '#history') {
+        switchTab('history');
+    }
+</script>
+
+{{> layout/footer}}
