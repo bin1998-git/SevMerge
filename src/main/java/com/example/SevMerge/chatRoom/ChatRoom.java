@@ -21,7 +21,7 @@ public class ChatRoom {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project; // 프로젝트 ID (FK)
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,6 +31,12 @@ public class ChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expert_id", nullable = false)
     private Member expert;
+
+    @Column(nullable = false)
+    private boolean deletedByClient = false;  // 의뢰인이 방 삭제
+
+    @Column(nullable = false)
+    private boolean deletedByExpert = false;  // 전문가가 방 삭제
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -50,6 +56,20 @@ public class ChatRoom {
         } else {
             return false;
         }
+    }
+
+    // 나에게서 방 삭제 (보는 사람 쪽 플래그)
+    public void deleteFor(Member viewer) {
+        if (this.client.getId().equals(viewer.getId())) this.deletedByClient = true;
+        else this.deletedByExpert = true;
+    }
+
+    public boolean isFullyDeleted() { return this.deletedByClient && this.deletedByExpert; }
+
+    // 새 메시지 도착 시 양쪽 삭제 플래그 해제 (방 다시 보이게)
+    public void restore() {
+        this.deletedByClient = false;
+        this.deletedByExpert = false;
     }
 
 }

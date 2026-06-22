@@ -46,6 +46,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/messages/**",
                         "/notifications",
                         "/notifications/**",
+                        "/chat/**",
                         "/boards/**",
                         "/admin/**",
                         "/bids/**",
