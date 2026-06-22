@@ -31,15 +31,15 @@ public class BookMarkService {
     @Transactional
     public boolean toggle(Long memberId, Long expertId) {
         // 해당 사용자가 이 전문가를 북마크 했는지 확인
-
         Optional<BookMark> bookMark = bookMarkRepository.findByMemberIdAndExpertProfileId(memberId, expertId);
-
         if (bookMark.isPresent()) { // 북마크 기록이 DB에 있으면 true 반환 즉 마크를 한번더 누르면 삭제 처리
             bookMarkRepository.delete(bookMark.get());
+            bookMark.get().bookmarkFalse();
             return false; // 북마크 취소
         } else { // 마크가 없으면 save 처리
             Member memberEntity = memberRepository.findById(memberId).orElseThrow(() ->
                     new BadRequestException("사용자를 찾을수 없습니다.")
+
             );
             ExpertProfile expertProfileEntitiy = expertProfileRepository.findById(expertId).orElseThrow(() ->
                     new BadRequestException("전문가가 존재하지 않습니다.")
@@ -48,6 +48,7 @@ public class BookMarkService {
                     .builder()
                     .member(memberEntity)
                     .expertProfile(expertProfileEntitiy)
+                    .bookmarked(true)
                     .build()
             );
             return true; // 북마크된상태

@@ -33,7 +33,7 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
     @Query(value = """
     SELECT AVG(avg_star) FROM (
         SELECT ep.id, COALESCE(AVG(r.count_star), 0.0) as avg_star
-        FROM expert_profile ep
+        FROM expert_profile_tb ep
         LEFT JOIN review_tb r ON r.targeter_id = ep.member_id
         GROUP BY ep.id
     ) sub
