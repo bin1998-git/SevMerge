@@ -91,12 +91,14 @@ public class ExpertProfileViewController {
         boolean isWished = false;
         if (sessionUser != null) {
             isWished = expertWishRepository.existsByMemberIdAndExpertId(sessionUser.getId(), memberId);
+            boolean currentStatus = bookMarkService.isBookmarked(sessionUser.getId(), profile.getId());
+            profile.setBookmarked(currentStatus);
         }
+
+
         model.addAttribute("isWished", isWished);
 
-
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(memberId);
-
         model.addAttribute("avgRating", String.format("%.1f", reviewService.avgRating(memberId)));
         model.addAttribute("reviews",reviewService.findMyReviews(memberId));
         model.addAttribute("doneProject",projectService.getDoneProjectsCount());

@@ -71,7 +71,7 @@ public class PartnerShipController {
 
         model.addAttribute("partnerships",partnerShipResponseList);
 
-        return "TEST/test";
+        return "admin/admin-partnership";
     }
 
     // 승인
