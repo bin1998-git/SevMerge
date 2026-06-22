@@ -166,6 +166,12 @@
                                                         보류 처리됨
                                                     </button>
                                                 {{/isHold}}
+
+                                                <a href="/chat/start/project/{{project.id}}?withMemberId={{expertId}}"
+                                                   class="btn btn-outline btn-sm"
+                                                   style="width: 100%; border-color: #cbd5e1; color: #2563eb; font-weight: 600; background: #fff; padding: 7px 0;">
+                                                    💬 채팅 문의
+                                                </a>
                                             </div>
                                         {{/expertCard}}
 
@@ -244,6 +250,7 @@
                     </div>
                     {{^isOwner}}
                         <a href="/bids/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
+                        <a href="/chat/start/project/{{project.id}}?withMemberId={{project.memberId}}" class="bid-btn" style="background:#fff; color:#2563eb; border:1.5px solid #2563eb; margin-top:10px;">💬 의뢰인에게 문의</a>
                     {{/isOwner}}
                 </div>
 

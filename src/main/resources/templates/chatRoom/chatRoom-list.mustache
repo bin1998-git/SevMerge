@@ -1,88 +1,60 @@
 {{> layout/header}}
 
 <style>
-    * { box-sizing: border-box; }
+    .chat-wrap { display: grid; grid-template-columns: 300px 1fr; height: calc(100vh - 64px); background: #fff; border-top: 1px solid #eaecf4; }
 
-    .chat-wrap { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 64px); background: #fff; border-top: 1px solid #eaecf4; }
-
-    /* 왼쪽 채팅방 목록 */
-    .chat-sidebar { border-right: 1px solid #eaecf4; display: flex; flex-direction: column; overflow: hidden; }
-    .chat-sidebar-header { padding: 20px; border-bottom: 1px solid #eaecf4; flex-shrink: 0; }
-    .chat-sidebar-title { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 12px; }
-    .chat-search { width: 100%; padding: 10px 14px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
-    .chat-search:focus { border-color: #2563eb; background: #fff; }
-    .chat-search::placeholder { color: #c4c9d9; }
-
+    /* 왼쪽: 채팅방 목록 */
+    .chat-sidebar { border-right: 1px solid #eaecf4; display: flex; flex-direction: column; min-height: 0; }
+    .chat-sidebar-head { padding: 20px; border-bottom: 1px solid #f3f4f8; flex-shrink: 0; }
+    .chat-sidebar-title { font-size: 18px; font-weight: 900; color: #1c1e26; }
     .chat-room-list { flex: 1; overflow-y: auto; }
-    .chat-room-list::-webkit-scrollbar { width: 4px; }
+    .chat-room-list::-webkit-scrollbar { width: 5px; }
     .chat-room-list::-webkit-scrollbar-thumb { background: #e2e5ef; border-radius: 4px; }
-
-    .chat-room-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; transition: background .12s; text-decoration: none; color: inherit; border-bottom: 1px solid #f8f9fc; }
+    .chat-room-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; text-decoration: none; color: inherit; border-bottom: 1px solid #f8f9fc; transition: background .12s; }
     .chat-room-item:hover { background: #f8f9ff; }
-    .chat-room-item.active { background: #eff6ff; }
-
-    .chat-room-avatar { width: 46px; height: 46px; border-radius: 50%; background: #eff6ff; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; position: relative; }
-    .chat-room-online { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; border: 2px solid #fff; position: absolute; bottom: 1px; right: 1px; }
+    .chat-avatar { width: 44px; height: 44px; border-radius: 50%; background: #eff6ff; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .chat-room-info { flex: 1; min-width: 0; }
-    .chat-room-name { font-size: 14px; font-weight: 700; color: #1c1e26; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .chat-room-last { font-size: 12px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .chat-room-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-    .chat-room-time { font-size: 11px; color: #c4c9d9; }
-    .chat-room-badge { background: #2563eb; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; min-width: 18px; text-align: center; }
+    .chat-room-name { font-size: 14px; font-weight: 700; color: #1c1e26; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chat-room-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chat-unread { background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; flex-shrink: 0; }
 
-    .chat-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; color: #c4c9d9; font-size: 14px; gap: 8px; }
-
-    /* 오른쪽 대화창 플레이스홀더 */
-    .chat-main { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #f8f9fc; }
-    .chat-main-icon { font-size: 48px; }
-    .chat-main-title { font-size: 16px; font-weight: 700; color: #9ca3af; }
-    .chat-main-sub { font-size: 13px; color: #c4c9d9; }
+    /* 오른쪽: 선택 전 안내 */
+    .chat-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #fafbff; color: #c4c9d9; }
+    .chat-placeholder-icon { font-size: 48px; }
+    .chat-placeholder-title { font-size: 17px; font-weight: 800; color: #9ca3af; }
+    .chat-placeholder-sub { font-size: 13px; color: #c4c9d9; }
 </style>
 
 <div class="chat-wrap">
 
-    <!-- 왼쪽: 채팅방 목록 -->
-    <div class="chat-sidebar">
-        <div class="chat-sidebar-header">
-            <div class="chat-sidebar-title">💬 메시지</div>
-            <input type="text" class="chat-search" placeholder="대화 상대 검색..." />
+    <!-- 왼쪽: 내 채팅방 목록 -->
+    <aside class="chat-sidebar">
+        <div class="chat-sidebar-head">
+            <div class="chat-sidebar-title">💬 채팅</div>
         </div>
-
         <div class="chat-room-list">
             {{#rooms}}
-            <a href="/messages/{{id}}" class="chat-room-item {{#isActive}}active{{/isActive}}">
-                <div class="chat-room-avatar">
-                    👤
-                    {{#isOnline}}<div class="chat-room-online"></div>{{/isOnline}}
-                </div>
-                <div class="chat-room-info">
-                    <div class="chat-room-name">{{partnerName}}</div>
-                    <div class="chat-room-last">{{lastMessage}}</div>
-                </div>
-                <div class="chat-room-meta">
-                    <span class="chat-room-time">{{lastTime}}</span>
-                    {{#unreadCount}}
-                    <span class="chat-room-badge">{{unreadCount}}</span>
-                    {{/unreadCount}}
-                </div>
-            </a>
+                <a href="/chat/room/{{id}}" class="chat-room-item">
+                    <div class="chat-avatar">{{#projectTitle}}📁{{/projectTitle}}{{^projectTitle}}👤{{/projectTitle}}</div>
+                    <div class="chat-room-info">
+                        <div class="chat-room-name">{{displayName}}</div>
+                        <div class="chat-room-sub">{{#lastMessage}}{{lastMessage}}{{/lastMessage}}{{^lastMessage}}{{#projectTitle}}프로젝트 문의{{/projectTitle}}{{^projectTitle}}1:1 문의{{/projectTitle}}{{/lastMessage}}</div>
+                    </div>
+                    {{#hasUnread}}<span class="chat-unread">{{unreadCount}}</span>{{/hasUnread}}
+                </a>
             {{/rooms}}
-
             {{^rooms}}
-            <div class="chat-empty">
-                <span>📭</span>
-                <span>아직 대화가 없습니다</span>
-            </div>
+                <div style="padding: 40px 16px; text-align: center; color: #c4c9d9; font-size: 13px;">아직 채팅방이 없습니다.</div>
             {{/rooms}}
         </div>
-    </div>
+    </aside>
 
-    <!-- 오른쪽: 채팅방 선택 전 안내 -->
-    <div class="chat-main">
-        <div class="chat-main-icon">💬</div>
-        <div class="chat-main-title">대화를 선택해주세요</div>
-        <div class="chat-main-sub">왼쪽에서 대화 상대를 선택하면 메시지를 주고받을 수 있어요</div>
-    </div>
+    <!-- 오른쪽: 안내 -->
+    <section class="chat-placeholder">
+        <div class="chat-placeholder-icon">💬</div>
+        <div class="chat-placeholder-title">대화를 선택해주세요</div>
+        <div class="chat-placeholder-sub">왼쪽에서 채팅방을 선택하면 대화를 시작할 수 있어요</div>
+    </section>
 
 </div>
 

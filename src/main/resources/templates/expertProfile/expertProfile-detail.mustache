@@ -91,6 +91,7 @@
                 <div class="profile-stars">★ <span>{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
                 {{^isOwner}}
                     <a href="/messages/send?receiverId={{expertProfile.memberId}}" class="chat-btn">💬 문의하기 →</a>
+                    <a href="/chat/start/expert/{{expertProfile.memberId}}" class="chat-btn">💬 실시간 채팅 →</a>
                 {{/isOwner}}
             </div>
 
