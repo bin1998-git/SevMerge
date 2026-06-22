@@ -122,7 +122,24 @@ public class MemberController {
         return "redirect:/exmain";
     }
 
+    /**
+     * [M2] Logout is restricted to POST only to prevent CSRF-via-GET attacks.
+     * GET /logout now returns a redirect to a confirmation page or the home page,
+     * without actually invalidating the session.
+     *
+     * The actual session invalidation is handled by Spring Security POST /logout
+     * (configured in SecurityConfig). This GET mapping exists only to avoid 404
+     * when users click a plain href="/logout" link; it safely redirects them home.
+     */
     @GetMapping("/logout")
+    public String logoutGet() {
+        // [M2] Do NOT invalidate session via GET — return a safe redirect instead.
+        // Real logout must go through POST /logout (Spring Security handles it).
+        log.warn("[M2] GET /logout attempted - ignoring. Logout requires POST.");
+        return "redirect:/";
+    }
+
+    @PostMapping("/logout")
     public String logout(HttpSession session) {
         memberService.logout(session);
         log.info("로그아웃완료");

@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -53,6 +55,16 @@ public class MemberService {
     private final SolApiService solApiService;
 
     private final NotificationService notificationService;
+
+    // ── [L4] Account lockout state (in-memory, per email) ────────────────────
+    private static final int  MAX_FAIL_ATTEMPTS  = 5;
+    private static final long LOCKOUT_DURATION_MS = 10 * 60_000L; // 10 minutes
+
+    private static class LoginAttempt {
+        final AtomicInteger failures = new AtomicInteger(0);
+        volatile long lockedUntil = 0L;
+    }
+    private final ConcurrentHashMap<String, LoginAttempt> loginAttempts = new ConcurrentHashMap<>();
 
 
     // 카카오 환경 변수
@@ -152,11 +164,32 @@ public class MemberService {
     //로그인 / 로그아웃
     @Transactional(readOnly = true)
     public Member login(MemberRequest.Login request, HttpSession session) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다."));
+        String email = request.getEmail();
 
-        if (!passwordEncoder.matches(request.getPassword(), member.getPassword()))
+        // ── [L4] Account lockout check ─────────────────────────────────────
+        LoginAttempt attempt = loginAttempts.computeIfAbsent(email, k -> new LoginAttempt());
+        long now = System.currentTimeMillis();
+        if (now < attempt.lockedUntil) {
+            long remainSec = (attempt.lockedUntil - now) / 1000;
+            throw new BadRequestException("계정이 일시적으로 잠겼습니다. " + remainSec + "초 후에 다시 시도하세요.");
+        }
+
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> {
+                    // Count failed attempt even for non-existent email (timing-safe)
+                    recordFailedAttempt(attempt, now, email);
+                    return new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다.");
+                });
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            recordFailedAttempt(attempt, now, email);
             throw new BadRequestException("비밀번호가 올바르지 않습니다.");
+        }
+
+        // Success – clear failure counter
+        attempt.failures.set(0);
+        attempt.lockedUntil = 0L;
+        log.info("[L4] 로그인 성공, 실패 카운터 초기화 - email={}", email);
 
         if (member.getStatus() == Status.SUSPENDED)
             return member;
@@ -172,6 +205,16 @@ public class MemberService {
         session.setAttribute("sessionUser", member);
         log.info("로그인 성공 - memberId={}", member.getId());
         return member;
+    }
+
+    /** Record one failed login attempt; lock account after MAX_FAIL_ATTEMPTS. */
+    private void recordFailedAttempt(LoginAttempt attempt, long now, String email) {
+        int failures = attempt.failures.incrementAndGet();
+        log.warn("[L4] 로그인 실패 누적 {}/{} - email={}", failures, MAX_FAIL_ATTEMPTS, email);
+        if (failures >= MAX_FAIL_ATTEMPTS) {
+            attempt.lockedUntil = now + LOCKOUT_DURATION_MS;
+            log.warn("[L4] 계정 잠금 적용 ({}분) - email={}", LOCKOUT_DURATION_MS / 60_000, email);
+        }
     }
 
     public void logout(HttpSession session) {

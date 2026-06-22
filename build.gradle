@@ -31,6 +31,8 @@ dependencyManagement {
 dependencies {
 
     implementation 'org.springframework.security:spring-security-crypto'
+    // [Security Patches] Full Spring Security for CSRF, headers, session management
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // 웹 소캣 통신 라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
