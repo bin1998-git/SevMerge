@@ -6,6 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Data
 @Builder
@@ -36,6 +37,14 @@ public class ExpertProfileResponse {
     public boolean isSkilled() { return "SKILLED".equals(grade); }
     public boolean isMaster()  { return "MASTER".equals(grade); }
 
+    private static final Pattern URL_PATTERN =
+        Pattern.compile("^https?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+$", Pattern.CASE_INSENSITIVE);
+
+    private static String sanitizeUrl(String url) {
+        if (url == null || url.isBlank()) return null;
+        return URL_PATTERN.matcher(url.trim()).matches() ? url.trim() : null;
+    }
+
     public static ExpertProfileResponse from(ExpertProfile profile) {
         return ExpertProfileResponse.builder()
                 .id(profile.getId())
@@ -46,7 +55,7 @@ public class ExpertProfileResponse {
                 .career(profile.getCareer())
                 .speciality(profile.getSpeciality())
                 .skillList(parseSkills(profile.getSpeciality()))
-                .githubUrl(profile.getGithubUrl())
+                .githubUrl(sanitizeUrl(profile.getGithubUrl()))
                 .contactEmail(profile.getContactEmail())
                 .isCertified(profile.isCertified())
                 .grade(profile.getExpertGrade() != null ? profile.getExpertGrade().toString() : Grade.NORMAL.toString())
