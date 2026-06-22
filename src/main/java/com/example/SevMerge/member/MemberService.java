@@ -230,7 +230,7 @@ public class MemberService {
 
         //엔티티 메서드를 호출해 상태만 true 변경.
 
-        if(member.isAdmin()) {
+        if (member.isAdmin()) {
             throw new AdminException("관리자 계정은 삭제가 불가능합니다.");
         }
         member.withdraw();
@@ -310,6 +310,17 @@ public class MemberService {
         return memberRepository.countNewMembersThisMonth();
     }
 
+    // 역할별 카테고리 조회
+    public Page<MemberResponse> searchMembersByRoleAndKeyword(String roleFilter, String keyword, Pageable pageable) {
+        try {
+            Role role = Role.valueOf(roleFilter.toUpperCase());
+            Page<Member> memberPage = memberRepository.findByRoleAndKeyword(role, keyword, pageable);
+            return memberPage.map(MemberResponse::from);
+        } catch (BadRequestException e) {
+            return Page.empty(pageable);
+        }
+    }
+
     // 승인 대기 전문가 조회 기능
     public long getPendingExpertCount() {
         log.info("승인 대기 전문가 수 조회 서비스 시작");
@@ -323,7 +334,7 @@ public class MemberService {
         Map<String, Integer> dateCountMap = new HashMap<>();
         for (Object[] row : rawData) {
             String date = (String) row[0];
-            int count =((Number) row[1]).intValue();
+            int count = ((Number) row[1]).intValue();
             dateCountMap.put(date, count);
         }
 
@@ -331,7 +342,7 @@ public class MemberService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
         LocalDate today = LocalDate.now();
 
-        for (int i = 6; i >= 0 ; i--) {
+        for (int i = 6; i >= 0; i--) {
             String targetDate = today.minusDays(i).format(formatter);
             trendData.add(dateCountMap.getOrDefault(targetDate, 0));
         }
@@ -610,7 +621,7 @@ public class MemberService {
 
     // 카카오 신규 의뢰인 회원가입 전용
     @Transactional
-    public Member registerKakaoMember(Long kakaoId, String nickname,String image, String selectedRole) {
+    public Member registerKakaoMember(Long kakaoId, String nickname, String image, String selectedRole) {
         String kakaoUserKey = String.valueOf(kakaoId);
 
         Member existing = findKakaoMember(kakaoId);
@@ -663,7 +674,7 @@ public class MemberService {
 
     // 카카오 전문가 가입
     @Transactional
-    public Member registerKakaoExpert(Long kakaoId, String nickname,String image, MemberRequest.ExpertJoin req) {
+    public Member registerKakaoExpert(Long kakaoId, String nickname, String image, MemberRequest.ExpertJoin req) {
         String kakaoUserKey = String.valueOf(kakaoId);
 
         Member existing = findKakaoMember(kakaoId);
@@ -691,7 +702,7 @@ public class MemberService {
 
     // 구글 전문가 가입
     @Transactional
-    public Member registerGoogleExpert(String googleId, String nickname, String email,String image, MemberRequest.ExpertJoin req) {
+    public Member registerGoogleExpert(String googleId, String nickname, String email, String image, MemberRequest.ExpertJoin req) {
         Member existing = findGoogleMember(googleId);
         if (existing != null) return existing;
 
