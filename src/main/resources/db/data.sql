@@ -397,63 +397,79 @@ VALUES
 --  - 완료 추세   : project_tb.created_at + project_status='DONE'
 -- ════════════════════════════════════════════════════════════════
 
--- -- ── 회원 더미 (일자별 3,5,2,6,4,7,3 = 30명) ──
--- INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
--- VALUES
--- ('chart_m01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저01', '010-0001-0001', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
--- ('chart_m02@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저02', '010-0001-0002', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
--- ('chart_m03@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저03', '010-0001-0003', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
--- ('chart_m04@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저04', '010-0001-0004', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
--- ('chart_m05@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저05', '010-0001-0005', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
--- ('chart_m06@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저06', '010-0001-0006', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
--- ('chart_m07@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저07', '010-0001-0007', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
--- ('chart_m08@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저08', '010-0001-0008', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
--- ('chart_m09@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저09', '010-0001-0009', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 4 DAY), 0),
--- ('chart_m10@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저10', '010-0001-0010', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 4 DAY), 0),
--- ('chart_m11@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저11', '010-0001-0011', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
--- ('chart_m12@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저12', '010-0001-0012', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
--- ('chart_m13@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저13', '010-0001-0013', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
--- ('chart_m14@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저14', '010-0001-0014', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
--- ('chart_m15@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저15', '010-0001-0015', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
--- ('chart_m16@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저16', '010-0001-0016', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
--- ('chart_m17@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저17', '010-0001-0017', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
--- ('chart_m18@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저18', '010-0001-0018', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
--- ('chart_m19@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저19', '010-0001-0019', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
--- ('chart_m20@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저20', '010-0001-0020', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
--- ('chart_m21@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저21', '010-0001-0021', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m22@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저22', '010-0001-0022', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m23@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저23', '010-0001-0023', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m24@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저24', '010-0001-0024', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m25@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저25', '010-0001-0025', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m26@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저26', '010-0001-0026', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m27@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저27', '010-0001-0027', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
--- ('chart_m28@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저28', '010-0001-0028', 'CLIENT', 'ACTIVE', false, NOW(), 0),
--- ('chart_m29@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저29', '010-0001-0029', 'EXPERT', 'ACTIVE', false, NOW(), 0),
--- ('chart_m30@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저30', '010-0001-0030', 'CLIENT', 'ACTIVE', false, NOW(), 0);
---
--- -- ── 프로젝트 더미 (전체 추세용, member_id=1) / 일부 DONE은 완료 추세에도 잡힘 ──
--- INSERT INTO project_tb (member_id, title, category, description, budget_min, budget_max, deadline, bid_filter, project_status, view_count, is_deleted, is_private, created_at)
--- VALUES
--- (1, '[차트]프로젝트 6-1', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
--- (1, '[차트]프로젝트 6-2', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
--- (1, '[차트]프로젝트 5-1', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
--- (1, '[차트]프로젝트 5-2', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
--- (1, '[차트]프로젝트 5-3', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
--- (1, '[차트]프로젝트 5-4', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
--- (1, '[차트]프로젝트 4-1', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
--- (1, '[차트]프로젝트 3-1', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트]프로젝트 3-2', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트]프로젝트 3-3', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트]프로젝트 3-4', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트]프로젝트 3-5', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트]프로젝트 2-1', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
--- (1, '[차트]프로젝트 2-2', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
--- (1, '[차트]프로젝트 2-3', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
--- (1, '[차트]프로젝트 1-1', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트]프로젝트 1-2', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트]프로젝트 1-3', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트]프로젝트 1-4', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트]프로젝트 1-5', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트]프로젝트 1-6', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트]프로젝트 0-1', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 0, false, false, NOW()),
--- (1, '[차트]프로젝트 0-2', 'APP', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'DONE', 0, false, false, NOW());
+-- ── 회원 더미 (일자별 3,5,2,6,4,7,3 = 30명) ──
+INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
+VALUES
+('chart_m01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저01', '010-0001-0001', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
+('chart_m02@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저02', '010-0001-0002', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
+('chart_m03@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저03', '010-0001-0003', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
+('chart_m04@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저04', '010-0001-0004', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
+('chart_m05@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저05', '010-0001-0005', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
+('chart_m06@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저06', '010-0001-0006', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
+('chart_m07@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저07', '010-0001-0007', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
+('chart_m08@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저08', '010-0001-0008', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
+('chart_m09@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저09', '010-0001-0009', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 4 DAY), 0),
+('chart_m10@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저10', '010-0001-0010', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 4 DAY), 0),
+('chart_m11@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저11', '010-0001-0011', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
+('chart_m12@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저12', '010-0001-0012', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
+('chart_m13@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저13', '010-0001-0013', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
+('chart_m14@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저14', '010-0001-0014', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
+('chart_m15@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저15', '010-0001-0015', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
+('chart_m16@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저16', '010-0001-0016', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 3 DAY), 0),
+('chart_m17@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저17', '010-0001-0017', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
+('chart_m18@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저18', '010-0001-0018', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
+('chart_m19@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저19', '010-0001-0019', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
+('chart_m20@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저20', '010-0001-0020', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 2 DAY), 0),
+('chart_m21@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저21', '010-0001-0021', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m22@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저22', '010-0001-0022', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m23@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저23', '010-0001-0023', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m24@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저24', '010-0001-0024', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m25@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저25', '010-0001-0025', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m26@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저26', '010-0001-0026', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m27@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저27', '010-0001-0027', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 1 DAY), 0),
+('chart_m28@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저28', '010-0001-0028', 'CLIENT', 'ACTIVE', false, NOW(), 0),
+('chart_m29@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저29', '010-0001-0029', 'EXPERT', 'ACTIVE', false, NOW(), 0),
+('chart_m30@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저30', '010-0001-0030', 'CLIENT', 'ACTIVE', false, NOW(), 0);
+
+-- ── 프로젝트 더미 (전체 추세용, member_id=1) / 일부 DONE은 완료 추세에도 잡힘 ──
+INSERT INTO project_tb (
+    member_id, title, category, description, budget_min, budget_max,
+    deadline, bid_filter, project_status, view_count, is_deleted, is_private, created_at
+)
+VALUES
+-- 6일 전 데이터 (다양한 시작 상태)
+(1, '[차트] 홈피 구축 건', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 12, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(1, '[차트] 앱 리뉴얼 기획', 'APP', '차트용 더미', 2000000, 5000000, NOW(), 'ALL', 'CLOSED', 5, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(1, '[차트] 임시 보관 프로젝트 A', 'WEB', '차트용 더미', 500000, 1000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+
+-- 5일 전 데이터 (진행 중 및 취소 상태 추가)
+(1, '[차트] 쇼핑몰 웹 개발', 'WEB', '차트용 더미', 1500000, 4000000, NOW(), 'ALL', 'IN_PROGRESS', 25, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(1, '[차트] 매칭 앱 프로토타입', 'APP', '차트용 더미', 3000000, 6000000, NOW(), 'ALL', 'OPEN', 18, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(1, '[차트] 중단된 서버 이전', 'WEB', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'CANCELLED', 2, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+
+-- 4일 전 데이터 (완료 단계 상태 추가)
+(1, '[차트] 반응형 퍼블리싱', 'WEB', '차트용 더미', 800000, 1500000, NOW(), 'ALL', 'COMPLETED', 14, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+(1, '[차트] 배달 커스텀 앱', 'APP', '차트용 더미', 5000000, 9000000, NOW(), 'ALL', 'DONE', 30, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+(1, '[차트] 관리자 기능 개선', 'WEB', '차트용 더미', 1200000, 2500000, NOW(), 'ALL', 'IN_PROGRESS', 9, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+
+-- 3일 전 데이터 (여러 상태 분산)
+(1, '[차트] 블로그 테마 제작', 'WEB', '차트용 더미', 300000, 700000, NOW(), 'ALL', 'OPEN', 4, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(1, '[차트] 위치기반 서비스 앱', 'APP', '차트용 더미', 4000000, 8000000, NOW(), 'ALL', 'IN_PROGRESS', 42, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(1, '[차트] 랜딩페이지 3종', 'WEB', '차트용 더미', 1000000, 1800000, NOW(), 'ALL', 'DONE', 15, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(1, '[차트] 보안 취약점 점검', 'WEB', '차트용 더미', 2000000, 4000000, NOW(), 'ALL', 'CLOSED', 8, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+
+-- 2일 전 데이터
+(1, '[차트] 소개 웹사이트', 'WEB', '차트용 더미', 500000, 1200000, NOW(), 'ALL', 'OPEN', 11, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(1, '[차트] 하이브리드 앱 외주', 'APP', '차트용 더미', 3500000, 7000000, NOW(), 'ALL', 'COMPLETED', 22, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(1, '[차트] 마케팅 툴 연동 API', 'WEB', '차트용 더미', 1500000, 3000000, NOW(), 'ALL', 'CANCELLED', 3, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+
+-- 1일 전 데이터
+(1, '[차트] 커뮤니티 사이트', 'WEB', '차트용 더미', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 19, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(1, '[차트] AI 데이터 정제 웹', 'WEB', '차트용 더미', 3000000, 6000000, NOW(), 'ALL', 'IN_PROGRESS', 16, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(1, '[차트] 위젯 UI 디자인 앱', 'APP', '차트용 더미', 1200000, 2000000, NOW(), 'ALL', 'DONE', 28, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(1, '[차트] 작성 중인 기획안', 'APP', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+
+-- 오늘 데이터 (방금 등록되거나 마감된 상태)
+(1, '[차트] 실시간 채팅 웹', 'WEB', '차트용 더미', 2000000, 4500000, NOW(), 'ALL', 'OPEN', 3, false, false, NOW()),
+(1, '[차트] 피트니스 로그 앱', 'APP', '차트용 더미', 4500000, 8500000, NOW(), 'ALL', 'IN_PROGRESS', 5, false, false, NOW()),
+(1, '[차트] 급한 버그 수정 건', 'WEB', '차트용 더미', 300000, 600000, NOW(), 'ALL', 'DONE', 14, false, false, NOW());
