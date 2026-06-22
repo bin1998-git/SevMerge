@@ -353,7 +353,6 @@
         </div>
         <form action="/admin/members" method="get" class="search-bar">
             <input type="hidden" name="page" value="0" />
-
             <select name="sort" class="filter-select" onchange="this.form.submit()"
                     style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; color: #4a5568; background-color: white; cursor: pointer; font-size: 14px;">
                 <option value="desc" {{^isNewSort}}selected{{/isNewSort}}>최신순</option>
@@ -361,6 +360,13 @@
             </select>
             <input type="text" class="search-input" name="keyword" placeholder="이름 또는 이메일로 검색..." value="{{keyword}}"/>
             <button type="submit" class="search-btn">검색</button>
+            <select name="roleFilter" class="filter-select" onchange="this.form.submit()"
+                    style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; color: #4a5568; background-color: white; cursor: pointer; font-size: 14px;">
+                <option value="ALL" {{#isRoleAll}}selected{{/isRoleAll}}>전체권한</option>
+                <option value="CLIENT" {{#isRoleClient}}selected{{/isRoleClient}}>일반</option>
+                <option value="EXPERT" {{#isRoleExpert}}selected{{/isRoleExpert}}>전문가</option>
+                <option value="ADMIN" {{#isRoleAdmin}}selected{{/isRoleAdmin}}>관리자</option>
+            </select>
         </form>
         <div class="admin-table-wrap">
             <div class="admin-table-head">
@@ -404,19 +410,17 @@
 
             <!-- 1. 이전 페이지 버튼 -->
             {{#hasPrev}}
-                <a href="/admin/members?page={{prevPage}}&keyword={{keyword}}" class="page-btn" style="padding: 6px
-                12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #4a5568;">이전</a>
+                <a href="/admin/members?page={{prevPage}}&keyword={{keyword}}&sort={{sort}}" class="page-btn" style="padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #4a5568;">이전</a>
             {{/hasPrev}}
 
             <!-- 2. 현재 페이지 표시 및 안내 -->
             <span class="page-info" style="font-size: 14px; font-weight: 600; color: #2d3748; padding: 6px 12px;">
-                {{nextPage}} / {{totalPages}} 페이지
+                {{displayPage}} / {{totalPages}} 페이지
             </span>
 
             <!-- 3. 다음 페이지 버튼 -->
             {{#hasNext}}
-                <a href="/admin/members?page={{nextPage}}&keyword={{keyword}}" class="page-btn" style="padding: 6px
-                12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #4a5568;">다음</a>
+                <a href="/admin/members?page={{nextPage}}&keyword={{keyword}}&sort={{sort}}" class="page-btn" style="padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #4a5568;">다음</a>
             {{/hasNext}}
         </div>
     </main>
