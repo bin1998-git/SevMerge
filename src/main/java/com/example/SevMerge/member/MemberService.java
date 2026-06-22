@@ -149,6 +149,7 @@ public class MemberService {
                     .githubUrl(request.getGithubUrl())
                     .contactEmail(request.getEmail())   // 일반가입은 입력 이메일이 연락처
                     .speciality(request.getSpeciality() != null ? request.getSpeciality() : "")
+                    .expertGrade(Grade.NORMAL)
                     .build());
             log.info("전문가 신청 완료 - memberId={}", member.getId());
         }

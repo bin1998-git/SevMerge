@@ -1,6 +1,7 @@
 package com.example.SevMerge.member;
 
 import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.expertprofile.Grade;
 import lombok.*;
 
 public class MemberRequest {
@@ -27,6 +28,7 @@ public class MemberRequest {
         private String career;
         private String githubUrl;
         private String speciality;
+
     }
 
     @Data

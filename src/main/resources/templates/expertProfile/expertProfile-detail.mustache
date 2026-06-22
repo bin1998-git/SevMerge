@@ -12,7 +12,6 @@
     .profile-name { font-size: 22px; font-weight: 900; color: #1c1e26; }
     .cert-badge { font-size: 11px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
 
-    /* 찜 버튼 스타일 */
     .wish-btn { border: none; background: none; cursor: pointer; font-size: 22px; transition: transform 0.2s; outline: none; }
     .wish-btn:hover { transform: scale(1.1); }
 
@@ -55,15 +54,6 @@
     <div class="detail-inner">
         <div class="profile-header">
             <div class="profile-top">
-                <div class="profile-avatar">👨‍💻</div>
-                <div class="profile-info">
-                    <div class="profile-name">
-                        {{expertProfile.memberName}}
-                        {{#expertProfile.isCertified}}<span class="cert-badge">⭐ 인증 전문가</span>{{/expertProfile.isCertified}}
-
-                        <button id="wishBtn" type="button" class="wish-btn" data-expert-id="{{expertProfile.memberId}}">
-                            <span id="wishIcon">{{#isWished}}♥{{/isWished}}{{^isWished}}♡{{/isWished}}</span>
-                        </button>
                 <div class="profile-top-row">
                     <div class="profile-avatar">👨‍💻</div>
                     <div class="profile-name-row">
@@ -85,6 +75,9 @@
                                 </div>
                             {{/expertProfile.master}}
                         </div>
+                        <button id="wishBtn" type="button" class="wish-btn" data-expert-id="{{expertProfile.memberId}}">
+                            <span id="wishIcon">{{#isWished}}♥{{/isWished}}{{^isWished}}♡{{/isWished}}</span>
+                        </button>
                     </div>
                 </div>
                 <div class="profile-career">{{expertProfile.career}}</div>
@@ -162,22 +155,14 @@
 <script>
     document.getElementById('wishBtn').addEventListener('click', function(e) {
         e.preventDefault();
-
         const expertId = this.getAttribute('data-expert-id');
         const icon = document.getElementById('wishIcon');
-
-        // 서버에 찜하기 요청
-        fetch(`/experts/wish/${expertId}`, {
-            method: 'POST'
-        })
+        fetch(`/experts/wish/${expertId}`, { method: 'POST' })
         .then(response => {
-            // 401 에러는 무조건 로그인 페이지로
             if (response.status === 401) {
                 alert("로그인이 필요한 기능입니다.");
                 window.location.href = "/login";
-            }
-            // 200 OK 인 경우에만 하트 토글 (색깔 변경)
-            else if (response.ok) {
+            } else if (response.ok) {
                 icon.innerText = (icon.innerText === '♥') ? '♡' : '♥';
             } else {
                 alert("처리 중 오류가 발생했습니다.");

@@ -236,6 +236,7 @@ public class MemberController {
                             );
                             project.setHasReview(hasReview);
                         }
+                        project.setReviewSkipped(projectService.isReviewSkipped(project.getId()));
                         return project;
                     })
                     .toList();

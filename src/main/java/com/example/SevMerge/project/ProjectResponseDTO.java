@@ -36,6 +36,7 @@ public class ProjectResponseDTO {
         private boolean isUrgent;
         private Timestamp createdAt;
         private boolean isOpen;
+        private boolean reviewSkipped;
 
         public ListDTO(Project project) {
             this.id = project.getId();
