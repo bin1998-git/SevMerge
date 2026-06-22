@@ -52,6 +52,9 @@ public class ExpertProfile {
     @Column(nullable = false)
     private boolean isCertified;
 
+    @Transient
+    private boolean bookmarked; // 북마크 확인여부
+
     // 전문가 등급 측정을 위한 편의 메서드
     public Grade checkGrade(Double avgRating, Integer reviewCount ,Integer doneCount, Double globalAvg) {
 

@@ -1,5 +1,6 @@
 package com.example.SevMerge.expertprofile;
 
+import com.example.SevMerge.bookmark.BookMarkService;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertwish.ExpertWishRepository;
@@ -48,7 +49,7 @@ public class ExpertProfileViewController {
     private final ExpertWishRepository expertWishRepository;
     private final ExpertWishService expertWishService;
     private final MemberService memberService;
-
+    private final BookMarkService bookMarkService;
     /**
      * 전문가 목록 페이지
      * GET /experts
@@ -56,12 +57,18 @@ public class ExpertProfileViewController {
      */
     @GetMapping
     public String list(HttpSession session ,Model model) {
-
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        model.addAttribute("expertProfiles", expertProfileService.getAll());
+        List<ExpertProfileResponse> profiles = expertProfileService.getAll(); // 전체 전문가 가져오기
+        if (sessionUser != null) {
+            for (ExpertProfileResponse profile : profiles) { // 전체 전문가 리스트
+                // 의뢰인이 전문가 북마크 했는지 확인 여부
+                boolean currentStatus = bookMarkService.isBookmarked(sessionUser.getId(), profile.getId());
+                profile.setBookmarked(currentStatus); // 체크했으면 true 로 셋팅
+            }
+        }
+        model.addAttribute("expertProfiles", profiles); // true 셋팅된 북마크 리스트
         model.addAttribute("doneProject",projectService.getDoneProjectsCount());
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
-
         return "expertProfile/expertProfile-list";
     }
 
