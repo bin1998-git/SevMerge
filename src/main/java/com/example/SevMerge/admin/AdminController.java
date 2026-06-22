@@ -6,10 +6,7 @@ import com.example.SevMerge.Report.ReportService;
 import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
-import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.MemberRepository;
-import com.example.SevMerge.member.MemberService;
-import com.example.SevMerge.member.Role;
+import com.example.SevMerge.member.*;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +28,6 @@ import java.util.stream.IntStream;
 public class AdminController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final ProjectService projectService;
     private final BoardService boardService;
     private final BoardRepository boardRepository;
