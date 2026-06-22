@@ -349,23 +349,40 @@ public class MemberController {
     public String adminMembers(@RequestParam(value = "keyword", required = false) String keyword,
                                @RequestParam(value = "sort", defaultValue = "desc") String sort,
                                @RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "roleFilter", defaultValue = "ALL") String roleFilter, // 1. 권한 파라미터 추가
                                Model model) {
         Sort.Direction direction = "asc".equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, 10, Sort.by(direction, "createdAt"));
-        Page<MemberResponse> memberPage = memberService.searchMembers(keyword, pageable);
-        List<MemberResponse> content = new ArrayList<>(memberPage.getContent());
 
+        // 2. 권한 필터(ALL 여부)를 포함하여 회원 목록 페이징 조회
+        Page<MemberResponse> memberPage;
+        if ("ALL".equals(roleFilter)) {
+            memberPage = memberService.searchMembersOrderByCreatedAt(keyword, pageable);
+        } else {
+            memberPage = memberService.searchMembersByRoleAndKeyword(roleFilter, keyword, pageable);
+        }
+
+        List<MemberResponse> content = memberPage.getContent();
 
         int startNo = (page * 10) + 1;
         for (int i = 0; i < content.size(); i++) {
             content.get(i).setVirtualNo(startNo + i);
         }
 
+        // HTML에 적용된 템플릿 변수명이 stats일 수 있으므로 둘 다 넘겨주거나 맞춰주어야 합니다.
         model.addAttribute("members", content);
+        model.addAttribute("stats", content); // HTML 반복문 이름이 stats면 이 줄이 필요합니다.
+
         model.addAttribute("keyword", keyword != null ? keyword : "");
         model.addAttribute("isAdmin", true);
         model.addAttribute("sort", sort);
         model.addAttribute("isNewSort","asc".equalsIgnoreCase(sort));
+
+        // 3. Mustache select 태그의 selected 유지를 위한 상태값 전달
+        model.addAttribute("isRoleAll", "ALL".equals(roleFilter));
+        model.addAttribute("isRoleClient", "CLIENT".equals(roleFilter));
+        model.addAttribute("isRoleExpert", "EXPERT".equals(roleFilter));
+        model.addAttribute("isRoleAdmin", "ADMIN".equals(roleFilter));
 
         int currentPage = memberPage.getNumber();
         int totalPages = memberPage.getTotalPages();
@@ -380,7 +397,7 @@ public class MemberController {
         model.addAttribute("nextPage", currentPage + 1);
 
         return "admin/admin-member";
-    }
+        }
 
     // 관리자 - 회원 삭제
     @PostMapping("/admin/members/{id}/delete")
