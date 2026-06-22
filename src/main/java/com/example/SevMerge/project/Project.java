@@ -72,6 +72,10 @@ public class Project {
     @CreationTimestamp
     private Timestamp createdAt;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Builder.Default
+    private boolean reviewSkipped = false;
+
 
 
     // DB에 저장되기 직전에 자동으로 실행되는 메서드

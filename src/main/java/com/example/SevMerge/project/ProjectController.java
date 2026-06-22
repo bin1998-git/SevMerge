@@ -271,4 +271,12 @@ public class ProjectController {
         return "redirect:/admin/projects";
 
     }
+
+    @PostMapping("/projects/{id}/skip-review")
+    public String skipReview(@PathVariable Long id, HttpSession session) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember == null) return "redirect:/login";
+        projectService.skipReview(id, loginMember);
+        return "redirect:/my-pages?tab=projects";
+    }
 }

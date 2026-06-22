@@ -318,4 +318,18 @@ public class ProjectService {
         }
         return trendData;
     }
+
+    @Transactional(readOnly = true)
+    public boolean isReviewSkipped(Long projectId) {
+        return projectRepository.findById(projectId)
+                .map(Project::isReviewSkipped)
+                .orElse(false);
+    }
+
+    @Transactional
+    public void skipReview(Long projectId, Member member) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다."));
+        project.setReviewSkipped(true);
+    }
 }
