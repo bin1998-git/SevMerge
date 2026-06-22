@@ -140,6 +140,7 @@ public class ProjectController {
 
         // 데이터 조회
         ProjectResponseDTO.DetailDTO project = projectService.findProjectById(id);
+        log.info("categoryName 확인: {}", project.getCategoryName()); // ← 추가
         model.addAttribute("project", project);
         model.addAttribute("isWeb", "WEB".equals(project.getCategoryName()));
         model.addAttribute("isApp", "APP".equals(project.getCategoryName()));

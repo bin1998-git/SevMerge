@@ -62,6 +62,7 @@ public class ProjectRequestDTO {
     @Data
     public static class UpdateDTO {
         private String title;
+        private String category;
         private String description;
         private Integer budgetMin;
         private Integer budgetMax;

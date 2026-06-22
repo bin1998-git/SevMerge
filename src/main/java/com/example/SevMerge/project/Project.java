@@ -98,6 +98,7 @@ public class Project {
         if (requestDTO.getIsPrivate() != null) {
             this.isPrivate = requestDTO.getIsPrivate();
         }
+        if (requestDTO.getCategory() != null) this.category = Category.valueOf(requestDTO.getCategory());
         
     }
 
