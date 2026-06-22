@@ -31,7 +31,7 @@ public class ProjectController {
     private final ReviewService reviewService;
 
     // 프로젝트 등록 폼
-    @GetMapping("/projects/save-form")
+    @GetMapping("/projects/save")
     public String saveForm() {
         log.info("project 등록폼 요청");
         return "project/project-save";
