@@ -295,6 +295,17 @@
             <input type="text" name="keyword" class="search-input" placeholder="프로젝트명으로 검색..." value="{{keyword}}"/>
 
             <button type="submit" class="search-btn">검색</button>
+            <select name="statusFilter" class="filter-select" onchange="this.form.submit()"
+                    style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; color: #4a5568; background-color: white; cursor: pointer; font-size: 14px;">
+                <option value="ALL" {{#isStatusAll}}selected{{/isStatusAll}}>전체상태</option>
+                <option value="OPEN" {{#isStatusOpen}}selected{{/isStatusOpen}}>모집중</option>
+                <option value="IN_PROGRESS" {{#isStatusInProgress}}selected{{/isStatusInProgress}}>진행중</option>
+                <option value="COMPLETED" {{#isStatusCompleted}}selected{{/isStatusCompleted}}>완료됨</option>
+                <option value="DONE" {{#isStatusDone}}selected{{/isStatusDone}}>종료</option>
+                <option value="CLOSED" {{#isStatusClosed}}selected{{/isStatusClosed}}>마감됨</option>
+                <option value="CANCELLED" {{#isStatusCancelled}}selected{{/isStatusCancelled}}>취소됨</option>
+                <option value="DRAFT" {{#isStatusDraft}}selected{{/isStatusDraft}}>임시저장</option>
+            </select>
         </form>
 
         <div class="admin-table-wrap">

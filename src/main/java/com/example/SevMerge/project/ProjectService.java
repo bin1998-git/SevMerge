@@ -319,6 +319,23 @@ public class ProjectService {
         return trendData;
     }
 
+    // 관리자 전용 >> 필터로 상태별 목록 조회하기
+    public List<ProjectResponseDTO.ListDTO> getAdminProjectsByStatusAndKeyword(String statusFilter, String keyword) {
+        try {
+            List<Project> projects;
+
+            if ("ALL".equalsIgnoreCase(statusFilter)) {
+                projects = projectRepository.findAdminProjectsByKeyword(keyword);
+            } else {
+                ProjectStatus status = ProjectStatus.valueOf(statusFilter.toUpperCase());
+                projects = projectRepository.findAdminProjectsByStatusAndKeyword(status, keyword);
+            }
+            return projects.stream().map(ProjectResponseDTO.ListDTO::new).toList();
+        } catch (BadRequestException e) {
+            return new ArrayList<>();
+        }
+    }
+
     @Transactional(readOnly = true)
     public boolean isReviewSkipped(Long projectId) {
         return projectRepository.findById(projectId)
