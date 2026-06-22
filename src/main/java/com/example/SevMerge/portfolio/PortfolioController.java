@@ -30,19 +30,26 @@ public class PortfolioController {
                                  Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page) {
 
         Member member = (Member) session.getAttribute(Define.SESSION_USER);
-
-        Page<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId,page);
-
-        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId); // 멤버 아이디
+        Page<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId, page);
+        ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId);
 
         model.addAttribute("portfolios", portfolios);
         model.addAttribute("portfolioCount", portfolios.getTotalElements());
         model.addAttribute("expertProfile", expertProfile);
-        model.addAttribute("totalPages",portfolios.getTotalPages());
-        model.addAttribute("currentPage",page);
-        model.addAttribute("hasPrev",page > 1 ? page - 1 : null );
-        model.addAttribute("hasNext", page < portfolios.getTotalPages() ? page + 1 : null );
         model.addAttribute("isOwner", member != null && member.getId().equals(expertId));
+
+        // 💡 머스태치 문법에 맞춰서 심플하게 가공하여 전달합니다.
+        int totalPages = portfolios.getTotalPages();
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        // 이전 페이지 번호 계산 (첫 페이지가 아니면 page - 1)
+        model.addAttribute("hasPrev", page > 1);
+        model.addAttribute("prevPage", page - 1);
+
+        // 다음 페이지 번호 계산 (마지막 페이지가 아니면 page + 1)
+        model.addAttribute("hasNext", page < totalPages);
+        model.addAttribute("nextPage", page + 1);
 
         return "portfolio/portfolio-list";
     }

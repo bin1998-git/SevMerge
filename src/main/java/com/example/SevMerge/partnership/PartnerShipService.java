@@ -67,6 +67,18 @@ public class PartnerShipService {
 //        deleteRejected();
     }
 
+    @Transactional
+    public void delete(Long id) {
+        PartnerShip partnerShipEntity = partnerShipRepository.findById(id).orElseThrow(() ->
+                new BadRequestException("해당하는 제휴가 없습니다.")
+        );
+        if(!partnerShipEntity.getStatus().equals(PartnerShipStatus.REJECTED)) {
+            throw new BadRequestException("거절된 제휴만 삭제가능 합니다.");
+        }
+        partnerShipRepository.delete(partnerShipEntity);
+    }
+
+
 //    @Scheduled(fixedDelay = 1000)
 //    @Transactional
 //    public void deleteRejected() {

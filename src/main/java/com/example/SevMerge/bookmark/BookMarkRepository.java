@@ -22,6 +22,7 @@ public interface BookMarkRepository extends JpaRepository<BookMark, Long> {
 
 
     // 해당 유저가 전문가를 북마크 했는지 확인하는 메서드
+    // 내 아이디로 전문가 마킹 마킹 완료한 것만 BookMark 객체 반환 즉 DB에 존재한다
     @Query("""
                 SELECT b FROM BookMark b
                          JOIN FETCH b.expertProfile e
