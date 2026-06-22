@@ -145,6 +145,7 @@ public class ExpertProfileViewController {
         model.addAttribute("reviews",reviewService.findMyReviews(sessionUser.getId()));
         Double avg = reviewService.avgRating(sessionUser.getId());
         model.addAttribute("avgRating", avg != null ? String.format("%.1f", avg) : "0.0");
+        model.addAttribute("wishCount", expertWishRepository.countByExpertId(sessionUser.getId()));
         model.addAttribute("isAll",   category == null && (keyword == null || keyword.isBlank()));
         model.addAttribute("isWeb",   "WEB".equals(category));
         model.addAttribute("isApp",   "APP".equals(category));

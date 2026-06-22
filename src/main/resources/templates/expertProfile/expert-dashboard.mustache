@@ -53,7 +53,7 @@
         border-radius: 20px; padding: 2px 10px;
         width: fit-content; margin: 0 auto 10px; font-weight: 600;
     }
-    .expert-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .expert-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
     .expert-stat  { background: #f8f9fc; border-radius: 8px; padding: 7px 4px; text-align: center; }
     .expert-stat-val { display: block; font-size: 16px; font-weight: 900; color: #2563eb; margin-bottom: 1px; }
     .expert-stat-lbl { font-size: 9px; color: #9ca3af; font-weight: 500; }
@@ -281,6 +281,10 @@
                             <div class="expert-stat">
                                 <span class="expert-stat-val">{{avgRating}}</span>
                                 <span class="expert-stat-lbl">평균 평점</span>
+                            </div>
+                            <div class="expert-stat">
+                                <span class="expert-stat-val">{{wishCount}}</span>
+                                <span class="expert-stat-lbl">받은 찜</span>
                             </div>
                         </div>
                     </div>
