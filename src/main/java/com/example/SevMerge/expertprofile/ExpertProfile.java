@@ -52,6 +52,10 @@ public class ExpertProfile {
     @Column(nullable = false)
     private boolean isCertified;
 
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    private Grade expertGrade;
+
     // 전문가 등급 측정을 위한 편의 메서드
     public Grade checkGrade(Double avgRating, Integer reviewCount ,Integer doneCount, Double globalAvg) {
 
