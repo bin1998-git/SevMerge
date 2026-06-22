@@ -1,0 +1,235 @@
+{{> layout/header}}
+
+<style>
+    .page-section { padding: 48px 28px 80px; }
+    .page-inner { max-width: 640px; margin: 0 auto; }
+
+    /* 광고 효과 소개 */
+    .why-ad-section { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-radius: 20px; padding: 36px 32px; margin-bottom: 28px; text-align: center; }
+    .why-ad-eyebrow { font-size: 11px; font-weight: 800; color: #92400e; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    .why-ad-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 8px; }
+    .why-ad-desc { font-size: 13px; color: #78716c; margin-bottom: 24px; line-height: 1.6; }
+    .why-ad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .why-ad-item { background: #fff; border-radius: 14px; padding: 18px 12px; }
+    .why-ad-icon { font-size: 24px; margin-bottom: 8px; }
+    .why-ad-item-title { font-size: 13px; font-weight: 800; color: #1c1e26; margin-bottom: 4px; }
+    .why-ad-item-desc { font-size: 11px; color: #9ca3af; line-height: 1.5; }
+
+    .balance-card { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+    .balance-label { font-size: 13px; font-weight: 600; color: #3b82f6; }
+    .balance-amount { font-size: 26px; font-weight: 900; color: #1d4ed8; }
+    .charge-link { font-size: 12px; font-weight: 700; color: #2563eb; text-decoration: underline; margin-top: 6px; display: inline-block; }
+
+    .form-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; padding: 32px; }
+    .form-title { font-size: 20px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
+    .form-sub { font-size: 13px; color: #9ca3af; margin-bottom: 24px; }
+
+    .plan-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .plan-option { border: 1.5px solid #e2e5ef; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all .15s; }
+    .plan-option:hover { border-color: #fbbf24; }
+    .plan-option.selected { border-color: #f59e0b; background: #fffbeb; }
+    .plan-option input { display: none; }
+    .plan-row { display: flex; justify-content: space-between; align-items: center; }
+    .plan-name { font-size: 15px; font-weight: 800; color: #1c1e26; }
+    .plan-desc { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+    .plan-price { font-size: 18px; font-weight: 900; color: #d97706; }
+
+    .carousel-notice { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; padding: 12px 14px; font-size: 12px; color: #166534; line-height: 1.6; margin-bottom: 22px; display: none; }
+    .carousel-notice.show { display: block; }
+
+    .form-group { margin-bottom: 22px; }
+    .form-label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 7px; }
+    .form-label .opt { color: #c4c9d9; font-weight: 500; margin-left: 4px; }
+    .form-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 70px; }
+    .form-textarea:focus { border-color: #f59e0b; }
+    .char-count { font-size: 11px; color: #c4c9d9; text-align: right; margin-top: 4px; }
+
+    .img-upload-row { display: flex; align-items: flex-start; gap: 14px; }
+    .img-preview { width: 64px; height: 64px; border-radius: 12px; background: #f8f9fc; border: 1.5px dashed #e2e5ef; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #c4c9d9; flex-shrink: 0; }
+    .img-upload-right { display: flex; flex-direction: column; gap: 6px; }
+    .img-upload-btn { padding: 9px 18px; background: #fff; border: 1.5px solid #f59e0b; color: #d97706; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .img-spec-note { font-size: 11px; color: #9ca3af; line-height: 1.6; }
+
+    .submit-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+    .submit-btn:hover { opacity: .92; }
+
+    .error-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #ef4444; font-weight: 600; margin-bottom: 20px; }
+</style>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="why-ad-section">
+            <div class="why-ad-eyebrow">📣 IcodeU AD</div>
+            <div class="why-ad-title">의뢰인이 가장 먼저 보는 자리</div>
+            <p class="why-ad-desc">신규 전문가는 후기가 없어 노출이 어려워요.<br>광고로 빠르게 노출을 늘리고 첫 문의를 받아보세요.</p>
+            <div class="why-ad-grid">
+                <div class="why-ad-item">
+                    <div class="why-ad-icon">🚀</div>
+                    <div class="why-ad-item-title">최상단 노출</div>
+                    <div class="why-ad-item-desc">메인 화면 가장 눈에 띄는 위치</div>
+                </div>
+                <div class="why-ad-item">
+                    <div class="why-ad-icon">✍️</div>
+                    <div class="why-ad-item-title">직접 꾸미기</div>
+                    <div class="why-ad-item-desc">홍보 이미지·문구 자유 설정</div>
+                </div>
+                <div class="why-ad-item">
+                    <div class="why-ad-icon">💳</div>
+                    <div class="why-ad-item-title">합리적인 비용</div>
+                    <div class="why-ad-item-desc">보유 포인트로 간편 결제</div>
+                </div>
+            </div>
+        </div>
+
+        {{#errorMsg}}
+            <div class="error-box">
+                {{errorMsg}}
+                <br>
+                <a href="/charge/form" class="charge-link">포인트 충전하러 가기 →</a>
+            </div>
+        {{/errorMsg}}
+
+        <div class="balance-card">
+            <div>
+                <div class="balance-label">보유 포인트</div>
+                <div class="balance-amount">{{balance}}P</div>
+                <a href="/charge/form" class="charge-link">포인트 충전하기 →</a>
+            </div>
+            <span style="font-size:32px;">📣</span>
+        </div>
+
+        <div class="form-card">
+            <h1 class="form-title">광고 슬롯 구매</h1>
+            <p class="form-sub">노출 위치를 선택하고, 나만의 광고를 만들어보세요.</p>
+
+            <form action="/advertisements/purchase" method="POST" id="adForm" enctype="multipart/form-data">
+
+                <div class="plan-list" id="planList">
+                    {{#placements}}
+                        <label class="plan-option" data-price="{{price}}">
+                            <input type="radio" name="placement" value="{{name}}" required/>
+                            <div class="plan-row">
+                                <div>
+                                    <div class="plan-name">{{label}}</div>
+                                    <div class="plan-desc">{{durationDays}}일간 노출</div>
+                                </div>
+                                <div class="plan-price">{{price}}P</div>
+                            </div>
+                        </label>
+                    {{/placements}}
+                </div>
+
+                <!-- 전문가 캐러셀 선택 시 안내 -->
+                <div class="carousel-notice" id="carouselNotice">
+                    ℹ️ <strong>전문가 캐러셀</strong>은 프로젝트 목록 사이에 썸네일 이미지와 AD 뱃지만 표시돼요.<br>
+                    홍보 문구는 <strong>메인 배너</strong>에서만 노출됩니다.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">광고 배너 이미지 <span class="opt">(선택, 미입력 시 프로필 사진 사용)</span></label>
+                    <div class="img-upload-row">
+                        <div class="img-preview" id="imgPreview">📷</div>
+                        <div class="img-upload-right">
+                            <input type="file" name="bannerImageFile" id="bannerImageFile" accept="image/*" style="display:none;" onchange="previewBannerImage(this)"/>
+                            <button type="button" class="img-upload-btn" onclick="document.getElementById('bannerImageFile').click()">이미지 선택</button>
+                            <p class="img-spec-note">
+                                📐 권장 규격: <strong>가로 600px × 세로 400px</strong> (3:2 비율)<br>
+                                규격이 다르면 이미지가 잘리거나 늘어날 수 있어요.<br>
+                                최대 10MB / JPG, PNG 권장
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="msgGroup">
+                    <label class="form-label">홍보 문구 <span class="opt">(선택, 최대 40자 · 메인 배너에만 노출)</span></label>
+                    <textarea name="customMessage" id="customMessage" class="form-textarea" maxlength="40" placeholder="예) 지금 상담 신청하면 견적서 무료 제공!"></textarea>
+                    <div class="char-count"><span id="msgCharCount">0</span>/40</div>
+                </div>
+
+                <button type="submit" class="submit-btn">광고 신청하기</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function updateFormByPlacement() {
+        const checked = document.querySelector('input[name="placement"]:checked');
+        const isCarousel = checked && checked.value === 'EXPERT_CAROUSEL';
+        document.getElementById('msgGroup').style.display = isCarousel ? 'none' : 'block';
+        document.getElementById('carouselNotice').classList.toggle('show', isCarousel);
+    }
+
+    document.querySelectorAll('.plan-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.plan-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+            updateFormByPlacement();
+        });
+    });
+
+    function previewBannerImage(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        if (file.size > 10 * 1024 * 1024) {
+            alert('이미지 크기는 10MB 이하로 업로드해 주세요.');
+            input.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('imgPreview');
+            preview.style.backgroundImage = `url('${e.target.result}')`;
+            preview.textContent = '';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    document.getElementById('customMessage').addEventListener('input', function() {
+        document.getElementById('msgCharCount').textContent = this.value.length;
+    });
+
+    document.getElementById('adForm').addEventListener('submit', function(e) {
+        const selected = document.querySelector('input[name="placement"]:checked');
+        if (!selected) {
+            e.preventDefault();
+            alert('광고 상품을 선택해 주세요.');
+            return;
+        }
+        const price = parseInt(selected.closest('.plan-option').dataset.price);
+        const balance = {{balance}};
+        if (price > balance) {
+            e.preventDefault();
+            if (confirm('잔액이 부족합니다. 포인트를 충전하러 가시겠습니까?')) {
+                window.location.href = '/charge/form';
+            }
+            return;
+        }
+        if (!confirm(`${price.toLocaleString()}P를 사용해 광고를 신청하시겠습니까?`)) {
+            e.preventDefault();
+        }
+    });
+
+    // URL 파라미터로 상품 자동 선택 (radio value로 찾기)
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const preselect = params.get('placement');
+        if (!preselect) return;
+        const radio = document.querySelector(`input[name="placement"][value="${preselect}"]`);
+        if (radio) {
+            const label = radio.closest('.plan-option');
+            if (label) {
+                document.querySelectorAll('.plan-option').forEach(o => o.classList.remove('selected'));
+                label.classList.add('selected');
+                radio.checked = true;
+                updateFormByPlacement();
+            }
+        }
+    })();
+</script>
+
+{{> layout/footer}}
