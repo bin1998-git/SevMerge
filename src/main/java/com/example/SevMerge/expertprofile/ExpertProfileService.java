@@ -17,11 +17,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ExpertProfileService {
+
+    private static final Pattern URL_PATTERN =
+        Pattern.compile("^https?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+$", Pattern.CASE_INSENSITIVE);
+
+    private static String sanitizeUrl(String url) {
+        if (url == null || url.isBlank()) return null;
+        return URL_PATTERN.matcher(url.trim()).matches() ? url.trim() : null;
+    }
 
     private final ExpertProfileRepository expertProfileRepository;
     private final ReviewRepository reviewRepository;
@@ -47,7 +56,7 @@ public class ExpertProfileService {
                 .intro(req.getIntro())
                 .career(req.getCareer())
                 .speciality(req.getSpeciality())
-                .githubUrl(req.getGithubUrl())
+                .githubUrl(sanitizeUrl(req.getGithubUrl()))
                 .contactEmail(req.getContactEmail())
                 .isCertified(false)
                 .build();
@@ -116,7 +125,7 @@ public class ExpertProfileService {
         profile.setIntro(req.getIntro());
         profile.setCareer(req.getCareer());
         profile.setSpeciality(req.getSpeciality());
-        profile.setGithubUrl(req.getGithubUrl());
+        profile.setGithubUrl(sanitizeUrl(req.getGithubUrl()));
         profile.setContactEmail(req.getContactEmail());
 
         return ExpertProfileResponse.from(profile);
