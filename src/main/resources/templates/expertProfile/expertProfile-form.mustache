@@ -1,50 +1,378 @@
 {{> layout/header}}
 
 <style>
-    .edit-tab-header { background: #fff; border-bottom: 1px solid #eaecf4; }
-    .edit-tab-inner  { max-width: 760px; margin: 0 auto; padding: 0 28px; display: flex; align-items: flex-end; gap: 0; }
-    .edit-tab-title  { font-size: 15px; font-weight: 900; color: #1c1e26; padding: 20px 24px 0 0; margin-right: 8px; white-space: nowrap; align-self: center; }
-    .edit-tab        { padding: 18px 20px 16px; font-size: 14px; font-weight: 600; color: #9ca3af; border-bottom: 2.5px solid transparent; text-decoration: none; transition: color .15s, border-color .15s; white-space: nowrap; }
-    .edit-tab:hover  { color: #1c1e26; }
+    /* ── 탭 헤더 ── */
+    .edit-tab-header {
+        background: #fff;
+        border-bottom: 1.5px solid #eaecf4;
+        position: sticky;
+        top: 64px;
+        z-index: 90;
+    }
+    .edit-tab-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 28px;
+        display: flex;
+        align-items: flex-end;
+        gap: 0;
+    }
+    .edit-tab-title {
+        font-size: 14px;
+        font-weight: 900;
+        color: #1c1e26;
+        padding: 20px 20px 0 0;
+        margin-right: 4px;
+        white-space: nowrap;
+        align-self: center;
+        letter-spacing: -0.3px;
+    }
+    .edit-tab {
+        padding: 18px 18px 15px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 2.5px solid transparent;
+        text-decoration: none;
+        transition: color .15s, border-color .15s;
+        white-space: nowrap;
+    }
+    .edit-tab:hover  { color: #374151; }
     .edit-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
 
-    .save-section    { padding: 40px 28px 80px; }
-    .save-inner      { max-width: 760px; margin: 0 auto; }
-    .notice-box      { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #2563eb; font-weight: 500; margin-bottom: 28px; line-height: 1.7; }
-    .save-form       { display: flex; flex-direction: column; gap: 22px; }
-    .form-group      { display: flex; flex-direction: column; gap: 8px; }
-    .form-label      { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-label .req { color: #ef4444; margin-left: 2px; }
-    .form-input      { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-select     { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; cursor: pointer; }
-    .form-select:focus { border-color: #2563eb; }
-    .form-textarea   { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 180px; line-height: 1.7; transition: border-color .15s; }
-    .form-textarea:focus { border-color: #2563eb; }
-    .form-textarea::placeholder { color: #c4c9d9; }
-    .form-hint       { font-size: 12px; color: #9ca3af; }
-    .form-btns       { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-    .btn             { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary     { background: #2563eb; color: #fff; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-outline     { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
-    .btn-lg          { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+    /* ── 페이지 래퍼 ── */
+    .profile-page {
+        flex: 1;
+        background: #f5f6fa;
+        padding: 40px 28px 60px;
+    }
+    .profile-page-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
 
-    .stack-box  { background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; padding: 16px; display: none; }
-    .stack-box.visible { display: block; }
-    .stack-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    /* ── 메인 폼 카드 ── */
+    .form-card {
+        background: #fff;
+        border: 1.5px solid #eaecf4;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .form-card-header {
+        padding: 24px 28px 20px;
+        border-bottom: 1.5px solid #f1f3f9;
+    }
+    .form-card-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #1c1e26;
+        letter-spacing: -0.4px;
+        margin-bottom: 4px;
+    }
+    .form-card-sub {
+        font-size: 13px;
+        color: #9ca3af;
+        font-weight: 400;
+    }
+    .form-card-body {
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+    }
+
+    /* ── 폼 필드 공통 ── */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .form-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        letter-spacing: -0.1px;
+    }
+    .form-label .req {
+        color: #ef4444;
+        font-size: 14px;
+        line-height: 1;
+    }
+    .form-label-badge {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        background: #f3f4f8;
+        border-radius: 5px;
+        padding: 2px 7px;
+        margin-left: 2px;
+    }
+
+    /* select */
+    .form-select-wrap {
+        position: relative;
+    }
+    .form-select-wrap::after {
+        content: '';
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 4.5px solid transparent;
+        border-right: 4.5px solid transparent;
+        border-top: 5.5px solid #9ca3af;
+        pointer-events: none;
+    }
+    .form-select {
+        width: 100%;
+        padding: 13px 44px 13px 16px;
+        background: #f8f9fc;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1c1e26;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        transition: border-color .15s, background .15s;
+    }
+    .form-select:focus {
+        border-color: #2563eb;
+        background: #fff;
+    }
+    .form-select option[value=""] { color: #c4c9d9; }
+
+    /* input */
+    .form-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .form-input-icon {
+        position: absolute;
+        left: 14px;
+        color: #c4c9d9;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        pointer-events: none;
+    }
+    .form-input {
+        width: 100%;
+        padding: 13px 16px 13px 42px;
+        background: #f8f9fc;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1c1e26;
+        outline: none;
+        transition: border-color .15s, background .15s;
+    }
+    .form-input:focus {
+        border-color: #2563eb;
+        background: #fff;
+    }
+    .form-input::placeholder { color: #c4c9d9; }
+
+    /* textarea */
+    .form-textarea {
+        width: 100%;
+        padding: 14px 16px;
+        background: #f8f9fc;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1c1e26;
+        outline: none;
+        resize: vertical;
+        min-height: 160px;
+        line-height: 1.75;
+        transition: border-color .15s, background .15s;
+    }
+    .form-textarea:focus {
+        border-color: #2563eb;
+        background: #fff;
+    }
+    .form-textarea::placeholder { color: #c4c9d9; }
+
+    /* hint */
+    .form-hint {
+        font-size: 12px;
+        color: #b0b8cc;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .form-hint::before {
+        content: '';
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23c4c9d9' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
+        background-size: cover;
+        flex-shrink: 0;
+    }
+
+    /* ── 구분선 ── */
+    .form-divider {
+        border: none;
+        border-top: 1.5px solid #f1f3f9;
+        margin: 2px 0;
+    }
+
+    /* ── 기술 스택 박스 ── */
+    .stack-section {
+        display: none;
+        flex-direction: column;
+        gap: 14px;
+        animation: stackFadeIn .2s ease;
+    }
+    .stack-section.visible { display: flex; }
+    @keyframes stackFadeIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .stack-box {
+        background: #f8f9fc;
+        border: 1.5px solid #e2e5ef;
+        border-radius: 10px;
+        padding: 18px 16px 14px;
+    }
+    .stack-box-label {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 12px;
+    }
+    .stack-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
     .stack-chip { display: flex; align-items: center; cursor: pointer; }
     .stack-chip input[type="checkbox"] { display: none; }
     .stack-chip-label {
-        padding: 6px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
-        border: 1.5px solid #e2e5ef; background: #fff; color: #6b7280;
-        cursor: pointer; transition: all .15s; user-select: none;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 600;
+        border: 1.5px solid #e2e5ef;
+        background: #fff;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all .15s;
+        user-select: none;
+        letter-spacing: -0.1px;
     }
-    .stack-chip input:checked + .stack-chip-label { background: #2563eb; color: #fff; border-color: #2563eb; }
-    .stack-chip-label:hover { border-color: #2563eb; color: #2563eb; }
-    .stack-preview { margin-top: 10px; font-size: 12px; color: #6b7280; min-height: 18px; }
-    /* ── FOOTER (exmain 스타일) ── */
+    .stack-chip input:checked + .stack-chip-label {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+        box-shadow: 0 2px 8px rgba(37,99,235,.25);
+    }
+    .stack-chip-label:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+        background: #eff6ff;
+    }
+    .stack-chip input:checked + .stack-chip-label:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        color: #fff;
+    }
+    .stack-preview {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #eaecf4;
+        font-size: 12.5px;
+        color: #6b7280;
+        min-height: 22px;
+        flex-wrap: wrap;
+    }
+    .stack-preview-label {
+        font-weight: 700;
+        color: #2563eb;
+        flex-shrink: 0;
+    }
+    .stack-empty-hint {
+        font-size: 12.5px;
+        color: #c4c9d9;
+    }
+
+    /* ── 폼 하단 버튼 영역 ── */
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 28px 26px;
+        border-top: 1.5px solid #f1f3f9;
+    }
+    .btn-cancel {
+        padding: 11px 24px;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff;
+        border: 1.5px solid #e2e5ef;
+        color: #6b7280;
+        cursor: pointer;
+        font-family: inherit;
+        text-decoration: none;
+        transition: border-color .15s, color .15s;
+        display: inline-flex;
+        align-items: center;
+    }
+    .btn-cancel:hover {
+        border-color: #9ca3af;
+        color: #374151;
+    }
+    .btn-submit {
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-size: 14.5px;
+        font-weight: 700;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background .15s, box-shadow .15s, transform .1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        letter-spacing: -0.2px;
+    }
+    .btn-submit:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 14px rgba(37,99,235,.35);
+    }
+    .btn-submit:active { transform: translateY(1px); }
+    .btn-submit-icon {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
+    /* ── FOOTER dark 오버라이드 ── */
     :root {
         --brand-blue:      #2D6BFF;
         --brand-blue-deep: #1846C9;
@@ -145,10 +473,19 @@
         color: rgba(255,255,255,.22);
     }
     .footer-copy {
-        font-family: 'JetBrains Mono', monospace;
         font-size: 11px;
         color: var(--brand-muted) !important;
         letter-spacing: .02em;
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 640px) {
+        .profile-page { padding: 24px 16px 48px; }
+        .form-card-body { padding: 20px 18px; }
+        .form-card-header { padding: 18px 18px 14px; }
+        .form-footer { padding: 16px 18px 20px; }
+        .edit-tab-inner { padding: 0 16px; }
+        .btn-submit { padding: 11px 22px; font-size: 14px; }
     }
 </style>
 
@@ -161,92 +498,161 @@
     </div>
 </div>
 
-<!-- 서버 데이터 전달용 (JS에서 data 속성으로 읽음, JS string literal에 Mustache 삽입 금지) -->
+<!-- 서버 데이터 전달용 (JS에서 data 속성으로 읽음) -->
 <div id="profileData"
      data-career="{{expertProfile.career}}"
      data-speciality="{{expertProfile.speciality}}"
+     data-github="{{#expertProfile.githubUrl}}{{expertProfile.githubUrl}}{{/expertProfile.githubUrl}}"
      style="display:none"></div>
 
-<section class="save-section">
-    <div class="save-inner">
+<!-- 페이지 본문 -->
+<div class="profile-page">
+    <div class="profile-page-inner">
 
-        <div class="notice-box">
-            인증 심사 안내<br>
-            제출된 프로필은 관리자 검토 후 승인됩니다. 승인까지 최대 3 영업일이 소요될 수 있습니다.
-        </div>
-
-        <form class="save-form" id="profileForm" action="/experts/my/form" method="POST">
-
-            <div class="form-group">
-                <label class="form-label">직종 / 전문 분야 <span class="req">*</span></label>
-                <select name="career" id="careerSelect" class="form-select">
-                    <option value="">선택하세요</option>
-                    <option value="풀스택">풀스택 개발자</option>
-                    <option value="백엔드">백엔드 개발자</option>
-                    <option value="프론트엔드">프론트엔드 개발자</option>
-                    <option value="앱개발">앱 개발자</option>
-                    <option value="UI/UX">UI/UX 디자이너</option>
-                    <option value="데이터">데이터 엔지니어</option>
-                    <option value="영상편집">영상 편집</option>
-                    <option value="기타">기타</option>
-                </select>
+        <!-- 폼 카드 -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="form-card-title">전문가 프로필 정보</div>
+                <div class="form-card-sub">직종과 기술 스택, 자기소개를 입력하면 클라이언트에게 노출됩니다.</div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">주요 기술 스택</label>
-                <div class="stack-box" id="stackBox">
-                    <div class="stack-grid" id="stackGrid"></div>
-                    <div class="stack-preview" id="stackPreview">기술 스택을 선택하세요.</div>
+            <form id="profileForm" action="/experts/my/form" method="POST">
+                <div class="form-card-body">
+
+                    <!-- 직종 / 전문 분야 -->
+                    <div class="form-group">
+                        <label class="form-label" for="careerSelect">
+                            직종 / 전문 분야
+                            <span class="req">*</span>
+                        </label>
+                        <div class="form-select-wrap">
+                            <select name="career" id="careerSelect" class="form-select">
+                                <option value="">직종을 선택하세요</option>
+                                <option value="풀스택">풀스택 개발자</option>
+                                <option value="백엔드">백엔드 개발자</option>
+                                <option value="프론트엔드">프론트엔드 개발자</option>
+                                <option value="앱개발">앱 개발자</option>
+                                <option value="UI/UX">UI/UX 디자이너</option>
+                                <option value="데이터">데이터 엔지니어</option>
+                                <option value="영상편집">영상 편집</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 기술 스택 (전체 나열) -->
+                    <div class="form-group" id="stackSection">
+                        <label class="form-label">
+                            주요 기술 스택
+                            <span class="form-label-badge">선택</span>
+                        </label>
+                        <div class="stack-box">
+                            <div class="stack-box-label">해당하는 기술을 모두 선택하세요</div>
+                            <div class="stack-grid" id="stackGrid"></div>
+                            <div class="stack-preview" id="stackPreview">
+                                <span class="stack-empty-hint">선택된 기술이 없습니다.</span>
+                            </div>
+                        </div>
+                        <input type="hidden" name="speciality" id="specialityInput" />
+                        <span class="form-hint">여러 기술을 중복 선택할 수 있습니다.</span>
+                    </div>
+
+                    <hr class="form-divider">
+
+                    <!-- 자기소개 -->
+                    <div class="form-group">
+                        <label class="form-label" for="introTextarea">
+                            자기소개
+                            <span class="req">*</span>
+                        </label>
+                        <textarea
+                            id="introTextarea"
+                            name="intro"
+                            class="form-textarea"
+                            placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 자유롭게 소개해주세요. (예: 5년차 백엔드 개발자로 ...)"
+                        >{{expertProfile.intro}}</textarea>
+                        <span class="form-hint">클라이언트가 가장 먼저 읽는 항목입니다. 구체적으로 작성할수록 수주 확률이 높아집니다.</span>
+                    </div>
+
+                    <!-- GitHub / 포트폴리오 URL -->
+                    <div class="form-group">
+                        <label class="form-label" for="githubInput">
+                            GitHub / 포트폴리오 URL
+                            <span class="form-label-badge">선택</span>
+                        </label>
+                        <div class="form-input-wrap">
+                            <svg class="form-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                            </svg>
+                            <input
+                                id="githubInput"
+                                type="url"
+                                name="githubUrl"
+                                class="form-input"
+                                placeholder="https://github.com/your-handle"
+                            />
+                        </div>
+                        <span class="form-hint">GitHub, Notion 포트폴리오, 개인 블로그 등 어떤 URL이든 입력 가능합니다.</span>
+                    </div>
+
+                </div><!-- /.form-card-body -->
+
+                <!-- 버튼 영역 -->
+                <div class="form-footer">
+                    <a href="/experts/dashboard" class="btn-cancel">취소</a>
+                    <button type="submit" class="btn-submit">
+                        <svg class="btn-submit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        {{#isUpdate}}수정 완료{{/isUpdate}}{{^isUpdate}}신청서 제출{{/isUpdate}}
+                    </button>
                 </div>
-                <input type="hidden" name="speciality" id="specialityInput" />
-                <span class="form-hint">직종 선택 후 해당 기술을 체크하세요.</span>
-            </div>
 
-            <div class="form-group">
-                <label class="form-label">자기소개 <span class="req">*</span></label>
-                <textarea name="intro" class="form-textarea"
-                          placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 소개해주세요.">{{expertProfile.intro}}</textarea>
-            </div>
+            </form>
+        </div><!-- /.form-card -->
 
-            <div class="form-group">
-                <label class="form-label">GitHub / 포트폴리오 URL</label>
-                <input type="url" name="githubUrl" class="form-input"
-                       value="{{expertProfile.githubUrl}}"
-                       placeholder="https://github.com/..." />
-                <span class="form-hint">GitHub, Notion, 개인 블로그 등 자유롭게 입력하세요.</span>
-            </div>
-
-            <div class="form-btns">
-                <a href="/experts/dashboard" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary btn-lg">
-                    {{#isUpdate}}수정 완료{{/isUpdate}}{{^isUpdate}}신청서 제출{{/isUpdate}}
-                </button>
-            </div>
-
-        </form>
-    </div>
-</section>
+    </div><!-- /.profile-page-inner -->
+</div><!-- /.profile-page -->
 
 <script>
 (function () {
-    var STACKS = {
-        '풀스택':    ['Java','Spring Boot','Node.js','React','Vue','TypeScript','Python','Docker','MySQL','MongoDB','PostgreSQL','AWS'],
-        '백엔드':    ['Java','Spring Boot','Node.js','Python','Django','FastAPI','Express','MySQL','PostgreSQL','Redis','Docker','AWS'],
-        '프론트엔드': ['React','Vue','Angular','TypeScript','Next.js','Nuxt.js','Tailwind CSS','SCSS','JavaScript','HTML/CSS','Webpack','Vite'],
-        '앱개발':    ['Flutter','React Native','Swift','Kotlin','Android','iOS','Firebase','Dart'],
-        'UI/UX':    ['Figma','Adobe XD','Sketch','Zeplin','Framer','Principle','Photoshop','Illustrator'],
-        '데이터':    ['Python','Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','R'],
-        '영상편집':  ['Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender'],
-        '기타':     ['WordPress','Shopify','Git','Linux','Nginx','Jenkins','Kubernetes','Figma']
-    };
+    var ALL_STACKS = [
+        'Java','Spring Boot','Python','Django','FastAPI','Node.js','Express',
+        'React','Vue','Angular','TypeScript','Next.js','Nuxt.js','JavaScript','HTML/CSS','Tailwind CSS','SCSS','Webpack','Vite',
+        'Flutter','React Native','Swift','Kotlin','Android','iOS','Dart',
+        'MySQL','PostgreSQL','MongoDB','Redis','Firebase','Docker','AWS',
+        'Figma','Adobe XD','Sketch','Zeplin','Photoshop','Illustrator',
+        'Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','R',
+        'Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender',
+        'Git','Linux','WordPress','Shopify','Nginx','Jenkins','Kubernetes'
+    ];
 
-    var careerSelect    = document.getElementById('careerSelect');
-    var stackBox        = document.getElementById('stackBox');
     var stackGrid       = document.getElementById('stackGrid');
     var stackPreview    = document.getElementById('stackPreview');
     var specialityInput = document.getElementById('specialityInput');
     var profileForm     = document.getElementById('profileForm');
     var profileData     = document.getElementById('profileData');
+    var githubInput     = document.getElementById('githubInput');
+    var careerSelect    = document.getElementById('careerSelect');
+
+    var savedCareer     = profileData ? profileData.getAttribute('data-career')     || '' : '';
+    var savedSpeciality = profileData ? profileData.getAttribute('data-speciality') || '' : '';
+    var savedGithub     = profileData ? profileData.getAttribute('data-github')     || '' : '';
+
+    // github URL: data 속성 → input (HTML attribute injection 방지)
+    if (githubInput && savedGithub) {
+        githubInput.value = savedGithub;
+    }
+
+    // career select 복원
+    if (careerSelect && savedCareer) {
+        careerSelect.value = savedCareer;
+    }
+
+    var preChecked = savedSpeciality
+        ? savedSpeciality.split(',').map(function (s) { return s.trim(); }).filter(Boolean)
+        : [];
 
     function getChecked() {
         return Array.from(stackGrid.querySelectorAll('input[type="checkbox"]:checked'))
@@ -256,60 +662,40 @@
     function syncHidden() {
         var checked = getChecked();
         specialityInput.value = checked.join(', ');
-        stackPreview.textContent = checked.length
-            ? '선택됨: ' + checked.join(', ')
-            : '기술 스택을 선택하세요.';
-    }
-
-    function renderStacks(career, preChecked) {
-        var list = STACKS[career] || [];
-        stackGrid.innerHTML = '';
-        if (!list.length) {
-            stackBox.classList.remove('visible');
-            syncHidden();
-            return;
+        if (checked.length) {
+            stackPreview.innerHTML =
+                '<span class="stack-preview-label">선택됨 ' + checked.length + '개</span> ' +
+                checked.join(', ');
+        } else {
+            stackPreview.innerHTML = '<span class="stack-empty-hint">선택된 기술이 없습니다.</span>';
         }
-        list.forEach(function (tech) {
-            var label = document.createElement('label');
-            label.className = 'stack-chip';
-
-            var cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.value = tech;
-            cb.checked = preChecked.indexOf(tech) !== -1;
-            cb.addEventListener('change', syncHidden);
-
-            var span = document.createElement('span');
-            span.className = 'stack-chip-label';
-            span.textContent = tech;
-
-            label.appendChild(cb);
-            label.appendChild(span);
-            stackGrid.appendChild(label);
-        });
-        stackBox.classList.add('visible');
-        syncHidden();
     }
 
-    careerSelect.addEventListener('change', function () {
-        renderStacks(this.value, []);
+    // 전체 스택 항상 표시
+    ALL_STACKS.forEach(function (tech) {
+        var labelEl = document.createElement('label');
+        labelEl.className = 'stack-chip';
+
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = tech;
+        cb.checked = preChecked.indexOf(tech) !== -1;
+        cb.addEventListener('change', syncHidden);
+
+        var span = document.createElement('span');
+        span.className = 'stack-chip-label';
+        span.textContent = tech;
+
+        labelEl.appendChild(cb);
+        labelEl.appendChild(span);
+        stackGrid.appendChild(labelEl);
     });
+
+    syncHidden();
 
     profileForm.addEventListener('submit', function () {
         specialityInput.value = getChecked().join(', ');
     });
-
-    // 수정 모드: data 속성에서 서버 값 읽어 복원 (JS string literal에 Mustache 삽입 불가)
-    var savedCareer    = profileData ? profileData.getAttribute('data-career')    || '' : '';
-    var savedSpeciality = profileData ? profileData.getAttribute('data-speciality') || '' : '';
-
-    if (savedCareer) {
-        careerSelect.value = savedCareer;
-        var preChecked = savedSpeciality
-            ? savedSpeciality.split(',').map(function (s) { return s.trim(); }).filter(Boolean)
-            : [];
-        renderStacks(savedCareer, preChecked);
-    }
 }());
 </script>
 
