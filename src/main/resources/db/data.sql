@@ -462,4 +462,22 @@ VALUES
 INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);
 INSERT INTO book_mark_tb (expert_id, member_id) VALUES (1, 1);
 
+-- 제휴문의 데이터
 
+-- 1. 첫 번째 제휴 문의 (대기 상태)
+INSERT INTO partner_ship_tb
+(company_name, manager_name, email, partner_file_url, content, status, created_at, deleted_at)
+VALUES
+    ('테크이노베이션', '김철수', 'chulsoo@techinn.com', '/files/partnership/proposal_tech_2026.pdf', '인공지능 매칭 시스템 제휴를 제안합니다.', 'PENDING', NOW(), NULL);
+
+-- 2. 두 번째 제휴 문의 (승인 상태)
+INSERT INTO partner_ship_tb
+(company_name, manager_name, email, partner_file_url, content, status, created_at, deleted_at)
+VALUES
+    ('글로벌네트웍스', '이영희', 'younghee@globalnet.co.kr', '/files/partnership/company_profile.docx', '전문가 풀(Pool) 공유 및 마케팅 협업 문의입니다.', 'APPROVED', NOW(), NULL);
+
+-- 3. 세 번째 제휴 문의
+INSERT INTO partner_ship_tb
+(company_name, manager_name, email, partner_file_url, content, status, created_at, deleted_at)
+VALUES
+    ('스패머컴퍼니', '박배두', 'badguy@spambot.com', '/files/partnership/ad_flyer.png', '단순 광고성 제휴 제안서입니다.', 'REJECTED', NOW(), DATE_ADD(NOW(), INTERVAL 10 SECOND));

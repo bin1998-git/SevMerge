@@ -27,6 +27,7 @@
     color: inherit;
     display: block;
     transition: transform .15s, box-shadow .2s;
+    position: relative;
 }
 .expert-card:hover {
     transform: translateY(-3px);
@@ -60,6 +61,53 @@
  .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
  .page-btn:hover { border-color: #2563eb; color: #2563eb; }
  .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+
+    /* 🔖 책갈피 버튼 라운드 디자인 */
+    .bookmark-btn {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #fff;
+        border: 1.5px solid #e2e5ef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.2s ease;
+    }
+
+    /* 마우스 호버 시 효과 */
+    .bookmark-btn:hover {
+        transform: scale(1.1);
+        border-color: #2563eb;
+        background: #f0f4ff;
+    }
+
+    /* 내부 SVG 책갈피 아이콘 기본 (빈 모양) */
+    .bookmark-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: none; /* 속을 비워둠 */
+        stroke: #9ca3af; /* 회색 테두리 */
+        stroke-width: 2;
+        transition: all 0.2s ease;
+    }
+
+    /* 북마크가 활성화(true) 되었을 때 스타일 */
+    .bookmark-btn.active {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+
+    /* 활성화 상태일 때 책갈피 속을 파란색으로 꽉 채움 */
+    .bookmark-btn.active svg {
+        fill: #2563eb;
+        stroke: #2563eb;
+    }
 </style>
 
 <div class="page-header">
@@ -119,9 +167,10 @@
                     </div>
                     <div class="expert-bottom">
                         <span class="expert-stat">완료 {{doneProject}}건</span>
-                        <button class="bookmark-btn" onclick="toggleBookmark(event, {{id}}, this)">
-                            {{#bookmarked}}⭐{{/bookmarked}}
-                            {{^bookmarked}}☆{{/bookmarked}}
+                        <button class="bookmark-btn {{#bookmarked}}active{{/bookmarked}}" onclick="toggleBookmark(event, {{id}}, this)">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                            </svg>
                         </button>
                     </div>
                 </a>
@@ -146,8 +195,7 @@
     function toggleBookmark(event, expertId, btn) {
         event.preventDefault();
         event.stopPropagation();
-        console.log("완성된 요청 주소:", `/bookmarks/toggle/${expertId}`);
-        // fetch 옵션에 credentials: 'include'를 추가합니다.
+
         fetch(`/bookmarks/toggle/${expertId}`, {
             method: 'POST',
             credentials: 'include'
@@ -160,7 +208,12 @@
                     return res.json();
                 })
                 .then(data => {
-                    btn.textContent = data.bookmarked ? '⭐' : '☆';
+                    // 💡 서버에서 온 북마크 유무(true/false)에 따라 active 클래스 토글!
+                    if (data.bookmarked) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
                 })
                 .catch(err => console.error(err));
     }

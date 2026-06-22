@@ -96,11 +96,13 @@
         {{/portfolios}}
 
         <div class="paging">
-            {{#paging}}
-            {{#hasPrev}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
-            {{#pageList}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>{{/pageList}}
-            {{#hasNext}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
-            {{/paging}}
+            {{#hasPrev}}
+                <a href="/portfolios?expertId={{expertProfile.id}}&page={{prevPage}}" class="page-btn">이전</a>
+            {{/hasPrev}}
+            <span class="page-btn active">{{currentPage}} / {{totalPages}}</span>
+            {{#hasNext}}
+                <a href="/portfolios?expertId={{expertProfile.id}}&page={{nextPage}}" class="page-btn">다음</a>
+            {{/hasNext}}
         </div>
 
     </div>

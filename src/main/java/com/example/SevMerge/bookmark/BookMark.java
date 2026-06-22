@@ -32,11 +32,6 @@ public class BookMark {
     @JoinColumn(name = "member_id")
     private Member member; // 나
 
-    boolean bookmarked = false;
-
-    public void bookmarkFalse(){
-        bookmarked = false;
-    }
 
 
 }

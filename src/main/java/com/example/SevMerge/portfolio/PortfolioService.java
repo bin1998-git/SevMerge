@@ -73,9 +73,11 @@ public class PortfolioService {
     public void save(PortfolioRequest.SaveDTO saveDTO) {
 
         saveDTO.validate();
-        if (!portfolioAiService.aiSaveValid(saveDTO)){
-            throw new BadRequestException("유효한 프로젝트를 등록해 주세요");
-        }
+
+        // ai 판별 기능 주석처리
+//        if (!portfolioAiService.aiSaveValid(saveDTO)){
+//            throw new BadRequestException("유효한 프로젝트를 등록해 주세요");
+//        }
 
         try {
             Portfolio newPortfolio = null;
@@ -127,9 +129,9 @@ public class PortfolioService {
             portfolio.setImageUrl(newImageFile);
         }
 
-        if (!portfolioAiService.aiUpdateValid(updateDTO)){
-            throw new BadRequestException("유효한 프로젝트를 등록해 주세요");
-        }
+//        if (!portfolioAiService.aiUpdateValid(updateDTO)){
+//            throw new BadRequestException("유효한 프로젝트를 등록해 주세요");
+//        }
 
         portfolio.setDescription(updateDTO.getDescription());
         portfolio.setTitle(updateDTO.getTitle());
