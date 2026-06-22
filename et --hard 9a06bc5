@@ -1,0 +1,312 @@
+[33m360bf2c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/advertisement[m[33m)[m HEAD@{0}: checkout: moving from new-develop to feature/advertisement
+[33m49b02fb[m[33m ([m[1;31morigin/new-develop[m[33m, [m[1;32mnew-develop[m[33m)[m HEAD@{1}: checkout: moving from feature/advertisement to new-develop
+[33m360bf2c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/advertisement[m[33m)[m HEAD@{2}: checkout: moving from new-develop to feature/advertisement
+[33m49b02fb[m[33m ([m[1;31morigin/new-develop[m[33m, [m[1;32mnew-develop[m[33m)[m HEAD@{3}: pull origin new-develop: Fast-forward
+[33md150550[m HEAD@{4}: checkout: moving from feature/advertisement to new-develop
+[33m360bf2c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/advertisement[m[33m)[m HEAD@{5}: pull origin new-develop: Merge made by the 'ort' strategy.
+[33m7ffffe3[m HEAD@{6}: pull origin new-develop: Merge made by the 'ort' strategy.
+[33m9a06bc5[m[33m ([m[1;31morigin/feature/advertisement[m[33m)[m HEAD@{7}: checkout: moving from new-develop to feature/advertisement
+[33md150550[m HEAD@{8}: pull origin new-develop: Fast-forward
+[33mb51d1ae[m HEAD@{9}: pull origin new-develop: Fast-forward
+[33me61ec10[m[33m ([m[1;32mfeature/loginInterceptor[m[33m)[m HEAD@{10}: checkout: moving from new-develop to new-develop
+[33me61ec10[m[33m ([m[1;32mfeature/loginInterceptor[m[33m)[m HEAD@{11}: merge feature/loginInterceptor: Fast-forward
+[33m4dedb18[m[33m ([m[1;32mfix/mypage-edit[m[33m)[m HEAD@{12}: checkout: moving from feature/loginInterceptor to new-develop
+[33me61ec10[m[33m ([m[1;32mfeature/loginInterceptor[m[33m)[m HEAD@{13}: commit: feature/loginInterceptor-refund
+[33m4dedb18[m[33m ([m[1;32mfix/mypage-edit[m[33m)[m HEAD@{14}: checkout: moving from new-develop to feature/loginInterceptor
+[33m4dedb18[m[33m ([m[1;32mfix/mypage-edit[m[33m)[m HEAD@{15}: merge fix/mypage-edit: Fast-forward
+[33mcdafb40[m HEAD@{16}: checkout: moving from fix/mypage-edit to new-develop
+[33m4dedb18[m[33m ([m[1;32mfix/mypage-edit[m[33m)[m HEAD@{17}: commit: fix/mypage-passwordcheck
+[33mcdafb40[m HEAD@{18}: checkout: moving from new-develop to fix/mypage-edit
+[33mcdafb40[m HEAD@{19}: merge feature/my-page: Merge made by the 'ort' strategy.
+[33m1dd9550[m HEAD@{20}: pull origin new-develop: Fast-forward
+[33mc745fe6[m HEAD@{21}: checkout: moving from feature/my-page to new-develop
+[33ma2fc404[m[33m ([m[1;32mfeature/my-page[m[33m)[m HEAD@{22}: commit: feature:비밀번호수정추가인증 및 마이페이지편의성추가
+[33mc745fe6[m HEAD@{23}: checkout: moving from new-develop to feature/my-page
+[33mc745fe6[m HEAD@{24}: merge fix/merge-project: Merge made by the 'ort' strategy.
+[33m984efff[m HEAD@{25}: pull origin new-develop: Fast-forward
+[33m20324dc[m HEAD@{26}: checkout: moving from fix/merge-project to new-develop
+[33m4c025eb[m[33m ([m[1;32mfix/merge-project[m[33m)[m HEAD@{27}: commit: fix/merge-project
+[33m20324dc[m HEAD@{28}: checkout: moving from new-develop to fix/merge-project
+[33m20324dc[m HEAD@{29}: commit (merge): 병합완료
+[33m831df17[m HEAD@{30}: checkout: moving from feature/payment-refund to new-develop
+[33m0b2b3f2[m[33m ([m[1;32mfeature/payment-refund[m[33m)[m HEAD@{31}: commit: 프로젝트 로직수정
+[33m20cc85e[m HEAD@{32}: checkout: moving from new-develop to feature/payment-refund
+[33m831df17[m HEAD@{33}: pull origin new-develop: Fast-forward
+[33mae69f4e[m HEAD@{34}: checkout: moving from feature/payment-refund to new-develop
+[33m20cc85e[m HEAD@{35}: commit: 환불로직구현 및 프로젝트승인완료구현중
+[33mae69f4e[m HEAD@{36}: checkout: moving from new-develop to feature/payment-refund
+[33mae69f4e[m HEAD@{37}: checkout: moving from new-develop to new-develop
+[33mae69f4e[m HEAD@{38}: checkout: moving from new-develop to new-develop
+[33mae69f4e[m HEAD@{39}: merge feature/client-refund: Merge made by the 'ort' strategy.
+[33md37d462[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{40}: pull origin new-develop: Fast-forward
+[33ma18129d[m HEAD@{41}: checkout: moving from feature/client-refund to new-develop
+[33mc209586[m HEAD@{42}: commit: 마이페이지 포맷팅중
+[33mfaa8d5f[m HEAD@{43}: checkout: moving from new-develop to feature/client-refund
+[33ma18129d[m HEAD@{44}: pull origin new-develop: Fast-forward
+[33m21a7778[m HEAD@{45}: checkout: moving from feature/client-refund to new-develop
+[33mfaa8d5f[m HEAD@{46}: commit: 환불로직구현중
+[33m21a7778[m HEAD@{47}: checkout: moving from new-develop to feature/client-refund
+[33m21a7778[m HEAD@{48}: merge feature/client-charge: Merge made by the 'ort' strategy.
+[33m2a89f27[m HEAD@{49}: pull origin new-develop: Fast-forward
+[33md9eb8d7[m HEAD@{50}: checkout: moving from feature/client-charge to new-develop
+[33mcc02115[m HEAD@{51}: commit: 의뢰인마이페이지 포인트/충전 기능 구현
+[33md9eb8d7[m HEAD@{52}: checkout: moving from new-develop to feature/client-charge
+[33md9eb8d7[m HEAD@{53}: pull origin new-develop: Fast-forward
+[33m1a9527d[m HEAD@{54}: checkout: moving from new-develop to new-develop
+[33m1a9527d[m HEAD@{55}: merge feature/client-mypage: Merge made by the 'ort' strategy.
+[33m81e419e[m HEAD@{56}: pull origin new-develop: Fast-forward
+[33mf2fcd06[m HEAD@{57}: checkout: moving from feature/client-mypage to new-develop
+[33m3238602[m HEAD@{58}: commit: 마이페이지 프로필 수정기능 추가 및 인트로/메인페이지 주소 수정
+[33mf2fcd06[m HEAD@{59}: checkout: moving from new-develop to feature/client-mypage
+[33mf2fcd06[m HEAD@{60}: pull origin new-develop: Fast-forward
+[33mbde9126[m HEAD@{61}: merge feature/exclient-dashboard: Merge made by the 'ort' strategy.
+[33mef7ded7[m HEAD@{62}: pull origin new-develop: Fast-forward
+[33m301be51[m HEAD@{63}: checkout: moving from feature/exclient-dashboard to new-develop
+[33meba481b[m HEAD@{64}: commit: 의뢰인 마이페이지 기능 추가 중
+[33m301be51[m HEAD@{65}: checkout: moving from new-develop to feature/exclient-dashboard
+[33m301be51[m HEAD@{66}: reset: moving to HEAD
+[33m301be51[m HEAD@{67}: pull origin new-develop: Fast-forward
+[33m4a058a4[m HEAD@{68}: merge feature/client-mypage: Fast-forward
+[33mea75ef7[m HEAD@{69}: checkout: moving from feature/client-mypage to new-develop
+[33m4a058a4[m HEAD@{70}: commit: feature:의뢰인마이페이지구현중
+[33mea75ef7[m HEAD@{71}: checkout: moving from new-develop to feature/client-mypage
+[33mea75ef7[m HEAD@{72}: checkout: moving from main to new-develop
+[33m0b112c7[m[33m ([m[1;32mmain[m[33m)[m HEAD@{73}: checkout: moving from feature/exclient-dashboard to main
+[33m49079b2[m HEAD@{74}: commit: 의뢰인마이페이지화면
+[33m9d31fd3[m HEAD@{75}: checkout: moving from develop to feature/exclient-dashboard
+[33m5cdacd5[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{76}: pull origin develop: Fast-forward
+[33m9d31fd3[m HEAD@{77}: checkout: moving from feature/exclient-dashboard to develop
+[33m9d31fd3[m HEAD@{78}: checkout: moving from develop to feature/exclient-dashboard
+[33m9d31fd3[m HEAD@{79}: pull origin develop: Fast-forward
+[33m24100c0[m HEAD@{80}: merge fix/header: Fast-forward
+[33m382bd71[m HEAD@{81}: checkout: moving from fix/header to develop
+[33m24100c0[m HEAD@{82}: commit: header머스태치 이름/로그아웃버튼안보이는오류수정
+[33m382bd71[m HEAD@{83}: checkout: moving from develop to fix/header
+[33m382bd71[m HEAD@{84}: checkout: moving from develop to develop
+[33m382bd71[m HEAD@{85}: pull origin develop: Fast-forward
+[33mc660125[m HEAD@{86}: checkout: moving from develop to develop
+[33mc660125[m HEAD@{87}: merge fix/header.mustache: Fast-forward
+[33m05fa295[m HEAD@{88}: checkout: moving from fix/header.mustache to develop
+[33mc660125[m HEAD@{89}: commit: 관리자로그인회원가입버튼안뜨는오류수정
+[33m05fa295[m HEAD@{90}: checkout: moving from develop to fix/header.mustache
+[33m05fa295[m HEAD@{91}: checkout: moving from develop to develop
+[33m05fa295[m HEAD@{92}: merge fix/social-join: Merge made by the 'ort' strategy.
+[33meb2665e[m HEAD@{93}: pull origin develop: Fast-forward
+[33mcc0e0e8[m HEAD@{94}: checkout: moving from fix/social-join to develop
+[33mfa8c412[m HEAD@{95}: commit: 전문가회원가입로직오류수정
+[33mcc0e0e8[m HEAD@{96}: checkout: moving from develop to fix/social-join
+[33mcc0e0e8[m HEAD@{97}: checkout: moving from develop to develop
+[33mcc0e0e8[m HEAD@{98}: merge fix/member-join: Merge made by the 'ort' strategy.
+[33m5622d2f[m HEAD@{99}: pull origin develop: Fast-forward
+[33m668b084[m HEAD@{100}: checkout: moving from fix/member-join to develop
+[33mbe46e3a[m HEAD@{101}: commit: 회원가입추가기능구현완료
+[33m668b084[m HEAD@{102}: checkout: moving from develop to fix/member-join
+[33m668b084[m HEAD@{103}: pull origin develop: Fast-forward
+[33me8a285b[m HEAD@{104}: checkout: moving from develop to develop
+[33me8a285b[m HEAD@{105}: merge feature/member-solApi: Merge made by the 'ort' strategy.
+[33mb3d4d8d[m HEAD@{106}: pull origin develop: Fast-forward
+[33m7d8577a[m HEAD@{107}: checkout: moving from feature/member-solApi to develop
+[33m3112e4d[m HEAD@{108}: commit: 관리자승인문자구현중
+[33ma6da6bc[m HEAD@{109}: checkout: moving from develop to feature/member-solApi
+[33m7d8577a[m HEAD@{110}: pull origin develop: Fast-forward
+[33mecbc234[m HEAD@{111}: checkout: moving from feature/member-solApi to develop
+[33ma6da6bc[m HEAD@{112}: commit: 전문가승인및거절시문자발송구현중
+[33mbcad421[m HEAD@{113}: checkout: moving from develop to feature/member-solApi
+[33mecbc234[m HEAD@{114}: pull origin develop: Fast-forward
+[33mbcad421[m HEAD@{115}: checkout: moving from feature/member-solApi to develop
+[33mbcad421[m HEAD@{116}: checkout: moving from develop to feature/member-solApi
+[33mbcad421[m HEAD@{117}: checkout: moving from develop to develop
+[33mbcad421[m HEAD@{118}: merge feature/expert-join: Merge made by the 'ort' strategy.
+[33mbc225aa[m HEAD@{119}: pull origin develop: Fast-forward
+[33mcf00d35[m HEAD@{120}: checkout: moving from feature/expert-join to develop
+[33mc72cba8[m HEAD@{121}: commit: 회원가입화면분기및전문가가입질문추가
+[33mcf00d35[m HEAD@{122}: checkout: moving from develop to feature/expert-join
+[33mcf00d35[m HEAD@{123}: pull origin develop: Fast-forward
+[33m3ecbe65[m HEAD@{124}: checkout: moving from feature/expert-join to develop
+[33m3ecbe65[m HEAD@{125}: checkout: moving from develop to feature/expert-join
+[33m3ecbe65[m HEAD@{126}: pull origin develop: Fast-forward
+[33m8529cba[m HEAD@{127}: checkout: moving from develop to develop
+[33m8529cba[m HEAD@{128}: checkout: moving from develop to develop
+[33m8529cba[m HEAD@{129}: merge fix/projects: Merge made by the 'ort' strategy.
+[33m0817757[m HEAD@{130}: pull origin develop: Fast-forward
+[33m7c17b1f[m HEAD@{131}: checkout: moving from fix/projects to develop
+[33mb38b828[m HEAD@{132}: commit: 클라이언트마이페이지제안서목록수정
+[33m7c17b1f[m HEAD@{133}: checkout: moving from develop to fix/projects
+[33m7c17b1f[m HEAD@{134}: checkout: moving from develop to develop
+[33m7c17b1f[m HEAD@{135}: commit (merge): 병합해결
+[33m2265537[m HEAD@{136}: pull origin develop: Fast-forward
+[33m6e6af8a[m HEAD@{137}: checkout: moving from fix/member-mypage to develop
+[33ma59982c[m HEAD@{138}: commit: 마이페이지프로젝트오류수정
+[33m6e6af8a[m HEAD@{139}: checkout: moving from develop to fix/member-mypage
+[33m6e6af8a[m HEAD@{140}: checkout: moving from develop to develop
+[33m6e6af8a[m HEAD@{141}: pull origin develop: Fast-forward
+[33m7866329[m HEAD@{142}: checkout: moving from develop to develop
+[33m7866329[m HEAD@{143}: checkout: moving from develop to develop
+[33m7866329[m HEAD@{144}: pull origin develop: Fast-forward
+[33mf159ed0[m HEAD@{145}: commit (merge): bidController병합해결
+[33m8823107[m HEAD@{146}: pull origin develop: Fast-forward
+[33m11dea4f[m HEAD@{147}: checkout: moving from fix/member-mypage to develop
+[33m0967112[m HEAD@{148}: commit: 비로그인프로젝트생성오류및 마이페이지프로젝트오류해결
+[33m11dea4f[m HEAD@{149}: checkout: moving from develop to fix/member-mypage
+[33m11dea4f[m HEAD@{150}: merge feature/expert-approve: Merge made by the 'ort' strategy.
+[33mcb6d826[m HEAD@{151}: checkout: moving from fix/social-login to develop
+[33m7b66070[m HEAD@{152}: checkout: moving from develop to fix/social-login
+[33mcb6d826[m HEAD@{153}: pull origin develop: Fast-forward
+[33m4ad5d9f[m HEAD@{154}: checkout: moving from feature/expert-approve to develop
+[33m9fcee11[m HEAD@{155}: commit: 전문가회원가입관리자인가처리및목록구현
+[33m4ad5d9f[m HEAD@{156}: checkout: moving from develop to feature/expert-approve
+[33m4ad5d9f[m HEAD@{157}: merge fix/social-login: Merge made by the 'ort' strategy.
+[33m2e08406[m HEAD@{158}: pull origin develop: Fast-forward
+[33m9bb7400[m HEAD@{159}: checkout: moving from fix/social-login to develop
+[33m7b66070[m HEAD@{160}: commit: 전문가로그인대기상태로직수정
+[33m9bb7400[m HEAD@{161}: checkout: moving from develop to fix/social-login
+[33m9bb7400[m HEAD@{162}: pull origin develop: Fast-forward
+[33md1646a6[m[33m ([m[1;31morigin/fix/Bidinterceptor[m[33m)[m HEAD@{163}: checkout: moving from develop to develop
+[33md1646a6[m[33m ([m[1;31morigin/fix/Bidinterceptor[m[33m)[m HEAD@{164}: merge fix/Bidinterceptor: Fast-forward
+[33m606e196[m HEAD@{165}: checkout: moving from fix/Bidinterceptor to develop
+[33md1646a6[m[33m ([m[1;31morigin/fix/Bidinterceptor[m[33m)[m HEAD@{166}: commit: fix: 프로젝트 컨트롤러 주소 충돌 임시 패치 및 머스테치 보정
+[33m606e196[m HEAD@{167}: checkout: moving from develop to fix/Bidinterceptor
+[33m606e196[m HEAD@{168}: merge feature/social-role: Merge made by the 'ort' strategy.
+[33m1680cfb[m HEAD@{169}: checkout: moving from feature/social-role to develop
+[33m153bab2[m[33m ([m[1;31morigin/feature/social-role[m[33m)[m HEAD@{170}: checkout: moving from develop to feature/social-role
+[33m1680cfb[m HEAD@{171}: pull origin develop: Fast-forward
+[33m49bdced[m HEAD@{172}: checkout: moving from feature/social-role to develop
+[33m153bab2[m[33m ([m[1;31morigin/feature/social-role[m[33m)[m HEAD@{173}: commit (merge): 머스테치 충돌 해결
+[33md99e400[m HEAD@{174}: commit: 전문가회원가입기능추가/Member코딩컨벤션/시큐리티제거완료
+[33ma2c187c[m HEAD@{175}: checkout: moving from develop to feature/social-role
+[33m49bdced[m HEAD@{176}: pull origin develop: Fast-forward
+[33m89a8ccb[m HEAD@{177}: checkout: moving from feature/social-role to develop
+[33ma2c187c[m HEAD@{178}: commit: 소셜회원가입역할선택로직추가구현중
+[33m89a8ccb[m HEAD@{179}: checkout: moving from develop to feature/social-role
+[33m89a8ccb[m HEAD@{180}: checkout: moving from feature/social-role to develop
+[33m89a8ccb[m HEAD@{181}: checkout: moving from develop to feature/social-role
+[33m89a8ccb[m HEAD@{182}: checkout: moving from develop to develop
+[33m89a8ccb[m HEAD@{183}: pull origin develop: Fast-forward
+[33m9d906e8[m HEAD@{184}: checkout: moving from develop to develop
+[33m9d906e8[m HEAD@{185}: pull origin develop: Fast-forward
+[33m9e1ac94[m HEAD@{186}: checkout: moving from develop to develop
+[33m9e1ac94[m HEAD@{187}: checkout: moving from develop to develop
+[33m9e1ac94[m HEAD@{188}: checkout: moving from develop to develop
+[33m9e1ac94[m HEAD@{189}: checkout: moving from develop to develop
+[33m9e1ac94[m HEAD@{190}: rebase (finish): returning to refs/heads/develop
+[33m9e1ac94[m HEAD@{191}: rebase (pick): 카카오소셜로그인오류수정및member소프트삭제기능추가
+[33mc685089[m HEAD@{192}: rebase (continue): 카카오로그인오류수정중
+[33m5d803e0[m HEAD@{193}: rebase (continue): MemberService수정중
+[33ma52417b[m HEAD@{194}: pull --rebase origin develop (start): checkout a52417bd11869127ccd87ab9ddfeb1f09f92230e
+[33mf93f3f2[m HEAD@{195}: pull origin develop: Merge made by the 'ort' strategy.
+[33m3202670[m HEAD@{196}: commit (merge): style: member-join 병합 충돌 해결 완료
+[33m1d2efba[m HEAD@{197}: checkout: moving from feature/member-join to develop
+[33mbdd93e0[m HEAD@{198}: commit: 카카오소셜로그인오류수정및member소프트삭제기능추가
+[33mc955041[m HEAD@{199}: checkout: moving from develop to feature/member-join
+[33m1d2efba[m HEAD@{200}: pull origin develop: Fast-forward
+[33mf56d0a1[m HEAD@{201}: checkout: moving from feature/member-join to develop
+[33mc955041[m HEAD@{202}: commit: 카카오로그인오류수정중
+[33md015c6c[m HEAD@{203}: checkout: moving from develop to feature/member-join
+[33mf56d0a1[m HEAD@{204}: pull origin develop: Fast-forward
+[33m39e7b07[m HEAD@{205}: checkout: moving from develop to develop
+[33m39e7b07[m HEAD@{206}: pull origin develop: Fast-forward
+[33m60e90e0[m HEAD@{207}: checkout: moving from develop to develop
+[33m60e90e0[m HEAD@{208}: pull origin develop: Fast-forward
+[33m1d19507[m HEAD@{209}: checkout: moving from feature/member-join to develop
+[33md015c6c[m HEAD@{210}: commit: MemberService수정중
+[33m1d19507[m HEAD@{211}: checkout: moving from develop to feature/member-join
+[33m1d19507[m HEAD@{212}: checkout: moving from develop to develop
+[33m1d19507[m HEAD@{213}: checkout: moving from develop to develop
+[33m1d19507[m HEAD@{214}: merge fix/kakao-join: Merge made by the 'ort' strategy.
+[33ma1bbffc[m HEAD@{215}: pull origin develop: Fast-forward
+[33mc32992b[m HEAD@{216}: checkout: moving from fix/kakao-join to develop
+[33m8e13202[m HEAD@{217}: commit: 세션중복오류처리완료
+[33mc32992b[m HEAD@{218}: checkout: moving from develop to fix/kakao-join
+[33mc32992b[m HEAD@{219}: checkout: moving from fix/kakao-join to develop
+[33mc32992b[m HEAD@{220}: checkout: moving from develop to fix/kakao-join
+[33mc32992b[m HEAD@{221}: merge fix/member-join: Merge made by the 'ort' strategy.
+[33me6e20d9[m HEAD@{222}: pull origin develop: Fast-forward
+[33m73aecae[m HEAD@{223}: checkout: moving from fix/member-join to develop
+[33mc9d992b[m HEAD@{224}: commit: 전문가회원가입오류해결
+[33m73aecae[m HEAD@{225}: checkout: moving from develop to fix/member-join
+[33m73aecae[m HEAD@{226}: checkout: moving from develop to develop
+[33m73aecae[m HEAD@{227}: merge feature/google-login: Merge made by the 'ort' strategy.
+[33mb4f2f4e[m HEAD@{228}: pull origin develop: Fast-forward
+[33m9cb93a5[m HEAD@{229}: checkout: moving from feature/google-login to develop
+[33m761cad6[m HEAD@{230}: commit: 구글로그인역할선택구현 및 정보수정오류해결
+[33mefe65f8[m HEAD@{231}: commit: 구글로그인역할선택구현중
+[33m9cb93a5[m HEAD@{232}: checkout: moving from develop to feature/google-login
+[33m9cb93a5[m HEAD@{233}: pull origin develop: Fast-forward
+[33m2505920[m HEAD@{234}: checkout: moving from develop to develop
+[33m2505920[m HEAD@{235}: pull origin develop: Fast-forward
+[33m1e75bfb[m HEAD@{236}: checkout: moving from develop to develop
+[33m1e75bfb[m HEAD@{237}: pull origin develop: Fast-forward
+[33m1a6a354[m HEAD@{238}: checkout: moving from develop to develop
+[33m1a6a354[m HEAD@{239}: commit (merge): mypage머스테치병합완료
+[33ma7aeda8[m HEAD@{240}: pull origin develop: Fast-forward
+[33mbdbc6ed[m HEAD@{241}: checkout: moving from feature/member-updateInfo to develop
+[33mcbb82bd[m HEAD@{242}: commit: 회원정보수정페이지구현
+[33mbdbc6ed[m HEAD@{243}: checkout: moving from develop to feature/member-updateInfo
+[33mbdbc6ed[m HEAD@{244}: checkout: moving from fix/member-url to develop
+[33mbdbc6ed[m HEAD@{245}: checkout: moving from develop to fix/member-url
+[33mbdbc6ed[m HEAD@{246}: checkout: moving from develop to develop
+[33mbdbc6ed[m HEAD@{247}: merge feature/member-findAll: Merge made by the 'ort' strategy.
+[33m7253019[m HEAD@{248}: checkout: moving from feature/member-findAll to develop
+[33m9a44825[m HEAD@{249}: commit: 멤버전체조회기능추가
+[33m42acbf5[m HEAD@{250}: checkout: moving from develop to feature/member-findAll
+[33m7253019[m HEAD@{251}: checkout: moving from develop to develop
+[33m7253019[m HEAD@{252}: pull origin develop: Fast-forward
+[33m42acbf5[m HEAD@{253}: checkout: moving from feature/member-findAll to develop
+[33m42acbf5[m HEAD@{254}: checkout: moving from develop to feature/member-findAll
+[33m42acbf5[m HEAD@{255}: merge fix/kakao-login: Merge made by the 'ort' strategy.
+[33m46f4e92[m HEAD@{256}: pull origin develop: Fast-forward
+[33m650e7c8[m HEAD@{257}: checkout: moving from fix/kakao-login to develop
+[33m499b0eb[m HEAD@{258}: commit: fix/kakao-login
+[33m650e7c8[m HEAD@{259}: checkout: moving from develop to fix/kakao-login
+[33m650e7c8[m HEAD@{260}: checkout: moving from 카카오머스테치수정 to develop
+[33m650e7c8[m HEAD@{261}: checkout: moving from develop to 카카오머스테치수정
+[33m650e7c8[m HEAD@{262}: checkout: moving from fix/member-url to develop
+[33m650e7c8[m HEAD@{263}: checkout: moving from develop to fix/member-url
+[33m650e7c8[m HEAD@{264}: pull origin develop: Fast-forward
+[33m6210e8a[m HEAD@{265}: checkout: moving from develop to develop
+[33m6210e8a[m HEAD@{266}: commit (merge): 소설로그인병합
+[33meeb5340[m HEAD@{267}: pull origin develop: Fast-forward
+[33m194e1c9[m HEAD@{268}: checkout: moving from 카카오소셜로그인 to develop
+[33m773c373[m HEAD@{269}: commit: 카카오톡소셜로그인구현중
+[33m194e1c9[m HEAD@{270}: checkout: moving from develop to 카카오소셜로그인
+[33m194e1c9[m HEAD@{271}: checkout: moving from develop to develop
+[33m194e1c9[m HEAD@{272}: checkout: moving from develop to develop
+[33m194e1c9[m HEAD@{273}: merge fix/member-url수정: Fast-forward
+[33m4709532[m HEAD@{274}: checkout: moving from fix/member-url수정 to develop
+[33m194e1c9[m HEAD@{275}: commit: fix(member): URL 및 메서드명 팀 문서에 맞게 수정
+[33m4709532[m HEAD@{276}: checkout: moving from develop to fix/member-url수정
+[33m4709532[m HEAD@{277}: pull origin develop: Fast-forward
+[33m8c437d7[m HEAD@{278}: checkout: moving from develop to develop
+[33m8c437d7[m HEAD@{279}: merge cwj: Merge made by the 'ort' strategy.
+[33m4b9c52c[m[33m ([m[1;31morigin/feature/comment[m[33m)[m HEAD@{280}: pull origin develop: Fast-forward
+[33m9d0fad0[m HEAD@{281}: checkout: moving from cwj to develop
+[33m61f9d36[m[33m ([m[1;31morigin/cwj[m[33m)[m HEAD@{282}: commit: feat(member): 회원가입·로그인·마이페이지 API 구현
+[33m9d0fad0[m HEAD@{283}: merge develop: Fast-forward
+[33m8214700[m[33m ([m[1;31morigin/pjb[m[33m, [m[1;31morigin/phg[m[33m, [m[1;31morigin/kdy[m[33m, [m[1;31morigin/hotfix[m[33m)[m HEAD@{284}: checkout: moving from develop to cwj
+[33m9d0fad0[m HEAD@{285}: checkout: moving from cwj to develop
+[33m8214700[m[33m ([m[1;31morigin/pjb[m[33m, [m[1;31morigin/phg[m[33m, [m[1;31morigin/kdy[m[33m, [m[1;31morigin/hotfix[m[33m)[m HEAD@{286}: checkout: moving from develop to cwj
+[33m9d0fad0[m HEAD@{287}: checkout: moving from cwj to develop
+[33m8214700[m[33m ([m[1;31morigin/pjb[m[33m, [m[1;31morigin/phg[m[33m, [m[1;31morigin/kdy[m[33m, [m[1;31morigin/hotfix[m[33m)[m HEAD@{288}: checkout: moving from feature/login to cwj
+[33mb976004[m HEAD@{289}: pull origin develop: Merge made by the 'ort' strategy.
+[33m66ae37f[m HEAD@{290}: commit: feat(member): 회원가입 API 구현
+[33m0b112c7[m[33m ([m[1;32mmain[m[33m)[m HEAD@{291}: checkout: moving from main to feature/login
+[33m0b112c7[m[33m ([m[1;32mmain[m[33m)[m HEAD@{292}: checkout: moving from feature/login to main
+[33m0b112c7[m[33m ([m[1;32mmain[m[33m)[m HEAD@{293}: checkout: moving from main to feature/login
+[33m0b112c7[m[33m ([m[1;32mmain[m[33m)[m HEAD@{294}: pull origin main: Fast-forward
+[33m1286f91[m HEAD@{295}: pull origin main: Fast-forward
+[33m6dcc7b8[m HEAD@{296}: checkout: moving from feature/login to main
+[33mb0908ca[m[33m ([m[1;31morigin/feature/login[m[33m)[m HEAD@{297}: commit: feat(member): Member Entity & Repository 구현
+[33m6dcc7b8[m HEAD@{298}: checkout: moving from feature/member-entity-repository to feature/login
+[33m6dcc7b8[m HEAD@{299}: merge main: Fast-forward
+[33madf30a5[m HEAD@{300}: checkout: moving from main to feature/member-entity-repository
+[33m6dcc7b8[m HEAD@{301}: pull origin main: Fast-forward
+[33madf30a5[m HEAD@{302}: checkout: moving from feature/member-entity-repository to main
+[33madf30a5[m HEAD@{303}: checkout: moving from main to feature/member-entity-repository
+[33madf30a5[m HEAD@{304}: pull origin main: Fast-forward
+[33mc797ead[m HEAD@{305}: pull: Fast-forward
+[33mc7f394a[m HEAD@{306}: checkout: moving from main to main
+[33mc7f394a[m HEAD@{307}: pull: Fast-forward
+[33m3ce9a54[m HEAD@{308}: checkout: moving from feature/PaymentRepository to main
+[33m3ce9a54[m HEAD@{309}: checkout: moving from main to feature/PaymentRepository
+[33m3ce9a54[m HEAD@{310}: pull: Fast-forward
+[33m92a095c[m HEAD@{311}: clone: from https://github.com/bin1998-git/SevMerge.git
