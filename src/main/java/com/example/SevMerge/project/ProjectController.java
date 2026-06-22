@@ -230,30 +230,31 @@ public class ProjectController {
         return ResponseEntity.ok(dto);
     }
 
-
-
-
-
     // 관리자용 프로젝트 관리 목록전체조회
     @GetMapping("/admin/projects")
-    public String adminProjects(@RequestParam(value = "keyword", required = false) String keyword, HttpSession session, Model model) {
+    public String adminProjects(@RequestParam(value = "keyword", required = false) String keyword,
+                                @RequestParam(value = "statusFilter", defaultValue = "ALL") String statusFilter,
+                                HttpSession session, Model model) {
         Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
 
-        List<ProjectResponseDTO.ListDTO> adminProjects;
-
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            adminProjects = projectService.findAdminProjectsByKeyword(keyword.trim());
-        } else {
-            adminProjects = projectService.findAllProjects();
-        }
+        String searchKeyword = (keyword != null) ? keyword.trim() : "";
+        List<ProjectResponseDTO.ListDTO> adminProjects = projectService.getAdminProjectsByStatusAndKeyword(statusFilter,searchKeyword);
 
         model.addAttribute("projects", adminProjects);
         model.addAttribute("isFree", false);
         model.addAttribute("isNotice", false);
         model.addAttribute("isInquiry", false);
         model.addAttribute("keyword", keyword != null ? keyword : "");
-
+        model.addAttribute("statusFilter", statusFilter);
+        model.addAttribute("isStatusAll", "ALL".equals(statusFilter));
+        model.addAttribute("isStatusOpen", "OPEN".equals(statusFilter));
+        model.addAttribute("isStatusInProgress", "IN_PROGRESS".equals(statusFilter));
+        model.addAttribute("isStatusCompleted", "COMPLETED".equals(statusFilter));
+        model.addAttribute("isStatusDone", "DONE".equals(statusFilter));
+        model.addAttribute("isStatusClosed", "CLOSED".equals(statusFilter));
+        model.addAttribute("isStatusCancelled", "CANCELLED".equals(statusFilter));
+        model.addAttribute("isStatusDraft", "DRAFT".equals(statusFilter));
         return "admin/admin-project";
     }
 

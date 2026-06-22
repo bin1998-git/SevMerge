@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, Long>{
 
-
     // 프로젝트 전체 조회(최신순 조회, DRAFT 제외)
     @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.isDeleted = false AND p.projectStatus <> 'DRAFT' ORDER BY p.createdAt DESC")
     List<Project> findAllProjects();
@@ -21,9 +20,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     // 프로젝트 상세조회
     @Query("SELECT p FROM Project p JOIN FETCH p.member WHERE p.id = :id AND p.isDeleted = false")
     Optional<Project> findByProjectId(@Param("id") Long id);
-
-
-
 
     // 진행중인 프로젝트 조회
     @Query("""
@@ -109,4 +105,19 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
             "GROUP BY DATE_FORMAT(created_at, '%m-%d') " +
             "ORDER BY date_str ASC", nativeQuery = true)
     List<Object[]> findRecent7DaysCompletedCount();
+
+    // 관리자 전용 - 특정 프로젝트 상태랑 검색 조건으로 목록 조회
+    @Query("""
+        SELECT p 
+        FROM Project p 
+        JOIN FETCH p.member 
+        WHERE p.projectStatus = :status 
+          AND (:keyword IS NULL OR :keyword = '' 
+               OR LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) 
+               OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))
+               OR LOWER(p.member.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND p.isDeleted = false 
+        ORDER BY p.createdAt DESC
+    """)
+    List<Project> findAdminProjectsByStatusAndKeyword(@Param("status") ProjectStatus status, @Param("keyword") String keyword);
 }
