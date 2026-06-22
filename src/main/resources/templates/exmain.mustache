@@ -496,6 +496,16 @@
         .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .footer-logo img { display: block; height: 26px; width: auto; }
         .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--brand-muted); }
+
+        .pd-logout {
+            color: #ef4444;
+        }
+
+        .pd-logout:hover {
+            background: #fff3f3;
+            color: #ef4444;
+        }
+
     </style>
 </head>
 <body>
@@ -519,7 +529,9 @@
                     <a href="/my-pages" class="btn-h btn-h-ghost">대시보드</a>
                 {{/isClient}}
                 <span class="h-username">{{sessionUser.name}}님</span>
-                <a href="/logout" class="btn-h-logout">로그아웃</a>
+                <form id="logoutFormClient" action="/logout" method="POST" style="display:inline;">
+                    <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0;">🚪 로그아웃</button>
+                </form>
             {{/isLoggedIn}}
             {{^isLoggedIn}}
                 <a href="/login" class="btn-h">로그인</a>
