@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Table(name = "chat_message_tb")
 @Entity
-@Builder
 public class ChatMessage {
 
     @Id
@@ -41,6 +40,18 @@ public class ChatMessage {
     @ColumnDefault("false")
     private Boolean isDeleted;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean isRead = false;            // 수신자 읽음 여부
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean deletedBySender = false;   // 보낸 사람이 삭제
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean deletedByReceiver = false; // 받은 사람이 삭제
+
     @CreationTimestamp
     private Timestamp createdAt;
 
@@ -57,4 +68,26 @@ public class ChatMessage {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public void markRead() { this.isRead = true; }
+
+    public boolean isSentBy(Member m) { return this.sender.getId().equals(m.getId()); }
+
+    // 나에게서 삭제 (보는 사람 쪽 플래그만)
+    public void deleteFor(Member viewer) {
+        if (isSentBy(viewer)) this.deletedBySender = true;
+        else this.deletedByReceiver = true;
+    }
+
+    // 모두에게서 삭제 (보낸 사람만 호출)
+    public void deleteForAll() {
+        this.deletedBySender = true;
+        this.deletedByReceiver = true;
+    }
+
+    public boolean isDeletedFor(Member viewer) {
+        return isSentBy(viewer) ? this.deletedBySender : this.deletedByReceiver;
+    }
+
+    public boolean isFullyDeleted() { return this.deletedBySender && this.deletedByReceiver; }
 }

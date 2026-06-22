@@ -73,6 +73,14 @@ public class NotificationService {
                 "/messages");
     }
 
+    // 새 채팅 → 수신자
+    @Transactional
+    public void notifyChatReceived(Member receiver, String senderName, Long roomId) {
+        notify(receiver, NotificationType.CHAT_RECEIVED,
+                senderName + "님이 채팅을 보냈습니다.",
+                "/chat/room/" + roomId);
+    }
+
     // 알림 리스트 반환
     public List<NotificationResponse.ListDTO> findAllNotifications(Member receiver) {
         List<Notification> notifications = notificationRepository.findAllNotificationDESC(receiver);
