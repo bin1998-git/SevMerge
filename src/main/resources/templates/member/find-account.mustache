@@ -1,0 +1,235 @@
+{{> layout/header}}
+
+<style>
+    .fa-section { padding: 72px 28px 80px; }
+    .fa-inner { max-width: 440px; margin: 0 auto; }
+    .fa-header { text-align: center; margin-bottom: 32px; }
+    .fa-logo { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; }
+    .fa-logo span { color: #2563eb; }
+    .fa-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
+    .fa-desc { font-size: 14px; color: #9ca3af; }
+
+    /* 탭 */
+    .fa-tabs { display: flex; border-bottom: 2px solid #eaecf4; margin-bottom: 28px; }
+    .fa-tab { flex: 1; padding: 12px 0; text-align: center; font-size: 14px; font-weight: 700;
+        color: #9ca3af; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+        transition: all .15s; background: none; border-top: none; border-left: none; border-right: none;
+        font-family: inherit; }
+    .fa-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+    .fa-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 32px 36px; display: flex; flex-direction: column; gap: 18px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-input { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px;
+        font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input:focus { border-color: #2563eb; background: #fff; }
+    .form-hint { font-size: 12px; color: #9ca3af; }
+
+    .phone-row { display: flex; gap: 8px; }
+    .phone-row .form-input { flex: 1; }
+    .send-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px;
+        font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .send-btn:hover { background: #2563eb; }
+    .send-btn:disabled { background: #c4c9d9; cursor: not-allowed; }
+
+    .submit-btn { width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none;
+        border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .submit-btn:hover { background: #1d4ed8; }
+
+    .result-box { border-radius: 12px; padding: 20px 22px; font-size: 14px; line-height: 1.7; display: none; }
+    .result-box.success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+    .result-box.error   { background: #fff3f3; border: 1px solid #fecaca; color: #ef4444; }
+    .result-label { font-size: 11px; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px; color: #9ca3af; }
+    .result-value { font-size: 18px; font-weight: 900; color: #1c1e26; }
+
+    .fa-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #9ca3af; }
+    .fa-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 18px; }
+
+    .divider { height: 1px; background: #f3f4f8; }
+</style>
+
+<section class="fa-section">
+    <div class="fa-inner">
+        <div class="fa-header">
+            <div class="fa-logo">Sev<span>Merge</span></div>
+            <h1 class="fa-title">계정 찾기</h1>
+            <p class="fa-desc">이름과 휴대폰 번호로 계정 정보를 찾아드려요.</p>
+        </div>
+
+        <div class="fa-tabs">
+            <button class="fa-tab active" onclick="switchTab('email')">이메일 찾기</button>
+            <button class="fa-tab" onclick="switchTab('password')">비밀번호 찾기</button>
+        </div>
+
+        <div class="fa-card">
+
+            <!-- 이메일 찾기 탭 -->
+            <div id="tab-email" class="tab-panel active">
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    <input type="text" id="email-name" class="form-input" placeholder="가입 시 입력한 이름" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">휴대폰 번호</label>
+                    <div class="phone-row">
+                        <input type="tel" id="email-phone" class="form-input" placeholder="010-0000-0000" />
+                        <button type="button" class="send-btn" onclick="sendSms('email')">인증</button>
+                    </div>
+                </div>
+                <div class="form-group" id="email-sms-group" style="display:none;">
+                    <label class="form-label">인증번호</label>
+                    <div class="phone-row">
+                        <input type="text" id="email-sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6" />
+                        <button type="button" class="send-btn" onclick="verifySms('email')">확인</button>
+                    </div>
+                    <span id="email-sms-hint" class="form-hint"></span>
+                </div>
+                <div class="divider"></div>
+                <button type="button" class="submit-btn" onclick="findEmail()">이메일 찾기</button>
+                <div id="email-result" class="result-box"></div>
+            </div>
+
+            <!-- 비밀번호 찾기 탭 -->
+            <div id="tab-password" class="tab-panel">
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    <input type="text" id="pw-name" class="form-input" placeholder="가입 시 입력한 이름" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">휴대폰 번호</label>
+                    <div class="phone-row">
+                        <input type="tel" id="pw-phone" class="form-input" placeholder="010-0000-0000" />
+                        <button type="button" class="send-btn" onclick="sendSms('password')">인증</button>
+                    </div>
+                </div>
+                <div class="form-group" id="pw-sms-group" style="display:none;">
+                    <label class="form-label">인증번호</label>
+                    <div class="phone-row">
+                        <input type="text" id="pw-sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6" />
+                        <button type="button" class="send-btn" onclick="verifySms('password')">확인</button>
+                    </div>
+                    <span id="pw-sms-hint" class="form-hint"></span>
+                </div>
+                <div class="divider"></div>
+                <button type="button" class="submit-btn" onclick="resetPassword()">임시 비밀번호 받기</button>
+                <div id="pw-result" class="result-box"></div>
+            </div>
+        </div>
+
+        <div class="fa-footer">
+            <a href="/login">← 로그인으로 돌아가기</a>
+        </div>
+    </div>
+</section>
+
+<script>
+    // 탭 전환
+    let emailVerified = false;
+    let pwVerified = false;
+
+    function switchTab(tab) {
+        document.querySelectorAll('.fa-tab').forEach((el, i) => {
+            el.classList.toggle('active', (tab === 'email' && i === 0) || (tab === 'password' && i === 1));
+        });
+        document.getElementById('tab-email').classList.toggle('active', tab === 'email');
+        document.getElementById('tab-password').classList.toggle('active', tab === 'password');
+    }
+
+    // 전화번호 하이픈 자동
+    ['email-phone', 'pw-phone'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', function() {
+            let v = el.value.replace(/[^0-9]/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length < 4) el.value = v;
+            else if (v.length < 8) el.value = v.slice(0,3) + '-' + v.slice(3);
+            else el.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7);
+        });
+    });
+
+    async function sendSms(type) {
+        const phone = document.getElementById(type === 'email' ? 'email-phone' : 'pw-phone').value.trim();
+        if (!phone) { alert('휴대폰 번호를 입력해주세요.'); return; }
+        const res = await fetch('/api/sms/send', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone })
+        });
+        if (res.ok) {
+            const groupId = type === 'email' ? 'email-sms-group' : 'pw-sms-group';
+            document.getElementById(groupId).style.display = 'flex';
+            document.getElementById(groupId).style.flexDirection = 'column';
+            alert('인증번호가 발송되었습니다.');
+        } else {
+            alert('발송에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    async function verifySms(type) {
+        const phone = document.getElementById(type === 'email' ? 'email-phone' : 'pw-phone').value.trim();
+        const code  = document.getElementById(type === 'email' ? 'email-sms-code' : 'pw-sms-code').value.trim();
+        const hint  = document.getElementById(type === 'email' ? 'email-sms-hint' : 'pw-sms-hint');
+        if (!code) { alert('인증번호를 입력해주세요.'); return; }
+        const res = await fetch('/api/sms/verify', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, code })
+        });
+        if (res.ok) {
+            if (type === 'email') emailVerified = true;
+            else pwVerified = true;
+            hint.textContent = '✓ 인증되었습니다.';
+            hint.style.color = '#10b981';
+        } else {
+            hint.textContent = '✗ 인증번호가 일치하지 않습니다.';
+            hint.style.color = '#ef4444';
+        }
+    }
+
+    async function findEmail() {
+        const name  = document.getElementById('email-name').value.trim();
+        const phone = document.getElementById('email-phone').value.trim();
+        const result = document.getElementById('email-result');
+        if (!name || !phone) { alert('이름과 휴대폰 번호를 입력해주세요.'); return; }
+        if (!emailVerified) { alert('휴대폰 인증을 완료해주세요.'); return; }
+
+        const res = await fetch('/api/member/find-email', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, phone })
+        });
+        const data = await res.json();
+        result.style.display = 'block';
+        if (res.ok) {
+            result.className = 'result-box success';
+            result.innerHTML = '<div class="result-label">가입된 이메일</div><div class="result-value">' + data.email + '</div>';
+        } else {
+            result.className = 'result-box error';
+            result.textContent = data.message;
+        }
+    }
+
+    async function resetPassword() {
+        const name  = document.getElementById('pw-name').value.trim();
+        const phone = document.getElementById('pw-phone').value.trim();
+        const result = document.getElementById('pw-result');
+        if (!name || !phone) { alert('이름과 휴대폰 번호를 입력해주세요.'); return; }
+        if (!pwVerified) { alert('휴대폰 인증을 완료해주세요.'); return; }
+
+        const res = await fetch('/api/member/reset-password', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, phone })
+        });
+        const data = await res.json();
+        result.style.display = 'block';
+        if (res.ok) {
+            result.className = 'result-box success';
+            result.innerHTML = '✓ ' + data.message + '<br><span style="font-size:12px;color:#065f46;">로그인 후 반드시 비밀번호를 변경해 주세요.</span>';
+        } else {
+            result.className = 'result-box error';
+            result.textContent = data.message;
+        }
+    }
+</script>
+
+{{> layout/footer}}

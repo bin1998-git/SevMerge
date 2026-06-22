@@ -4,15 +4,17 @@ import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 public class ExpertWishService {
 
     private final ExpertWishRepository expertWishRepository;
     private final MemberRepository memberRepository;
+
 
     @Transactional
     public void toggleWish(Long memberId, Long expertId) {
@@ -34,5 +36,14 @@ public class ExpertWishService {
 
             expertWishRepository.save(wish);
         }
+    }
+    @Transactional(readOnly = true)
+    public Page<ExpertWish> findMyWishesPaged(Long memberId, Pageable pageable) {
+        return expertWishRepository.findAllByMemberIdOrderByIdDesc(memberId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ExpertWish> filterWishesPaged(Long memberId, String keyword, Pageable pageable) {
+        return expertWishRepository.findByMemberIdAndExpertNameContaining(keyword, memberId, pageable);
     }
 }

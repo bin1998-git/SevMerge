@@ -14,9 +14,11 @@
     .form-input { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
     .form-input::placeholder { color: #c4c9d9; }
     .form-input:focus { border-color: #2563eb; background: #fff; }
+    .form-input.error { border-color: #ef4444; }
     .form-options { display: flex; justify-content: flex-end; }
-    .form-options a { font-size: 13px; color: #9ca3af; text-decoration: none; }
-    .form-options a:hover { color: #2563eb; }
+    .find-pw-link { font-size: 13px; color: #9ca3af; text-decoration: none; transition: all .15s; }
+    .find-pw-link:hover { color: #2563eb; }
+    .find-pw-link.highlighted { color: #2563eb; font-weight: 700; }
     .divider { height: 1px; background: #f3f4f8; }
     .submit-btn { padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .submit-btn:hover { background: #1d4ed8; }
@@ -24,11 +26,11 @@
     .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
     .auth-footer a:hover { text-decoration: underline; }
     .error-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #ef4444; font-weight: 600; }
+    .error-box a { color: #ef4444; font-weight: 700; }
 </style>
 
 <section class="auth-section">
     <div class="auth-inner">
-
         <div class="auth-header">
             <div class="auth-logo">Sev<span>Merge</span></div>
             <h1 class="auth-title">로그인</h1>
@@ -36,57 +38,56 @@
         </div>
 
         <form class="auth-form" action="/login" method="POST">
-
             <div class="form-group">
                 <label class="form-label">이메일</label>
-                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요" />
+                <input type="email" name="email" id="emailInput" class="form-input {{#errorMessage}}error{{/errorMessage}}"
+                       placeholder="이메일을 입력하세요" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">비밀번호</label>
-                <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" />
+                <input type="password" name="password" id="pwInput" class="form-input {{#errorMessage}}error{{/errorMessage}}"
+                       placeholder="비밀번호를 입력하세요" />
                 <div class="form-options">
-                    <a href="#">비밀번호를 잊으셨나요?</a>
+                    <a href="/find-account" class="find-pw-link {{#errorMessage}}highlighted{{/errorMessage}}" id="findPwLink">
+                        {{#errorMessage}}비밀번호를 잊으셨나요? →{{/errorMessage}}
+                        {{^errorMessage}}비밀번호를 잊으셨나요?{{/errorMessage}}
+                    </a>
                 </div>
             </div>
 
-            {{! 로그인 오류 }}
             {{#errorMessage}}
-            <div class="error-box">{{errorMessage}}</div>
+                <div class="error-box">
+                    {{errorMessage}}
+                    <br><a href="/find-account">→ 계정 찾기</a>
+                </div>
             {{/errorMessage}}
 
             <div class="divider"></div>
-
             <button type="submit" class="submit-btn">로그인</button>
 
+            <div style="text-align:center; color: #c4c9d9; font-size: 13px;">또는</div>
 
-            <!-- 구분선 -->
-            <div style="text-align:center; margin: 20px 0; color: #c4c9d9; font-size: 13px;">또는</div>
-
-            <div class="social-login-group" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+            <div style="display:flex; flex-direction:column; gap:10px;">
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code"
                    style="display:flex; align-items:center; justify-content:center; gap:8px;
-              width:100%; padding:13px; background:#FEE500; border:none; border-radius:10px;
-              font-size:14px; font-weight:700; color:#191600; text-decoration:none;">
+                   width:100%; padding:13px; background:#FEE500; border-radius:10px;
+                   font-size:14px; font-weight:700; color:#191600; text-decoration:none;">
                     <span style="font-size:18px;">💬</span> 카카오로 시작하기
                 </a>
-            </div>
-
-            <!-- 구글 로그인 버튼 -->
-            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
-               style="display:flex; align-items:center; justify-content:center; gap:10px;
-          width:100%; padding:13px; border:1.5px solid #e2e5ef; border-radius:10px;
-          font-size:14px; font-weight:600; color:#4b5563; background:#fff; text-decoration:none;">
+                <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
+                style="display:flex; align-items:center; justify-content:center; gap:10px;
+                width:100%; padding:13px; border:1.5px solid #e2e5ef; border-radius:10px;
+                font-size:14px; font-weight:600; color:#4b5563; background:#fff; text-decoration:none;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" />
                 Google로 로그인
-            </a>
-
+                </a>
+            </div>
         </form>
 
         <div class="auth-footer">
             아직 계정이 없으신가요? <a href="/join-start">회원가입</a>
         </div>
-
     </div>
 </section>
 

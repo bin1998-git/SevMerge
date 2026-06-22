@@ -8,6 +8,7 @@ import com.example.SevMerge.bookmark.BookMarkService;
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.expertwish.ExpertWishService;
 import com.example.SevMerge.message.MessageRepository;
 import com.example.SevMerge.message.MessageService;
 import com.example.SevMerge.payment.PaymentService;
@@ -17,6 +18,7 @@ import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.refund.RefundApplicationService;
 import com.example.SevMerge.review.ReviewRepository;
 import com.example.SevMerge.review.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,8 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final ExpertWishService expertWishService;
 
     @Value("${oauth.google.client-id}")
     private String googleClientId;
@@ -93,9 +97,13 @@ public class MemberController {
         return "redirect:/login";
     }
 
-    // 로그인 / 로그아웃
+    // 로그인/ 로그아웃
     @GetMapping("/login")
-    public String loginForm(Model model) {
+    public String loginForm(HttpSession session ,Model model) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember != null) {
+            return "redirect:/exmain";
+        }
         model.addAttribute("email", "");
         model.addAttribute("googleClientId", googleClientId);
         return "member/login-form";
@@ -103,25 +111,42 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(MemberRequest.Login request, HttpSession session, Model model) {
-        Member member = memberService.login(request, session);
+        try {
+            Member member = memberService.login(request, session);
 
-        // 거절된 전문가는 안내 페이지로
-        if (member.getStatus() == Status.REJECTED) {
-            session.setAttribute("rejectedMemberId", member.getId());
-            return "redirect:/expert-rejected";
+            // 거절된 전문가는 안내 페이지로
+            if (member.getStatus() == Status.REJECTED) {
+                session.setAttribute("rejectedMemberId", member.getId());
+                return "redirect:/expert-rejected";
+            }
+
+            // 3회 신고 누적으로 정지된 회원은 정지안내 페이지로 가게 만들기
+            if (member.getStatus() == Status.SUSPENDED) {
+                session.setAttribute("suspendedMemberId", member.getId());
+                return "redirect:/banned-info";
+            }
+
+            if ("ADMIN".equals(String.valueOf(member.getRole()))) {
+                return "redirect:/admin/main";
+            }
+            return "redirect:/exmain";
         }
-
-        // 3회 신고 누적으로 정지된 회원은 정지안내 페이지로 가게 만들기
-        if (member.getStatus() == Status.SUSPENDED) {
-            session.setAttribute("suspendedMemberId", member.getId());
-            return "redirect:/banned-info";
+        catch (BadRequestException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("googleClientId", googleClientId);
+            return "member/login-form";
         }
+    }
 
-        if ("ADMIN".equals(String.valueOf(member.getRole()))) {
-            return "redirect:/admin/main";
-        }
-
-        return "redirect:/exmain";
+    @PostMapping("/api/member/check-email")
+    @ResponseBody
+    public ResponseEntity<?> checkEmailDuplicate(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (email == null || !email.contains("@"))
+            return ResponseEntity.badRequest().body(Map.of("available", false, "message", "올바른 이메일 형식이 아닙니다."));
+        boolean exists = memberRepository.existsByEmail(email);
+        if (exists) return ResponseEntity.ok(Map.of("available", false, "message", "이미 사용 중인 이메일입니다."));
+        return ResponseEntity.ok(Map.of("available", true, "message", "사용 가능한 이메일입니다."));
     }
 
     /**
@@ -148,6 +173,52 @@ public class MemberController {
         return "redirect:/";
     }
 
+    // 비밀번호/이메일 찾기 페이지
+    @GetMapping("/find-account")
+    public String findAccountPage() {
+        return "member/find-account";
+    }
+
+    // 이메일로 회원 존재 확인 (비밀번호 찾기용)
+    @PostMapping("/api/member/find-by-phone")
+    @ResponseBody
+    public ResponseEntity<?> findByPhone(@RequestBody Map<String, String> body) {
+        String phone = body.get("phone");
+        String name  = body.get("name");
+        boolean exists = memberService.existsByNameAndPhone(name, phone);
+        if (exists) return ResponseEntity.ok(Map.of("exists", true));
+        return ResponseEntity.ok(Map.of("exists", false));
+    }
+
+    // 임시 비밀번호 발급
+    @PostMapping("/api/member/reset-password")
+    @ResponseBody
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String phone = body.get("phone");
+        String name  = body.get("name");
+        try {
+            String tempPw = memberService.resetPasswordByPhone(name, phone);
+            return ResponseEntity.ok(Map.of("message", "임시 비밀번호가 문자로 발송되었습니다."));
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 이메일 찾기
+    @PostMapping("/api/member/find-email")
+    @ResponseBody
+    public ResponseEntity<?> findEmail(@RequestBody Map<String, String> body) {
+        String phone = body.get("phone");
+        String name  = body.get("name");
+        try {
+            String email = memberService.findEmailByNameAndPhone(name, phone);
+            return ResponseEntity.ok(Map.of("email", email));
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+
     // 정지화면 안내 페이지 조회
     @GetMapping("/banned-info")
     public String bannedInfoPage(Model model, HttpSession session) {
@@ -171,30 +242,13 @@ public class MemberController {
         return "member/banned";
     }
 
-//    // 클라이언트 대시보드
-//    @GetMapping("/clients/dashboard")
-//    public String clientDashboard(HttpSession session, Model model) {
-//        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-//        if (loginMember == null) return "redirect:/login";
-//        if (loginMember.isExpert()) return "redirect:/experts/dashboard";
-//
-//        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
-//        long completedCount = myProjects.stream().filter(ProjectResponeDTO.ListDTO::isDone).count();
-//        long activeCount    = myProjects.stream()
-//                .filter(p -> "IN_PROGRESS".equals(p.getProjectStatus()) || "CLOSED".equals(p.getProjectStatus()))
-//                .count();
-//
-//        model.addAttribute("projectCount",   myProjects.size());
-//        model.addAttribute("completedCount", completedCount);
-//        model.addAttribute("activeCount",    activeCount);
-//        return "member/exclient-dashboard";
-//    }
 
     // 마이페이지 (의뢰인 전용)
     @GetMapping("/my-pages")
     public String mypage(@RequestParam(required = false) String tab,
                          @RequestParam(required = false) String keyword,
-                         HttpSession session, Model model) {
+                         HttpSession session, Model model,
+                         HttpServletRequest request) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
         if (loginMember == null) {
@@ -231,6 +285,7 @@ public class MemberController {
         model.addAttribute("isMessages", tab.equalsIgnoreCase("messages"));
         // 북마크
         model.addAttribute("isBookmarks", tab.equalsIgnoreCase("bookmarks"));
+        model.addAttribute("isWishlist", tab.equalsIgnoreCase("wishlist"));
         // 탭별 데이터
         if (tab.equals("projects")) {
             List<ProjectResponseDTO.ListDTO> projects = myProjects.stream()
@@ -286,8 +341,32 @@ public class MemberController {
                 model.addAttribute("bookMarks", bookMarkService.findAllMyBookMarks(loginMember.getId()));
             }
             model.addAttribute("keyword", keyword);
-        }
+        }else if (tab.equals("wishlist")) {
+            int wishPage = 0;
+            try {
+                String wishPageParam = request.getParameter("wishPage");
+                if (wishPageParam != null) wishPage = Integer.parseInt(wishPageParam);
+            } catch (NumberFormatException ignored) {
+            }
 
+            Pageable wishPageable = PageRequest.of(wishPage, 10);
+            Page<com.example.SevMerge.expertwish.ExpertWish> wishResult;
+
+            if (keyword != null && !keyword.isBlank()) {
+                wishResult = expertWishService.filterWishesPaged(loginMember.getId(), keyword, wishPageable);
+            } else {
+                wishResult = expertWishService.findMyWishesPaged(loginMember.getId(), wishPageable);
+            }
+            model.addAttribute("wishes", wishResult.getContent());
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("wishCurrentPage", wishPage + 1);  // 1-based 표시용
+            model.addAttribute("wishTotalPages", wishResult.getTotalPages() == 0 ? 1 : wishResult.getTotalPages());
+            model.addAttribute("wishHasPrev", wishResult.hasPrevious());
+            model.addAttribute("wishHasNext", wishResult.hasNext());
+            model.addAttribute("wishPrevPage", wishPage - 1);
+            model.addAttribute("wishNextPage", wishPage + 1);
+            model.addAttribute("wishTotalElements", wishResult.getTotalElements());
+        }
         return "member/client-mypage";
     }
 

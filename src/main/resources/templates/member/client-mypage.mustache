@@ -131,6 +131,9 @@
                 <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon">📝</span>내 게시글</a>
                 <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon">⭐</span>리뷰</a>
                 <a href="/my-pages?tab=bookmarks" class="cm-link {{#isBookmarks}}active{{/isBookmarks}}"><span class="cm-icon">⭐</span>북마크</a>
+                <a href="/my-pages?tab=wishlist" class="cm-link {{#isWishlist}}active{{/isWishlist}}">
+                    <span class="cm-icon">❤️</span>찜한 전문가
+                </a>
 
                 <div class="cm-group">포인트 / 결제</div>
                 <a href="/charge/form" class="cm-link"><span class="cm-icon">💰</span>포인트 충전</a>
@@ -285,6 +288,58 @@
                     {{/bookMarks}}
                     {{^bookMarks}}<div class="cm-empty">북마크한 전문가가 없습니다.</div>{{/bookMarks}}
                 {{/isBookmarks}}
+
+                {{! ===== 찜한 전문가 ===== }}
+                {{#isWishlist}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">찜한 전문가</div>
+                        <div class="cm-content-sub">찜한 전문가 목록이에요. 총 {{wishTotalElements}}명</div>
+                    </div>
+
+                    <form style="display:flex;gap:10px;margin-bottom:20px;" method="get" action="/my-pages">
+                        <input type="hidden" name="tab" value="wishlist"/>
+                        <input type="text" name="keyword" class="cm-finput" style="flex:1;padding:10px 14px;"
+                               placeholder="전문가 이름으로 검색..."
+                               value="{{#keyword}}{{keyword}}{{/keyword}}"/>
+                        <button type="submit" class="cm-btn cm-btn-primary" style="margin-top:0;padding:0 18px;">검색</button>
+                    </form>
+
+                    {{#wishes}}
+                        <div class="cm-item">
+                            <div class="cm-item-body">
+                                <span class="cm-item-cat">전문가</span>
+                                <a href="/experts/{{expert.id}}" style="text-decoration:none;color:inherit;">
+                                    <div class="cm-item-title">{{expert.name}}</div>
+                                </a>
+                                <div class="cm-item-meta">{{createdAt}}</div>
+                            </div>
+                            <div class="cm-item-right">
+                                <button type="button" class="cm-btn"
+                                        style="background:#fff;border:1.5px solid #fecaca;color:#ef4444;"
+                                        onclick="cancelWish({{expert.id}}, this)">
+                                    ❤️ 찜 취소
+                                </button>
+                            </div>
+                        </div>
+                    {{/wishes}}
+
+                    {{^wishes}}
+                        <div class="cm-empty">찜한 전문가가 없습니다.</div>
+                    {{/wishes}}
+
+                    <!-- 페이지네이션 -->
+                    <div class="cm-paging" style="margin-top:20px;">
+                        {{#wishHasPrev}}
+                            <a href="/my-pages?tab=wishlist&wishPage={{wishPrevPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}"
+                            class="cm-page">‹ 이전</a>
+                        {{/wishHasPrev}}
+                        <span class="cm-page active">{{wishCurrentPage}}</span>
+                        {{#wishHasNext}}
+                            <a href="/my-pages?tab=wishlist&wishPage={{wishNextPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}"
+                            class="cm-page">다음 ›</a>
+                        {{/wishHasNext}}
+                    </div>
+                {{/isWishlist}}
 
                 {{! ===== 쪽지함 ===== }}
                 {{#isMessages}}
@@ -748,6 +803,16 @@ function confirmCurrentPassword() {
 document.getElementById("pwVerifyModalBg").addEventListener("click", function(e) {
     if (e.target === this) closePwVerifyModal();
 });
+
+    async function cancelWish(expertId, btn) {
+    if (!confirm('찜을 취소하시겠습니까?')) return;
+    const res = await fetch('/experts/wish/' + expertId, { method: 'POST' });
+    if (res.ok) {
+        btn.closest('.cm-item').remove();
+    } else {
+        alert('처리 중 오류가 발생했습니다.');
+    }
+}
 </script>
 
 {{> layout/footer}}

@@ -37,14 +37,49 @@
     .terms-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; }
     .terms-item input { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
     .terms-item label { cursor: pointer; }
-    .skill-input-wrap { display: flex; gap: 8px; }
-    .skill-input-wrap .form-input { flex: 1; }
-    .skill-add-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
-    .skill-add-btn:hover { background: #2563eb; }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .skill-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 13px; font-weight: 600; }
-    .skill-tag button { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
-    .skill-tag button:hover { color: #ef4444; }
+    /* 기술스택 선택기 */
+.skill-picker { border: 1.5px solid #e2e5ef; border-radius: 12px; overflow: hidden; }
+.skill-picker-tabs {
+    display: flex;
+    overflow-x: auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e2e5ef;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.skill-picker-tabs::-webkit-scrollbar { display: none; }
+
+.sp-tab {
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    transition: all .12s;
+    flex-shrink: 0;
+}
+.sp-tab.active { color: #2563eb; border-bottom-color: #2563eb; background: #fff; }
+.skill-picker-body { padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 8px; min-height: 72px; }
+.sp-chip { padding: 6px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid #e2e5ef; background: #fff; color: #4b5563;
+    font-family: inherit; transition: all .12s; user-select: none; }
+.sp-chip:hover { border-color: #2563eb; color: #2563eb; }
+.sp-chip.selected { background: #2563eb; border-color: #2563eb; color: #fff; }
+.skill-selected-area { margin-top: 12px; }
+.skill-selected-label { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 28px; }
+.skill-tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px;
+    background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;
+    border-radius: 20px; font-size: 12px; font-weight: 600; }
+.skill-tag button { background: none; border: none; color: #93c5fd; cursor: pointer;
+    font-size: 13px; line-height: 1; padding: 0; }
+.skill-tag button:hover { color: #ef4444; }
+.skill-empty { font-size: 12px; color: #c4c9d9; }
 </style>
 
 <section class="auth-section">
@@ -147,13 +182,17 @@
 
             <div class="form-group">
                 <label class="form-label">기술 스택 <span class="required">*</span></label>
-                <div class="skill-input-wrap">
-                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter" />
-                    <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
+                <div class="skill-picker">
+                    <div class="skill-picker-tabs" id="spTabs"></div>
+                    <div class="skill-picker-body" id="spBody"></div>
                 </div>
-                <div id="skillTags" class="skill-tags"></div>
-                <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요. 의뢰인이 이 키워드로 검색해요.</span>
-                <!-- 실제 전송되는 값 (콤마로 합쳐짐) -->
+                <div class="skill-selected-area">
+                    <div class="skill-selected-label">선택된 기술</div>
+                    <div class="skill-tags" id="skillTags">
+                        <span class="skill-empty">선택된 기술이 없습니다.</span>
+                    </div>
+                </div>
+                <span class="form-hint">ⓘ 여러 기술을 중복 선택할 수 있습니다.</span>
                 <input type="hidden" name="speciality" id="specialityHidden" />
             </div>
 
@@ -224,51 +263,78 @@
     pwInput.addEventListener("input", checkPwMatch);
     pwConfirmInput.addEventListener("input", checkPwMatch);
 
-// ===== 기술 스택 태그 =====
-    const skillInput = document.getElementById("skillInput");
-    const skillAddBtn = document.getElementById("skillAddBtn");
-    const skillTags = document.getElementById("skillTags");
-    const specialityHidden = document.getElementById("specialityHidden");
-    let skills = [];
+// ===== 기술스택 선택기 =====
+const SKILL_CATEGORIES = [
+    { label: '언어', skills: ['Java','Python','JavaScript','TypeScript','Swift','Kotlin','Dart','R','C','C++','C#','Go','Rust','PHP'] },
+    { label: '백엔드', skills: ['Spring Boot','Django','FastAPI','Node.js','Express','NestJS','Flask','Laravel','Ruby on Rails'] },
+    { label: '프론트엔드', skills: ['React','Vue','Angular','Next.js','Nuxt.js','HTML/CSS','Tailwind CSS','SCSS','Webpack','Vite','jQuery','Svelte'] },
+    { label: '모바일', skills: ['Flutter','React Native','Android','iOS','Kotlin Multiplatform'] },
+    { label: 'DB/인프라', skills: ['MySQL','PostgreSQL','MongoDB','Redis','Firebase','Docker','AWS','GCP','Azure','Nginx','Jenkins','Kubernetes','Linux','Elasticsearch'] },
+    { label: '디자인', skills: ['Figma','Adobe XD','Sketch','Zeplin','Photoshop','Illustrator','InDesign','Canva'] },
+    { label: '데이터/AI', skills: ['Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','Scikit-learn','OpenCV','LangChain'] },
+    { label: '영상', skills: ['Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender','Cinema 4D'] },
+    { label: '기타', skills: ['Git','WordPress','Shopify','Notion API','REST API','GraphQL','WebSocket','Unity','Unreal Engine'] }
+];
 
-    function renderSkills() {
-        skillTags.innerHTML = "";
-        skills.forEach((skill, idx) => {
-            const tag = document.createElement("span");
-            tag.className = "skill-tag";
-            tag.innerHTML = skill + ' <button type="button" data-idx="' + idx + '">×</button>';
-            skillTags.appendChild(tag);
-        });
-        specialityHidden.value = skills.join(",");  // 콤마로 합쳐 hidden에 저장
+let selectedSkills = [];
+let activeCategory = 0;
+
+function renderTabs() {
+    const tabs = document.getElementById('spTabs');
+    tabs.innerHTML = SKILL_CATEGORIES.map((cat, i) =>
+        `<button type="button" class="sp-tab ${i === activeCategory ? 'active' : ''}"
+            onclick="switchCategory(${i})">${cat.label}</button>`
+    ).join('');
+}
+
+function renderChips() {
+    const body = document.getElementById('spBody');
+    body.innerHTML = SKILL_CATEGORIES[activeCategory].skills.map(skill =>
+        `<button type="button" class="sp-chip ${selectedSkills.includes(skill) ? 'selected' : ''}"
+            onclick="toggleSkill('${skill}')">${skill}</button>`
+    ).join('');
+}
+
+function renderSelectedTags() {
+    const area = document.getElementById('skillTags');
+    if (selectedSkills.length === 0) {
+        area.innerHTML = '<span class="skill-empty">선택된 기술이 없습니다.</span>';
+    } else {
+        area.innerHTML = selectedSkills.map(skill =>
+            `<span class="skill-tag">${skill}
+                <button type="button" onclick="removeSkill('${skill}')">×</button>
+            </span>`
+        ).join('');
     }
+    document.getElementById('specialityHidden').value = selectedSkills.join(',');
+}
 
-    function addSkill() {
-        const val = skillInput.value.trim();
-        if (!val) return;
-        if (skills.includes(val)) {   // 중복 방지
-            skillInput.value = "";
-            return;
-        }
-        skills.push(val);
-        skillInput.value = "";
-        renderSkills();
+function switchCategory(idx) {
+    activeCategory = idx;
+    renderTabs();
+    renderChips();
+}
+
+function toggleSkill(skill) {
+    if (selectedSkills.includes(skill)) {
+        selectedSkills = selectedSkills.filter(s => s !== skill);
+    } else {
+        selectedSkills.push(skill);
     }
+    renderChips();
+    renderSelectedTags();
+}
 
-    skillAddBtn.addEventListener("click", addSkill);
-    skillInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-            e.preventDefault();   // 엔터로 폼 제출되는 것 방지
-            addSkill();
-        }
-    });
-    // 칩 X 버튼 (이벤트 위임)
-    skillTags.addEventListener("click", function (e) {
-        if (e.target.tagName === "BUTTON") {
-            const idx = parseInt(e.target.dataset.idx);
-            skills.splice(idx, 1);
-            renderSkills();
-        }
-    });
+function removeSkill(skill) {
+    selectedSkills = selectedSkills.filter(s => s !== skill);
+    renderChips();
+    renderSelectedTags();
+}
+
+// 초기화
+renderTabs();
+renderChips();
+renderSelectedTags();
 
     // 제출 시 필수값 + 비밀번호 + 기술스택 + 약관 검증
 form.addEventListener("submit", function (e) {
@@ -326,28 +392,42 @@ form.addEventListener("submit", function (e) {
 
     // ===== 이메일 인증 =====
     sendCodeBtn.addEventListener("click", async function () {
-        const email = emailInput.value.trim();
-        if (!email) { alert("이메일을 입력해주세요."); return; }
+    const email = emailInput.value.trim();
+    if (!email) { alert("이메일을 입력해주세요."); return; }
 
-        sendCodeBtn.disabled = true;
-        showSendingToast("이메일 발송중입니다");
-        try {
-            const res = await fetch("/api/email/send", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: email })
-            });
-            if (res.ok) {
-                alert("인증 코드가 발송되었습니다.");
-                codeGroup.style.display = "flex";
-                codeGroup.style.flexDirection = "column";
-            } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
-        } catch (e) {
-            alert("발송에 실패했습니다. 다시 시도해주세요.");
-        } finally {
-            hideSendingToast();
-            sendCodeBtn.disabled = false;
-        }
+    // 중복 체크 먼저
+    const dupRes = await fetch("/api/member/check-email", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
     });
+    const dupData = await dupRes.json();
+    if (!dupData.available) {
+        alert(dupData.message);
+        emailInput.style.borderColor = "#ef4444";
+        return;
+    }
+    emailInput.style.borderColor = "#10b981";
+
+    // 중복 아니면 인증코드 발송
+    sendCodeBtn.disabled = true;
+    showSendingToast("이메일 발송중입니다");
+    try {
+        const res = await fetch("/api/email/send", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+        if (res.ok) {
+            alert("인증 코드가 발송되었습니다.");
+            codeGroup.style.display = "flex";
+            codeGroup.style.flexDirection = "column";
+        } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
+    } catch (e) {
+        alert("발송에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+        hideSendingToast();
+        sendCodeBtn.disabled = false;
+    }
+});
 
     // 이메일 발송중 오버레이 (중앙 원형 점 스피너)
     function showSendingToast(message) {

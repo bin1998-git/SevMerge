@@ -27,6 +27,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -296,6 +297,88 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getCurrentPassword(), member.getPassword()))
             throw new BadRequestException("현재 비밀번호가 올바르지 않습니다.");
         member.changePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+
+    // 이름+전화번호로 이메일 찾기
+    @Transactional(readOnly = true)
+    public String findEmailByNameAndPhone(String name, String phone) {
+        String cleanPhone = phone.replaceAll("-", "");
+        return memberRepository.findAll().stream()
+                .filter(m -> !m.isDeleted()
+                        && m.getName().equals(name)
+                        && m.getPhone() != null
+                        && m.getPhone().replaceAll("-", "").equals(cleanPhone))
+                .findFirst()
+                .map(m -> {
+                    // 소셜 로그인 계정은 이메일 노출 대신 안내
+                    if (m.getProvider() != null && !m.getProvider().isBlank()) {
+                        return m.getProvider().toUpperCase() + " 소셜 계정으로 가입된 계정입니다.";
+                    }
+                    // 이메일 마스킹
+                    String email = m.getEmail();
+                    int atIdx = email.indexOf('@');
+                    if (atIdx <= 2) return email;
+                    return email.substring(0, 2) + "**" + email.substring(atIdx);
+                })
+                .orElseThrow(() -> new BadRequestException("일치하는 회원 정보가 없습니다."));
+    }
+
+    // 이름+전화번호로 임시 비밀번호 발급
+    @Transactional
+    public String resetPasswordByPhone(String name, String phone) {
+        String cleanPhone = phone.replaceAll("-", "");
+        Member member = memberRepository.findAll().stream()
+                .filter(m -> !m.isDeleted()
+                        && m.getName().equals(name)
+                        && m.getPhone() != null
+                        && m.getPhone().replaceAll("-", "").equals(cleanPhone))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException("일치하는 회원 정보가 없습니다."));
+
+        if (member.getProvider() != null && !member.getProvider().isBlank()) {
+            throw new BadRequestException("소셜 로그인 계정은 비밀번호를 재설정할 수 없습니다.");
+        }
+
+        // 임시 비밀번호 생성 (영문+숫자+특수문자 10자)
+        String tempPw = generateTempPassword();
+        member.changePassword(passwordEncoder.encode(tempPw));
+
+        sendStatusSms(member, "[SevMerge] 임시 비밀번호: " + tempPw + " (로그인 후 반드시 변경해 주세요)");
+        log.info("임시 비밀번호 발급 - memberId={}", member.getId());
+        return tempPw;
+    }
+
+    // 이름+전화번호로 회원 존재 확인
+    @Transactional(readOnly = true)
+    public boolean existsByNameAndPhone(String name, String phone) {
+        String cleanPhone = phone.replaceAll("-", "");
+        return memberRepository.findAll().stream()
+                .anyMatch(m -> !m.isDeleted()
+                        && m.getName().equals(name)
+                        && m.getPhone() != null
+                        && m.getPhone().replaceAll("-", "").equals(cleanPhone));
+    }
+
+    // 임시 비밀번호 생성
+    private String generateTempPassword() {
+        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%";
+        java.util.Random random = new java.security.SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        // 최소 구성 보장
+        sb.append("ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz".charAt(random.nextInt(46))); // 영문
+        sb.append("23456789".charAt(random.nextInt(8)));  // 숫자
+        sb.append("!@#$%".charAt(random.nextInt(5)));     // 특수문자
+        for (int i = 3; i < 10; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        // 섞기
+        char[] arr = sb.toString().toCharArray();
+        for (int i = arr.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+        }
+        return new String(arr);
     }
 
     // 관리자 전용
@@ -732,15 +815,19 @@ public class MemberService {
 
     // 전문가 프로필 저장
     private void saveExpertProfile(Member member, MemberRequest.ExpertJoin req) {
+        String contactEmail = (req.getEmail() != null && !req.getEmail().isBlank())
+                ? req.getEmail()
+                : member.getEmail();
         expertProfileRepository.save(ExpertProfile.builder()
                 .member(member)
                 .profileImage("default.png")
                 .intro(req.getIntro())
                 .career(req.getCareer())
                 .githubUrl(req.getGithubUrl())
-                .contactEmail(req.getEmail())
+                .contactEmail(contactEmail)
                 .speciality(req.getSpeciality() != null ? req.getSpeciality() : "")
                 .isCertified(false)
+                .expertGrade(Grade.NORMAL)
                 .build());
     }
 

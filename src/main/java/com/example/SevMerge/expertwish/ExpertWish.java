@@ -34,4 +34,9 @@ public class ExpertWish {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    public String getFormattedDate() {
+        if (createdAt == null) return "";
+        return new java.text.SimpleDateFormat("yyyy-MM-dd").format(createdAt);
+    }
 }
