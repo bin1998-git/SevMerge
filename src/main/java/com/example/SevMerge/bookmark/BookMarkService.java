@@ -45,7 +45,6 @@ public class BookMarkService {
         } else { // 마크가 없으면 save 처리
             Member memberEntity = memberRepository.findById(memberId).orElseThrow(() ->
                     new BadRequestException("사용자를 찾을수 없습니다.")
-
             );
             ExpertProfile expertProfileEntitiy = expertProfileRepository.findById(expertId).orElseThrow(() ->
                     new BadRequestException("전문가가 존재하지 않습니다.")
@@ -62,7 +61,6 @@ public class BookMarkService {
 
     @Transactional
     public void delete(Long expertId,Long memberId){
-
         BookMark bookMark = bookMarkRepository.findByMemberIdAndExpertProfileId(memberId, expertId).orElseThrow(() ->
                     new BadRequestException("북마크가 없습니다.")
                 );
@@ -78,11 +76,8 @@ public class BookMarkService {
         List<BookMark> filteredBookMarkList = bookMarkRepository.findFilterByName(keyword, memberId);
 
         if(filteredBookMarkList.isEmpty() || filteredBookMarkList == null) {
-
             throw new BadRequestException("해당 이름의 전문가 북마크는 존재하지 않습니다.");
         }
-
-
          return filteredBookMarkList;
     }
 
