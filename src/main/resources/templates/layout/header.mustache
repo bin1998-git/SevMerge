@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>코드요 — 당신의 아이디어를 코드로</title>
+    <title>코드요</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
             --navy:      #0d1b2e;
-            --navy2:     #112240;
             --cyan:      #00c8e0;
             --cyan-dark: #00a8be;
             --blue:      #2563eb;
@@ -20,22 +19,16 @@
             --gray:      #6b7280;
             --gray-lt:   #9ca3af;
             --border:    #e5e7eb;
-            --surface:   #f0f4fa;
         }
 
         body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
-            background: var(--surface);
-            color: #1e293b;
-            line-height: 1.6;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             padding-top: 64px;
         }
 
         a { text-decoration: none; color: inherit; }
 
-        /* ══════════════════════════════
-           NAV — fixed, 흰 배경, max-width 맞춤
-        ══════════════════════════════ */
+        /* ══ NAV ══ */
         .nav {
             position: fixed !important;
             top: 0 !important; left: 0 !important; right: 0 !important;
@@ -47,7 +40,6 @@
             display: flex !important;
             align-items: center;
             box-shadow: 0 2px 12px rgba(0,0,0,.08);
-            padding: 0 !important;
         }
         .nav-inner {
             width: 100%;
@@ -59,12 +51,9 @@
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            flex-wrap: nowrap;
-            overflow: visible;
         }
         .nav-logo {
             display: flex; align-items: center; flex-shrink: 0;
-            text-decoration: none;
         }
         .nav-logo img { display: block; height: 28px; width: auto; }
 
@@ -72,14 +61,13 @@
         .nav-links {
             display: flex; gap: 24px; align-items: center;
             font-size: 14px; color: #6b7280; font-weight: 500;
-            min-width: 0; overflow: visible;
         }
         .nav-links a:hover { color: #1c1e26; }
 
         /* 전문가 탭 네비 */
         .nav-links.expert-links {
             flex: 1; gap: 0; justify-content: center;
-            min-width: 0; overflow-x: auto; scrollbar-width: none;
+            overflow-x: auto; scrollbar-width: none;
         }
         .nav-links.expert-links::-webkit-scrollbar { display: none; }
         .expert-nav-tab {
@@ -95,7 +83,7 @@
         /* 우측 액션 */
         .nav-actions {
             display: flex; align-items: center; gap: 8px;
-            flex-shrink: 0; flex-wrap: nowrap; white-space: nowrap;
+            flex-shrink: 0; white-space: nowrap;
         }
 
         /* 버튼 */
@@ -125,7 +113,7 @@
             font-size: 11px; font-weight: 700;
             background: var(--blue); color: #fff;
             border-radius: 6px; padding: 3px 9px;
-            text-decoration: none; transition: background .15s; white-space: nowrap;
+            text-decoration: none; transition: background .15s;
         }
         .nav-charge-btn:hover { background: var(--blue-dark); }
 
@@ -152,15 +140,12 @@
         }
         .profile-thumb {
             width: 44px; height: 44px; border-radius: 50%;
-            background-size: cover; background-position: center;
             background-color: #eff6ff; border: 1.5px solid #bfdbfe;
             display: flex; align-items: center; justify-content: center;
-            font-size: 0; overflow: hidden; flex-shrink: 0;
+            overflow: hidden; flex-shrink: 0;
         }
         .profile-thumb-default {
             font-size: 14px; font-weight: 800; color: var(--blue);
-            max-width: 100%; overflow: hidden;
-            text-overflow: ellipsis; white-space: nowrap; padding: 0 4px;
         }
         .profile-dropdown {
             display: none; position: absolute; top: 50px; right: 0;
@@ -189,41 +174,34 @@
         .pd-charge-btn {
             font-size: 11px; font-weight: 700;
             background: var(--blue); color: #fff;
-            border-radius: 6px; padding: 3px 9px; text-decoration: none; white-space: nowrap;
+            border-radius: 6px; padding: 3px 9px; text-decoration: none;
         }
         .pd-charge-btn:hover { background: var(--blue-dark); }
 
         /* 관리자 드롭다운 */
-        .admin-dropdown-trigger { font-size: inherit; font-weight: inherit; color: inherit; transition: color .15s; cursor: pointer; }
         .admin-dropdown-container { position: relative; display: inline-block; }
-        .admin-dropdown-container:hover .nav-submenu,
-        .nav-submenu.active { display: flex !important; flex-direction: column !important; }
+        .admin-dropdown-trigger { cursor: pointer; }
+        .admin-dropdown-container:hover .nav-submenu { display: flex !important; }
         .nav-submenu {
             display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
             background: #fff; min-width: 140px;
             border: 1px solid #e5e7eb; border-radius: 6px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,.1); padding: 4px 0; z-index: 9999;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,.1);
+            padding: 4px 0; z-index: 9999;
+            flex-direction: column;
         }
         .nav-submenu .submenu-link {
-            position: relative !important; display: block !important;
-            width: 100% !important; box-sizing: border-box !important;
-            padding: 10px 0 !important; font-size: 13px; font-weight: 600;
-            color: #6b7280 !important; background-color: transparent !important;
-            text-decoration: none; white-space: nowrap; transition: all .1s;
-            text-align: center !important; border-left: none !important;
+            display: block; width: 100%;
+            padding: 10px 0; font-size: 13px; font-weight: 600;
+            color: #6b7280; text-decoration: none; white-space: nowrap;
+            text-align: center; transition: all .1s; position: relative;
         }
-        .nav-submenu .submenu-link.active-link { color: var(--blue) !important; background-color: #eff6ff !important; }
-        .nav-submenu .submenu-link.active-link::before {
-            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--blue);
-        }
-        .nav-submenu .submenu-link:hover { color: var(--blue) !important; background-color: #eff6ff !important; }
+        .nav-submenu .submenu-link:hover { color: var(--blue); background: #eff6ff; }
+        .nav-submenu .submenu-link.active-link { color: var(--blue); background: #eff6ff; }
+        .nav-submenu .submenu-link.active-link::before,
         .nav-submenu .submenu-link:hover::before {
-            content: "" !important; position: absolute !important;
-            left: 0 !important; top: 0 !important; bottom: 0 !important;
-            width: 4px !important; background-color: var(--blue) !important;
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--blue);
         }
-        .nav-submenu:hover .submenu-link.active-link:not(:hover) { background-color: transparent !important; color: #6b7280 !important; }
-        .nav-submenu:hover .submenu-link.active-link:not(:hover)::before { display: none !important; }
 
         /* 알림 토스트 */
         .noti-toast {
@@ -242,271 +220,40 @@
             100% { opacity: 0; }
         }
 
-        /* ══════════════════════════════
-           히어로
-        ══════════════════════════════ */
-        .hero {
-            padding: 28px 28px 32px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-            max-width: 1300px; margin: 0 auto;
-        }
-        .hero-dark {
-            background: linear-gradient(140deg, rgba(13,27,46,.82) 0%, rgba(14,42,74,.75) 60%, rgba(13,32,64,.85) 100%),
-                        url('/mainBackground.jpg') center/cover no-repeat;
-            border-radius: 24px; padding: 48px 44px 44px;
-            position: relative; overflow: hidden; min-height: 440px;
-            display: flex; flex-direction: column; justify-content: flex-end;
-        }
-        .hero-dark::before {
-            content: ''; position: absolute; inset: 0;
-            background-image:
-                linear-gradient(rgba(0,200,224,.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,200,224,.06) 1px, transparent 1px);
-            background-size: 40px 40px; pointer-events: none;
-        }
-        .hero-code-img {
-            position: absolute; top: 24px; right: 24px;
-            width: 200px; height: 375px; border-radius: 16px; object-fit: cover; opacity: .92;
-        }
-        .hero-badge-dark {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(0,200,224,.12); border: 1px solid rgba(0,200,224,.3);
-            border-radius: 999px; padding: 4px 14px;
-            font-size: 11px; font-weight: 700; color: var(--cyan);
-            margin-bottom: 20px; letter-spacing: .3px; width: fit-content;
-        }
-        .hero-title-dark {
-            font-size: clamp(28px, 3.5vw, 44px); font-weight: 900; color: #fff;
-            line-height: 1.15; letter-spacing: -1.5px; margin-bottom: 14px;
-        }
-        .hero-title-dark .hl { color: var(--cyan); }
-        .hero-desc-dark {
-            font-size: 14px; color: rgba(255,255,255,.55);
-            line-height: 1.75; margin-bottom: 32px; max-width: 340px;
-        }
-        .hero-btns-dark { display: flex; gap: 12px; flex-wrap: wrap; }
-        .btn-cyan {
-            background: var(--cyan); color: var(--navy);
-            border-radius: 30px; padding: 12px 26px; font-size: 14px; font-weight: 800;
-        }
-        .btn-cyan:hover { background: var(--cyan-dark); }
-        .btn-outline-dark {
-            background: transparent; color: #fff;
-            border: 1.5px solid rgba(255,255,255,.35);
-            border-radius: 30px; padding: 12px 26px; font-size: 14px; font-weight: 700;
-        }
-        .btn-outline-dark:hover { border-color: rgba(255,255,255,.7); }
-
-        .hero-light {
-            background: var(--white); border-radius: 24px; padding: 32px 32px 28px;
-            display: flex; flex-direction: column; justify-content: flex-start; gap: 18px;
-            position: relative; overflow: hidden; min-height: 440px;
-        }
-        .hero-person-img {
-            position: absolute; bottom: 0; right: -10px;
-            width: 260px; height: auto; object-fit: contain; pointer-events: none; z-index: 2;
-        }
-        .hero-badge-light {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #eff6ff; border: 1px solid #bfdbfe;
-            border-radius: 999px; padding: 4px 14px;
-            font-size: 11px; font-weight: 700; color: var(--blue);
-            letter-spacing: .3px; width: fit-content;
-        }
-        .hero-title-light {
-            font-size: clamp(24px, 3vw, 38px); font-weight: 900; color: #0f172a;
-            line-height: 1.2; letter-spacing: -1.5px; max-width: 62%;
-        }
-        .hero-title-light .hl { color: var(--blue); }
-        .mini-cards {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-            max-width: 62%; position: relative; z-index: 3;
-        }
-        .mini-card {
-            background: #f8faff; border: 1.5px solid var(--border);
-            border-radius: 16px; padding: 20px 14px; transition: border-color .2s;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; aspect-ratio: 1 / 1;
-        }
-        .mini-card:hover { border-color: #93c5fd; background: #fff; }
-        .mini-card-ico {
-            width: 52px; height: 52px; border-radius: 14px;
-            background: var(--white); margin-bottom: 12px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 8px rgba(37,99,235,.1);
-        }
-        .mini-card-ico svg { width: 28px; height: 28px; }
-        .mini-card-eyebrow { font-size: 10px; color: var(--gray-lt); font-weight: 600; margin-bottom: 4px; letter-spacing: .3px; }
-        .mini-card-title { font-size: 13px; font-weight: 800; color: #0f172a; }
-        .hero-btns-light {
-            display: flex; gap: 8px; flex-wrap: wrap;
-            max-width: 62%; position: relative; z-index: 3;
-        }
-        .btn-blue-light {
-            background: var(--blue); color: #fff; border-radius: 30px; padding: 11px 20px;
-            font-size: 13px; font-weight: 800; flex: 1; text-align: center;
-        }
-        .btn-blue-light:hover { background: var(--blue-dark); }
-        .btn-outline-light {
-            background: var(--white); color: #1e293b;
-            border: 1.5px solid var(--border); border-radius: 30px; padding: 11px 20px;
-            font-size: 13px; font-weight: 700; flex: 1; text-align: center;
-        }
-        .btn-outline-light:hover { border-color: var(--blue); color: var(--blue); }
-
-        /* 통계 바 */
-        .stats-bar {
-            max-width: 1300px; margin: 0 auto; padding: 20px 28px;
-            display: flex; justify-content: space-around; flex-wrap: wrap; gap: 16px;
-        }
-        .stat { text-align: center; }
-        .stat-num { font-size: 28px; font-weight: 900; color: #0f172a; display: block; letter-spacing: -1px; }
-        .stat-num em { color: var(--blue); font-style: normal; }
-        .stat-label { font-size: 12px; color: var(--gray-lt); font-weight: 500; margin-top: 2px; }
-
-        /* 공통 섹션 */
-        section { padding: 80px 28px; }
-        .section-inner { max-width: 1100px; margin: 0 auto; }
-        .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
-        .sec-title { font-size: clamp(26px, 4vw, 38px); font-weight: 900; letter-spacing: -1.5px; color: #0f172a; margin-bottom: 12px; }
-        .sec-desc { font-size: 15px; color: var(--gray); max-width: 500px; line-height: 1.8; }
-
-        /* 서비스 소개 */
-        .features { background: var(--white); }
-        .section-header { margin-bottom: 52px; }
-        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .feature-card {
-            background: #f8faff; border: 1.5px solid var(--border);
-            border-radius: 18px; padding: 30px 26px; transition: border-color .2s, box-shadow .2s;
-        }
-        .feature-card:hover { border-color: #93c5fd; box-shadow: 0 6px 24px rgba(37,99,235,.08); }
-        .feature-icon {
-            width: 50px; height: 50px; border-radius: 14px; background: var(--blue-soft);
-            display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px;
-        }
-        .feature-name { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -.3px; }
-        .feature-desc { font-size: 13px; color: var(--gray); line-height: 1.75; }
-
-        /* 이용 방법 */
-        .how { background: var(--surface); }
-        .how-steps-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 52px; align-items: start; }
-        .how-col { background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 28px 28px 32px; height: 100%; }
-        .how-col-label { font-size: 13px; font-weight: 700; margin-bottom: 24px; }
-        .how-col-label.client { color: var(--blue); }
-        .how-col-label.expert { color: #7c3aed; }
-        .steps { display: flex; flex-direction: column; gap: 22px; }
-        .step { display: flex; gap: 16px; align-items: flex-start; }
-        .step-num {
-            width: 32px; height: 32px; border-radius: 8px; color: #fff;
-            font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .step-num.blue { background: var(--blue); }
-        .step-num.purple { background: #7c3aed; }
-        .step-title { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
-        .step-desc { font-size: 13px; color: var(--gray); line-height: 1.7; }
-        .how-mock { margin-top: 32px; background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px 28px; }
-        .how-mock-label { font-size: 11px; font-weight: 700; color: var(--gray-lt); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
-        .mock-cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-        .mock-card { background: #f8faff; border-radius: 14px; padding: 16px 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-        .mock-title { font-size: 13px; font-weight: 700; color: #0f172a; line-height: 1.4; }
-        .mock-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-        .mock-tag { font-size: 10px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
-        .tag-blue   { background: #dbeafe; color: #1e40af; }
-        .tag-green  { background: #d1fae5; color: #065f46; }
-        .tag-purple { background: #ede9fe; color: #5b21b6; }
-        .tag-amber  { background: #fef3c7; color: #92400e; }
-        .mock-price { font-size: 13px; font-weight: 900; color: var(--blue); margin-top: auto; }
-
-        /* 분야 */
-        .categories { background: var(--navy); }
-        .categories .eyebrow { color: #67e8f9; }
-        .categories .sec-title { color: #fff; }
-        .categories .sec-desc { color: rgba(255,255,255,.45); }
-        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; }
-        .cat-card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09); border-radius: 14px; padding: 22px 16px; text-align: center; transition: background .2s, border-color .2s; cursor: default; }
-        .cat-card:hover { background: rgba(0,200,224,.15); border-color: rgba(0,200,224,.4); }
-        .cat-emoji { font-size: 26px; margin-bottom: 10px; display: block; }
-        .cat-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-        .cat-sub { font-size: 11px; color: rgba(255,255,255,.35); }
-
-        /* 신뢰 */
-        .trust { background: var(--white); }
-        .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 52px; }
-        .trust-card { border: 1.5px solid var(--border); border-radius: 18px; padding: 30px 26px; text-align: center; transition: border-color .2s; }
-        .trust-card:hover { border-color: #93c5fd; }
-        .trust-icon { font-size: 34px; margin-bottom: 14px; display: block; }
-        .trust-name { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-        .trust-desc { font-size: 13px; color: var(--gray); line-height: 1.75; }
-
-        /* CTA */
-        .cta-banner { background: linear-gradient(135deg, #0d1b2e 0%, #1a3a8f 50%, #1e1b4b 100%); padding: 88px 28px; text-align: center; }
-        .cta-inner { max-width: 620px; margin: 0 auto; }
-        .cta-title { font-size: clamp(28px, 5vw, 46px); font-weight: 900; color: #fff; letter-spacing: -2px; margin-bottom: 14px; }
-        .cta-title .hl { color: var(--cyan); }
-        .cta-desc { font-size: 16px; color: rgba(255,255,255,.6); margin-bottom: 38px; line-height: 1.8; }
-        .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .btn-cta-cyan { background: var(--cyan); color: var(--navy); border-radius: 30px; padding: 14px 32px; font-size: 15px; font-weight: 800; }
-        .btn-cta-cyan:hover { background: var(--cyan-dark); }
-        .btn-cta-ghost { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.3); border-radius: 30px; padding: 14px 32px; font-size: 15px; font-weight: 700; }
-        .btn-cta-ghost:hover { border-color: rgba(255,255,255,.7); }
-
         /* 반응형 */
         @media (max-width: 960px) {
             .nav-inner { padding: 0 16px; }
             .nav-links { display: none; }
             .nav-logo img { height: 24px; }
-            .hero { grid-template-columns: 1fr; padding: 12px; }
-            .hero-dark { min-height: 360px; padding: 32px 24px 28px; }
-            .hero-light { min-height: auto; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .how-steps-row { grid-template-columns: 1fr; }
-            .mock-cards-row { grid-template-columns: 1fr; }
-            .cat-grid { grid-template-columns: repeat(2, 1fr); }
-            .trust-grid { grid-template-columns: 1fr; }
-            section { padding: 60px 16px; }
         }
         @media (max-width: 480px) {
             .nav-inner { padding: 0 12px; }
-            .hero-person-img { width: 180px; }
-            .hero-code-img { width: 140px; height: 260px; }
-            .mini-cards { max-width: 58%; }
-            .hero-btns-light { max-width: 58%; }
-            .hero-title-light { max-width: 58%; }
-        }
-
-        /* nav 강제 고정 — 모든 화면 크기에서 항상 표시 */
-        header.nav,
-        .nav {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
         }
     </style>
 </head>
 <body>
 
 <!-- ══ 네브바 ══ -->
-<header class="nav" style="position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;z-index:99999!important;">
+<header class="nav">
     <div class="nav-inner">
         {{#isExpert}}
-            {{#isExpert}}
-                {{#isAdmin}}
-                    <a href="/admin/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
-                {{/isAdmin}}
-                {{^isAdmin}}
-                    <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
-                {{/isAdmin}}
-                <nav class="nav-links expert-links">
-                    <a href="/bids/my-list"         class="expert-nav-tab">제안서 관리</a>
-                    <a href="/bids/my-orders"       class="expert-nav-tab">주문 관리</a>
-                    <a href="/payment/my"           class="expert-nav-tab">수익 &amp; 정산</a>
-                    <a href="/reviews/my"           class="expert-nav-tab">평가 및 리뷰</a>
-                    <a href="/experts/my/info-edit" class="expert-nav-tab">내 정보 수정</a>
-                    <a href="/boards"               class="expert-nav-tab">게시판</a>
-                    <a href="/messages"             class="expert-nav-tab">쪽지함</a>
-                </nav>
-                <div class="nav-actions"></div>
-            {{/isExpert}}
+            {{#isAdmin}}
+                <a href="/admin/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+            {{/isAdmin}}
+            {{^isAdmin}}
+                <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+            {{/isAdmin}}
+
+            <nav class="nav-links expert-links">
+                <a href="/bids/my-list"         class="expert-nav-tab">제안서 관리</a>
+                <a href="/bids/my-orders"       class="expert-nav-tab">주문 관리</a>
+                <a href="/payment/my"           class="expert-nav-tab">수익 &amp; 정산</a>
+                <a href="/reviews/my"           class="expert-nav-tab">평가 및 리뷰</a>
+                <a href="/experts/my/info-edit" class="expert-nav-tab">내 정보 수정</a>
+                <a href="/boards"               class="expert-nav-tab">게시판</a>
+                <a href="/messages"             class="expert-nav-tab">쪽지함</a>
+            </nav>
+
             <div class="nav-actions">
                 <div class="nav-balance-wrap">
                     <span class="nav-balance-label">잔액</span>
@@ -523,7 +270,7 @@
                 <div class="profile-menu" id="profileMenuExpert">
                     <button class="profile-trigger" onclick="toggleProfileMenu(event,'profileDropdownExpert')" aria-label="내 메뉴">
                         {{#sessionUser.profileImage}}
-                            <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
+                            <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');background-size:cover;"></span>
                         {{/sessionUser.profileImage}}
                         {{^sessionUser.profileImage}}
                             <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
@@ -533,15 +280,15 @@
                         <div class="pd-head"><div class="pd-name">{{sessionUser.name}}님</div></div>
                         <a href="/experts/dashboard" class="pd-item">🏠 대시보드</a>
                         <a href="/experts/my/form" class="pd-item">⚙️ 프로필 수정</a>
-                        <form id="logoutFormExpert" action="/logout" method="POST" style="display:inline;">
-                            <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0;">🚪 로그아웃</button>
+                        <form action="/logout" method="POST" style="display:inline;">
+                            <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:10px 12px;">🚪 로그아웃</button>
                         </form>
                     </div>
                 </div>
             </div>
         {{/isExpert}}
+
         {{^isExpert}}
-            <!-- 비로그인 / 일반회원: 랜딩 로고 -->
             {{#isLoggedIn}}
                 {{#isAdmin}}
                     <a href="/admin/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
@@ -558,8 +305,8 @@
                 {{#isAdmin}}
                     <a href="/admin/members" class="admin-main-item">회원 관리</a>
                     <a href="/admin/projects" class="admin-main-item">프로젝트 관리</a>
-                    <div class="admin-dropdown-container" style="position:relative;display:inline-block;">
-                        <span class="admin-dropdown-trigger" style="cursor:pointer;">게시판 관리</span>
+                    <div class="admin-dropdown-container">
+                        <span class="admin-dropdown-trigger">게시판 관리</span>
                         <div class="nav-submenu">
                             <a href="/admin/boards"   class="submenu-link">자유게시판</a>
                             <a href="/admin/notices"  class="submenu-link">공지사항</a>
@@ -568,13 +315,13 @@
                         </div>
                     </div>
                     <a href="/admin/blacklists" class="admin-main-item">블랙리스트</a>
-                    <div class="admin-dropdown-container" style="position:relative;display:inline-block;">
-                        <span class="admin-dropdown-trigger" style="cursor:pointer;">전문가 승인</span>
+                    <div class="admin-dropdown-container">
+                        <span class="admin-dropdown-trigger">전문가 승인</span>
                         <div class="nav-submenu">
-                            <a href="/admin/experts/withdraw"      class="submenu-link">출금 요청 관리</a>
+                            <a href="/admin/experts/withdraw"       class="submenu-link">출금 요청 관리</a>
                             <a href="/admin/experts?status=PENDING" class="submenu-link">전문가 승인 관리</a>
-                            <a href="/admin/experts/grade"         class="submenu-link">등급별 전문가 관리</a>
-                            <a href="/admin/refund-applications"   class="submenu-link">환불 요청 관리</a>
+                            <a href="/admin/experts/grade"          class="submenu-link">등급별 전문가 관리</a>
+                            <a href="/admin/refund-applications"    class="submenu-link">환불 요청 관리</a>
                         </div>
                     </div>
                 {{/isAdmin}}
@@ -587,14 +334,13 @@
                         <a href="/messages">쪽지함</a>
                     {{/isLoggedIn}}
                     {{^isLoggedIn}}
-                        <!-- 인트로 페이지(/)에서는 랜딩 링크, 다른 페이지에서는 서비스 링크 -->
-                        <a href="#features"  class="nav-link-intro">서비스 소개</a>
-                        <a href="#how"       class="nav-link-intro">이용 방법</a>
+                        <a href="#features"   class="nav-link-intro">서비스 소개</a>
+                        <a href="#how"        class="nav-link-intro">이용 방법</a>
                         <a href="#categories" class="nav-link-intro">분야</a>
-                        <a href="#trust"     class="nav-link-intro">안전 결제</a>
-                        <a href="/projects"  class="nav-link-other" style="display:none;">프로젝트</a>
-                        <a href="/experts"   class="nav-link-other" style="display:none;">전문가</a>
-                        <a href="/boards"    class="nav-link-other" style="display:none;">게시판</a>
+                        <a href="#trust"      class="nav-link-intro">안전 결제</a>
+                        <a href="/projects"   class="nav-link-other" style="display:none;">프로젝트</a>
+                        <a href="/experts"    class="nav-link-other" style="display:none;">전문가</a>
+                        <a href="/boards"     class="nav-link-other" style="display:none;">게시판</a>
                     {{/isLoggedIn}}
                 {{/isAdmin}}
             </nav>
@@ -611,7 +357,7 @@
                     <div class="profile-menu" id="profileMenuUser">
                         <button class="profile-trigger" onclick="toggleProfileMenu(event,'profileDropdownUser')" aria-label="내 메뉴">
                             {{#sessionUser.profileImage}}
-                                <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');"></span>
+                                <span class="profile-thumb" style="background-image:url('{{sessionUser.profileImageUrl}}');background-size:cover;"></span>
                             {{/sessionUser.profileImage}}
                             {{^sessionUser.profileImage}}
                                 <span class="profile-thumb profile-thumb-default">{{sessionUser.name}}</span>
@@ -628,8 +374,8 @@
                                 <a href="/my-pages" class="pd-item">🏠 마이페이지</a>
                                 <a href="/my-pages?tab=edit" class="pd-item">⚙️ 정보 수정</a>
                             {{/isAdmin}}
-                            <form id="logoutFormClient" action="/logout" method="POST" style="display:inline;">
-                                <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0;">🚪 로그아웃</button>
+                            <form action="/logout" method="POST" style="display:inline;">
+                                <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:10px 12px;">🚪 로그아웃</button>
                             </form>
                         </div>
                     </div>
@@ -643,7 +389,7 @@
     </div>
 </header>
 
-<!-- ══ SSE 알림 ══ -->
+<!-- ══ SSE 알림 (로그인 시) ══ -->
 {{#isLoggedIn}}
     <script>
         const sse = new EventSource('/notifications/subscribe');
@@ -671,35 +417,16 @@
 <!-- ══ 공통 스크립트 ══ -->
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        const isAdminMenuVisible = document.querySelector('.admin-main-item, .admin-dropdown-trigger');
-        if (isAdminMenuVisible) {
-            document.querySelectorAll('.nav-logo').forEach(logo => logo.setAttribute('href', '/admin/main'));
-        }
-
-        /* 비로그인 상태: 인트로(/) 여부에 따라 nav 링크 전환 */
+        /* 비로그인: 인트로(/) 여부에 따라 nav 링크 전환 */
         const isIntroPage = window.location.pathname === '/' || window.location.pathname === '';
-        const introLinks = document.querySelectorAll('.nav-link-intro');
-        const otherLinks = document.querySelectorAll('.nav-link-other');
-        if (!isIntroPage) {
-            introLinks.forEach(el => el.style.display = 'none');
-            otherLinks.forEach(el => el.style.display = '');
-        } else {
-            introLinks.forEach(el => el.style.display = '');
-            otherLinks.forEach(el => el.style.display = 'none');
-        }
+        document.querySelectorAll('.nav-link-intro').forEach(el => el.style.display = isIntroPage ? '' : 'none');
+        document.querySelectorAll('.nav-link-other').forEach(el => el.style.display = isIntroPage ? 'none' : '');
 
-        /* nav 항상 표시 강제 적용 */
-        const nav = document.querySelector('header.nav, .nav');
-        if (nav) {
-            nav.style.setProperty('display', 'flex', 'important');
-            nav.style.setProperty('visibility', 'visible', 'important');
-            nav.style.setProperty('opacity', '1', 'important');
-            nav.style.setProperty('position', 'fixed', 'important');
-            nav.style.setProperty('top', '0', 'important');
-            nav.style.setProperty('left', '0', 'important');
-            nav.style.setProperty('right', '0', 'important');
-            nav.style.setProperty('z-index', '99999', 'important');
-        }
+        /* 프로필 이니셜 */
+        document.querySelectorAll('.profile-thumb-default').forEach(el => {
+            const name = el.textContent.trim();
+            if (name) el.textContent = name.charAt(0);
+        });
     });
 
     function toggleProfileMenu(e, dropdownId) {
@@ -712,20 +439,14 @@
             if (menu && !menu.contains(e.target)) dd.classList.remove('open');
         });
     });
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.profile-thumb-default').forEach(function(el) {
-            const name = el.textContent.trim();
-            if (name) el.textContent = name.charAt(0);
-        });
-    });
 
     /* CSRF 자동 주입 */
-    (function injectCsrfTokens() {
+    (function() {
         function getCsrfToken() {
             const match = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('XSRF-TOKEN='));
             return match ? decodeURIComponent(match.split('=')[1]) : null;
         }
-        function addCsrfToForms() {
+        function addCsrf() {
             const token = getCsrfToken();
             if (!token) return;
             document.querySelectorAll('form').forEach(function(form) {
@@ -737,12 +458,12 @@
                 }
             });
         }
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addCsrfToForms);
-        else addCsrfToForms();
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addCsrf);
+        else addCsrf();
     })();
 </script>
 
-<!-- ══ 관리자 활성 메뉴 스크립트 ══ -->
+<!-- ══ 관리자 활성 메뉴 ══ -->
 {{#isAdmin}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -751,25 +472,26 @@
 
             document.querySelectorAll('.nav-links > .admin-main-item').forEach(function(link) {
                 if (link.getAttribute('href') === currentPath)
-                    link.setAttribute('style', 'color:#2563eb!important;font-weight:bold!important;');
+                    link.style.cssText = 'color:#2563eb!important;font-weight:bold!important;';
             });
 
             document.querySelectorAll('.nav-submenu .submenu-link').forEach(function(link) {
                 const href = link.getAttribute('href');
-                const isBoardMatch   = href.includes('boards')   && (currentPath.includes('board') || currentPath.includes('boards'));
-                const isNoticeMatch  = href.includes('notices')  && (currentPath.includes('notice') || currentPath.includes('notices'));
-                const isExpertMatch  = (
-                    (href.includes('withdraw')      && currentPath.includes('/admin/experts/withdraw')) ||
-                    (href.includes('status=PENDING')&& currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
-                    (href.includes('grade')         && currentPath.includes('/admin/experts/grade')) ||
-                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications'))
-                );
-                if (isBoardMatch || isNoticeMatch || isExpertMatch) {
+                const match =
+                    (href.includes('boards')            && currentPath.includes('board')) ||
+                    (href.includes('notices')           && currentPath.includes('notice')) ||
+                    (href.includes('withdraw')          && currentPath.includes('/admin/experts/withdraw')) ||
+                    (href.includes('status=PENDING')    && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
+                    (href.includes('grade')             && currentPath.includes('/admin/experts/grade')) ||
+                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications'));
+                if (match) {
                     link.classList.add('active-link');
                     const trigger = link.closest('.admin-dropdown-container')?.querySelector('.admin-dropdown-trigger');
-                    if (trigger) trigger.setAttribute('style', 'color:#2563eb!important;font-weight:bold!important;');
+                    if (trigger) trigger.style.cssText = 'color:#2563eb!important;font-weight:bold!important;';
                 }
             });
         });
     </script>
 {{/isAdmin}}
+
+

@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>IcodeU — IT 전문가 매칭 플랫폼</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
-          rel="stylesheet"/>
+{{> layout/header}}
     <style>
         :root {
             --brand-blue:      #2D6BFF;
@@ -27,36 +20,7 @@
         }
         a { text-decoration: none; color: inherit; }
 
-        /* ── HEADER ── */
-        .header {
-            background: var(--brand-white);
-            border-bottom: 1px solid var(--brand-line);
-            position: sticky; top: 0; z-index: 100;
-        }
-        .header-inner {
-            max-width: 1200px; margin: 0 auto; padding: 0 32px;
-            height: 60px; display: flex; align-items: center;
-            justify-content: space-between; gap: 24px;
-        }
-        .nav-logo img { display: block; height: 32px; width: auto; }
-        .header-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .btn-h {
-            padding: 7px 18px; border-radius: 7px; font-size: 13px; font-weight: 600;
-            font-family: inherit; cursor: pointer; transition: all .15s;
-            border: 1.5px solid var(--brand-line); background: var(--brand-white); color: var(--brand-slate);
-        }
-        .btn-h:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
-        .btn-h-fill { background: var(--brand-blue); color: var(--brand-white); border-color: var(--brand-blue); }
-        .btn-h-fill:hover { background: var(--brand-blue-deep); border-color: var(--brand-blue-deep); color: #fff; }
-        .btn-h-ghost { border-color: transparent; background: var(--brand-mist); color: var(--brand-slate); }
-        .btn-h-ghost:hover { background: var(--brand-line); }
-        .h-username { font-size: 13px; color: var(--brand-muted); font-weight: 500; padding: 0 4px; }
-        .btn-h-logout {
-            padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
-            font-family: inherit; cursor: pointer; transition: all .15s;
-            border: 1.5px solid var(--brand-line); background: transparent; color: var(--brand-muted);
-        }
-        .btn-h-logout:hover { border-color: #ef4444; color: #ef4444; }
+        /* [삭제 완료] 기존 .header, .header-inner, .nav-logo, .header-nav, .btn-h 관련 스타일 정의 제거 */
 
         /* ── SEARCH HERO ── */
         .search-hero { background: var(--brand-white); border-bottom: 1px solid var(--brand-line); padding: 52px 32px 40px; }
@@ -75,8 +39,8 @@
         .sh-input {
             flex: 1; padding: 12px 18px; background: var(--brand-mist);
             border: 1.5px solid var(--brand-line); border-radius: 8px;
-            font-size: 14px; font-family: 'Space Grotesk', sans-serif;
-            color: var(--brand-ink); outline: none; transition: border-color .15s, background .15s;
+            font-size: 14px; font-family: 'Space Grotesk', sans-serif; color: var(--brand-ink);
+            outline: none; transition: border-color .15s, background .15s;
         }
         .sh-input::placeholder { color: var(--brand-muted); }
         .sh-input:focus { border-color: var(--brand-blue); background: var(--brand-white); }
@@ -87,86 +51,39 @@
         }
         .sh-btn:hover { background: var(--brand-slate); }
 
-
-
-        /* ── MAIN ── */
-            /* 메인 배너 광고 카드  */
+        /* ── MAIN CONTENT ── */
         .main-wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+        /* 메인 배너 광고 카드 */
         .ad-main-card {
-            flex: 0 0 calc((100% - 32px) / 3);  /* 3개씩, biz-card랑 동일한 너비 */
-            background: #fff;
-            border: 1.5px solid #fde68a;
-            border-radius: 14px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform .2s, box-shadow .2s;
-            text-decoration: none;
-            color: inherit;
+            flex: 0 0 calc((100% - 32px) / 3); background: #fff; border: 1.5px solid #fde68a;
+            border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;
+            transition: transform .2s, box-shadow .2s; text-decoration: none; color: inherit;
         }
-        .ad-main-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(217,119,6,.16);
-        }
-        .ad-main-thumb {
-            position: relative;
-            width: 100%;
-            padding-top: 60%;
-            background-color: #f5f5f0;
-            flex-shrink: 0;
-        }
-        .ad-main-thumb-img {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-        }
+        .ad-main-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(217,119,6,.16); }
+        .ad-main-thumb { position: relative; width: 100%; padding-top: 60%; background-color: #f5f5f0; flex-shrink: 0; }
+        .ad-main-thumb-img { position: absolute; inset: 0; background-size: cover; background-position: center; }
         .ad-main-badge {
-            position: absolute; top: 8px; right: 8px;
-            background: rgba(255,255,255,.95); color: #92400e;
+            position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,.95); color: #92400e;
             font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800;
-            letter-spacing: .1em; padding: 2px 7px; border-radius: 4px;
-            z-index: 1;
+            letter-spacing: .1em; padding: 2px 7px; border-radius: 4px; z-index: 1;
         }
-        .ad-main-body {
-            padding: 14px 16px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .ad-main-name {
-            font-size: 14px; font-weight: 800;
-            color: var(--brand-ink);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .ad-main-spec {
-            font-size: 11px; color: var(--brand-muted);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        .ad-main-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+        .ad-main-name { font-size: 14px; font-weight: 800; color: var(--brand-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ad-main-spec { font-size: 11px; color: var(--brand-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .ad-main-msg {
             font-size: 12px; color: #78716c; line-height: 1.5; margin-top: 4px;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-         /* 캐러셀 미니 광고 카드 */
-          .ad-mini-card {
-            position: relative;
-            background-color: #1c1209;
-            overflow: hidden;
-            min-height: 240px;  /* biz-card랑 동일하게 */
-             }
-        .ad-mini-thumb {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            border-radius: 16px;
-        }
+
+        /* 캐러셀 미니 광고 카드 */
+        .ad-mini-card { position: relative; background-color: #1c1209; overflow: hidden; min-height: 240px; }
+        .ad-mini-thumb { position: absolute; inset: 0; background-size: cover; background-position: center; border-radius: 16px; }
         .ad-mini-badge {
-            position: absolute; top: 12px; right: 12px; z-index: 2;
-            background: rgba(255,255,255,.95); color: #92400e;
-            font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800;
-            letter-spacing: .1em; padding: 3px 8px; border-radius: 5px;
+            position: absolute; top: 12px; right: 12px; z-index: 2; background: rgba(255,255,255,.95); color: #92400e;
+            font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800; letter-spacing: .1em; padding: 3px 8px; border-radius: 5px;
         }
+
         /* ── EXPERT BLOCK ── */
         .expert-block { padding: 48px 0 0; }
         .expert-block + .expert-block { border-top: 1px solid var(--brand-line); }
@@ -181,10 +98,7 @@
         .kw-amber { background: #fef9c3; color: #92400e; }
         .kw-green { background: #dcfce7; color: #166534; }
         .block-sub { font-size: 20px; font-weight: 700; color: var(--brand-ink); letter-spacing: -.02em; }
-        .block-more {
-            font-size: 12px; font-weight: 600; color: var(--brand-blue);
-            font-family: 'JetBrains Mono', monospace; letter-spacing: .02em;
-        }
+        .block-more { font-size: 12px; font-weight: 600; color: var(--brand-blue); font-family: 'JetBrains Mono', monospace; letter-spacing: .02em; }
         .block-more:hover { text-decoration: underline; }
 
         /* ── CAROUSEL ── */
@@ -192,1085 +106,479 @@
         .c-viewport { overflow: hidden; }
         .c-track { display: flex; gap: 16px; will-change: transform; }
 
-        /* ── BUSINESS CARD (명함) — dark style ── */
+        /* ── BUSINESS CARD (명함 스타일에 따른 본문 레이아웃) ── */
         .biz-card {
-            flex: 0 0 calc((100% - 32px) / 3);
-            min-height: 240px;
-            background: #0d1728;
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: border-color .25s, box-shadow .25s, transform .2s;
-            cursor: pointer;
-            display: block;
+            flex: 0 0 calc((100% - 32px) / 3); min-height: 240px; background: #0d1728;
+            border: 1px solid rgba(255,255,255,.07); border-radius: 16px; overflow: hidden;
+            transition: border-color .25s, box-shadow .25s, transform .2s; cursor: pointer; display: block;
         }
-        .biz-card:hover {
-            border-color: rgba(45,107,255,.45);
-            box-shadow: 0 8px 32px rgba(45,107,255,.18);
-            transform: translateY(-2px);
-        }
-        .biz-inner {
-            padding: 24px;
-            min-height: 240px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* Card top — brand area */
-        .biz-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .biz-app-icon {
-            width: 52px; height: 52px; border-radius: 12px;
-            display: block; flex-shrink: 0;
-        }
-        .biz-wordmark {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 18px; font-weight: 700;
-            letter-spacing: .12em;
-            color: rgba(255,255,255,.80);
-        }
+        .biz-card:hover { border-color: rgba(45,107,255,.45); box-shadow: 0 8px 32px rgba(45,107,255,.18); transform: translateY(-2px); }
+        .biz-inner { padding: 24px; min-height: 240px; display: flex; flex-direction: column; justify-content: space-between; }
+        .biz-brand { display: flex; align-items: center; gap: 12px; }
+        .biz-app-icon { width: 52px; height: 52px; border-radius: 12px; display: block; flex-shrink: 0; }
+        .biz-wordmark { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: .12em; color: rgba(255,255,255,.80); }
         .bwm-iu { color: var(--brand-sky); }
-
-        /* Card bottom — person info */
-        .biz-body { }
-        .biz-name-line {
-            display: flex; flex-direction: column; gap: 6px;
-            margin-bottom: 12px;
-        }
+        .biz-name-line { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
         .biz-name {
-            font-size: 16px; font-weight: 700; color: #ffffff;
-            letter-spacing: -.02em; line-height: 1.35;
+            font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: -.02em; line-height: 1.35;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .biz-role {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px; font-weight: 500; color: var(--brand-sky);
-            white-space: nowrap;
-        }
+        .biz-role { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 500; color: var(--brand-sky); white-space: nowrap; }
         .biz-contacts { display: flex; flex-direction: column; gap: 5px; }
         .biz-ct {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px; color: rgba(255,255,255,.40);
-            display: flex; align-items: center; gap: 8px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,.40);
+            display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .biz-ct-dot { color: var(--brand-blue); font-size: 9px; flex-shrink: 0; }
         .biz-ct a { color: var(--brand-sky); text-decoration: none; }
         .biz-ct a:hover { text-decoration: underline; }
 
         /* ── TRUST BAR ── */
-        .trust-bar {
-            background: var(--brand-white);
-            border-bottom: 1px solid var(--brand-line);
-            padding: 0 32px;
-        }
-        .trust-bar-inner {
-            max-width: 1200px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: center;
-            gap: 0; height: 44px;
-        }
-        .trust-item {
-            display: flex; align-items: center; gap: 7px;
-            font-size: 12px; font-weight: 500; color: var(--brand-muted);
-            padding: 0 28px;
-        }
-        .trust-item + .trust-item {
-            border-left: 1px solid var(--brand-line);
-        }
+        .trust-bar { background: var(--brand-white); border-bottom: 1px solid var(--brand-line); padding: 0 32px; }
+        .trust-bar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0; height: 44px; }
+        .trust-item { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--brand-muted); padding: 0 28px; }
+        .trust-item + .trust-item { border-left: 1px solid var(--brand-line); }
         .trust-item svg { flex-shrink: 0; }
         .trust-item strong { color: var(--brand-ink); font-weight: 700; }
 
         /* ── BIZ CARD OVERLAY ── */
-        .biz-card { position: relative; }
         .biz-overlay {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
+            position: absolute; bottom: 0; left: 0; right: 0;
             background: linear-gradient(to bottom, rgba(13,23,40,0) 0%, rgba(13,23,40,.96) 28%, #0a1222 100%);
-            border-radius: 0 0 16px 16px;
-            padding: 32px 24px 24px;
-            transform: translateY(100%);
-            transition: transform .32s cubic-bezier(0.4,0,0.2,1);
-            display: flex; flex-direction: column; gap: 14px;
+            border-radius: 0 0 16px 16px; padding: 32px 24px 24px; transform: translateY(100%);
+            transition: transform .32s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; gap: 14px;
         }
         .biz-card:hover .biz-overlay { transform: translateY(0); }
-        .ov-stats {
-            display: flex; gap: 16px;
-        }
-        .ov-stat {
-            display: flex; flex-direction: column; gap: 2px;
-        }
-        .ov-stat-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 15px; font-weight: 700; color: #ffffff;
-        }
+        .ov-stats { display: flex; gap: 16px; }
+        .ov-stat { display: flex; flex-direction: column; gap: 2px; }
+        .ov-stat-val { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: #ffffff; }
         .ov-stat-val .ov-stars { color: #f59e0b; letter-spacing: 1px; font-size: 12px; }
-        .ov-stat-label {
-            font-size: 10px; color: rgba(255,255,255,.38);
-            font-family: 'JetBrains Mono', monospace; letter-spacing: .05em;
-        }
-        .ov-divider {
-            width: 1px; background: rgba(255,255,255,.08); align-self: stretch; flex-shrink: 0;
-        }
+        .ov-stat-label { font-size: 10px; color: rgba(255,255,255,.38); font-family: 'JetBrains Mono', monospace; letter-spacing: .05em; }
+        .ov-divider { width: 1px; background: rgba(255,255,255,.08); align-self: stretch; flex-shrink: 0; }
         .ov-cta {
-            display: block; width: 100%; padding: 10px 0;
-            background: var(--brand-blue); color: #fff;
-            border: none; border-radius: 8px;
-            font-size: 13px; font-weight: 700; font-family: inherit;
-            cursor: pointer; text-align: center;
-            transition: background .15s;
+            display: block; width: 100%; padding: 10px 0; background: var(--brand-blue); color: #fff;
+            border: none; border-radius: 8px; font-size: 13px; font-weight: 700; font-family: inherit;
+            cursor: pointer; text-align: center; transition: background .15s;
         }
         .ov-cta:hover { background: var(--brand-blue-deep); color: #fff; }
 
         /* ── CAROUSEL ARROWS ── */
         .c-arrow {
-            position: absolute; top: 0; bottom: 0; width: 80px;
-            display: flex; align-items: center; border: none; cursor: pointer;
-            z-index: 10; font-size: 28px; font-weight: 300;
+            position: absolute; top: 0; bottom: 0; width: 80px; display: flex; align-items: center;
+            border: none; cursor: pointer; z-index: 10; font-size: 28px; font-weight: 300;
             color: rgba(255,255,255,.6); transition: color .15s; padding: 0;
         }
         .c-arrow:hover { color: var(--brand-sky); }
-        .c-arrow-right {
-            right: 0;
-            background: linear-gradient(to right, transparent 0%, var(--brand-mist) 60%);
-            justify-content: flex-end; padding-right: 14px;
-        }
-        .c-arrow-left {
-            left: 0;
-            background: linear-gradient(to left, transparent 0%, var(--brand-mist) 60%);
-            justify-content: flex-start; padding-left: 14px;
-        }
+        .c-arrow-right { right: 0; background: linear-gradient(to right, transparent 0%, var(--brand-mist) 60%); justify-content: flex-end; padding-right: 14px; }
+        .c-arrow-left { left: 0; background: linear-gradient(to left, transparent 0%, var(--brand-mist) 60%); justify-content: flex-start; padding-left: 14px; }
 
         /* ── BANNER #5: 프로모션 카운트다운 ── */
         .promo-banner {
-            background: linear-gradient(135deg, #1846C9 0%, #2D6BFF 50%, #5b8fff 100%);
-            border-radius: 16px;
-            padding: 28px 36px;
-            margin: 48px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg, #1846C9 0%, #2D6BFF 50%, #5b8fff 100%); border-radius: 16px;
+            padding: 28px 36px; margin: 48px 0 0; display: flex; align-items: center; justify-content: space-between;
+            gap: 24px; position: relative; overflow: hidden;
         }
-        .promo-banner::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,.08) 0%, transparent 60%);
-            pointer-events: none;
-        }
+        .promo-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 80% 50%, rgba(255,255,255,.08) 0%, transparent 60%); pointer-events: none; }
         .promo-left { display: flex; flex-direction: column; gap: 6px; }
         .promo-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255,255,255,.18); border-radius: 20px;
-            padding: 3px 10px; width: fit-content;
-            font-family: 'JetBrains Mono', monospace; font-size: 10px;
-            font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-            color: #fff;
+            display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.18);
+            border-radius: 20px; padding: 3px 10px; width: fit-content; font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #fff;
         }
         .promo-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: blink 1.4s infinite; }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-        .promo-title {
-            font-size: 22px; font-weight: 700; color: #fff;
-            letter-spacing: -.02em; line-height: 1.2;
-        }
+        .promo-title { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -.02em; line-height: 1.2; }
         .promo-title span { opacity: .75; font-size: 14px; font-weight: 400; }
         .promo-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
         .promo-timer { display: flex; align-items: center; gap: 8px; }
         .promo-unit { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .promo-num {
-            font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700;
-            color: #fff; line-height: 1;
-            background: rgba(0,0,0,.2); border-radius: 8px;
-            padding: 6px 12px; min-width: 52px; text-align: center;
+            font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; color: #fff;
+            background: rgba(0,0,0,.15); padding: 4px 10px; border-radius: 8px; min-width: 48px; text-align: center;
         }
-        .promo-label { font-size: 10px; color: rgba(255,255,255,.6); font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; }
-        .promo-sep { font-size: 22px; font-weight: 700; color: rgba(255,255,255,.5); padding-bottom: 14px; }
-        .promo-cta {
-            padding: 12px 24px; background: #fff; color: var(--brand-blue);
-            border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
-            cursor: pointer; font-family: inherit; white-space: nowrap;
+        .promo-colon { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; color: rgba(255,255,255,.5); padding-bottom: 16px; }
+        .promo-label { font-size: 9px; font-weight: 600; color: rgba(255,255,255,.5); letter-spacing: .05em; text-transform: uppercase; }
+        .promo-btn {
+            background: #fff; color: var(--brand-blue); font-size: 13px; font-weight: 700;
+            padding: 12px 24px; border-radius: 30px; box-shadow: 0 4px 14px rgba(24,70,201,.2);
             transition: transform .15s, box-shadow .15s;
         }
-        .promo-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+        .promo-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(24,70,201,.3); }
 
-        /* ── BANNER #9: 포트폴리오 하이라이트 ── */
-        .portfolio-banner {
-            margin: 0;
-            padding: 48px 0 0;
-            border-top: 1px solid var(--brand-line);
-        }
-        .portfolio-banner .block-head { margin-bottom: 24px; }
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-        .pf-card {
-            border-radius: 14px;
-            overflow: hidden;
-            background: var(--brand-white);
-            border: 1px solid var(--brand-line);
-            transition: transform .2s, box-shadow .2s;
-            cursor: pointer;
-        }
-        .pf-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(45,107,255,.12); }
-        .pf-thumb {
-            height: 160px;
-            background: var(--brand-ink);
-            position: relative;
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .pf-thumb-1 { background: linear-gradient(135deg, #0f1f3d 0%, #1a3566 100%); }
-        .pf-thumb-2 { background: linear-gradient(135deg, #0d2416 0%, #14532d 100%); }
-        .pf-thumb-3 { background: linear-gradient(135deg, #1a0a2e 0%, #3b0764 100%); }
-        .pf-thumb-mockup {
-            width: 80%; height: 75%;
-            background: rgba(255,255,255,.06);
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,.1);
-            display: flex; align-items: flex-start;
-            padding: 10px; gap: 6px; flex-direction: column;
-        }
-        .pf-mock-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.15); }
-        .pf-mock-bar.w80 { width: 80%; }
-        .pf-mock-bar.w60 { width: 60%; }
-        .pf-mock-bar.w40 { width: 40%; background: rgba(45,107,255,.5); }
-        .pf-mock-block { display: flex; gap: 6px; width: 100%; margin-top: 4px; }
-        .pf-mock-sq { width: 36px; height: 36px; border-radius: 6px; background: rgba(255,255,255,.08); flex-shrink: 0; }
-        .pf-mock-lines { display: flex; flex-direction: column; gap: 4px; flex: 1; padding-top: 4px; }
-        .pf-tag {
-            position: absolute; top: 12px; left: 12px;
-            background: rgba(45,107,255,.85); color: #fff;
-            font-family: 'JetBrains Mono', monospace; font-size: 9px;
-            font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-            padding: 3px 8px; border-radius: 4px;
-        }
-        .pf-body { padding: 16px 18px; }
-        .pf-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-        .pf-category {
-            font-family: 'JetBrains Mono', monospace; font-size: 10px;
-            color: var(--brand-blue); font-weight: 600; letter-spacing: .08em;
-        }
-        .pf-rating { font-size: 11px; color: #f59e0b; }
-        .pf-title { font-size: 14px; font-weight: 700; color: var(--brand-ink); margin-bottom: 4px; line-height: 1.4; }
-        .pf-expert { font-size: 12px; color: var(--brand-muted); }
+        /* ── SECTION REVIEWS ── */
+        .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .review-card { background: var(--brand-white); border: 1px solid var(--brand-line); border-radius: 14px; padding: 20px; }
+        .rev-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .rev-project { font-size: 14px; font-weight: 700; color: var(--brand-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+        .rev-stars { color: #f59e0b; font-size: 12px; letter-spacing: 1px; }
+        .rev-comment { font-size: 13px; color: var(--brand-slate); line-height: 1.5; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .rev-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--brand-muted); display: flex; gap: 8px; }
+        .rev-author { font-weight: 600; color: var(--brand-slate); }
 
-        /* ── BANNER #7: 전문가 모집 ── */
-        .recruit-banner {
-            margin: 48px 0 0;
-            background: var(--brand-ink);
-            border-radius: 16px;
-            padding: 40px 48px;
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 32px; position: relative; overflow: hidden;
-        }
-        .recruit-banner::after {
-            content: '';
-            position: absolute; right: -60px; top: -60px;
-            width: 240px; height: 240px;
-            background: radial-gradient(circle, rgba(45,107,255,.18) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .recruit-left { display: flex; flex-direction: column; gap: 10px; }
-        .recruit-eyebrow {
-            font-family: 'JetBrains Mono', monospace; font-size: 10px;
-            font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
-            color: var(--brand-sky);
-        }
-        .recruit-title {
-            font-size: 24px; font-weight: 700; color: #fff;
-            letter-spacing: -.02em; line-height: 1.25;
-        }
-        .recruit-title em { color: var(--brand-sky); font-style: normal; }
-        .recruit-desc { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.7; max-width: 420px; }
-        .recruit-stats { display: flex; gap: 32px; margin-top: 4px; }
-        .recruit-stat-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 20px; font-weight: 700; color: #fff;
-        }
-        .recruit-stat-label { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; }
-        .recruit-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
-        .recruit-cta {
-            padding: 14px 32px; background: var(--brand-blue); color: #fff;
-            border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
-            cursor: pointer; font-family: inherit; white-space: nowrap;
-            transition: background .15s, transform .15s;
-            text-decoration: none; display: inline-block;
-        }
-        .recruit-cta:hover { background: var(--brand-blue-deep); transform: translateY(-1px); color: #fff; }
-        .recruit-note { font-size: 11px; color: rgba(255,255,255,.3); font-family: 'JetBrains Mono', monospace; }
-
-        /* ── 누적거래 통계 배너 ── */
-        .stats-banner {
-            background: var(--brand-white);
-            border-top: 1px solid var(--brand-line);
-            border-bottom: 1px solid var(--brand-line);
-            padding: 56px 32px;
-        }
-        .stats-inner { max-width: 1200px; margin: 0 auto; }
-        .stats-eyebrow {
-            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
-            letter-spacing: .2em; text-transform: uppercase; color: var(--brand-muted);
-            text-align: center; margin-bottom: 10px;
-        }
-        .stats-title {
-            font-size: 26px; font-weight: 700; color: var(--brand-ink);
-            letter-spacing: -.02em; text-align: center; margin-bottom: 48px;
-        }
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 0; border: 1px solid var(--brand-line); border-radius: 16px; overflow: hidden;
-        }
-        .stats-item {
-            padding: 32px 28px; text-align: center;
-            border-right: 1px solid var(--brand-line);
-            position: relative;
-        }
-        .stats-item:last-child { border-right: none; }
-        .stats-item-icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            background: #dde8ff; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 16px;
-        }
-        .stats-item-icon svg { display: block; }
-        .stats-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 36px; font-weight: 700; color: var(--brand-ink);
-            letter-spacing: -.03em; line-height: 1;
-            margin-bottom: 8px;
-        }
-        .stats-num em { color: var(--brand-blue); font-style: normal; }
-        .stats-desc { font-size: 13px; color: var(--brand-muted); font-weight: 500; }
-
-        /* ── REVIEW SECTION ── */
-        .review-section { background: var(--brand-ink); padding: 64px 32px; margin-top: 64px; }
-        .review-inner { max-width: 1200px; margin: 0 auto; }
-        .r-eyebrow {
-            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
-            letter-spacing: .2em; text-transform: uppercase; color: var(--brand-muted); margin-bottom: 8px;
-        }
-        .r-title { font-size: 26px; font-weight: 700; color: var(--brand-white); letter-spacing: -.02em; margin-bottom: 32px; }
-        .r-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .r-card { background: var(--brand-slate); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 24px; }
-        .r-stars { font-size: 12px; color: #f59e0b; letter-spacing: 2px; margin-bottom: 12px; }
-        .r-text { font-size: 13px; color: #a8b4c8; line-height: 1.8; margin-bottom: 20px; }
-        .r-author { display: flex; align-items: center; gap: 10px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.08); }
-        .r-ava {
-            width: 34px; height: 34px; border-radius: 8px; background: var(--brand-blue);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
-        }
-        .r-name { font-size: 13px; font-weight: 700; color: var(--brand-white); }
-        .r-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--brand-muted); margin-top: 1px; }
+        /* ── SECTION STATS ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-bottom: 48px; }
+        .stat-card { background: var(--brand-white); border: 1px solid var(--brand-line); border-radius: 14px; padding: 24px; text-align: center; }
+        .st-val { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; color: var(--brand-blue); letter-spacing: -.02em; margin-bottom: 4px; }
+        .st-label { font-size: 12px; font-weight: 600; color: var(--brand-muted); }
 
         /* ── FOOTER ── */
-        .footer { background: var(--brand-ink); border-top: 1px solid rgba(255,255,255,.06); padding: 24px 32px; }
-        .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .footer-logo img { display: block; height: 26px; width: auto; }
-        .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--brand-muted); }
+        .footer { background: var(--brand-white); border-top: 1px solid var(--brand-line); padding: 40px 32px; color: var(--brand-muted); font-size: 12px; }
+        .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+        .footer-left { display: flex; flex-direction: column; gap: 12px; }
+        .footer-logo { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; letter-spacing: .1em; color: var(--brand-ink); }
+        .footer-logo span { color: var(--brand-blue); }
+        .footer-links { display: flex; gap: 20px; margin-bottom: 4px; }
+        .footer-links a { font-weight: 600; color: var(--brand-slate); }
+        .footer-links a:hover { color: var(--brand-blue); text-decoration: underline; }
+        .footer-right { font-family: 'JetBrains Mono', monospace; text-align: right; font-size: 11px; }
 
-        .pd-logout {
-            color: #ef4444;
+        @media(max-width: 960px) {
+            .ad-main-card, .biz-card { flex: 0 0 calc((100% - 16px) / 2); }
+            .review-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .promo-banner { flex-direction: column; align-items: flex-start; padding: 24px; }
+            .promo-right { width: 100%; justify-content: space-between; }
+            .footer-inner { flex-direction: column; gap: 24px; }
+            .footer-right { text-align: left; }
         }
-
-        .pd-logout:hover {
-            background: #fff3f3;
-            color: #ef4444;
+        @media(max-width: 560px) {
+            .ad-main-card, .biz-card { flex: 0 0 100%; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .sh-title { font-size: 26px; }
+            .sh-row { flex-direction: column; }
+            .sh-btn { width: 100%; text-align: center; }
         }
-
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
-    <div class="header-inner">
-        <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
-        <nav class="header-nav">
-            {{#isLoggedIn}}
-
-                {{#isAdmin}}
-                    <a href="/admin/main" class="btn-h btn-h-ghost">대시보드</a>
-                {{/isAdmin}}
-
-                {{#isExpert}}
-                    <a href="/experts/dashboard" class="btn-h btn-h-ghost">대시보드</a>
-                {{/isExpert}}
-
-                {{#isClient}}
-                    <a href="/my-pages" class="btn-h btn-h-ghost">대시보드</a>
-                {{/isClient}}
-                <span class="h-username">{{sessionUser.name}}님</span>
-                <form id="logoutFormClient" action="/logout" method="POST" style="display:inline;">
-                    <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0;">🚪 로그아웃</button>
-                </form>
-            {{/isLoggedIn}}
-            {{^isLoggedIn}}
-                <a href="/login" class="btn-h">로그인</a>
-                <a href="/join-start" class="btn-h btn-h-fill">회원가입</a>
-            {{/isLoggedIn}}
-        </nav>
-    </div>
-</header>
-
-<!-- SEARCH HERO -->
 <section class="search-hero">
     <div class="search-hero-inner">
-        <div class="sh-eyebrow">IT Expert Matching Platform</div>
-        <h1 class="sh-title">원하는 전문가를<br><em>지금 바로</em> 찾아보세요</h1>
-        <div class="sh-row">
-            <input type="text" class="sh-input" placeholder="React 개발, 앱 UI 디자인, 로고 제작 …">
-            <button class="sh-btn">검색</button>
-        </div>
+        <div class="sh-eyebrow">Expert Workspace / Center</div>
+        <h2 class="sh-title">전문가님, 반갑습니다.<br>오늘도 <em>최고의 코드</em>를 공유해보세요.</h2>
+        <form class="sh-row" action="/projects" method="GET">
+            <input class="sh-input" type="text" name="kw" placeholder="관심 있는 프로젝트 검색어 또는 기술 스택을 입력하세요..."/>
+            <button class="sh-btn" type="submit">의뢰 검색</button>
+        </form>
     </div>
 </section>
 
-<!-- TRUST BAR -->
 <div class="trust-bar">
     <div class="trust-bar-inner">
         <div class="trust-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)" stroke-width="2.2"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <span>결제는 <strong>에스크로</strong>로 보호됩니다</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span>누적 완료 의뢰 <strong>14,209건</strong></span>
         </div>
         <div class="trust-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)" stroke-width="2.2"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span>작업 완료 후 <strong>자동 정산</strong></span>
-        </div>
-        <div class="trust-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)" stroke-width="2.2"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span>불만족 시 <strong>100% 환불</strong> 보장</span>
-        </div>
-        <div class="trust-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)" stroke-width="2.2"
-                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            <span>검증된 전문가 <strong>2,400+</strong></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>안전한 에스크로 거래 대금 보호</span>
         </div>
     </div>
 </div>
 
-<!-- MAIN -->
 <div class="main-wrap">
 
-    <!-- BANNER #5: 프로모션 카운트다운 -->
+    <section class="expert-block">
+        <div class="block-head">
+            <div class="block-head-left">
+                <span class="block-kw kw-amber">AD / Premium</span>
+                <h3 class="block-sub">추천 상단 광고 전문가</h3>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            {{#adExperts}}
+                <a class="ad-main-card" href="/experts/{{id}}">
+                    <div class="ad-main-thumb">
+                        <div class="ad-main-thumb-img" style="background-image: url('{{#bannerImage}}{{bannerImageUrl}}{{/bannerImage}}{{^bannerImage}}/default-banner.jpg{{/bannerImage}}');"></div>
+                        <div class="ad-main-badge">PREMIUM</div>
+                    </div>
+                    <div class="ad-main-body">
+                        <div class="ad-main-name">{{user.name}} 전문가</div>
+                        <div class="ad-main-spec">{{techStack}} · 경력 {{careerYear}}년</div>
+                        <div class="ad-main-msg">{{introduction}}</div>
+                    </div>
+                </a>
+            {{/adExperts}}
+            {{^adExperts}}
+                <div style="flex:1; background:#fff; border:1px dashed var(--brand-line); border-radius:14px; padding:40px; text-align:center; font-size:13px; color:var(--brand-muted);">
+                    현재 활성화된 프리미엄 상단 광고 전문가가 없습니다.
+                </div>
+            {{/adExperts}}
+        </div>
+    </section>
+
+    <section class="expert-block">
+        <div class="block-head">
+            <div class="block-head-left">
+                <span class="block-kw kw-blue">LIVE BIDDING</span>
+                <h3 class="block-sub">실시간 지원 대기중인 프로젝트</h3>
+            </div>
+            <a class="block-more" href="/projects">ALL PROJECTS →</a>
+        </div>
+
+        <div class="carousel-section" id="c1">
+            <button class="c-arrow c-arrow-left" aria-label="이전">&#8249;</button>
+            <div class="c-viewport">
+                <div class="c-track">
+                    {{#recentProjects}}
+                        <div class="biz-card" data-project-id="{{id}}" data-dday="D-{{dday}}" data-budget="{{budget}}원" href="/projects/{{id}}">
+                            <div class="biz-inner">
+                                <div class="biz-brand">
+                                    <img class="biz-app-icon" src="/project-icon.svg" alt="App"/>
+                                    <div class="biz-wordmark">PRJ<span class="bwm-iu">.{{id}}</span></div>
+                                </div>
+                                <div class="biz-body">
+                                    <div class="biz-name-line">
+                                        <h4 class="biz-name">{{title}}</h4>
+                                        <div class="biz-role">{{category}}</div>
+                                    </div>
+                                    <div class="biz-contacts">
+                                        <div class="biz-ct"><span class="biz-ct-dot">■</span>스택: {{requiredSkills}}</div>
+                                        <div class="biz-ct"><span class="biz-ct-dot">■</span>마감일: {{endDate}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/recentProjects}}
+                    {{^recentProjects}}
+                        <div style="flex:1; background:#fff; border:1px dashed var(--brand-line); border-radius:16px; padding:60px; text-align:center; font-size:14px; color:var(--brand-muted);">
+                            현재 등록된 신규 프로젝트 의뢰가 존재하지 않습니다.
+                        </div>
+                    {{/recentProjects}}
+                </div>
+            </div>
+            <button class="c-arrow c-arrow-right" aria-label="다음">&#8250;</button>
+        </div>
+    </section>
+
+    <section class="expert-block">
+        <div class="block-head">
+            <div class="block-head-left">
+                <span class="block-kw kw-green">MASTER RANK</span>
+                <h3 class="block-sub">아이코드유 공인 최고 등급 마스터</h3>
+            </div>
+            <a class="block-more" href="/experts">ALL EXPERTS →</a>
+        </div>
+
+        <div class="carousel-section" id="c2">
+            <button class="c-arrow c-arrow-left" aria-label="이전">&#8249;</button>
+            <div class="c-viewport">
+                <div class="c-track">
+                    {{#masterExperts}}
+                        <div class="biz-card" data-project-id="EX-{{id}}" data-dday="★ {{grade}}" data-budget="리뷰 {{reviewCount}}개" href="/experts/{{id}}">
+                            <div class="biz-inner">
+                                <div class="biz-brand">
+                                    <img class="biz-app-icon" src="/expert-icon.svg" alt="Expert"/>
+                                    <div class="biz-wordmark">EXP<span class="bwm-iu">.{{id}}</span></div>
+                                </div>
+                                <div class="biz-body">
+                                    <div class="biz-name-line">
+                                        <h4 class="biz-name">{{user.name}} 전문가</h4>
+                                        <div class="biz-role">{{techStack}}</div>
+                                    </div>
+                                    <div class="biz-contacts">
+                                        <div class="biz-ct"><span class="biz-ct-dot">■</span>경력사항: {{careerYear}}년 차 프리랜서</div>
+                                        <div class="biz-ct"><span class="biz-ct-dot">■</span>한줄평: 평점 {{rating}} / 5.0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/masterExperts}}
+                    {{^masterExperts}}
+                        <div style="flex:1; background:#fff; border:1px dashed var(--brand-line); border-radius:16px; padding:60px; text-align:center; font-size:14px; color:var(--brand-muted);">
+                            현재 등록된 최고 마스터 등급 전문가 풀이 비어있습니다.
+                        </div>
+                    {{/masterExperts}}
+                </div>
+            </div>
+            <button class="c-arrow c-arrow-right" aria-label="다음">&#8250;</button>
+        </div>
+    </section>
+
     <div class="promo-banner">
         <div class="promo-left">
-            <div class="promo-badge"><span class="promo-badge-dot"></span> 이번 주 한정</div>
-            <div class="promo-title">
-                첫 의뢰 수수료 <strong>0%</strong> 프로모션<br>
-                <span>신규 회원 가입 후 첫 프로젝트에 적용됩니다</span>
+            <div class="promo-badge">
+                <span class="promo-badge-dot"></span>
+                Special Promotion
             </div>
+            <h4 class="promo-title">수수료 0% 보장 리워드 이벤트 마감 임박<br><span>지금 프로젝트에 제안서를 제출하고 첫 계약 수수료 전액 면제 혜택을 누리세요.</span></h4>
         </div>
         <div class="promo-right">
-            <div class="promo-timer">
-                <div class="promo-unit">
-                    <span class="promo-num" id="promo-d">00</span>
-                    <span class="promo-label">DAYS</span>
-                </div>
-                <span class="promo-sep">:</span>
-                <div class="promo-unit">
-                    <span class="promo-num" id="promo-h">00</span>
-                    <span class="promo-label">HOURS</span>
-                </div>
-                <span class="promo-sep">:</span>
-                <div class="promo-unit">
-                    <span class="promo-num" id="promo-m">00</span>
-                    <span class="promo-label">MINS</span>
-                </div>
-                <span class="promo-sep">:</span>
-                <div class="promo-unit">
-                    <span class="promo-num" id="promo-s">00</span>
-                    <span class="promo-label">SECS</span>
-                </div>
+            <div class="promo-timer" id="countdownTimer">
+                <div class="promo-unit"><span class="promo-num" id="cd-d">00</span><span class="promo-label">Days</span></div>
+                <span class="promo-colon">:</span>
+                <div class="promo-unit"><span class="promo-num" id="cd-h">00</span><span class="promo-label">Hrs</span></div>
+                <span class="promo-colon">:</span>
+                <div class="promo-unit"><span class="promo-num" id="cd-m">00</span><span class="promo-label">Min</span></div>
+                <span class="promo-colon">:</span>
+                <div class="promo-unit"><span class="promo-num" id="cd-s">00</span><span class="promo-label">Sec</span></div>
             </div>
-            {{#isLoggedIn}}
-                <a href="/projects/save-form" class="promo-cta">지금 시작하기</a>
-            {{/isLoggedIn}}
-            {{^isLoggedIn}}
-                <a href="/join-start" class="promo-cta">지금 시작하기</a>
-            {{/isLoggedIn}}
+            <a class="promo-btn" href="/projects">지금 참여 →</a>
         </div>
     </div>
-    <!-- 전문가 광고 -->
-    {{#hasMainAds}}
-        <div class="expert-block">
-            <div class="block-head">
-                <div class="block-head-left">
-                    <span class="block-kw" style="background:#fef3c7;color:#92400e;">AD</span>
-                    <span class="block-sub">지금 주목받는 전문가</span>
-                </div>
-            </div>
-            <div class="carousel-section" id="cs-ad">
-                <div class="c-viewport">
-                    <div class="c-track ad-track">
-                        {{#mainAds}}
-                            <a href="/experts/{{expertId}}" class="ad-main-card">
-                                <div class="ad-main-thumb">
-                                    <div class="ad-main-thumb-img" style="background-image:url('{{displayImageUrl}}');"></div>
-                                    <span class="ad-main-badge">AD</span>
-                                </div>
-                                <div class="ad-main-body">
-                                    <span class="ad-main-name">{{expertName}}</span>
-                                    <span class="ad-main-spec">{{speciality}}</span>
-                                    {{#customMessage}}
-                                        <p class="ad-main-msg">{{customMessage}}</p>
-                                    {{/customMessage}}
-                                </div>
-                            </a>
-                        {{/mainAds}}
-                    </div>
-                </div>
-                <button class="c-arrow c-arrow-left" aria-label="이전">‹</button>
-                <button class="c-arrow c-arrow-right" aria-label="다음">›</button>
-            </div>
-        </div>
-    {{/hasMainAds}}
-    <!-- ① 마감 임박 의뢰 -->
-    <div class="expert-block">
+
+    <section class="expert-block">
         <div class="block-head">
             <div class="block-head-left">
-                <span class="block-kw kw-blue">Urgent</span>
-                <span class="block-sub">빠른 작업이 필요한 의뢰</span>
+                <span class="block-kw kw-amber">REAL REVIEWS</span>
+                <h3 class="block-sub">클라이언트가 작성한 생생한 검증 후기</h3>
             </div>
-            <a href="/projects" class="block-more">VIEW ALL →</a>
         </div>
-        <div class="carousel-section" id="cs-1">
-            <div class="c-viewport">
-                <div class="c-track">
-                    {{#carouselAd}}
-                        <a href="/experts/{{expertId}}" class="biz-card ad-mini-card">
-                            <span class="ad-mini-badge">AD</span>
-                            <div class="ad-mini-thumb" style="background-image:url('{{displayImageUrl}}');"></div>
-                        </a>
-                    {{/carouselAd}}
 
-                    {{#urgentProjects}}
-                        <a href="/projects/{{id}}" class="biz-card"
-                           data-project-id="{{id}}"
-                           data-dday="D-{{dDay}}"
-                           data-budget="{{budgetMin}}~{{budgetMax}}만원"
-                           data-category="{{categoryName}}">
-                            <div class="biz-inner">
-                                <div class="biz-brand">
-                                    <img src="/app-icon.svg" class="biz-app-icon" alt="">
-                                    <span class="biz-wordmark"><span class="bwm-iu">I</span>CODE<span
-                                            class="bwm-iu">U</span></span>
-                                </div>
-                                <div class="biz-body">
-                                    <div class="biz-name-line">
-                                        <span class="biz-name">{{title}}</span>
-                                        <span class="biz-role">{{categoryName}}</span>
-                                    </div>
-                                    <div class="biz-contacts">
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> D-{{dDay}}일 마감</span>
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> 예산 {{budgetMin}}
-                                            ~{{budgetMax}}만원</span>
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> 의뢰인 {{memberName}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    {{/urgentProjects}}
-                    {{^urgentProjects}}
-                        <div class="biz-card" style="display:flex;align-items:center;justify-content:center;">
-                            <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 의뢰가 없습니다</span>
+        <div class="review-grid">
+            {{#recentReviews}}
+                <div class="review-card">
+                    <div class="rev-head">
+                        <div class="rev-project">{{projectTitle}}</div>
+                        <div class="rev-stars">
+                            {{rating}} ★
                         </div>
-                    {{/urgentProjects}}
-
+                    </div>
+                    <p class="rev-comment">“{{content}}”</p>
+                    <div class="rev-meta">
+                        by <span class="rev-author">{{writerName}}</span>
+                        <span class="rev-date">| &nbsp;{{createdAt}}</span>
+                    </div>
                 </div>
-            </div>
-            <button class="c-arrow c-arrow-left" aria-label="이전">‹</button>
-            <button class="c-arrow c-arrow-right" aria-label="다음">›</button>
+            {{/recentReviews}}
+            {{^recentReviews}}
+                <div style="grid-column: span 2; background:#fff; border:1px dashed var(--brand-line); border-radius:14px; padding:40px; text-align:center; font-size:13px; color:var(--brand-muted);">
+                    아직 등록된 실시간 프로젝트 후기가 존재하지 않습니다.
+                </div>
+            {{/recentReviews}}
         </div>
-    </div>
+    </section>
 
-    <!-- ② 합리적인 예산 의뢰 -->
-    <div class="expert-block">
+    <section class="expert-block">
         <div class="block-head">
             <div class="block-head-left">
-                <span class="block-kw kw-amber">Budget</span>
-                <span class="block-sub">예산이 합리적인 의뢰</span>
-            </div>
-            <a href="/projects" class="block-more">VIEW ALL →</a>
-        </div>
-        <div class="carousel-section" id="cs-2">
-            <div class="c-viewport">
-                <div class="c-track">
-                    {{#carouselAd}}
-                        <a href="/experts/{{expertId}}" class="biz-card ad-mini-card">
-                            <span class="ad-mini-badge">AD</span>
-                            <div class="ad-mini-thumb" style="background-image:url('{{displayImageUrl}}');"></div>
-                        </a>
-                    {{/carouselAd}}
-
-                    {{#budgetProjects}}
-                        <a href="/projects/{{id}}" class="biz-card"
-                           data-project-id="{{id}}"
-                           data-dday="D-{{dDay}}"
-                           data-budget="{{budgetMin}}~{{budgetMax}}만원"
-                           data-category="{{categoryName}}">
-                            <div class="biz-inner">
-                                <div class="biz-brand">
-                                    <img src="/app-icon.svg" class="biz-app-icon" alt="">
-                                    <span class="biz-wordmark"><span class="bwm-iu">I</span>CODE<span
-                                            class="bwm-iu">U</span></span>
-                                </div>
-                                <div class="biz-body">
-                                    <div class="biz-name-line">
-                                        <span class="biz-name">{{title}}</span>
-                                        <span class="biz-role">{{categoryName}}</span>
-                                    </div>
-                                    <div class="biz-contacts">
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> D-{{dDay}}일 마감</span>
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> 예산 {{budgetMin}}
-                                            ~{{budgetMax}}만원</span>
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> 의뢰인 {{memberName}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    {{/budgetProjects}}
-                    {{^budgetProjects}}
-                        <div class="biz-card" style="display:flex;align-items:center;justify-content:center;">
-                            <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 의뢰가 없습니다</span>
-                        </div>
-                    {{/budgetProjects}}
-
-                </div>
-            </div>
-            <button class="c-arrow c-arrow-left" aria-label="이전">‹</button>
-            <button class="c-arrow c-arrow-right" aria-label="다음">›</button>
-        </div>
-    </div>
-
-    <!-- ③ 최신 등록 의뢰 -->
-    <div class="expert-block">
-        <div class="block-head">
-            <div class="block-head-left">
-                <span class="block-kw kw-green">Latest</span>
-                <span class="block-sub">최신 등록된 의뢰</span>
-            </div>
-            <a href="/projects" class="block-more">VIEW ALL →</a>
-        </div>
-        <div class="carousel-section" id="cs-3">
-            <div class="c-viewport">
-                <div class="c-track">
-                    {{#carouselAd}}
-                        <a href="/experts/{{expertId}}" class="biz-card ad-mini-card">
-                            <span class="ad-mini-badge">AD</span>
-                            <div class="ad-mini-thumb" style="background-image:url('{{displayImageUrl}}');"></div>
-                        </a>
-                    {{/carouselAd}}
-
-                    {{#latestProjects}}
-                        <a href="/projects/{{id}}" class="biz-card"
-                           data-project-id="{{id}}"
-                           data-dday="D-{{dDay}}"
-                           data-budget="{{budgetMin}}~{{budgetMax}}만원"
-                           data-category="{{categoryName}}">
-                            <div class="biz-inner">
-                                <div class="biz-brand">
-                                    <img src="/app-icon.svg" class="biz-app-icon" alt="">
-                                    <span class="biz-wordmark"><span class="bwm-iu">I</span>CODE<span
-                                            class="bwm-iu">U</span></span>
-                                </div>
-                                <div class="biz-body">
-                                    <div class="biz-name-line">
-                                        <span class="biz-name">{{title}}</span>
-                                        <span class="biz-role">{{categoryName}}</span>
-                                    </div>
-                                    <div class="biz-contacts">
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> D-{{dDay}}일 마감</span>
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> 예산 {{budgetMin}}
-                                            ~{{budgetMax}}만원</span>
-                                        <span class="biz-ct"><span class="biz-ct-dot">✦</span> 의뢰인 {{memberName}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    {{/latestProjects}}
-                    {{^latestProjects}}
-                        <div class="biz-card" style="display:flex;align-items:center;justify-content:center;">
-                            <span style="color:rgba(255,255,255,.3);font-size:13px;">등록된 의뢰가 없습니다</span>
-                        </div>
-                    {{/latestProjects}}
-
-                </div>
-            </div>
-            <button class="c-arrow c-arrow-left" aria-label="이전">‹</button>
-            <button class="c-arrow c-arrow-right" aria-label="다음">›</button>
-        </div>
-    </div>
-
-    <!-- BANNER #9: 포트폴리오 하이라이트 -->
-    <div class="portfolio-banner">
-        <div class="block-head">
-            <div class="block-head-left">
-                <span class="block-kw kw-blue">Recent Work</span>
-                <span class="block-sub">전문가들의 실제 납품 결과물</span>
-            </div>
-            <a href="/experts" class="block-more">MORE →</a>
-        </div>
-        <div class="portfolio-grid">
-            <a href="/experts" class="pf-card">
-                <div class="pf-thumb pf-thumb-1">
-                    <div class="pf-tag">WEB</div>
-                    <div class="pf-thumb-mockup">
-                        <div class="pf-mock-bar w80"></div>
-                        <div class="pf-mock-bar w60"></div>
-                        <div class="pf-mock-block">
-                            <div class="pf-mock-sq"></div>
-                            <div class="pf-mock-lines">
-                                <div class="pf-mock-bar w80"></div>
-                                <div class="pf-mock-bar w60"></div>
-                                <div class="pf-mock-bar w40"></div>
-                            </div>
-                        </div>
-                        <div class="pf-mock-bar w40"></div>
-                    </div>
-                </div>
-                <div class="pf-body">
-                    <div class="pf-meta">
-                        <span class="pf-category">React · 랜딩페이지</span>
-                        <span class="pf-rating">★★★★★</span>
-                    </div>
-                    <div class="pf-title">SaaS 서비스 메인 페이지 풀리뉴얼</div>
-                    <div class="pf-expert">by 김*준 · 3일 전 완료</div>
-                </div>
-            </a>
-            <a href="/experts" class="pf-card">
-                <div class="pf-thumb pf-thumb-2">
-                    <div class="pf-tag">APP</div>
-                    <div class="pf-thumb-mockup">
-                        <div class="pf-mock-bar w60"></div>
-                        <div class="pf-mock-bar w80"></div>
-                        <div class="pf-mock-block">
-                            <div class="pf-mock-sq"></div>
-                            <div class="pf-mock-lines">
-                                <div class="pf-mock-bar w60"></div>
-                                <div class="pf-mock-bar w40"></div>
-                                <div class="pf-mock-bar w80"></div>
-                            </div>
-                        </div>
-                        <div class="pf-mock-bar w60"></div>
-                    </div>
-                </div>
-                <div class="pf-body">
-                    <div class="pf-meta">
-                        <span class="pf-category">Flutter · 모바일앱</span>
-                        <span class="pf-rating">★★★★★</span>
-                    </div>
-                    <div class="pf-title">배달 중개 앱 iOS / Android 출시</div>
-                    <div class="pf-expert">by 이*연 · 1주 전 완료</div>
-                </div>
-            </a>
-            <a href="/experts" class="pf-card">
-                <div class="pf-thumb pf-thumb-3">
-                    <div class="pf-tag">BRAND</div>
-                    <div class="pf-thumb-mockup">
-                        <div class="pf-mock-bar w40"></div>
-                        <div class="pf-mock-bar w80"></div>
-                        <div class="pf-mock-block">
-                            <div class="pf-mock-sq"></div>
-                            <div class="pf-mock-lines">
-                                <div class="pf-mock-bar w80"></div>
-                                <div class="pf-mock-bar w60"></div>
-                                <div class="pf-mock-bar w40"></div>
-                            </div>
-                        </div>
-                        <div class="pf-mock-bar w80"></div>
-                    </div>
-                </div>
-                <div class="pf-body">
-                    <div class="pf-meta">
-                        <span class="pf-category">Design · 브랜딩</span>
-                        <span class="pf-rating">★★★★☆</span>
-                    </div>
-                    <div class="pf-title">스타트업 CI/BI 아이덴티티 디자인</div>
-                    <div class="pf-expert">by 박*윤 · 5일 전 완료</div>
-                </div>
-            </a>
-        </div>
-    </div>
-
-</div><!-- /main-wrap -->
-
-<!-- REVIEW -->
-<section class="review-section">
-    <div class="review-inner">
-        <div class="r-eyebrow">Client Reviews</div>
-        <div class="r-title">실제 의뢰인의 이야기</div>
-        <div class="r-grid">
-            <div class="r-card">
-                <div class="r-stars">★★★★★</div>
-                <p class="r-text">"처음 외주를 맡겨봤는데 생각보다 훨씬 빠르고 깔끔하게 완성해 주셨어요. 에스크로 방식이라 돈 걱정도 없었고, 수정도 군말 없이 해주셔서 정말
-                    만족했습니다."</p>
-                <div class="r-author">
-                    <div class="r-ava">이</div>
-                    <div>
-                        <div class="r-name">이*연</div>
-                        <div class="r-sub">LANDING PAGE · 3 WEEKS AGO</div>
-                    </div>
-                </div>
-            </div>
-            <div class="r-card">
-                <div class="r-stars">★★★★★</div>
-                <p class="r-text">"로고 시안을 3개나 제시해 주셔서 고르는 재미가 있었어요. 원하는 분위기를 정확히 잡아주셨고 납기도 딱 맞춰주셔서 다음에도 꼭 쓸 것 같습니다."</p>
-                <div class="r-author">
-                    <div class="r-ava">박</div>
-                    <div>
-                        <div class="r-name">박*훈</div>
-                        <div class="r-sub">BRAND LOGO · 1 WEEK AGO</div>
-                    </div>
-                </div>
-            </div>
-            <div class="r-card">
-                <div class="r-stars">★★★★☆</div>
-                <p class="r-text">"앱 출시 후에도 버그가 생기면 바로 수정해 주셔서 믿고 맡길 수 있었습니다. 중간에 요구사항이 바뀌었는데도 유연하게 대응해 주셔서 감사했어요."</p>
-                <div class="r-author">
-                    <div class="r-ava">최</div>
-                    <div>
-                        <div class="r-name">최*아</div>
-                        <div class="r-sub">iOS APP · 2 WEEKS AGO</div>
-                    </div>
-                </div>
+                <span class="block-kw kw-blue">PLATFORM METRICS</span>
+                <h3 class="block-sub">데이터로 증명하는 매칭 신뢰도</h3>
             </div>
         </div>
-    </div>
-</section>
 
-<!-- 누적거래 통계 -->
-<div class="stats-banner">
-    <div class="stats-inner">
-        <div class="stats-eyebrow">Platform Statistics</div>
-        <div class="stats-title">숫자로 증명하는 아이코드유</div>
         <div class="stats-grid">
-            <div class="stats-item">
-                <div class="stats-item-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)"
-                         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                    </svg>
-                </div>
-                <div class="stats-num"><em>12,480</em>+</div>
-                <div class="stats-desc">누적 완료 프로젝트</div>
+            <div class="stat-card">
+                <div class="st-val">98.4%</div>
+                <div class="st-label">프로젝트 매칭 성공률</div>
             </div>
-            <div class="stats-item">
-                <div class="stats-item-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)"
-                         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="1" x2="12" y2="23"/>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                    </svg>
-                </div>
-                <div class="stats-num"><em>34</em>억+</div>
-                <div class="stats-desc">누적 거래 금액</div>
+            <div class="stat-card">
+                <div class="st-val">4.92</div>
+                <div class="st-label">전문가 평균 만족도 평점</div>
             </div>
-            <div class="stats-item">
-                <div class="stats-item-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)"
-                         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </div>
-                <div class="stats-num"><em>2,400</em>+</div>
-                <div class="stats-desc">활동 중인 전문가</div>
+            <div class="stat-card">
+                <div class="st-val">1.2Hr</div>
+                <div class="st-label">평균 매칭 소요 시간</div>
             </div>
-            <div class="stats-item">
-                <div class="stats-item-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-blue)"
-                         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                </div>
-                <div class="stats-num"><em>98.2</em>%</div>
-                <div class="stats-desc">에스크로 정산 완료율</div>
+            <div class="stat-card">
+                <div class="st-val">0건</div>
+                <div class="st-label">안전 결제 대금 사고율</div>
             </div>
         </div>
-    </div>
+    </section>
+
 </div>
 
-<!-- BANNER #7: 전문가 모집 -->
-<div style="background: var(--brand-ink); padding: 0 32px;">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 56px 0;">
-        <div class="recruit-banner" style="margin: 0;">
-            <div class="recruit-left">
-                <div class="recruit-eyebrow">Join as Expert</div>
-                <div class="recruit-title">
-                    당신의 실력을<br><em>수익으로 바꾸세요</em>
-                </div>
-                <div class="recruit-desc">
-                    아이코드유에 전문가로 등록하면 검증된 클라이언트의 프로젝트 의뢰를 직접 받을 수 있습니다.<br>
-                    에스크로 안전 정산으로 미수금 걱정 없이 작업에만 집중하세요.
-                </div>
-                <div class="recruit-stats">
-                    <div>
-                        <div class="recruit-stat-val">87만원</div>
-                        <div class="recruit-stat-label">전문가 월 평균 수익</div>
-                    </div>
-                    <div>
-                        <div class="recruit-stat-val">2,400+</div>
-                        <div class="recruit-stat-label">활동 중인 전문가</div>
-                    </div>
-                    <div>
-                        <div class="recruit-stat-val">98%</div>
-                        <div class="recruit-stat-label">정산 완료율</div>
-                    </div>
-                </div>
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-left">
+            <div class="footer-logo">Icode<span>U</span></div>
+            <div class="footer-links">
+                <a href="#">이용약관</a>
+                <a href="#">개인정보처리방침</a>
+                <a href="#">고객센터</a>
+                <a href="#">전문가 가이드</a>
             </div>
-            <div class="recruit-right">
-                <a href="/join-start" class="recruit-cta">전문가로 시작하기 →</a>
-                <div class="recruit-note">가입 · 프로필 등록 무료 · 수수료는 완료 후만 발생</div>
-            </div>
+            <p>(주)아이코드유플랫폼 | 대표자: 홍길동 | 사업자등록번호: 000-00-00000<br>주소: 서울시 강남구 테헤란로 IT타워 10층 | 이메일: support@icodeu.com</p>
+        </div>
+        <div class="footer-right">
+            &copy; 2026 IcodeU Platform. Powered by JetBrains Mono &amp; Space Grotesk.
         </div>
     </div>
-</div>
-
-<!-- FOOTER -->
-{{>layout/footer}}
+</footer>
 
 <script>
-    function getStars(rating) {
-        if (rating === 0 || isNaN(rating)) return '<span style="color:rgba(255,255,255,.3);font-size:11px;">평점없음</span>';
-        const full = Math.floor(rating);
-        const decimal = rating - full;
-        const empty = 5 - full - (decimal > 0 ? 1 : 0);
-        const pct = Math.round(decimal * 100);
-        const uid = Math.random().toString(36).slice(2, 7);
-        let html = '';
-
-        for (let i = 0; i < full; i++) {
-            html += `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;">
-                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#f59e0b"/>
-            </svg>`;
-        }
-
-        if (decimal > 0) {
-            html += `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;">
-                <defs>
-                    <linearGradient id="g-${uid}" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="${pct}%" stop-color="#f59e0b"/>
-                        <stop offset="${pct}%" stop-color="rgba(255,255,255,0.15)"/>
-                    </linearGradient>
-                </defs>
-                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="url(#g-${uid})"/>
-            </svg>`;
-        }
-
-        for (let i = 0; i < empty; i++) {
-            html += `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;">
-                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="rgba(255,255,255,0.15)"/>
-            </svg>`;
-        }
-
-        return html;
-    }
-
-    function initCarousel(section) {
-        const track     = section.querySelector('.c-track');
-        const isAdTrack = track.classList.contains('ad-track');
-        const realCards = Array.from(section.querySelectorAll(isAdTrack ? '.ad-main-card' : '.biz-card'));
-        const realCount = realCards.length;
-        const GAP       = 16;
-        let   idx       = 0;
-        let   busy      = false;
-
-        realCards.slice(0, 3).forEach(c => {
-            const cl = c.cloneNode(true);
-            cl.setAttribute('aria-hidden', 'true');
-            track.appendChild(cl);
-        });
-
-           function cardW() {
-             const card = track.querySelector(isAdTrack ? '.ad-main-card' : '.biz-card');
-             return card ? card.getBoundingClientRect().width : 0;
-           }
-
-        function moveTo(i, animate) {
-            track.style.transition = animate ? 'transform 0.65s cubic-bezier(0.4,0,0.2,1)' : 'none';
-            track.style.transform  = `translateX(-${i * (cardW() + GAP)}px)`;
-        }
-
-        function next() {
-            if (busy) return;
-            busy = true;
-            idx++;
-            moveTo(idx, true);
-            if (idx >= realCount) {
-                track.addEventListener('transitionend', function once() {
-                    track.removeEventListener('transitionend', once);
-                    moveTo(0, false);
-                    idx  = 0;
-                    busy = false;
-                });
-            } else {
-                setTimeout(() => { busy = false; }, 700);
-            }
-        }
-        function prev() {
-            if (busy || idx === 0) return;
-            busy = true;
-            idx--;
-            moveTo(idx, true);
-            setTimeout(() => { busy = false; }, 700);
-        }
-
-        let timer = setInterval(next, 3800);
-        section.querySelector('.c-arrow-right').addEventListener('click', () => { clearInterval(timer); next(); timer = setInterval(next, 3800); });
-        section.querySelector('.c-arrow-left').addEventListener('click',  () => { clearInterval(timer); prev(); timer = setInterval(next, 3800); });
-        section.addEventListener('mouseenter', () => clearInterval(timer));
-        section.addEventListener('mouseleave', () => { timer = setInterval(next, 3800); });
-    }
-
     (function() {
-        function getNextSunday() {
-            const now = new Date();
-            const day = now.getDay();
-            const diff = day === 0 ? 7 : 7 - day;
-            const end = new Date(now);
-            end.setDate(now.getDate() + diff);
-            end.setHours(23, 59, 59, 0);
-            return end;
+        function setupCarousel(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const track = el.querySelector('.c-track');
+            const btnL  = el.querySelector('.c-arrow-left');
+            const btnR  = el.querySelector('.c-arrow-right');
+            if (!track || !btnL || !btnR) return;
+
+            let currentIdx = 0;
+
+            function getCardsPerView() {
+                if (window.innerWidth <= 560) return 1;
+                if (window.innerWidth <= 960) return 2;
+                return 3;
+            }
+
+            function update() {
+                const totalCards = track.children.length;
+                const cpv = getCardsPerView();
+                const maxIdx = Math.max(0, totalCards - cpv);
+
+                if (currentIdx > maxIdx) currentIdx = maxIdx;
+                if (currentIdx < 0) currentIdx = 0;
+
+                const gap = 16;
+                const cardWidth = (track.parentElement.clientWidth - (gap * (cpv - 1))) / cpv;
+
+                Array.from(track.children).forEach(card => {
+                    card.style.flex = `0 0 ${cardWidth}px`;
+                });
+
+                const offset = currentIdx * (cardWidth + gap);
+                track.style.transform = `translateX(-${offset}px)`;
+
+                btnL.style.display = currentIdx === 0 ? 'none' : 'flex';
+                btnR.style.display = currentIdx >= maxIdx ? 'none' : 'flex';
+            }
+
+            btnL.addEventListener('click', () => { currentIdx--; update(); });
+            btnR.addEventListener('click', () => { currentIdx++; update(); });
+            window.addEventListener('resize', update);
+
+            update();
+            setTimeout(update, 200);
         }
-        const endTime = getNextSunday();
-        const pad = n => String(n).padStart(2, '0');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCarousel('c1');
+            setupCarousel('c2');
+        });
+    })();
+
+    /* 카운트다운 타이머 구문 */
+    (function() {
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 3);
+
+        const dEl = document.getElementById('cd-d');
+        const hEl = document.getElementById('cd-h');
+        const mEl = document.getElementById('cd-m');
+        const sEl = document.getElementById('cd-s');
+
+        function pad(n) { return n < 10 ? '0' + n : n; }
 
         function tick() {
             const now = new Date();
-            const diff = Math.max(0, endTime - now);
-            const d = Math.floor(diff / 86400000);
-            const h = Math.floor((diff % 86400000) / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            const dEl = document.getElementById('promo-d');
-            const hEl = document.getElementById('promo-h');
-            const mEl = document.getElementById('promo-m');
-            const sEl = document.getElementById('promo-s');
+            const diff = targetDate - now;
+            if (diff <= 0) {
+                if (dEl) dEl.textContent = '00';
+                if (hEl) hEl.textContent = '00';
+                if (mEl) mEl.textContent = '00';
+                if (sEl) sEl.textContent = '00';
+                return;
+            }
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / (1000 * 60)) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+
             if (dEl) dEl.textContent = pad(d);
             if (hEl) hEl.textContent = pad(h);
             if (mEl) mEl.textContent = pad(m);
@@ -1280,8 +588,10 @@
         setInterval(tick, 1000);
     })();
 
+    /* 명함 마우스 오버 오버레이 부착 */
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.biz-card[data-project-id]').forEach(card => {
+            if (card.querySelector('.biz-overlay')) return;
             const dday   = card.dataset.dday   || 'D-?';
             const budget = card.dataset.budget || '미정';
             const href   = card.getAttribute('href') || '#';
@@ -1292,20 +602,26 @@
                 <div class="ov-stats">
                     <div class="ov-stat">
                         <span class="ov-stat-val">${dday}</span>
-                        <span class="ov-stat-label">마감</span>
+                        <span class="ov-stat-label">마감/등급</span>
                     </div>
                     <div class="ov-divider"></div>
                     <div class="ov-stat">
                         <span class="ov-stat-val">${budget}</span>
-                        <span class="ov-stat-label">예산</span>
+                        <span class="ov-stat-label">예산/내역</span>
                     </div>
                 </div>
-                <a class="ov-cta" href="${href}">의뢰 보기 →</a>
+                <a class="ov-cta" href="${href}">자세히 보기 →</a>
             `;
             card.appendChild(overlay);
         });
 
-        document.querySelectorAll('.carousel-section').forEach(initCarousel);
+        document.querySelectorAll('.biz-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if(e.target.closest('.ov-cta')) return;
+                const href = card.getAttribute('href');
+                if(href) window.location.href = href;
+            });
+        });
     });
 </script>
 </body>
