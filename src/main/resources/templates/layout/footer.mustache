@@ -927,12 +927,37 @@
             location.href = '/experts/dashboard';
         } else {
             alert('전문가 회원만 이용할 수 있습니다. 로그인 후 이용해주세요.');
-            fetch('/logout', { method: 'GET' })
-                    .finally(() => {
-                        location.href = '/login';
-                    });
+            /* [M2] Logout must use POST to prevent CSRF-via-GET */
+            const csrfToken = document.cookie.split(';')
+                .map(c => c.trim())
+                .find(c => c.startsWith('XSRF-TOKEN='));
+            const token = csrfToken ? decodeURIComponent(csrfToken.split('=')[1]) : '';
+            fetch('/logout', {
+                method: 'POST',
+                headers: { 'X-XSRF-TOKEN': token }
+            }).finally(() => {
+                location.href = '/login';
+            });
         }
     }
+</script>
+
+<script>
+(function () {
+    var cookie = document.cookie.split(';')
+        .map(function (c) { return c.trim(); })
+        .find(function (c) { return c.startsWith('XSRF-TOKEN='); });
+    if (!cookie) return;
+    var token = decodeURIComponent(cookie.split('=')[1]);
+    document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(function (form) {
+        if (form.querySelector('input[name="_csrf"]')) return;
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = '_csrf';
+        input.value = token;
+        form.appendChild(input);
+    });
+}());
 </script>
 
 <!-- ▼▼▼ AI 챗봇 영역 ▼▼▼ -->

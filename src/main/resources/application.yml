@@ -1,6 +1,10 @@
 spring:
   profiles:
     active: dev
+  # [L2] Suppress Spring Boot error details from /error endpoint
+  web:
+    resources:
+      add-mappings: true
   config:
     import: optional:file:.env[.properties]
   mustache:
@@ -27,11 +31,23 @@ solapi:
   api-secret: ${SOLAPI_SECRET_KEY}
   sender-number: ${SOLAPI_SENDER_NUMBER}
 
+# [L2] Disable Spring Boot default Whitelabel error page and stack trace exposure
 server:
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+    include-binding-errors: never
+    whitelabel:
+      enabled: false
   port: 8080
   servlet:
     session:
       tracking-modes: cookie
+      cookie:
+        secure: true        # [M3] Secure flag – HTTPS only
+        same-site: strict   # [M3] SameSite=Strict – blocks cross-site submission
+        http-only: true     # Prevent JS access to session cookie
     encoding:
       charset: utf-8
       force: true
