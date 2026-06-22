@@ -639,7 +639,10 @@
                         </div>
                         <a href="/experts/dashboard" class="pd-item">🏠 대시보드</a>
                         <a href="/experts/my/form" class="pd-item">⚙️ 프로필 수정</a>
-                        <a href="/logout" class="pd-item pd-logout">🚪 로그아웃</a>
+                        {{! [M2] Logout via POST form to prevent CSRF-via-GET }}
+                        <form id="logoutFormExpert" action="/logout" method="POST" style="display:inline;">
+                            <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0;">🚪 로그아웃</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -734,7 +737,10 @@
                                 <a href="/my-pages" class="pd-item">🏠 마이페이지</a>
                                 <a href="/my-pages?tab=edit" class="pd-item">⚙️ 정보 수정</a>
                             {{/isAdmin}}
-                            <a href="/logout" class="pd-item pd-logout">🚪 로그아웃</a>
+                            {{! [M2] Logout via POST form to prevent CSRF-via-GET }}
+                            <form id="logoutFormClient" action="/logout" method="POST" style="display:inline;">
+                                <button type="submit" class="pd-item pd-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0;">🚪 로그아웃</button>
+                            </form>
                         </div>
                     </div>
                 {{/isLoggedIn}}
@@ -813,6 +819,42 @@
             if (name) el.textContent = name.charAt(0);  // 첫 글자만
         });
     });
+
+    /* [M1] CSRF token injection for all HTML forms.
+     * Spring Security sets the XSRF-TOKEN cookie (readable by JS).
+     * We read it and inject a hidden _csrf field into every POST/PUT/DELETE form.
+     */
+    (function injectCsrfTokens() {
+        function getCsrfToken() {
+            const match = document.cookie.split(';')
+                .map(c => c.trim())
+                .find(c => c.startsWith('XSRF-TOKEN='));
+            return match ? decodeURIComponent(match.split('=')[1]) : null;
+        }
+
+        function addCsrfToForms() {
+            const token = getCsrfToken();
+            if (!token) return;
+            document.querySelectorAll('form').forEach(function(form) {
+                const method = (form.method || '').toUpperCase();
+                if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
+                    if (!form.querySelector('input[name="_csrf"]')) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = '_csrf';
+                        input.value = token;
+                        form.appendChild(input);
+                    }
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', addCsrfToForms);
+        } else {
+            addCsrfToForms();
+        }
+    })();
 </script>
 
 {{#isAdmin}}

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Component
 @RequiredArgsConstructor
@@ -56,6 +57,12 @@ public class SessionInterceptor implements HandlerInterceptor {
                            Object handler, ModelAndView modelAndView) throws Exception {
 
         if (modelAndView != null) {
+            // [L3] Skip redirect views — model attributes would become query params in the URL,
+            // leaking auth state (e.g. /login?isLoggedIn=false&isExpert=false&isAdmin=false).
+            if (modelAndView.getView() instanceof RedirectView) return;
+            String viewName = modelAndView.getViewName();
+            if (viewName != null && viewName.startsWith("redirect:")) return;
+
             HttpSession session = request.getSession(false);
             if (session != null) {
                 Member member = (Member) session.getAttribute(Define.SESSION_USER);

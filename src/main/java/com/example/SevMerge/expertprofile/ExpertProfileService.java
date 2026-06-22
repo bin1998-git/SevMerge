@@ -141,8 +141,9 @@ public class ExpertProfileService {
 
         expertProfileRepository.findByMemberId(memberId)
                 .ifPresent(ep -> {
-                    ep.checkGrade(avgRate, reviewCount, donCount, globalAvg);
-                    expertProfileRepository.save(ep); // 명시적 save 추가
+                    Grade newGrade = ep.checkGrade(avgRate, reviewCount, donCount, globalAvg);
+                    ep.setExpertGrade(newGrade);
+                    expertProfileRepository.save(ep);
                 });
     }
 }

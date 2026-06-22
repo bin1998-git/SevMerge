@@ -10,8 +10,8 @@
 
     /* ── 테이블 ── */
     .bid-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; }
-    .bid-table-head { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 110px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
-    .bid-row { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .bid-table-head { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 140px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
+    .bid-row { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 140px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
     .bid-row:last-child { border-bottom: none; }
     .bid-row:hover { background: #f8f9ff; }
     .cell { font-size: 13px; color: #4b5563; }
@@ -25,14 +25,122 @@
     .badge-rejected { background: #f3f4f6; color: #6b7280; }
 
     /* ── 버튼 ── */
-    .btn-cancel { padding: 6px 14px; background: #fff; border: 1.5px solid #fca5a5; color: #dc2626; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .btn-edit { padding: 6px 12px; background: #eef2ff; border: 1.5px solid #e0e7ff; color: #4f46e5; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-edit:hover { background: #e0e7ff; }
+    .btn-cancel { padding: 6px 12px; background: #fff; border: 1.5px solid #fca5a5; color: #dc2626; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
     .btn-cancel:hover { background: #fef2f2; }
-    .btn-disabled { padding: 6px 14px; background: #f9fafb; border: 1.5px solid #e5e7eb; color: #d1d5db; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: not-allowed; }
+    .btn-disabled { padding: 6px 12px; background: #f9fafb; border: 1.5px solid #e5e7eb; color: #d1d5db; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: not-allowed; }
 
     /* ── 빈 상태 ── */
     .empty-state { text-align: center; padding: 80px 0; }
     .empty-icon { font-size: 36px; margin-bottom: 14px; }
     .empty-msg { font-size: 14px; color: #c4c9d9; margin-bottom: 18px; }
+    /* ── FOOTER (exmain 스타일) ── */
+    :root {
+        --brand-blue:      #2D6BFF;
+        --brand-blue-deep: #1846C9;
+        --brand-sky:       #6BA0FF;
+        --brand-ink:       #0C1424;
+        --brand-slate:     #33415C;
+        --brand-muted:     #5A6B85;
+        --brand-mist:      #EBEEF4;
+        --brand-line:      #E2E7F0;
+        --brand-white:     #FFFFFF;
+    }
+    .footer {
+        background: var(--brand-ink) !important;
+        border-top: 1px solid rgba(255,255,255,.06) !important;
+        padding: 40px 32px 28px !important;
+    }
+    .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .footer-brand-logo {
+        font-size: 20px;
+        font-weight: 800;
+        color: rgba(255,255,255,.85);
+        letter-spacing: .05em;
+    }
+    .footer-brand-logo span { color: var(--brand-sky); }
+    .footer-actions { display: flex; gap: 8px; }
+    .footer-actions .btn-outline {
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.55);
+        font-size: 13px;
+        padding: 8px 16px;
+        border-radius: 7px;
+        transition: border-color .15s, color .15s;
+    }
+    .footer-actions .btn-outline:hover {
+        border-color: var(--brand-sky);
+        color: var(--brand-sky);
+    }
+    .footer-nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+    .footer-nav a {
+        font-size: 13px;
+        color: rgba(255,255,255,.45);
+        transition: color .15s;
+    }
+    .footer-nav a:hover { color: rgba(255,255,255,.8); }
+    .footer-nav-sep {
+        display: inline-block;
+        width: 1px;
+        height: 12px;
+        background: rgba(255,255,255,.15);
+        vertical-align: middle;
+    }
+    .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255,255,255,.07);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .footer-policy-links {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .footer-policy-links a {
+        font-size: 12px;
+        color: rgba(255,255,255,.32);
+        transition: color .15s;
+    }
+    .footer-policy-links a:hover { color: rgba(255,255,255,.6); }
+    .footer-policy-strong {
+        font-weight: 700;
+        color: rgba(255,255,255,.5) !important;
+    }
+    .footer-hours-inline {
+        font-size: 12px;
+        color: rgba(255,255,255,.22);
+    }
+    .footer-copy {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--brand-muted) !important;
+        letter-spacing: .02em;
+    }
 </style>
 
 <section class="page-section">
@@ -56,7 +164,7 @@
             {{#bids}}
             <div class="bid-row">
                 <span class="cell cell-title">{{projectTitle}}</span>
-                <span class="cell cell-price">{{proposedPrice}}원</span>
+                <span class="cell cell-price">{{proposedPrice}}만원</span>
                 <span class="cell">{{estimatedDays}}일</span>
                 <span class="cell">{{createdAt}}</span>
                 <span class="cell">
@@ -66,10 +174,13 @@
                 </span>
                 <span class="cell">
                     {{#isPending}}
-                    <button class="btn-cancel" data-bid-id="{{id}}">취소</button>
+                    <div style="display: flex; gap: 6px;">
+                        <a href="/bids/{{id}}/edit" class="btn-edit">수정</a>
+                        <button class="btn-cancel" data-bid-id="{{id}}">취소</button>
+                    </div>
                     {{/isPending}}
                     {{^isPending}}
-                    <span class="btn-disabled">취소불가</span>
+                    <span class="btn-disabled">수정/취소불가</span>
                     {{/isPending}}
                 </span>
             </div>
