@@ -85,10 +85,19 @@
                     </div>
 
                     {{^isCertified}}
-                        <div class="expert-actions">
-                            <button type="button" class="approve-btn" onclick="updateExpertStatus({{memberId}}, 'approve')">승인</button>
-                            <button type="button" class="reject-btn" onclick="updateExpertStatus({{memberId}}, 'reject')">거절</button>
-                        </div>
+                        {{#isPending}}
+                            <div class="expert-actions">
+                                <button type="button" class="approve-btn"
+                                        onclick="updateExpertStatus({{memberId}}, 'approve')">승인</button>
+                                <button type="button" class="reject-btn"
+                                        onclick="updateExpertStatus({{memberId}}, 'reject')">거절</button>
+                            </div>
+                        {{/isPending}}
+                        {{#isRejected}}
+                            <div class="expert-actions">
+                                <span style="font-size:13px;color:#ef4444;font-weight:700;">거절됨</span>
+                            </div>
+                        {{/isRejected}}
                     {{/isCertified}} </div>
             {{/experts}}
 

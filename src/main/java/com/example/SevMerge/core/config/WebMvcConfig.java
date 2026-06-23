@@ -82,7 +82,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/google-redirect",    // 구글 로그인 통과
                         "/kakao-redirect",     // 카카오 로그인 통과
                         "/social-role",        // 소셜 가입 페이지 통과
-                        "/social-join",git
+                        "/social-join",
                         "/social-pending",
                         "/social-expert-form",
                         "/social-expert-join",

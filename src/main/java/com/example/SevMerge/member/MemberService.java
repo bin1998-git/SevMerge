@@ -138,6 +138,8 @@ public class MemberService {
                 .profileImage(savedImage)
                 .build();
         memberRepository.save(member);
+        session.removeAttribute("verified_email");
+        session.removeAttribute("verified_phone");
 
         // 전문가 신청 시 ExpertProfile 초기 생성
         if (request.getRole() == Role.EXPERT) {

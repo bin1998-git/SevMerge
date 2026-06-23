@@ -88,8 +88,17 @@ public class MemberController {
 
     @PostMapping("/join")
     public String join(MemberRequest.Join request,
-                       @RequestParam(value = "profileImageFile", required = false) MultipartFile profileImageFile) {
-        memberService.join(request, profileImageFile);
+                       @RequestParam(value = "profileImageFile", required = false) MultipartFile profileImageFile,
+                       Model model) {
+        try {
+            memberService.join(request, profileImageFile);
+        } catch (BadRequestException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            if (request.getRole() == Role.EXPERT) {
+                return "member/join-form-expert";
+            }
+            return "member/join-form-client";
+        }
 
         if (request.getRole() != null && "EXPERT".equalsIgnoreCase(request.getRole().toString())) {
             return "redirect:/social-pending";

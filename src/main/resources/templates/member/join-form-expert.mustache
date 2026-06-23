@@ -182,12 +182,31 @@
 
             <div class="form-group">
                 <label class="form-label">기술 스택 <span class="required">*</span></label>
-                <div class="skill-picker">
-                    <div class="skill-picker-tabs" id="spTabs"></div>
-                    <div class="skill-picker-body" id="spBody"></div>
+
+                <!-- 카테고리 선택 드롭다운 -->
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <select id="categorySelect" class="form-input" style="flex:1;"
+                            onchange="renderChips()">
+                        <option value="0">언어</option>
+                        <option value="1">백엔드</option>
+                        <option value="2">프론트엔드</option>
+                        <option value="3">모바일</option>
+                        <option value="4">DB/인프라</option>
+                        <option value="5">디자인</option>
+                        <option value="6">데이터/AI</option>
+                        <option value="7">영상</option>
+                        <option value="8">기타</option>
+                    </select>
                 </div>
-                <div class="skill-selected-area">
-                    <div class="skill-selected-label">선택된 기술</div>
+
+                <!-- 기술 칩 목록 -->
+                <div class="skill-picker-body" id="spBody"
+                     style="border:1.5px solid #e2e5ef; border-radius:10px; padding:14px; display:flex; flex-wrap:wrap; gap:8px; min-height:72px;">
+                </div>
+
+                <!-- 선택된 기술 -->
+                <div style="margin-top:12px;">
+                    <div style="font-size:12px; color:#9ca3af; margin-bottom:8px;">선택된 기술</div>
                     <div class="skill-tags" id="skillTags">
                         <span class="skill-empty">선택된 기술이 없습니다.</span>
                     </div>
@@ -263,7 +282,6 @@
     pwInput.addEventListener("input", checkPwMatch);
     pwConfirmInput.addEventListener("input", checkPwMatch);
 
-// ===== 기술스택 선택기 =====
 const SKILL_CATEGORIES = [
     { label: '언어', skills: ['Java','Python','JavaScript','TypeScript','Swift','Kotlin','Dart','R','C','C++','C#','Go','Rust','PHP'] },
     { label: '백엔드', skills: ['Spring Boot','Django','FastAPI','Node.js','Express','NestJS','Flask','Laravel','Ruby on Rails'] },
@@ -277,19 +295,11 @@ const SKILL_CATEGORIES = [
 ];
 
 let selectedSkills = [];
-let activeCategory = 0;
-
-function renderTabs() {
-    const tabs = document.getElementById('spTabs');
-    tabs.innerHTML = SKILL_CATEGORIES.map((cat, i) =>
-        `<button type="button" class="sp-tab ${i === activeCategory ? 'active' : ''}"
-            onclick="switchCategory(${i})">${cat.label}</button>`
-    ).join('');
-}
 
 function renderChips() {
+    const idx = parseInt(document.getElementById('categorySelect').value);
     const body = document.getElementById('spBody');
-    body.innerHTML = SKILL_CATEGORIES[activeCategory].skills.map(skill =>
+    body.innerHTML = SKILL_CATEGORIES[idx].skills.map(skill =>
         `<button type="button" class="sp-chip ${selectedSkills.includes(skill) ? 'selected' : ''}"
             onclick="toggleSkill('${skill}')">${skill}</button>`
     ).join('');
@@ -309,12 +319,6 @@ function renderSelectedTags() {
     document.getElementById('specialityHidden').value = selectedSkills.join(',');
 }
 
-function switchCategory(idx) {
-    activeCategory = idx;
-    renderTabs();
-    renderChips();
-}
-
 function toggleSkill(skill) {
     if (selectedSkills.includes(skill)) {
         selectedSkills = selectedSkills.filter(s => s !== skill);
@@ -331,8 +335,6 @@ function removeSkill(skill) {
     renderSelectedTags();
 }
 
-// 초기화
-renderTabs();
 renderChips();
 renderSelectedTags();
 
