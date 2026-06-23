@@ -121,6 +121,8 @@ public class ExpertProfileViewController {
         if (sessionUser == null) return "redirect:/login";
         if (!sessionUser.isExpert()) return "redirect:/";
 
+        model.addAttribute("isDashboard", true);
+
         // 전문가 프로필 (없으면 빈 채로)
         try {
             ExpertProfileResponse profile = expertProfileService.getByMemberId(sessionUser.getId());

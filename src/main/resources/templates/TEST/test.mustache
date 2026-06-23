@@ -1,152 +1,37 @@
 {{> layout/header}}
 
 <style>
-    .admin-wrap {
-        display: flex;
-        min-height: calc(100vh - 64px);
-    }
-
-    .admin-content {
-        flex: 1;
-        padding: 36px 36px 80px;
-        background: #f5f6fa;
-    }
-
-    .admin-header {
-        margin-bottom: 24px;
-    }
-
-    .admin-title {
-        font-size: 22px;
-        font-weight: 900;
-        color: #1c1e26;
-        letter-spacing: -0.5px;
-        margin-bottom: 4px;
-    }
-
-    .admin-desc {
-        font-size: 14px;
-        color: #9ca3af;
-    }
-
-    .admin-table-wrap {
-        background: #fff;
-        border-radius: 14px;
-        border: 1.5px solid #eaecf4;
-        overflow: hidden;
-    }
-
+    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
+    .admin-content { flex: 1; padding: 36px 36px 80px; background: #f5f6fa; }
+    .admin-header { margin-bottom: 24px; }
+    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .admin-desc { font-size: 14px; color: #9ca3af; }
+    .admin-table-wrap { background: #fff; border-radius: 14px; border: 1.5px solid #eaecf4; overflow: hidden; }
     .admin-table-head {
         display: grid;
         grid-template-columns: 60px 1fr 120px 160px 120px 160px;
-        gap: 12px;
-        padding: 12px 22px;
-        background: #f8f9fc;
-        border-bottom: 1px solid #eaecf4;
-        font-size: 11px;
-        font-weight: 700;
-        color: #9ca3af;
-        letter-spacing: .5px;
+        gap: 12px; padding: 12px 22px;
+        background: #f8f9fc; border-bottom: 1px solid #eaecf4;
+        font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: .5px;
     }
-
     .admin-table-row {
         display: grid;
         grid-template-columns: 60px 1fr 120px 160px 120px 160px;
-        gap: 12px;
-        padding: 15px 22px;
-        border-bottom: 1px solid #f3f4f8;
-        align-items: center;
-        font-size: 13px;
+        gap: 12px; padding: 15px 22px;
+        border-bottom: 1px solid #f3f4f8; align-items: center; font-size: 13px;
     }
-
-    .admin-table-row:last-child {
-        border-bottom: none;
-    }
-
-    .admin-table-row:hover {
-        background: #f8f9ff;
-    }
-
-    .cell-id {
-        color: #c4c9d9;
-        font-weight: 500;
-        text-align: center;
-    }
-
-    .cell-date {
-        color: #9ca3af;
-        font-size: 12px;
-        text-align: center;
-    }
-
-    .status-pending {
-        font-size: 11px;
-        background: #fef9c3;
-        color: #92400e;
-        border: 1px solid #fde68a;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-weight: 700;
-        display: inline-block;
-    }
-
-    .status-approved {
-        font-size: 11px;
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-weight: 700;
-        display: inline-block;
-    }
-
-    .status-rejected {
-        font-size: 11px;
-        background: #fff3f3;
-        color: #ef4444;
-        border: 1px solid #fecaca;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-weight: 700;
-        display: inline-block;
-    }
-
-    .btn-approve {
-        padding: 5px 12px;
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    .btn-reject {
-        padding: 5px 12px;
-        background: #fff3f3;
-        color: #ef4444;
-        border: 1px solid #fecaca;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-        margin-left: 4px;
-    }
-
-    .btn-approve:hover {
-        background: #d1fae5;
-    }
-
-    .btn-reject:hover {
-        background: #fee2e2;
-    }
-
-    .action-btns {
-        display: flex;
-        gap: 4px;
-    }
+    .admin-table-row:last-child { border-bottom: none; }
+    .admin-table-row:hover { background: #f8f9ff; }
+    .cell-id { color: #c4c9d9; font-weight: 500; text-align: center; }
+    .cell-date { color: #9ca3af; font-size: 12px; text-align: center; }
+    .status-pending { font-size: 11px; background: #fef9c3; color: #92400e; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-approved { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-rejected { font-size: 11px; background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .btn-approve { padding: 5px 12px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .btn-reject { padding: 5px 12px; background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; margin-left: 4px; }
+    .btn-approve:hover { background: #d1fae5; }
+    .btn-reject:hover { background: #fee2e2; }
+    .action-btns { display: flex; gap: 4px; }
 </style>
 
 <div class="admin-wrap">
@@ -177,35 +62,20 @@
                     <span>
                     {{#isPending}}<span class="status-pending">대기</span>{{/isPending}}
                         {{#isApproved}}<span class="status-approved">승인</span>{{/isApproved}}
-                    {{#isRejected}}
-                    <span class="status-rejected">거절</span>
-                    {{/isRejected}}
+                        {{#isRejected}}<span class="status-rejected">거절</span>{{/isRejected}}
                 </span>
                     <div class="action-btns">
                         <form action="/admin/partnerships/{{id}}/approve" method="post" style="display:inline;">
                             <button type="submit" class="btn-approve">승인</button>
                         </form>
-                        {{#isRejected}}
-                            <form action="/admin/partnerships/{{id}}/delete" method="post" style="display:inline;">
-                                <button type="submit" class="btn-reject" onclick="deletedButton(event)">삭제</button>
-                            </form>
-                        {{/isRejected}}
-                        {{^isRejected}}
                         <form action="/admin/partnerships/{{id}}/reject" method="post" style="display:inline;">
                             <button type="submit" class="btn-reject">거절</button>
                         </form>
-                        {{/isRejected}}
                     </div>
                 </div>
             {{/partnerships}}
         </div>
     </main>
 </div>
-<script>
-    function deletedButton(event){
-        if(!confirm("정말 삭제 하시겠습니까?"))
-        event.preventDefault()
-    }
-</script>
 
 {{> layout/footer}}

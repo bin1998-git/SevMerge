@@ -133,13 +133,6 @@ public class MemberController {
      * (configured in SecurityConfig). This GET mapping exists only to avoid 404
      * when users click a plain href="/logout" link; it safely redirects them home.
      */
-//    @GetMapping("/logout")
-//    public String logoutGet() {
-//        // [M2] Do NOT invalidate session via GET — return a safe redirect instead.
-//        // Real logout must go through POST /logout (Spring Security handles it).
-//        log.warn("[M2] GET /logout attempted - ignoring. Logout requires POST.");
-//        return "redirect:/";
-//    }
 
     @PostMapping("/logout")
     public String logout(HttpSession session) {
@@ -171,24 +164,6 @@ public class MemberController {
         return "member/banned";
     }
 
-//    // 클라이언트 대시보드
-//    @GetMapping("/clients/dashboard")
-//    public String clientDashboard(HttpSession session, Model model) {
-//        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-//        if (loginMember == null) return "redirect:/login";
-//        if (loginMember.isExpert()) return "redirect:/experts/dashboard";
-//
-//        List<ProjectResponeDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
-//        long completedCount = myProjects.stream().filter(ProjectResponeDTO.ListDTO::isDone).count();
-//        long activeCount    = myProjects.stream()
-//                .filter(p -> "IN_PROGRESS".equals(p.getProjectStatus()) || "CLOSED".equals(p.getProjectStatus()))
-//                .count();
-//
-//        model.addAttribute("projectCount",   myProjects.size());
-//        model.addAttribute("completedCount", completedCount);
-//        model.addAttribute("activeCount",    activeCount);
-//        return "member/exclient-dashboard";
-//    }
 
     // 마이페이지 (의뢰인 전용)
     @GetMapping("/my-pages")
@@ -205,6 +180,7 @@ public class MemberController {
             return "redirect:/experts/dashboard";
         }
 
+        model.addAttribute("isDashboard", true);
         if (tab == null) tab = "projects";
 
         model.addAttribute("member", memberService.getMyInfo(loginMember.getId()));
