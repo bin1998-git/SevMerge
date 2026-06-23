@@ -1,85 +1,146 @@
 {{> layout/header}}
 
 <style>
-    .auth-section { padding: 72px 28px 80px; }
-    .auth-inner { max-width: 440px; margin: 0 auto; }
-    .auth-header { text-align: center; margin-bottom: 36px; }
-    .auth-logo { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; }
-    .auth-logo span { color: #2563eb; }
-    .auth-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .auth-desc { font-size: 14px; color: #9ca3af; }
-    .auth-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 36px; display: flex; flex-direction: column; gap: 18px; }
+    .auth-section {
+        min-height: calc(100vh - 64px);
+        background: #f0f4fa;
+        display: flex; align-items: center; justify-content: center;
+        padding: 48px 28px;
+    }
+    .auth-inner { width: 100%; max-width: 440px; }
+
+    .auth-header { text-align: center; margin-bottom: 32px; }
+    .auth-logo {
+        font-size: 24px; font-weight: 900; color: #0f172a;
+        margin-bottom: 12px; letter-spacing: -1px;
+    }
+    .auth-logo .hl { color: var(--blue); }
+    .auth-title {
+        font-size: 22px; font-weight: 900; color: #0f172a;
+        letter-spacing: -0.5px; margin-bottom: 6px;
+    }
+    .auth-desc { font-size: 14px; color: var(--gray-lt); }
+
+    /* 폼 카드 */
+    .auth-form {
+        background: #fff; border: 1.5px solid var(--border);
+        border-radius: 20px; padding: 36px;
+        display: flex; flex-direction: column; gap: 18px;
+        box-shadow: 0 4px 24px rgba(37,99,235,.06);
+    }
     .form-group { display: flex; flex-direction: column; gap: 7px; }
     .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-input { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input {
+        padding: 13px 16px; background: #f8faff;
+        border: 1.5px solid var(--border); border-radius: 10px;
+        font-size: 14px; font-family: inherit; color: #0f172a;
+        outline: none; transition: border-color .15s, background .15s;
+    }
     .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: #2563eb; background: #fff; }
+    .form-input:focus { border-color: var(--blue); background: #fff; }
+
     .form-options { display: flex; justify-content: flex-end; }
-    .form-options a { font-size: 13px; color: #9ca3af; text-decoration: none; }
-    .form-options a:hover { color: #2563eb; }
-    .divider { height: 1px; background: #f3f4f8; }
-    .submit-btn { padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .submit-btn:hover { background: #1d4ed8; }
-    .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #9ca3af; }
-    .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .form-options a { font-size: 13px; color: var(--gray-lt); text-decoration: none; }
+    .form-options a:hover { color: var(--blue); }
+
+    .divider {
+        display: flex; align-items: center; gap: 12px;
+        color: var(--gray-lt); font-size: 12px; font-weight: 500;
+    }
+    .divider::before, .divider::after {
+        content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* 로그인 버튼 */
+    .submit-btn {
+        padding: 14px; background: var(--blue); color: #fff;
+        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
+        cursor: pointer; font-family: inherit; transition: background .15s;
+    }
+    .submit-btn:hover { background: var(--blue-dark); }
+
+    /* 소셜 버튼 */
+    .social-login-group { display: flex; flex-direction: column; gap: 10px; }
+    .social-btn {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; padding: 13px; border-radius: 25px;
+        font-size: 14px; font-weight: 700; text-decoration: none;
+        transition: opacity .15s;
+    }
+    .social-btn:hover { opacity: .88; }
+    .social-btn-kakao { background: #FEE500; color: #191600; border: none; }
+    .social-btn-google {
+        background: #fff; color: #374151;
+        border: 1.5px solid var(--border);
+    }
+    .social-btn-kakao-icon {
+        width: 20px; height: 20px;
+    }
+
+    /* 에러 */
+    .error-box {
+        background: #fff3f3; border: 1px solid #fecaca;
+        border-radius: 10px; padding: 12px 14px;
+        font-size: 13px; color: #ef4444; font-weight: 600;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .error-box::before { content: '⚠️'; font-size: 14px; }
+
+    /* 푸터 링크 */
+    .auth-footer {
+        text-align: center; margin-top: 20px;
+        font-size: 14px; color: var(--gray-lt);
+    }
+    .auth-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
     .auth-footer a:hover { text-decoration: underline; }
-    .error-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #ef4444; font-weight: 600; }
 </style>
 
 <section class="auth-section">
     <div class="auth-inner">
 
         <div class="auth-header">
-            <div class="auth-logo">Sev<span>Merge</span></div>
+            <div class="auth-logo">I<span class="hl">code</span>U</div>
             <h1 class="auth-title">로그인</h1>
-            <p class="auth-desc">SevMerge에 오신 것을 환영합니다.</p>
+            <p class="auth-desc">코드요에 오신 것을 환영합니다.</p>
         </div>
 
         <form class="auth-form" action="/login" method="POST">
 
             <div class="form-group">
                 <label class="form-label">이메일</label>
-                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요" />
+                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요"/>
             </div>
 
             <div class="form-group">
                 <label class="form-label">비밀번호</label>
-                <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요" />
+                <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요"/>
                 <div class="form-options">
                     <a href="#">비밀번호를 잊으셨나요?</a>
                 </div>
             </div>
 
-            {{! 로그인 오류 }}
             {{#errorMessage}}
-            <div class="error-box">{{errorMessage}}</div>
+                <div class="error-box">{{errorMessage}}</div>
             {{/errorMessage}}
-
-            <div class="divider"></div>
 
             <button type="submit" class="submit-btn">로그인</button>
 
+            <div class="divider">또는</div>
 
-            <!-- 구분선 -->
-            <div style="text-align:center; margin: 20px 0; color: #c4c9d9; font-size: 13px;">또는</div>
-
-            <div class="social-login-group" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+            <div class="social-login-group">
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code"
-                   style="display:flex; align-items:center; justify-content:center; gap:8px;
-              width:100%; padding:13px; background:#FEE500; border:none; border-radius:10px;
-              font-size:14px; font-weight:700; color:#191600; text-decoration:none;">
-                    <span style="font-size:18px;">💬</span> 카카오로 시작하기
+                   class="social-btn social-btn-kakao">
+                    <svg class="social-btn-kakao-icon" viewBox="0 0 24 24" fill="#191600">
+                        <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.636 5.076 4.1 6.514L5.1 21l4.373-2.329C10.243 18.88 11.11 19 12 19c5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
+                    </svg>
+                    카카오로 시작하기
+                </a>
+                <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
+                class="social-btn social-btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google"/>
+                Google로 로그인
                 </a>
             </div>
-
-            <!-- 구글 로그인 버튼 -->
-            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
-               style="display:flex; align-items:center; justify-content:center; gap:10px;
-          width:100%; padding:13px; border:1.5px solid #e2e5ef; border-radius:10px;
-          font-size:14px; font-weight:600; color:#4b5563; background:#fff; text-decoration:none;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" />
-                Google로 로그인
-            </a>
 
         </form>
 
