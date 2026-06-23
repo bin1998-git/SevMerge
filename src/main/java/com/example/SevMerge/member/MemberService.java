@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,13 +58,14 @@ public class MemberService {
     private final NotificationService notificationService;
 
     // ── [L4] Account lockout state (in-memory, per email) ────────────────────
-    private static final int  MAX_FAIL_ATTEMPTS  = 5;
+    private static final int MAX_FAIL_ATTEMPTS = 5;
     private static final long LOCKOUT_DURATION_MS = 10 * 60_000L; // 10 minutes
 
     private static class LoginAttempt {
         final AtomicInteger failures = new AtomicInteger(0);
         volatile long lockedUntil = 0L;
     }
+
     private final ConcurrentHashMap<String, LoginAttempt> loginAttempts = new ConcurrentHashMap<>();
 
 
@@ -208,7 +210,9 @@ public class MemberService {
         return member;
     }
 
-    /** Record one failed login attempt; lock account after MAX_FAIL_ATTEMPTS. */
+    /**
+     * Record one failed login attempt; lock account after MAX_FAIL_ATTEMPTS.
+     */
     private void recordFailedAttempt(LoginAttempt attempt, long now, String email) {
         int failures = attempt.failures.incrementAndGet();
         log.warn("[L4] 로그인 실패 누적 {}/{} - email={}", failures, MAX_FAIL_ATTEMPTS, email);
@@ -345,6 +349,52 @@ public class MemberService {
 
         for (int i = 6; i >= 0; i--) {
             String targetDate = today.minusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
+
+    // 관리자가 선택한 기간동안 일자별 회원 조회
+    public List<Integer> getMemberTrendByPeriod(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawData = memberRepository.findMemberCountByPeriod(startDate, endDate);
+
+        Map<String, Integer> dateCountMap = new HashMap<>();
+        for (Object[] row : rawData) {
+            String date = (String) row[0];
+            int count = ((Number) row[1]).intValue();
+            dateCountMap.put(date, count);
+        }
+
+        List<Integer> trendData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
+
+    // 권한별 + 선택 기간 동안의 일자별 가입 조회 (차트용)
+    public List<Integer> getMemberTrendByRoleAndPeriod(String roleFilter, LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawData = memberRepository.findMemberCountByRoleAndPeriod(roleFilter, startDate, endDate);
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        List<Integer> trendData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
             trendData.add(dateCountMap.getOrDefault(targetDate, 0));
         }
         return trendData;

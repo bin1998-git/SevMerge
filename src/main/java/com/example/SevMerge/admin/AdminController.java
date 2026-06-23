@@ -7,6 +7,7 @@ import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.member.*;
+import com.example.SevMerge.project.ProjectRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.MemberService;
@@ -23,9 +24,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 @Controller
@@ -34,13 +37,18 @@ public class AdminController {
 
     private final MemberService memberService;
     private final ProjectService projectService;
+    private final ProjectRepository projectRepository;
     private final BoardService boardService;
     private final BoardRepository boardRepository;
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
     private final PartnerShipService partnerShipService;
     @GetMapping("/admin/main")
-    public String dashboardPage(HttpSession session, Model model) {
+    public String dashboardPage(HttpSession session, Model model,
+                                @RequestParam(value = "startDate", required = false) String startDate,
+                                @RequestParam(value = "endDate", required = false) String endDate,
+                                @RequestParam(value = "roleFilter", defaultValue = "ALL") String roleFilter,
+                                @RequestParam(value = "projectType", required = false) String projectType) {
 
         long newMemberCount = memberService.getNewMemberCountThisMonth();
 
@@ -62,17 +70,67 @@ public class AdminController {
         // 승인 대기 전문가 조회하는 코드
         model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
 
+        String defaultStartDate = (startDate != null && !startDate.isEmpty()) ?
+                startDate : LocalDate.now().minusDays(6).toString();
+        String defaultEndDate = (endDate != null && !endDate.isEmpty()) ?
+                endDate : LocalDate.now().toString();
+
+        String memberChartName = "ALL".equalsIgnoreCase(roleFilter) ? "총 회원수" : ("CLIENT".equalsIgnoreCase(roleFilter) ? "일반 회원수" : "전문가 회원수");
+
+        model.addAttribute("startDate", defaultStartDate);
+        model.addAttribute("endDate", defaultEndDate);
+        model.addAttribute("roleFilter", roleFilter);
+        model.addAttribute("memberChartName", memberChartName);
+        model.addAttribute("projectType", projectType);
+
+        LocalDate parsedStartDate = LocalDate.parse(defaultStartDate);
+        LocalDate parsedEndDate = LocalDate.parse(defaultEndDate);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
-        LocalDate today = LocalDate.now();
-        List<String> chartLabels = IntStream.rangeClosed(0,6)
-                .mapToObj(i -> today.minusDays(6 - i).format(formatter))
+        long daysBetween = ChronoUnit.DAYS.between(parsedStartDate, parsedEndDate);
+
+        List<String> chartLabels = IntStream.rangeClosed(0, (int) daysBetween)
+                .mapToObj(i -> parsedStartDate.plusDays(i).format(formatter))
                 .toList();
 
-        List<Integer> memberData = memberService.getPast7DaysMemberTrend();
-        List<Integer> projectData = projectService.getPast7DaysProjectTrend();
-        List<Integer> completeData = projectService.getPast7DaysCompletedTrend();
 
+        List<Integer> memberData = new ArrayList<>();
+        List<Integer> projectData = new ArrayList<>();
+        List<Integer> completeData = new ArrayList<>();
+
+        Supplier<List<Integer>> zeroDataSupplier = () -> chartLabels.stream().map(i -> 0).toList();
+
+        if (projectType != null && !projectType.isEmpty()) {
+            model.addAttribute("isStatusAll", false);
+            model.addAttribute("selectedProjectType", projectType);
+
+            projectData = projectService.getProjectCountByPeriodAndType(parsedStartDate, parsedEndDate, projectType);
+            memberData = zeroDataSupplier.get();
+            completeData = zeroDataSupplier.get();
+        } else if (!"ALL".equalsIgnoreCase(roleFilter)) {
+            model.addAttribute("isStatusAll", false);
+            model.addAttribute("selectedProjectType", null);
+
+            memberData = memberService.getMemberTrendByRoleAndPeriod(roleFilter, parsedStartDate, parsedEndDate);
+            projectData = zeroDataSupplier.get();
+            completeData = zeroDataSupplier.get();
+        } else {
+            model.addAttribute("isStatusAll", true);
+            model.addAttribute("selectedProjectType", null);
+
+            memberData = memberService.getMemberTrendByPeriod(parsedStartDate, parsedEndDate);
+            projectData = projectService.getProjectTrendByPeriod(parsedStartDate, parsedEndDate);
+            completeData = projectService.getCompletedTrendByPeriod(parsedStartDate, parsedEndDate);
+
+
+
+        }
         model.addAttribute("chartLabels", chartLabels != null ? chartLabels : new ArrayList<>());
+        model.addAttribute("memberData", memberData);
+        model.addAttribute("projectData", projectData);
+        model.addAttribute("completedData", completeData);
+
+
         model.addAttribute("memberData", memberData != null ? memberData : new ArrayList<>());
         model.addAttribute("projectData", projectData != null ? projectData : new ArrayList<>());
         model.addAttribute("completedData", completeData != null ? completeData : new ArrayList<>());

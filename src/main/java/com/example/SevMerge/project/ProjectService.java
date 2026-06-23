@@ -15,7 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -319,6 +323,71 @@ public class ProjectService {
         return trendData;
     }
 
+    // 사용자가 선택한 기간 동안 일자별 프로젝트 누적 등록 조회
+    public List<Integer> getProjectTrendByPeriod(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawData = projectRepository.findProjectCountByPeriod(startDate, endDate);
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        int sumInPeriod = 0;
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            sumInPeriod += dateCountMap.getOrDefault(targetDate, 0);
+        }
+
+        int cumulativeCount = findAllProjects().size() - sumInPeriod;
+
+        List<Integer> trendData = new ArrayList<>();
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
+
+    // 사용자가 선택한 기간 동안의 일자별 프로젝트 누적 완료 트렌드 조회
+    public List<Integer> getCompletedTrendByPeriod(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawData = projectRepository.findCompletedCountByPeriod(startDate, endDate);
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+
+                }
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        int sumInPeriod = 0;
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            sumInPeriod += dateCountMap.getOrDefault(targetDate, 0);
+        }
+
+        int cumulativeCount = (int) getDoneProjectsCount() - sumInPeriod;
+
+        List<Integer> trendData = new ArrayList<>();
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
+
     // 관리자 전용 >> 필터로 상태별 목록 조회하기
     public List<ProjectResponseDTO.ListDTO> getAdminProjectsByStatusAndKeyword(String statusFilter, String keyword) {
         try {
@@ -348,5 +417,29 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다."));
         project.setReviewSkipped(true);
+    }
+
+    // 특정 프로젝트 종류 일자별 등록 수 조회하는거
+    public List<Integer> getProjectCountByPeriodAndType(LocalDate startDate, LocalDate endDate, String projectType) {
+        List<Object[]> rawData = projectRepository.findProjectCountByPeriodAndType(startDate, endDate, projectType);
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        List<Integer> trendData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
     }
 }

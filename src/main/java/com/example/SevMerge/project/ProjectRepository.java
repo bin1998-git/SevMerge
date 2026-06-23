@@ -120,4 +120,39 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
         ORDER BY p.createdAt DESC
     """)
     List<Project> findAdminProjectsByStatusAndKeyword(@Param("status") ProjectStatus status, @Param("keyword") String keyword);
+
+    // 시작일부터 종료일까지의 일자별 프로젝트 등록 수 조회
+    @Query(value = """
+            SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
+            FROM project_tb 
+            WHERE created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
+            GROUP BY DATE_FORMAT(created_at, '%m-%d') 
+            ORDER BY date_str ASC
+            """, nativeQuery = true)
+    List<Object[]> findProjectCountByPeriod(@Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
+
+    // 시작일부터 종료일까지의 일자별 프로젝트 완료 수 조회
+    @Query(value = """
+            SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
+            FROM project_tb 
+            WHERE project_status = 'DONE' AND created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
+            GROUP BY DATE_FORMAT(created_at, '%m-%d') 
+            ORDER BY date_str ASC
+            """, nativeQuery = true)
+    List<Object[]> findCompletedCountByPeriod(@Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
+
+    // 시작일부터 종료일까지 특정 프로젝트 일자별 등록 수 조회 (차트용)
+    @Query(value = """
+            SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
+            FROM project_tb 
+            WHERE project_type = :projectType 
+              AND created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
+            GROUP BY DATE_FORMAT(created_at, '%m-%d') 
+            ORDER BY date_str ASC
+            """, nativeQuery = true)
+    List<Object[]> findProjectCountByPeriodAndType(
+            @Param("startDate") java.time.LocalDate startDate,
+            @Param("endDate") java.time.LocalDate endDate,
+            @Param("projectType") String projectType
+    );
 }

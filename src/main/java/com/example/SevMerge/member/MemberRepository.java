@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,9 +65,32 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 역할Role 조건으로 회원 조회
     List<Member> findByRoleAndIsDeletedFalse(Role role);
 
-    // 역할(Role)과 검색어(keyword) 조건으로 탈퇴하지 않은 회원 목록 페이징 조회
+    // 역할과 검색어 조건으로 탈퇴하지 않은 회원 목록 페이징 조회
     @Query("SELECT m FROM Member m WHERE m.role = :role " +
             "AND (:keyword IS NULL OR :keyword = '' OR m.name LIKE %:keyword% OR m.email LIKE %:keyword%) " +
             "AND (m.isDeleted = false OR m.isDeleted IS NULL)")
     Page<Member> findByRoleAndKeyword(@Param("role") Role role, @Param("keyword") String keyword, Pageable pageable);
+
+    // 시작일부터 종료일까지의 일자별 신규 회원 가입 수 조회
+    @Query(value = """
+            SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
+            FROM member_tb 
+            WHERE created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
+            GROUP BY DATE_FORMAT(created_at, '%m-%d') 
+            ORDER BY date_str ASC
+            """, nativeQuery = true)
+    List<Object[]> findMemberCountByPeriod(@Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
+
+    // 특정 권한 조건으로 시작일부터 종료일까지 일자별 가입 수 조회
+    @Query(value = """
+            SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
+            FROM member_tb 
+            WHERE LOWER(role) = LOWER(:role) 
+              AND created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
+            GROUP BY DATE_FORMAT(created_at, '%m-%d') 
+            ORDER BY date_str ASC
+            """, nativeQuery = true)
+    List<Object[]> findMemberCountByRoleAndPeriod(@Param("role") String role, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+
 }

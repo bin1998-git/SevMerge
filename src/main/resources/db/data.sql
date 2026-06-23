@@ -492,6 +492,47 @@ INSERT INTO partner_ship_tb
 VALUES
     ('글로벌네트웍스', '이영희', 'younghee@globalnet.co.kr', '/files/partnership/company_profile.docx', '전문가 풀(Pool) 공유 및 마케팅 협업 문의입니다.', 'APPROVED', NOW(), NULL);
 
+-- -- 6일 전 데이터
+-- INSERT INTO project_table_name VALUES
+--     (1, '[차트] 기업형 홈페이지 구축', 'WEB', '차트용 더미 데이터', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 12, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+--     (1, '[차트] 핀테크 앱 리뉴얼 기획', 'APP', '차트용 더미 데이터', 2000000, 5000000, NOW(), 'ALL', 'CLOSED', 5, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+--     (1, '[차트] 커머스 플랫폼 UI/UX 설계', 'UI_UX', '차트용 더미 데이터', 1500000, 3500000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+--
+-- -- 5일 전 데이터
+--     (1, '[차트] AI 학습용 데이터 정제', 'DATA', '차트용 더미 데이터', 3000000, 6000000, NOW(), 'ALL', 'IN_PROGRESS', 25, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+--     (1, '[차트] 홍보 영상 3D 모션그래픽', 'VIDEO', '차트용 더미 데이터', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 18, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+--     (1, '[차트] 사내 문서 번역 및 정리', 'ETC', '차트용 더미 데이터', 500000, 1000000, NOW(), 'ALL', 'CANCELLED', 2, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+--
+-- -- 4일 전 데이터
+--     (1, '[차트] 반응형 웹 퍼블리싱', 'WEB', '차트용 더미 데이터', 800000, 1500000, NOW(), 'ALL', 'COMPLETED', 14, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+--     (1, '[차트] 중개 플랫폼 배달 앱 개발', 'APP', '차트용 더미 데이터', 5000000, 9000000, NOW(), 'ALL', 'DONE', 30, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+--     (1, '[차트] 브랜드 웹사이트 디자인 개선', 'UI_UX', '차트용 더미 데이터', 1200000, 2500000, NOW(), 'ALL', 'IN_PROGRESS', 9, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+--
+-- -- 3일 전 데이터
+--     (1, '[차트] 추천 시스템 데이터 로그 분석', 'DATA', '차트용 더미 데이터', 4000000, 8000000, NOW(), 'ALL', 'OPEN', 4, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+--     (1, '[차트] 유튜브 채널 브랜딩 영상', 'VIDEO', '차트용 더미 데이터', 1000000, 2000000, NOW(), 'ALL', 'IN_PROGRESS', 15, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+--     (1, '[차트] 공공사업 제안서 대행 작성', 'ETC', '차트용 더미 데이터', 1500000, 3000000, NOW(), 'ALL', 'DONE', 8, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+--
+-- -- 2일 전 데이터
+--     (1, '[차트] 스타트업 소개 랜딩페이지', 'WEB', '차트용 더미 데이터', 500000, 1200000, NOW(), 'ALL', 'OPEN', 11, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+--     (1, '[차트] 물류 관리 하이브리드 앱', 'APP', '차트용 더미 데이터', 3500000, 7000000, NOW(), 'ALL', 'COMPLETED', 22, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+--     (1, '[차트] 모바일 게임 UI 리스킨', 'UI_UX', '차트용 더미 데이터', 2000000, 4000000, NOW(), 'ALL', 'CANCELLED', 3, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+--
+-- -- 1일 전 데이터
+--     (1, '[차트] 고객 구매 행동 데이터 시각화', 'DATA', '차트용 더미 데이터', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 19, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+--     (1, '[차트] 기업 행사 현장 스케치 영상', 'VIDEO', '차트용 더미 데이터', 1800000, 3500000, NOW(), 'ALL', 'IN_PROGRESS', 16, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+--     (1, '[차트] 사무실 이전 케이블 정리 외주', 'ETC', '차트용 더미 데이터', 300000, 600000, NOW(), 'ALL', 'DONE', 28, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+--     (1, '[차트] 미분류 임시 보관 기획안', 'ETC', '차트용 더미 데이터', 500000, 1000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+--
+-- -- 오늘 데이터
+--     (1, '[차트] 웹 소켓 기반 실시간 채팅 웹', 'WEB', '차트용 더미 데이터', 2000000, 4500000, NOW(), 'ALL', 'OPEN', 3, false, false, NOW()),
+--     (1, '[차트] 피트니스 헬스 로그 기록 앱', 'APP', '차트용 더미 데이터', 4500000, 8500000, NOW(), 'ALL', 'IN_PROGRESS', 5, false, false, NOW()),
+--     (1, '[차트] 관리자 통계 대시보드 UI 디자인', 'UI_UX', '차트용 더미 데이터', 1000000, 2200000, NOW(), 'ALL', 'DONE', 14, false, false, NOW());
+
+
+
+
+
 -- 3. 세 번째 제휴 문의
 INSERT INTO partner_ship_tb
 (company_name, manager_name, email, partner_file_url, content, status, created_at, deleted_at)
