@@ -56,19 +56,53 @@ public class ExpertProfileViewController {
      * → templates/expertProfile/expertProfile-list.mustache
      */
     @GetMapping
-    public String list(HttpSession session ,Model model) {
+    public String list(@RequestParam(required = false) String career,
+                       @RequestParam(required = false) String keyword,
+                       HttpSession session, Model model) {
+
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        List<ExpertProfileResponse> profiles = expertProfileService.getAll(); // 전체 전문가 가져오기
+        List<ExpertProfileResponse> profiles = expertProfileService.getAll();
+
+        // career(기술 키워드) 필터링
+        if (career != null && !career.isBlank()) {
+            final String careerLower = career.toLowerCase();
+            profiles = profiles.stream()
+                    .filter(p -> p.getSpeciality() != null &&
+                            p.getSpeciality().toLowerCase().contains(careerLower))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        // keyword 검색
+        if (keyword != null && !keyword.isBlank()) {
+            final String kw = keyword.toLowerCase();
+            profiles = profiles.stream()
+                    .filter(p -> (p.getMemberName() != null && p.getMemberName().toLowerCase().contains(kw))
+                            || (p.getSpeciality() != null && p.getSpeciality().toLowerCase().contains(kw))
+                            || (p.getIntro() != null && p.getIntro().toLowerCase().contains(kw)))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
         if (sessionUser != null) {
-            for (ExpertProfileResponse profile : profiles) { // 전체 전문가 리스트
-                // 의뢰인이 전문가 북마크 했는지 확인 여부
+            for (ExpertProfileResponse profile : profiles) {
                 boolean currentStatus = bookMarkService.isBookmarked(sessionUser.getId(), profile.getId());
-                profile.setBookmarked(currentStatus); // 체크했으면 true 로 셋팅
+                profile.setBookmarked(currentStatus);
             }
         }
-        model.addAttribute("expertProfiles", profiles); // true 셋팅된 북마크 리스트
-        model.addAttribute("doneProject",projectService.getDoneProjectsCount());
+
+        model.addAttribute("expertProfiles", profiles);
+        model.addAttribute("doneProject", projectService.getDoneProjectsCount());
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+
+        // 탭 활성화
+        model.addAttribute("isAll", career == null && keyword == null);
+        model.addAttribute("isFullstack", "fullstack".equalsIgnoreCase(career));
+        model.addAttribute("isBackend", "backend".equalsIgnoreCase(career));
+        model.addAttribute("isFrontend", "frontend".equalsIgnoreCase(career));
+        model.addAttribute("isApp", "flutter".equalsIgnoreCase(career));
+        model.addAttribute("isUiux", "figma".equalsIgnoreCase(career));
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+        model.addAttribute("currentCareer", career != null ? career : "");
+
         return "expertProfile/expertProfile-list";
     }
 

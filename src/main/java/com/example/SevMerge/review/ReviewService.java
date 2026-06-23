@@ -138,4 +138,12 @@ public class ReviewService {
         return reviewRepository.avgRating(targetId);
     }
 
+
+    public List<ReviewResponse.ReviewListDTO> getRecentReviews(int limit) {
+        return reviewRepository.findRecentReviews(
+                        org.springframework.data.domain.PageRequest.of(0, limit))
+                .stream()
+                .map(ReviewResponse.ReviewListDTO::new)
+                .toList();
+    }
 }

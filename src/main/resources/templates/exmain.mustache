@@ -130,45 +130,100 @@
     .ex-step-txt { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.75); white-space: nowrap; }
     .ex-step-arrow { font-size: 12px; color: rgba(255,255,255,.3); }
 
-    /* ══ 공통 레이아웃 ══ */
-    .main-wrap { max-width: 1300px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+    /* ══ 광고 카드 (크몽 스타일) ══ */
+.ad-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+.ad-card {
+    flex: 0 0 calc((100% - 32px) / 3);
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    text-decoration: none; color: inherit;
+}
+.ad-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(37,99,235,.10);
+    border-color: #93c5fd;
+}
 
-    /* ══ 섹션 ══ */
-    .ex-section { padding: 52px 0 0; }
-    .ex-section:last-of-type { padding-bottom: 64px; }
-    .ex-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-    .ex-section-head-left { display: flex; align-items: baseline; gap: 12px; }
-    .ex-eyebrow {
-        display: inline-block; font-size: 10px; font-weight: 700;
-        letter-spacing: .15em; text-transform: uppercase; padding: 3px 10px; border-radius: 6px;
-    }
-    .ey-blue   { background: #dbeafe; color: #1e40af; }
-    .ey-amber  { background: #fef3c7; color: #92400e; }
-    .ey-green  { background: #d1fae5; color: #065f46; }
-    .ey-navy   { background: #e0e7ff; color: #3730a3; }
-    .ex-section-title { font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -.5px; }
-    .ex-more { font-size: 12px; font-weight: 700; color: var(--blue); display: flex; align-items: center; gap: 4px; }
-    .ex-more:hover { text-decoration: underline; }
+/* 썸네일 — 이미지만, 글자 없음 */
+.ad-thumb {
+    position: relative; width: 100%; padding-top: 58%;
+    background: #f0f4fa; flex-shrink: 0; overflow: hidden;
+}
+.ad-thumb-img {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform .4s ease;
+}
+.ad-card:hover .ad-thumb-img { transform: scale(1.04); }
+.ad-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,.92); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 5px;
+}
 
-    /* ══ 광고 카드 - 글래스 ══ */
-    .ad-grid { display: flex; gap: 16px; flex-wrap: wrap; }
-    .ad-card {
-        flex: 0 0 calc((100% - 32px) / 3);
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
-        border-radius: 18px; overflow: hidden;
-        display: flex; flex-direction: column;
-        transition: all .2s; text-decoration: none; color: inherit;
-        box-shadow: 0 4px 16px rgba(37,99,235,.06);
-    }
-    .ad-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(37,99,235,.12); border-color: #93c5fd; background: rgba(255,255,255,.75); }
-    .ad-thumb { position: relative; width: 100%; padding-top: 58%; background: rgba(240,244,250,.8); flex-shrink: 0; }
-    .ad-thumb-img { position: absolute; inset: 0; background-size: cover; background-position: center; }
-    .ad-badge { position: absolute; top: 10px; right: 10px; background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 800; letter-spacing: .05em; padding: 3px 9px; border-radius: 6px; }
-    .ad-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px; }
-    .ad-name { font-size: 15px; font-weight: 800; color: #0f172a; }
-    .ad-spec { font-size: 12px; color: #4a6fa5; }
-    .ad-msg { font-size: 13px; color: #4a6fa5; line-height: 1.6; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* 카드 본문 */
+.ad-body {
+    padding: 14px 16px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    flex: 1;
+}
+
+/* 홍보문구 */
+.ad-msg {
+    font-size: 13px; color: #1e293b; line-height: 1.6; font-weight: 500;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* 하단 — 평점 + 전문가 프로필 */
+.ad-footer {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding-top: 10px; border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+.ad-expert-info {
+    display: flex; align-items: center; gap: 8px;
+}
+.ad-expert-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #eff6ff; border: 1.5px solid #bfdbfe;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: var(--blue);
+    flex-shrink: 0; overflow: hidden;
+}
+.ad-expert-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.ad-expert-name {
+    font-size: 12px; font-weight: 700; color: #374151;
+}
+.ad-rating {
+    font-size: 12px; font-weight: 700; color: #f59e0b;
+}
+.ad-cta {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+}
+
+/* AD 뱃지 */
+.ad-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,.95); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* 호버 효과 */
+.ad-card:hover .ad-thumb-img {
+    transform: scale(1.04);
+    transition: transform .4s ease;
+}
+.ad-thumb { overflow: hidden; }
+.ad-thumb-img { transition: transform .4s ease; }
 
     /* ══ 캐러셀 ══ */
     .carousel-section { position: relative; }
@@ -196,6 +251,73 @@
     .proj-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid rgba(37,99,235,.1); }
     .proj-budget { font-size: 14px; font-weight: 900; color: var(--blue); }
     .proj-deadline { font-size: 11px; color: var(--gray-lt); }
+    /* ══ 광고 카드 개선 ══ */
+.ad-thumb { padding-top: 62%; }
+
+.ad-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top,
+        rgba(13,27,46,.85) 0%,
+        rgba(13,27,46,.4) 60%,
+        transparent 100%);
+    padding: 20px 16px 14px;
+}
+.ad-overlay-name {
+    font-size: 15px; font-weight: 900; color: #fff;
+    letter-spacing: -.3px; margin-bottom: 3px;
+}
+.ad-overlay-spec {
+    font-size: 11px; color: rgba(255,255,255,.7); font-weight: 500;
+}
+.ad-body {
+    padding: 14px 18px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.ad-msg-wrap {
+    display: flex; gap: 6px; align-items: flex-start;
+}
+.ad-quote {
+    font-size: 20px; color: var(--cyan); font-weight: 900;
+    line-height: 1; flex-shrink: 0; margin-top: -2px;
+}
+.ad-msg {
+    font-size: 13px; color: #374151; line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+    font-style: italic;
+}
+.ad-cta {
+    font-size: 12px; font-weight: 700; color: var(--blue);
+    text-align: right;
+}
+.ad-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,.95); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 5px;
+}
+.ad-thumb { overflow: hidden; }
+.ad-thumb-img { transition: transform .4s ease; }
+.ad-card:hover .ad-thumb-img { transform: scale(1.04); }
+
+/* ══ 인피드 광고 카드 ══ */
+.ad-infeed-card {
+    border-color: #fde68a !important;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+    text-decoration: none;
+    position: relative;
+}
+.ad-infeed-card::before {
+    content: 'AD';
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(255,255,255,.9); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 2px 7px; border-radius: 4px;
+}
+.ad-infeed-card:hover {
+    border-color: #f59e0b !important;
+    box-shadow: 0 6px 24px rgba(245,158,11,.15) !important;
+}
 
     /* ══ 전문가 카드 - 글래스 ══ */
     .expert-card {
@@ -472,24 +594,57 @@
                 <h2 class="ex-section-title">추천 상단 광고 전문가</h2>
             </div>
         </div>
-        <div class="ad-grid">
-            {{#adExperts}}
-                <a class="ad-card" href="/experts/{{id}}">
-                    <div class="ad-thumb">
-                        <div class="ad-thumb-img" style="background-image:url('{{#bannerImage}}{{bannerImageUrl}}{{/bannerImage}}{{^bannerImage}}/default-banner.jpg{{/bannerImage}}');"></div>
-                        <div class="ad-badge">PREMIUM</div>
-                    </div>
-                    <div class="ad-body">
-                        <div class="ad-name">{{user.name}} 전문가</div>
-                        <div class="ad-spec">{{techStack}} · 경력 {{careerYear}}년</div>
-                        <div class="ad-msg">{{introduction}}</div>
-                    </div>
-                </a>
-            {{/adExperts}}
-            {{^adExperts}}
-                <div class="empty-state">현재 활성화된 프리미엄 광고 전문가가 없습니다.</div>
-            {{/adExperts}}
-        </div>
+
+        {{#hasAdExperts}}
+            <div class="ad-grid">
+                {{#adExperts}}
+                    <a class="ad-card" href="/experts/{{expertId}}">
+
+                        <!-- 썸네일만 — 글자 없음 -->
+                        <div class="ad-thumb">
+                            <div class="ad-thumb-img"
+                                 style="background-image:url('{{displayImageUrl}}');"></div>
+                            <span class="ad-badge">AD</span>
+                        </div>
+
+                        <!-- 카드 본문 -->
+                        <div class="ad-body">
+
+                            <!-- 홍보문구 -->
+                            <p class="ad-msg">{{customMessage}}</p>
+
+                            <!-- 하단: 평점 + 전문가 닉네임 -->
+                            <div class="ad-footer">
+                                <div class="ad-expert-info">
+                                    <div class="ad-expert-avatar">
+                                        {{#profileImage}}
+                                            <img src="{{displayImageUrl}}" alt="{{expertName}}">
+                                        {{/profileImage}}
+                                        {{^profileImage}}
+                                            {{expertName}}
+                                        {{/profileImage}}
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <span class="ad-expert-name">{{expertName}}</span>
+                                        <span style="font-size:11px;color:#f59e0b;font-weight:700;">★ {{avgRating}}</span>
+                                    </div>
+                                </div>
+                                <span class="ad-cta">프로필 보기 →</span>
+                            </div>
+                        </div>
+
+                    </a>
+                {{/adExperts}}
+            </div>
+        {{/hasAdExperts}}
+
+        {{^hasAdExperts}}
+            <div style="background:#fff; border:1.5px dashed var(--border);
+                border-radius:18px; padding:48px; text-align:center;
+                color:var(--gray-lt); font-size:13px;">
+                현재 활성화된 프리미엄 광고 전문가가 없습니다.
+            </div>
+        {{/hasAdExperts}}
     </section>
 
     <!-- ══ 실시간 프로젝트 ══ -->
@@ -506,24 +661,43 @@
             <div class="c-viewport">
                 <div class="c-track">
                     {{#recentProjects}}
-                        <div class="proj-card" data-href="/projects/{{id}}">
-                            <div class="proj-card-top">
-                                <span class="proj-id">PRJ.{{id}}</span>
-                                <span class="proj-dday">D-{{dday}}</span>
+                        {{#isAd}}
+                            <a class="proj-card ad-infeed-card" href="/experts/{{expertId}}">
+                                <div class="proj-card-top">
+                                    <span class="proj-id" style="color:#92400e;">👤 전문가 광고</span>
+                                    <span class="proj-dday" style="background:#fef3c7;color:#92400e;">AD</span>
+                                </div>
+                                <div>
+                                    <div class="proj-title" style="color:#92400e;">{{expertName}} 전문가</div>
+                                    <div class="proj-category" style="color:#b45309;">{{speciality}}</div>
+                                </div>
+                                <div class="proj-footer">
+                    <span class="proj-budget" style="color:#92400e;font-size:12px;">
+                        "{{customMessage}}"
+                    </span>
+                                    <span class="proj-deadline" style="color:#b45309;">프로필 보기 →</span>
+                                </div>
+                            </a>
+                        {{/isAd}}
+                        {{^isAd}}
+                            <div class="proj-card" data-href="/projects/{{id}}">
+                                <div class="proj-card-top">
+                                    <span class="proj-id">PRJ.{{id}}</span>
+                                    <span class="proj-dday">D-{{dday}}</span>
+                                </div>
+                                <div>
+                                    <div class="proj-title">{{title}}</div>
+                                    <div class="proj-category">{{categoryName}}</div>
+                                </div>
+                                <div class="proj-tags">
+                                    <span class="proj-tag">{{categoryName}}</span>
+                                </div>
+                                <div class="proj-footer">
+                                    <span class="proj-budget">{{budgetMin}}~{{budgetMax}}만원</span>
+                                    <span class="proj-deadline">마감 {{endDate}}</span>
+                                </div>
                             </div>
-                            <div>
-                                <div class="proj-title">{{title}}</div>
-                                <div class="proj-category">{{category}}</div>
-                            </div>
-                            <div class="proj-tags">
-                                {{#requiredSkillsList}}<span class="proj-tag">{{.}}</span>{{/requiredSkillsList}}
-                                {{^requiredSkillsList}}<span class="proj-tag">{{requiredSkills}}</span>{{/requiredSkillsList}}
-                            </div>
-                            <div class="proj-footer">
-                                <span class="proj-budget">{{budget}}원~</span>
-                                <span class="proj-deadline">마감 {{endDate}}</span>
-                            </div>
-                        </div>
+                        {{/isAd}}
                     {{/recentProjects}}
                     {{^recentProjects}}<div class="empty-state">현재 등록된 신규 프로젝트가 없습니다.</div>{{/recentProjects}}
                 </div>
@@ -546,18 +720,18 @@
             <div class="c-viewport">
                 <div class="c-track">
                     {{#masterExperts}}
-                        <div class="expert-card" data-href="/experts/{{id}}">
+                        <div class="expert-card" data-href="/experts/{{memberId}}">
                             <div class="expert-card-top">
-                                <div class="expert-avatar">{{user.name}}</div>
+                                <div class="expert-avatar">{{memberName}}</div>
                                 <div class="expert-info">
-                                    <div class="expert-name">{{user.name}} 전문가</div>
+                                    <div class="expert-name">{{memberName}} 전문가</div>
                                     <span class="expert-grade grade-master">🏆 MASTER</span>
                                 </div>
                             </div>
-                            <div class="expert-stack">{{techStack}}</div>
+                            <div class="expert-stack">{{speciality}}</div>
                             <div class="expert-footer">
-                                <span class="expert-rating">★ {{rating}}</span>
-                                <span class="expert-career">경력 {{careerYear}}년 · 리뷰 {{reviewCount}}개</span>
+                                <span class="expert-rating">★ {{ratingDisplay}}</span>
+                                <span class="expert-career">리뷰 {{totalReviews}}개</span>
                             </div>
                         </div>
                     {{/masterExperts}}
@@ -600,14 +774,21 @@
             {{#recentReviews}}
                 <div class="review-card">
                     <div class="rev-head">
-                        <div class="rev-project">{{projectTitle}}</div>
-                        <div class="rev-stars">★ {{rating}}</div>
+                        <div class="rev-project">{{targetName}} 전문가</div>
+                        <div class="rev-stars">{{star}}</div>
                     </div>
                     <p class="rev-comment">"{{content}}"</p>
-                    <div class="rev-meta"><span class="rev-author">{{writerName}}</span><span>| {{createdAt}}</span></div>
+                    <div class="rev-meta">
+                        <span class="rev-author">{{reviewerName}}</span>
+                        <span>| {{createdAt}}</span>
+                    </div>
                 </div>
             {{/recentReviews}}
-            {{^recentReviews}}<div style="grid-column:span 2;" class="empty-state">아직 등록된 후기가 없습니다.</div>{{/recentReviews}}
+            {{^recentReviews}}
+                <div style="grid-column:span 2;" class="empty-state">
+                    아직 등록된 후기가 없습니다.
+                </div>
+            {{/recentReviews}}
         </div>
     </section>
 
@@ -668,6 +849,11 @@
                 const t = el.textContent.trim();
                 if (t) el.textContent = t.charAt(0);
             });
+            document.querySelectorAll('.ad-expert-avatar').forEach(el => {
+    if (el.querySelector('img')) return; // 이미지 있으면 건너뜀
+    const t = el.textContent.trim();
+    if (t) el.textContent = t.charAt(0);
+});
         });
     })();
 
