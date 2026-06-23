@@ -533,7 +533,7 @@
                     </form>
                 {{/isEdit}}
 
-                {{! ===== 준비중 메뉴들 (포인트 충전/출금/결제내역) ===== }}
+
                 {{#isCharge}}
                     <div class="cm-soon-box"><div class="cm-soon-icon">💰</div><div class="cm-soon-title">포인트 충전</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
                 {{/isCharge}}
@@ -812,6 +812,24 @@ document.getElementById("pwVerifyModalBg").addEventListener("click", function(e)
     } else {
         alert('처리 중 오류가 발생했습니다.');
     }
+}
+    function withdrawMember(event) {
+    event.preventDefault();
+    if (!confirm("정말 탈퇴하시겠습니까?\n탈퇴 후 복구가 불가능합니다.")) return;
+
+    fetch("/my-pages/withdraw", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("탈퇴가 완료되었습니다.");
+            window.location.href = "/";
+        } else {
+            res.text().then(t => alert("탈퇴 처리 실패: " + t));
+        }
+    })
+    .catch(() => alert("서버 오류가 발생했습니다."));
 }
 </script>
 

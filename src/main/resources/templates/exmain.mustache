@@ -1,7 +1,6 @@
 {{> layout/header}}
 
 <style>
-    /* ══ intro 디자인 토큰 그대로 ══ */
     :root {
         --navy:      #0d1b2e;
         --cyan:      #00c8e0;
@@ -19,18 +18,26 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
         font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: var(--bg);
-        color: #1e293b;
-        line-height: 1.6;
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+        color: #1e293b; line-height: 1.6;
     }
     a { text-decoration: none; color: inherit; }
 
-    /* ══ 웰컴 히어로 ══ */
+    /* 배경 글로우 */
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; }
+    .bg-glow-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+    .bg-glow-3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,200,224,.08) 0%, transparent 70%); top: 40%; left: 30%; }
+
+    /* ══ 히어로 ══ */
     .ex-hero {
         background: linear-gradient(140deg, rgba(13,27,46,.90) 0%, rgba(14,42,74,.85) 60%, rgba(13,32,64,.92) 100%),
                     url('/mainBackground.jpg') center/cover no-repeat;
         padding: 52px 28px 48px;
         position: relative; overflow: hidden;
+        border-bottom: 1px solid rgba(255,255,255,.1);
+        box-shadow: 0 4px 32px rgba(13,27,46,.15);
     }
     .ex-hero::before {
         content: ''; position: absolute; inset: 0;
@@ -59,7 +66,6 @@
     .ex-hero-title .hl { color: var(--cyan); }
     .ex-hero-desc { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.75; margin-bottom: 28px; max-width: 400px; }
 
-    /* 검색 바 */
     .ex-search-row { display: flex; gap: 8px; max-width: 520px; }
     .ex-search-input {
         flex: 1; padding: 12px 18px;
@@ -72,49 +78,23 @@
     .ex-search-btn {
         padding: 12px 24px; background: var(--cyan); color: var(--navy);
         border: none; border-radius: 10px; font-size: 14px; font-weight: 800;
-        cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .15s;
+        cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
+        box-shadow: 0 4px 14px rgba(0,200,224,.3);
     }
-    .ex-search-btn:hover { background: var(--cyan-dark); }
+    .ex-search-btn:hover { background: var(--cyan-dark); transform: translateY(-1px); }
 
-    /* 우측 신뢰 지표 */
-    .ex-hero-right {
-        display: flex; flex-direction: column; gap: 12px; flex-shrink: 0;
-    }
+    .ex-hero-right { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
     .ex-trust-item {
-        background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
         border-radius: 14px; padding: 16px 20px;
         display: flex; align-items: center; gap: 14px; min-width: 220px;
+        transition: background .15s, border-color .15s;
     }
-    .ex-trust-ico { font-size: 24px; }
+    .ex-trust-item:hover { background: rgba(255,255,255,.13); border-color: rgba(0,200,224,.3); }
     .ex-trust-val { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
     .ex-trust-val em { color: var(--cyan); font-style: normal; }
     .ex-trust-label { font-size: 11px; color: rgba(255,255,255,.45); font-weight: 500; }
-
-    /* ══ 공통 레이아웃 ══ */
-    .main-wrap { max-width: 1300px; margin: 0 auto; padding: 0 28px; }
-
-    /* ══ 섹션 공통 ══ */
-    .ex-section { padding: 52px 0 0; }
-    .ex-section:last-of-type { padding-bottom: 64px; }
-    .ex-section-head {
-        display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
-    }
-    .ex-section-head-left { display: flex; align-items: baseline; gap: 12px; }
-    .ex-eyebrow {
-        display: inline-block; font-size: 10px; font-weight: 700;
-        letter-spacing: .15em; text-transform: uppercase; padding: 3px 10px;
-        border-radius: 6px;
-    }
-    .ey-blue   { background: #dbeafe; color: #1e40af; }
-    .ey-amber  { background: #fef3c7; color: #92400e; }
-    .ey-green  { background: #d1fae5; color: #065f46; }
-    .ey-navy   { background: #e0e7ff; color: #3730a3; }
-    .ex-section-title { font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -.5px; }
-    .ex-more {
-        font-size: 12px; font-weight: 700; color: var(--blue);
-        display: flex; align-items: center; gap: 4px;
-    }
-    .ex-more:hover { text-decoration: underline; }
 
     .ex-hero-actions { display: flex; flex-direction: column; gap: 14px; }
     .ex-hero-links { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -123,23 +103,23 @@
         padding: 8px 16px; border-radius: 20px;
         background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
         font-size: 12px; font-weight: 700; color: rgba(255,255,255,.8);
-        transition: background .15s, border-color .15s;
+        transition: all .15s; backdrop-filter: blur(4px);
     }
     .ex-hero-link:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.4); color: #fff; }
 
-    /* 의뢰인 히어로 전용 */
     .ex-search-btn-outline {
-        padding: 12px 24px; background: transparent; color: #fff;
-        border: 1.5px solid rgba(255,255,255,.35); border-radius: 10px;
+        padding: 12px 24px; background: rgba(255,255,255,.08); color: #fff;
+        border: 1.5px solid rgba(255,255,255,.25); border-radius: 10px;
         font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
-        white-space: nowrap; transition: border-color .15s; text-decoration: none;
-        display: inline-flex; align-items: center;
+        white-space: nowrap; transition: all .15s; text-decoration: none;
+        display: inline-flex; align-items: center; backdrop-filter: blur(8px);
     }
-    .ex-search-btn-outline:hover { border-color: rgba(255,255,255,.7); }
+    .ex-search-btn-outline:hover { border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.14); }
+
     .ex-hero-step {
         display: inline-flex; align-items: center; gap: 7px;
         background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
-        border-radius: 10px; padding: 7px 12px;
+        border-radius: 10px; padding: 7px 12px; backdrop-filter: blur(4px);
     }
     .ex-step-num {
         width: 20px; height: 20px; border-radius: 50%;
@@ -150,92 +130,221 @@
     .ex-step-txt { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.75); white-space: nowrap; }
     .ex-step-arrow { font-size: 12px; color: rgba(255,255,255,.3); }
 
-    /* ══ 광고 전문가 카드 ══ */
-    .ad-grid { display: flex; gap: 16px; flex-wrap: wrap; }
-    .ad-card {
-        flex: 0 0 calc((100% - 32px) / 3);
-        background: #fff; border: 1.5px solid var(--border);
-        border-radius: 18px; overflow: hidden;
-        display: flex; flex-direction: column;
-        transition: transform .2s, box-shadow .2s, border-color .2s;
-        text-decoration: none; color: inherit;
-    }
-    .ad-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(37,99,235,.10); border-color: #93c5fd; }
-    .ad-thumb { position: relative; width: 100%; padding-top: 58%; background: #f0f4fa; flex-shrink: 0; }
-    .ad-thumb-img { position: absolute; inset: 0; background-size: cover; background-position: center; }
-    .ad-badge {
-        position: absolute; top: 10px; right: 10px;
-        background: #fef3c7; color: #92400e;
-        font-size: 10px; font-weight: 800; letter-spacing: .05em;
-        padding: 3px 9px; border-radius: 6px;
-    }
-    .ad-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px; }
-    .ad-name { font-size: 15px; font-weight: 800; color: #0f172a; }
-    .ad-spec { font-size: 12px; color: var(--gray); }
-    .ad-msg {
-        font-size: 13px; color: var(--gray); line-height: 1.6; margin-top: 6px;
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    }
+    /* ══ 광고 카드 (크몽 스타일) ══ */
+.ad-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+.ad-card {
+    flex: 0 0 calc((100% - 32px) / 3);
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    text-decoration: none; color: inherit;
+}
+.ad-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(37,99,235,.10);
+    border-color: #93c5fd;
+}
 
-    /* ══ 프로젝트 캐러셀 카드 ══ */
+/* 썸네일 — 이미지만, 글자 없음 */
+.ad-thumb {
+    position: relative; width: 100%; padding-top: 58%;
+    background: #f0f4fa; flex-shrink: 0; overflow: hidden;
+}
+.ad-thumb-img {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform .4s ease;
+}
+.ad-card:hover .ad-thumb-img { transform: scale(1.04); }
+.ad-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,.92); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 5px;
+}
+
+/* 카드 본문 */
+.ad-body {
+    padding: 14px 16px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    flex: 1;
+}
+
+/* 홍보문구 */
+.ad-msg {
+    font-size: 13px; color: #1e293b; line-height: 1.6; font-weight: 500;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* 하단 — 평점 + 전문가 프로필 */
+.ad-footer {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding-top: 10px; border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+.ad-expert-info {
+    display: flex; align-items: center; gap: 8px;
+}
+.ad-expert-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #eff6ff; border: 1.5px solid #bfdbfe;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: var(--blue);
+    flex-shrink: 0; overflow: hidden;
+}
+.ad-expert-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.ad-expert-name {
+    font-size: 12px; font-weight: 700; color: #374151;
+}
+.ad-rating {
+    font-size: 12px; font-weight: 700; color: #f59e0b;
+}
+.ad-cta {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+}
+
+/* AD 뱃지 */
+.ad-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,.95); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* 호버 효과 */
+.ad-card:hover .ad-thumb-img {
+    transform: scale(1.04);
+    transition: transform .4s ease;
+}
+.ad-thumb { overflow: hidden; }
+.ad-thumb-img { transition: transform .4s ease; }
+
+    /* ══ 캐러셀 ══ */
     .carousel-section { position: relative; }
     .c-viewport { overflow: hidden; }
     .c-track { display: flex; gap: 16px; will-change: transform; transition: transform .3s ease; }
 
+    /* ══ 프로젝트 카드 - 글래스 ══ */
     .proj-card {
         flex: 0 0 calc((100% - 32px) / 3);
-        background: #fff; border: 1.5px solid var(--border);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
         border-radius: 18px; padding: 24px;
         display: flex; flex-direction: column; gap: 14px;
-        transition: border-color .2s, box-shadow .2s, transform .2s;
-        cursor: pointer;
+        transition: all .2s; cursor: pointer;
+        box-shadow: 0 4px 16px rgba(37,99,235,.06);
     }
-    .proj-card:hover { border-color: #93c5fd; box-shadow: 0 6px 24px rgba(37,99,235,.08); transform: translateY(-2px); }
+    .proj-card:hover { border-color: #93c5fd; box-shadow: 0 10px 28px rgba(37,99,235,.12); transform: translateY(-2px); background: rgba(255,255,255,.75); }
     .proj-card-top { display: flex; align-items: center; justify-content: space-between; }
     .proj-id { font-size: 11px; font-weight: 700; color: var(--gray-lt); letter-spacing: .05em; }
-    .proj-dday {
-        font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;
-        background: #fef3c7; color: #92400e;
-    }
+    .proj-dday { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: #fef3c7; color: #92400e; }
     .proj-title { font-size: 15px; font-weight: 800; color: #0f172a; line-height: 1.4; }
     .proj-category { font-size: 12px; color: var(--blue); font-weight: 600; }
     .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .proj-tag {
-        font-size: 11px; font-weight: 700; border-radius: 6px; padding: 3px 9px;
-        background: #dbeafe; color: #1e40af;
-    }
-    .proj-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); }
+    .proj-tag { font-size: 11px; font-weight: 700; border-radius: 6px; padding: 3px 9px; background: #dbeafe; color: #1e40af; }
+    .proj-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid rgba(37,99,235,.1); }
     .proj-budget { font-size: 14px; font-weight: 900; color: var(--blue); }
     .proj-deadline { font-size: 11px; color: var(--gray-lt); }
+    /* ══ 광고 카드 개선 ══ */
+.ad-thumb { padding-top: 62%; }
 
-    /* ══ 전문가 카드 ══ */
+.ad-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top,
+        rgba(13,27,46,.85) 0%,
+        rgba(13,27,46,.4) 60%,
+        transparent 100%);
+    padding: 20px 16px 14px;
+}
+.ad-overlay-name {
+    font-size: 15px; font-weight: 900; color: #fff;
+    letter-spacing: -.3px; margin-bottom: 3px;
+}
+.ad-overlay-spec {
+    font-size: 11px; color: rgba(255,255,255,.7); font-weight: 500;
+}
+.ad-body {
+    padding: 14px 18px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.ad-msg-wrap {
+    display: flex; gap: 6px; align-items: flex-start;
+}
+.ad-quote {
+    font-size: 20px; color: var(--cyan); font-weight: 900;
+    line-height: 1; flex-shrink: 0; margin-top: -2px;
+}
+.ad-msg {
+    font-size: 13px; color: #374151; line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+    font-style: italic;
+}
+.ad-cta {
+    font-size: 12px; font-weight: 700; color: var(--blue);
+    text-align: right;
+}
+.ad-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,.95); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 5px;
+}
+.ad-thumb { overflow: hidden; }
+.ad-thumb-img { transition: transform .4s ease; }
+.ad-card:hover .ad-thumb-img { transform: scale(1.04); }
+
+/* ══ 인피드 광고 카드 ══ */
+.ad-infeed-card {
+    border-color: #fde68a !important;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+    text-decoration: none;
+    position: relative;
+}
+.ad-infeed-card::before {
+    content: 'AD';
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(255,255,255,.9); color: #92400e;
+    font-size: 9px; font-weight: 800; letter-spacing: .1em;
+    padding: 2px 7px; border-radius: 4px;
+}
+.ad-infeed-card:hover {
+    border-color: #f59e0b !important;
+    box-shadow: 0 6px 24px rgba(245,158,11,.15) !important;
+}
+
+    /* ══ 전문가 카드 - 글래스 ══ */
     .expert-card {
         flex: 0 0 calc((100% - 32px) / 3);
-        background: #fff; border: 1.5px solid var(--border);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
         border-radius: 18px; padding: 24px;
         display: flex; flex-direction: column; gap: 14px;
-        transition: border-color .2s, box-shadow .2s, transform .2s;
-        cursor: pointer;
+        transition: all .2s; cursor: pointer;
+        box-shadow: 0 4px 16px rgba(37,99,235,.06);
     }
-    .expert-card:hover { border-color: #93c5fd; box-shadow: 0 6px 24px rgba(37,99,235,.08); transform: translateY(-2px); }
+    .expert-card:hover { border-color: #93c5fd; box-shadow: 0 10px 28px rgba(37,99,235,.12); transform: translateY(-2px); background: rgba(255,255,255,.75); }
     .expert-card-top { display: flex; align-items: center; gap: 14px; }
     .expert-avatar {
         width: 52px; height: 52px; border-radius: 14px;
-        background: var(--blue-soft); border: 1.5px solid #bfdbfe;
+        background: rgba(37,99,235,.1); border: 1.5px solid rgba(37,99,235,.2);
         display: flex; align-items: center; justify-content: center;
         font-size: 20px; font-weight: 900; color: var(--blue); flex-shrink: 0;
     }
     .expert-info { flex: 1; min-width: 0; }
     .expert-name { font-size: 15px; font-weight: 800; color: #0f172a; }
-    .expert-grade {
-        display: inline-block; font-size: 10px; font-weight: 700;
-        padding: 2px 8px; border-radius: 5px; margin-top: 3px;
-    }
+    .expert-grade { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 5px; margin-top: 3px; }
     .grade-master { background: #fef3c7; color: #92400e; }
     .grade-skilled { background: #dbeafe; color: #1e40af; }
     .grade-normal { background: #f3f4f6; color: #4b5563; }
-    .expert-stack { font-size: 12px; color: var(--gray); line-height: 1.5; }
-    .expert-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); }
+    .expert-stack { font-size: 12px; color: #4a6fa5; line-height: 1.5; }
+    .expert-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid rgba(37,99,235,.1); }
     .expert-rating { font-size: 13px; font-weight: 700; color: #f59e0b; }
     .expert-career { font-size: 12px; color: var(--gray-lt); }
 
@@ -244,11 +353,11 @@
         position: absolute; top: 0; bottom: 0; width: 60px;
         display: flex; align-items: center;
         border: none; cursor: pointer; z-index: 10; font-size: 24px;
-        color: var(--gray); transition: color .15s; padding: 0; background: none;
+        color: #4a6fa5; transition: color .15s; padding: 0; background: none;
     }
     .c-arrow:hover { color: var(--blue); }
-    .c-arrow-right { right: -16px; background: linear-gradient(to right, transparent 0%, var(--bg) 60%); justify-content: flex-end; padding-right: 0; }
-    .c-arrow-left  { left: -16px;  background: linear-gradient(to left,  transparent 0%, var(--bg) 60%); justify-content: flex-start; padding-left: 0; }
+    .c-arrow-right { right: -16px; background: linear-gradient(to right, transparent 0%, rgba(200,216,240,.6) 60%); justify-content: flex-end; }
+    .c-arrow-left  { left: -16px;  background: linear-gradient(to left,  transparent 0%, rgba(200,216,240,.6) 60%); justify-content: flex-start; }
 
     /* ══ 프로모 배너 ══ */
     .promo-banner {
@@ -256,6 +365,8 @@
         border-radius: 20px; padding: 32px 36px; margin: 52px 0 0;
         display: flex; align-items: center; justify-content: space-between; gap: 24px;
         position: relative; overflow: hidden;
+        box-shadow: 0 8px 32px rgba(13,27,46,.2);
+        border: 1px solid rgba(255,255,255,.1);
     }
     .promo-banner::before {
         content: ''; position: absolute; inset: 0;
@@ -276,53 +387,50 @@
     .promo-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; position: relative; z-index: 1; }
     .promo-timer { display: flex; align-items: center; gap: 8px; }
     .promo-unit { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .promo-num {
-        font-size: 28px; font-weight: 900; color: #fff;
-        background: rgba(0,0,0,.2); padding: 4px 10px;
-        border-radius: 8px; min-width: 48px; text-align: center; letter-spacing: -.5px;
-    }
+    .promo-num { font-size: 28px; font-weight: 900; color: #fff; background: rgba(0,0,0,.2); padding: 4px 10px; border-radius: 8px; min-width: 48px; text-align: center; letter-spacing: -.5px; }
     .promo-colon { font-size: 22px; font-weight: 500; color: rgba(255,255,255,.4); padding-bottom: 16px; }
     .promo-label { font-size: 9px; font-weight: 600; color: rgba(255,255,255,.4); letter-spacing: .05em; text-transform: uppercase; }
     .promo-btn {
         background: var(--cyan); color: var(--navy); font-size: 14px; font-weight: 800;
         padding: 13px 28px; border-radius: 30px;
-        box-shadow: 0 4px 14px rgba(0,200,224,.3); transition: background .15s, transform .15s;
+        box-shadow: 0 4px 14px rgba(0,200,224,.3); transition: all .15s;
     }
     .promo-btn:hover { background: var(--cyan-dark); transform: translateY(-1px); }
 
-    /* ══ 리뷰 ══ */
+    /* ══ 리뷰 - 글래스 ══ */
     .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .review-card {
-        background: #fff; border: 1.5px solid var(--border);
-        border-radius: 18px; padding: 22px; transition: border-color .2s;
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius: 18px; padding: 22px; transition: all .2s;
+        box-shadow: 0 4px 16px rgba(37,99,235,.06);
     }
-    .review-card:hover { border-color: #93c5fd; }
+    .review-card:hover { border-color: #93c5fd; background: rgba(255,255,255,.75); box-shadow: 0 8px 24px rgba(37,99,235,.1); }
     .rev-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .rev-project { font-size: 14px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
     .rev-stars { color: #f59e0b; font-size: 13px; font-weight: 700; }
-    .rev-comment {
-        font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 14px;
-        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-    }
+    .rev-comment { font-size: 13px; color: #4a6fa5; line-height: 1.6; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .rev-meta { font-size: 11px; color: var(--gray-lt); display: flex; gap: 8px; }
-    .rev-author { font-weight: 700; color: var(--gray); }
+    .rev-author { font-weight: 700; color: #4a6fa5; }
 
-    /* ══ 통계 ══ */
+    /* ══ 통계 - 글래스 ══ */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-bottom: 64px; }
     .stat-card {
-        background: #fff; border: 1.5px solid var(--border);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
         border-radius: 18px; padding: 28px; text-align: center;
-        transition: border-color .2s, box-shadow .2s;
+        transition: all .2s; box-shadow: 0 4px 16px rgba(37,99,235,.06);
     }
-    .stat-card:hover { border-color: #93c5fd; box-shadow: 0 4px 16px rgba(37,99,235,.06); }
+    .stat-card:hover { border-color: #93c5fd; box-shadow: 0 8px 24px rgba(37,99,235,.1); background: rgba(255,255,255,.75); transform: translateY(-2px); }
     .st-val { font-size: 32px; font-weight: 900; color: var(--blue); letter-spacing: -1px; margin-bottom: 6px; }
-    .st-label { font-size: 12px; font-weight: 600; color: var(--gray-lt); }
+    .st-label { font-size: 12px; font-weight: 600; color: #4a6fa5; }
 
     /* ══ 빈 상태 ══ */
     .empty-state {
-        flex: 1; background: #fff; border: 1.5px dashed var(--border);
+        flex: 1; backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.4); border: 1.5px dashed rgba(37,99,235,.2);
         border-radius: 18px; padding: 48px; text-align: center;
-        font-size: 13px; color: var(--gray-lt);
+        font-size: 13px; color: #4a6fa5;
     }
 
     /* ══ 반응형 ══ */
@@ -345,12 +453,20 @@
     }
 </style>
 
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="bg-glow bg-glow-3"></div>
+
 <!-- ══ 히어로: 전문가 ══ -->
 {{#isExpert}}
     <section class="ex-hero">
         <div class="ex-hero-inner">
             <div class="ex-hero-left">
-                <span class="ex-hero-badge">⚡ 실력을 수익으로</span>
+            <span class="ex-hero-badge" style="display: inline-flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h8v6h2v2h-2v2h-2v-8H2v-4h2v2Zm12 6h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2v-2h2v2Zm-6-6h8v4h-2v-2h-8V5h-2V3h2V1h2v8Zm-8 2H4V9h2v2Zm2-2H6V7h2v2Zm2-2H8V5h2v2Z"/></svg>
+                실력을 수익으로
+            </span>
                 <h1 class="ex-hero-title">지금 이 순간에도<br>새로운 의뢰가<br><span class="hl">당신을 기다립니다.</span></h1>
                 <p class="ex-hero-desc">원하는 프로젝트를 골라 제안서를 보내세요.<br>코드요가 당신의 실력을 적정한 보상으로 연결해드립니다.</p>
                 <div class="ex-hero-actions">
@@ -360,30 +476,15 @@
                     </form>
                     <div class="ex-hero-links">
                         <a href="/bids/my-list" class="ex-hero-link" style="display: inline-flex; align-items: center; gap: 8px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H4v-2h16v2ZM4 20H2V4h2v16ZM16 4h-2v6h6V8h2v12h-2v-8h-8V4H4V2h12v2Zm-4 14H6v-2h6v2Zm-2-4H6v-2h4v2Zm10-6h-2V6h2v2Zm-2-2h-2V4h2v2Z"/></svg>
                             내 제안서 관리
                         </a>
-
                         <a href="/bids/my-orders" class="ex-hero-link" style="display: inline-flex; align-items: center; gap: 8px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                            </svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 5h12v2H10zm0 4h8v2h-8zm0 4h12v2H10zm0 4h8v2h-8zm-4-6H4V9h2v2ZM4 9H2V7h2v2Zm4 0H6V7h2v2ZM6 7H4V5h2v2Zm-2 6h2v2H4zm0 4h2v2H4zm-2 0v-2h2v2zm4 0v-2h2v2z"/></svg>
                             진행 중인 주문
                         </a>
-
                         <a href="/experts/dashboard" class="ex-hero-link" style="display: inline-flex; align-items: center; gap: 8px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20h4v-6h2v6h4v2H4v-2h4v-6h2v6Zm-6 0H2V10h2v10Zm18 0h-2V10h2v10Zm-8-6h-4v-2h4v2Zm-8-4H4V8h2v2Zm14 0h-2V8h2v2ZM8 8H6V6h2v2Zm10 0h-2V6h2v2Zm-8-2H8V4h2v2Zm6 0h-2V4h2v2Zm-2-2h-4V2h4v2Z"/></svg>
                             대시보드
                         </a>
                     </div>
@@ -391,38 +492,27 @@
             </div>
             <div class="ex-hero-right">
                 <div class="ex-trust-item">
-        <span class="ex-trust-ico" style="color: var(--cyan);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
-        </span>
+                <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3zM1 7h2v10H1zm2 10h18v2H3zM21 7h2v10h-2zM11 9h2v2h-2zm-2 2h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm4 0h2v2h-2zM5 11h2v2H5z"/></svg>
+                </span>
                     <div>
                         <div class="ex-trust-val">월평균 <em>340만</em></div>
                         <div class="ex-trust-label">활성 전문가 평균 수익</div>
                     </div>
                 </div>
-
                 <div class="ex-trust-item">
-        <span class="ex-trust-ico" style="color: var(--cyan);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-        </span>
+                <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18 22H6v-2h12v2ZM6 20H4v-2h2v2Zm14 0h-2v-2h2v2ZM4 18H2V6h2v12Zm18 0h-2V6h2v12Zm-5-1h-2v-2h2v2Zm-2-2h-2v-2h2v2Zm-2-2h-2V6h2v7ZM6 6H4V4h2v2Zm14 0h-2V4h2v2Zm-2-2H6V2h12v2Z"/></svg>
+                </span>
                     <div>
                         <div class="ex-trust-val">1.2<em>Hr</em></div>
                         <div class="ex-trust-label">평균 매칭 소요 시간</div>
                     </div>
                 </div>
-
                 <div class="ex-trust-item">
-        <span class="ex-trust-ico" style="color: var(--cyan);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-        </span>
+                <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 22H5v-2h14v2ZM5 20H3V10h2v10Zm16 0h-2V10h2v10ZM9 8h10v2H5V8h2V4h2v4Zm8-2h-2V4h2v2Zm-2-2H9V2h6v2Z"/></svg>
+                </span>
                     <div>
                         <div class="ex-trust-val">100<em>%</em></div>
                         <div class="ex-trust-label">에스크로 대금 보호</div>
@@ -438,21 +528,16 @@
     <section class="ex-hero ex-hero-client">
         <div class="ex-hero-inner">
             <div class="ex-hero-left">
-                <span class="ex-hero-badge" style="display: inline-flex; align-items: center; gap: 6px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
-                    </svg>
-                    IT 프로젝트, 전문가에게 맡기세요
-                </span>
+            <span class="ex-hero-badge" style="display: inline-flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19h4v2H2v-8h2v6Zm8 0H8v-2h4v2Zm4-2h-4v-2h4v2Zm4-2h-4v-2h4v2Zm-10-2H4v-2h6v2Zm12 0h-2v-2h2v2ZM8 5H4v6H2V3h6v2Zm12 6h-4V9h4v2Zm-4-2h-4V7h4v2Zm-4-2H8V5h4v2Z"/></svg>
+                IT 프로젝트, 전문가에게 맡기세요
+            </span>
                 <h1 class="ex-hero-title">아이디어만 있으면<br>충분합니다.<br><span class="hl">[코드요]</span>가 연결합니다.</h1>
                 <p class="ex-hero-desc">프로젝트를 등록하면 평균 <strong style="color:var(--cyan);">24시간 내</strong> 검증된 전문가가 제안서를 보내옵니다.<br>개발, 디자인, AI까지 — 한 번의 등록으로 시작하세요.</p>
                 <div class="ex-hero-actions">
                     <div class="ex-search-row">
                         <a href="/projects/save-form" class="ex-search-btn" style="border-radius:10px; text-align:center; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                            </svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H6v-2h10V4H6V2h14v2h-2v16h2v2ZM6 7h2v2H6v2h2v2H6v2h2v2H6v3H4v-3H2v-2h2v-2H2v-2h2V9H2V7h2V4h2v3Zm16 13h-2V4h2v16Z"/></svg>
                             프로젝트 등록하기
                         </a>
                         <a href="/experts" class="ex-search-btn-outline">전문가 둘러보기</a>
@@ -468,37 +553,27 @@
             </div>
             <div class="ex-hero-right">
                 <div class="ex-trust-item">
-        <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-        </span>
+                <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg>
+                </span>
                     <div>
                         <div class="ex-trust-val">14,209<em>+</em></div>
                         <div class="ex-trust-label">누적 완료 프로젝트</div>
                     </div>
                 </div>
-
                 <div class="ex-trust-item">
-        <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-            </svg>
-        </span>
+                <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h8v6h2v2h-2v2h-2v-8H2v-4h2v2Zm12 6h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2v-2h2v2Zm-6-6h8v4h-2v-2h-8V5h-2V3h2V1h2v8Zm-8 2H4V9h2v2Zm2-2H6V7h2v2Zm2-2H8V5h2v2Z"/></svg>
+                </span>
                     <div>
                         <div class="ex-trust-val">24<em>Hr</em></div>
                         <div class="ex-trust-label">평균 첫 제안 도착 시간</div>
                     </div>
                 </div>
-
                 <div class="ex-trust-item">
-        <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-        </span>
+                <span class="ex-trust-ico" style="color: var(--cyan); display: flex;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 22H5v-2h14v2ZM5 20H3V10h2v10Zm16 0h-2V10h2v10ZM9 8h10v2H5V8h2V4h2v4Zm8-2h-2V4h2v2Zm-2-2H9V2h6v2Z"/></svg>
+                </span>
                     <div>
                         <div class="ex-trust-val">100<em>%</em></div>
                         <div class="ex-trust-label">에스크로 안전 결제</div>
@@ -519,24 +594,57 @@
                 <h2 class="ex-section-title">추천 상단 광고 전문가</h2>
             </div>
         </div>
-        <div class="ad-grid">
-            {{#adExperts}}
-                <a class="ad-card" href="/experts/{{id}}">
-                    <div class="ad-thumb">
-                        <div class="ad-thumb-img" style="background-image:url('{{#bannerImage}}{{bannerImageUrl}}{{/bannerImage}}{{^bannerImage}}/default-banner.jpg{{/bannerImage}}');"></div>
-                        <div class="ad-badge">PREMIUM</div>
-                    </div>
-                    <div class="ad-body">
-                        <div class="ad-name">{{user.name}} 전문가</div>
-                        <div class="ad-spec">{{techStack}} · 경력 {{careerYear}}년</div>
-                        <div class="ad-msg">{{introduction}}</div>
-                    </div>
-                </a>
-            {{/adExperts}}
-            {{^adExperts}}
-                <div class="empty-state">현재 활성화된 프리미엄 광고 전문가가 없습니다.</div>
-            {{/adExperts}}
-        </div>
+
+        {{#hasAdExperts}}
+            <div class="ad-grid">
+                {{#adExperts}}
+                    <a class="ad-card" href="/experts/{{expertId}}">
+
+                        <!-- 썸네일만 — 글자 없음 -->
+                        <div class="ad-thumb">
+                            <div class="ad-thumb-img"
+                                 style="background-image:url('{{displayImageUrl}}');"></div>
+                            <span class="ad-badge">AD</span>
+                        </div>
+
+                        <!-- 카드 본문 -->
+                        <div class="ad-body">
+
+                            <!-- 홍보문구 -->
+                            <p class="ad-msg">{{customMessage}}</p>
+
+                            <!-- 하단: 평점 + 전문가 닉네임 -->
+                            <div class="ad-footer">
+                                <div class="ad-expert-info">
+                                    <div class="ad-expert-avatar">
+                                        {{#profileImage}}
+                                            <img src="{{displayImageUrl}}" alt="{{expertName}}">
+                                        {{/profileImage}}
+                                        {{^profileImage}}
+                                            {{expertName}}
+                                        {{/profileImage}}
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <span class="ad-expert-name">{{expertName}}</span>
+                                        <span style="font-size:11px;color:#f59e0b;font-weight:700;">★ {{avgRating}}</span>
+                                    </div>
+                                </div>
+                                <span class="ad-cta">프로필 보기 →</span>
+                            </div>
+                        </div>
+
+                    </a>
+                {{/adExperts}}
+            </div>
+        {{/hasAdExperts}}
+
+        {{^hasAdExperts}}
+            <div style="background:#fff; border:1.5px dashed var(--border);
+                border-radius:18px; padding:48px; text-align:center;
+                color:var(--gray-lt); font-size:13px;">
+                현재 활성화된 프리미엄 광고 전문가가 없습니다.
+            </div>
+        {{/hasAdExperts}}
     </section>
 
     <!-- ══ 실시간 프로젝트 ══ -->
@@ -553,32 +661,45 @@
             <div class="c-viewport">
                 <div class="c-track">
                     {{#recentProjects}}
-                        <div class="proj-card" data-href="/projects/{{id}}">
-                            <div class="proj-card-top">
-                                <span class="proj-id">PRJ.{{id}}</span>
-                                <span class="proj-dday">D-{{dday}}</span>
+                        {{#isAd}}
+                            <a class="proj-card ad-infeed-card" href="/experts/{{expertId}}">
+                                <div class="proj-card-top">
+                                    <span class="proj-id" style="color:#92400e;">👤 전문가 광고</span>
+                                    <span class="proj-dday" style="background:#fef3c7;color:#92400e;">AD</span>
+                                </div>
+                                <div>
+                                    <div class="proj-title" style="color:#92400e;">{{expertName}} 전문가</div>
+                                    <div class="proj-category" style="color:#b45309;">{{speciality}}</div>
+                                </div>
+                                <div class="proj-footer">
+                    <span class="proj-budget" style="color:#92400e;font-size:12px;">
+                        "{{customMessage}}"
+                    </span>
+                                    <span class="proj-deadline" style="color:#b45309;">프로필 보기 →</span>
+                                </div>
+                            </a>
+                        {{/isAd}}
+                        {{^isAd}}
+                            <div class="proj-card" data-href="/projects/{{id}}">
+                                <div class="proj-card-top">
+                                    <span class="proj-id">PRJ.{{id}}</span>
+                                    <span class="proj-dday">D-{{dday}}</span>
+                                </div>
+                                <div>
+                                    <div class="proj-title">{{title}}</div>
+                                    <div class="proj-category">{{categoryName}}</div>
+                                </div>
+                                <div class="proj-tags">
+                                    <span class="proj-tag">{{categoryName}}</span>
+                                </div>
+                                <div class="proj-footer">
+                                    <span class="proj-budget">{{budgetMin}}~{{budgetMax}}만원</span>
+                                    <span class="proj-deadline">마감 {{endDate}}</span>
+                                </div>
                             </div>
-                            <div>
-                                <div class="proj-title">{{title}}</div>
-                                <div class="proj-category">{{category}}</div>
-                            </div>
-                            <div class="proj-tags">
-                                {{#requiredSkillsList}}
-                                    <span class="proj-tag">{{.}}</span>
-                                {{/requiredSkillsList}}
-                                {{^requiredSkillsList}}
-                                    <span class="proj-tag">{{requiredSkills}}</span>
-                                {{/requiredSkillsList}}
-                            </div>
-                            <div class="proj-footer">
-                                <span class="proj-budget">{{budget}}원~</span>
-                                <span class="proj-deadline">마감 {{endDate}}</span>
-                            </div>
-                        </div>
+                        {{/isAd}}
                     {{/recentProjects}}
-                    {{^recentProjects}}
-                        <div class="empty-state">현재 등록된 신규 프로젝트가 없습니다.</div>
-                    {{/recentProjects}}
+                    {{^recentProjects}}<div class="empty-state">현재 등록된 신규 프로젝트가 없습니다.</div>{{/recentProjects}}
                 </div>
             </div>
             <button class="c-arrow c-arrow-right" aria-label="다음">&#8250;</button>
@@ -599,24 +720,22 @@
             <div class="c-viewport">
                 <div class="c-track">
                     {{#masterExperts}}
-                        <div class="expert-card" data-href="/experts/{{id}}">
+                        <div class="expert-card" data-href="/experts/{{memberId}}">
                             <div class="expert-card-top">
-                                <div class="expert-avatar">{{user.name}}</div>
+                                <div class="expert-avatar">{{memberName}}</div>
                                 <div class="expert-info">
-                                    <div class="expert-name">{{user.name}} 전문가</div>
+                                    <div class="expert-name">{{memberName}} 전문가</div>
                                     <span class="expert-grade grade-master">🏆 MASTER</span>
                                 </div>
                             </div>
-                            <div class="expert-stack">{{techStack}}</div>
+                            <div class="expert-stack">{{speciality}}</div>
                             <div class="expert-footer">
-                                <span class="expert-rating">★ {{rating}}</span>
-                                <span class="expert-career">경력 {{careerYear}}년 · 리뷰 {{reviewCount}}개</span>
+                                <span class="expert-rating">★ {{ratingDisplay}}</span>
+                                <span class="expert-career">리뷰 {{totalReviews}}개</span>
                             </div>
                         </div>
                     {{/masterExperts}}
-                    {{^masterExperts}}
-                        <div class="empty-state">등록된 마스터 등급 전문가가 없습니다.</div>
-                    {{/masterExperts}}
+                    {{^masterExperts}}<div class="empty-state">등록된 마스터 등급 전문가가 없습니다.</div>{{/masterExperts}}
                 </div>
             </div>
             <button class="c-arrow c-arrow-right" aria-label="다음">&#8250;</button>
@@ -626,14 +745,8 @@
     <!-- ══ 프로모 배너 ══ -->
     <div class="promo-banner">
         <div class="promo-left">
-            <div class="promo-badge">
-                <span class="promo-badge-dot"></span>
-                Special Promotion
-            </div>
-            <h4 class="promo-title">
-                수수료 0% 보장 리워드 이벤트 마감 임박
-                <span>지금 제안서를 제출하고 첫 계약 수수료 전액 면제 혜택을 누리세요.</span>
-            </h4>
+            <div class="promo-badge"><span class="promo-badge-dot"></span>Special Promotion</div>
+            <h4 class="promo-title">수수료 0% 보장 리워드 이벤트 마감 임박<span>지금 제안서를 제출하고 첫 계약 수수료 전액 면제 혜택을 누리세요.</span></h4>
         </div>
         <div class="promo-right">
             <div class="promo-timer">
@@ -661,18 +774,20 @@
             {{#recentReviews}}
                 <div class="review-card">
                     <div class="rev-head">
-                        <div class="rev-project">{{projectTitle}}</div>
-                        <div class="rev-stars">★ {{rating}}</div>
+                        <div class="rev-project">{{targetName}} 전문가</div>
+                        <div class="rev-stars">{{star}}</div>
                     </div>
                     <p class="rev-comment">"{{content}}"</p>
                     <div class="rev-meta">
-                        <span class="rev-author">{{writerName}}</span>
+                        <span class="rev-author">{{reviewerName}}</span>
                         <span>| {{createdAt}}</span>
                     </div>
                 </div>
             {{/recentReviews}}
             {{^recentReviews}}
-                <div style="grid-column:span 2;" class="empty-state">아직 등록된 후기가 없습니다.</div>
+                <div style="grid-column:span 2;" class="empty-state">
+                    아직 등록된 후기가 없습니다.
+                </div>
             {{/recentReviews}}
         </div>
     </section>
@@ -696,7 +811,6 @@
 </div>
 
 <script>
-    /* ── 캐러셀 ── */
     (function() {
         function setupCarousel(id) {
             const el = document.getElementById(id);
@@ -705,67 +819,48 @@
             const btnL  = el.querySelector('.c-arrow-left');
             const btnR  = el.querySelector('.c-arrow-right');
             if (!track || !btnL || !btnR) return;
-
             let idx = 0;
-
-            function cpv() {
-                if (window.innerWidth <= 560) return 1;
-                if (window.innerWidth <= 960) return 2;
-                return 3;
-            }
-
+            function cpv() { return window.innerWidth <= 560 ? 1 : window.innerWidth <= 960 ? 2 : 3; }
             function update() {
                 const total = track.children.length;
                 const n = cpv();
                 const max = Math.max(0, total - n);
                 if (idx > max) idx = max;
                 if (idx < 0)   idx = 0;
-
                 const gap = 16;
                 const w = (track.parentElement.clientWidth - gap * (n - 1)) / n;
                 Array.from(track.children).forEach(c => { c.style.flex = `0 0 ${w}px`; });
                 track.style.transform = `translateX(-${idx * (w + gap)}px)`;
-
-                btnL.style.display = idx === 0    ? 'none' : 'flex';
-                btnR.style.display = idx >= max   ? 'none' : 'flex';
+                btnL.style.display = idx === 0  ? 'none' : 'flex';
+                btnR.style.display = idx >= max ? 'none' : 'flex';
             }
-
             btnL.addEventListener('click', () => { idx--; update(); });
             btnR.addEventListener('click', () => { idx++; update(); });
             window.addEventListener('resize', update);
-            update();
-            setTimeout(update, 200);
+            update(); setTimeout(update, 200);
         }
-
         document.addEventListener('DOMContentLoaded', () => {
             setupCarousel('c1');
             setupCarousel('c2');
-
-            /* 카드 클릭 이동 */
             document.querySelectorAll('[data-href]').forEach(card => {
-                card.addEventListener('click', () => {
-                    window.location.href = card.dataset.href;
-                });
+                card.addEventListener('click', () => { window.location.href = card.dataset.href; });
             });
-
-            /* 전문가 아바타 이니셜 */
             document.querySelectorAll('.expert-avatar').forEach(el => {
                 const t = el.textContent.trim();
                 if (t) el.textContent = t.charAt(0);
             });
+            document.querySelectorAll('.ad-expert-avatar').forEach(el => {
+    if (el.querySelector('img')) return; // 이미지 있으면 건너뜀
+    const t = el.textContent.trim();
+    if (t) el.textContent = t.charAt(0);
+});
         });
     })();
 
-    /* ── 카운트다운 ── */
     (function() {
         const target = new Date();
         target.setDate(target.getDate() + 3);
-        const els = {
-            d: document.getElementById('cd-d'),
-            h: document.getElementById('cd-h'),
-            m: document.getElementById('cd-m'),
-            s: document.getElementById('cd-s'),
-        };
+        const els = { d: document.getElementById('cd-d'), h: document.getElementById('cd-h'), m: document.getElementById('cd-m'), s: document.getElementById('cd-s') };
         function pad(n) { return n < 10 ? '0' + n : '' + n; }
         function tick() {
             const diff = target - new Date();
@@ -775,8 +870,8 @@
             if (els.m) els.m.textContent = pad(Math.floor(diff / 60000) % 60);
             if (els.s) els.s.textContent = pad(Math.floor(diff / 1000) % 60);
         }
-        tick();
-        setInterval(tick, 1000);
+        tick(); setInterval(tick, 1000);
     })();
 </script>
+
 {{> layout/footer}}

@@ -46,4 +46,7 @@ public interface ReviewRepository extends JpaRepository<Review , Long> {
 
     @Query("SELECT COUNT(r) > 0 FROM Review r WHERE r.reviewer.id = :reviewerId AND r.targeter.id = :targeterId AND r.project.id = :projectId AND r.isDelete = false")
     boolean existsByReviewerAndTargeterAndProject(@Param("reviewerId") Long reviewerId, @Param("targeterId") Long targeterId, @Param("projectId") Long projectId);
+
+    @Query("SELECT r FROM Review r JOIN FETCH r.reviewer WHERE r.isDelete = false ORDER BY r.id DESC")
+    List<Review> findRecentReviews(Pageable pageable);
 }
