@@ -62,7 +62,7 @@
             flex: 1; min-width: 0;
             display: flex; align-items: center;
             justify-content: center;
-            overflow: hidden; /* 잘림 방지: 햄버거로 처리 */
+            overflow: hidden;
         }
         .nav-tab {
             padding: 0 13px; height: 64px;
@@ -75,13 +75,14 @@
         .nav-tab:hover { color: #1c1e26; border-color: #d1d5db; }
         .nav-tab.active { color: var(--blue); border-color: var(--blue); }
 
-        /* 햄버거 버튼 (탭 모드에서만 등장) */
+        /* 햄버거 버튼 */
         .nav-hamburger {
             display: none;
             background: none; border: none; cursor: pointer;
             padding: 8px; border-radius: 8px; color: #6b7280;
             transition: background .15s, color .15s;
             flex-shrink: 0;
+            align-items: center; justify-content: center;
         }
         .nav-hamburger:hover { background: #f3f4f6; color: #1c1e26; }
         .nav-hamburger svg { width: 22px; height: 22px; display: block; }
@@ -98,16 +99,16 @@
             background: rgba(0,0,0,.3);
         }
         .nav-drawer-panel {
-            position: absolute; top: 0; left: 0;
+            position: absolute; top: 0; right: 0;
             width: 260px; height: 100%;
             background: #fff; padding: 12px 0;
-            box-shadow: 4px 0 20px rgba(0,0,0,.1);
+            box-shadow: -4px 0 20px rgba(0,0,0,.1);
             overflow-y: auto;
         }
         .nav-drawer-item {
             display: block; padding: 14px 24px;
             font-size: 14px; font-weight: 600; color: #4b5563;
-            text-decoration: none; border-left: 3px solid transparent;
+            text-decoration: none; border-right: 3px solid transparent;
             transition: all .12s;
         }
         .nav-drawer-item:hover { background: #f8f9ff; color: var(--blue); border-color: var(--blue); }
@@ -139,7 +140,6 @@
         .btn-primary { background: var(--blue); color: #fff; }
         .btn-primary:hover { background: var(--blue-dark); }
 
-        /* ── 대시보드/마이페이지 버튼: light gray 톤 ── */
         .btn-dashboard {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 8px 18px; border-radius: 25px;
@@ -272,16 +272,11 @@
             100% { opacity: 0; }
         }
 
-        /* ── 반응형 ──
-           탭이 있는 경우(로그인 + isDashboard):
-           - 860px 이하: 탭 숨기고 햄버거 버튼 표시
-           탭 없는 경우:
-           - 960px 이하: nav-links 숨김
-        */
+        /* ── 반응형 ── */
         @media (max-width: 860px) {
             .nav-inner { padding: 0 16px; }
             .nav-tabs { display: none; }
-            .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
+            .nav-hamburger { display: flex; }
             .nav-logo img { height: 24px; }
             .btn-dashboard { padding: 7px 14px; font-size: 13px; }
         }
@@ -306,14 +301,6 @@
             <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
 
             {{#isDashboard}}
-            {{! 햄버거 버튼 (모바일에서만 보임) }}
-                <button class="nav-hamburger" id="hamburgerExpert" aria-label="메뉴 열기" style="display:none;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
                 <nav class="nav-tabs" id="tabsExpert">
                     <a href="/bids/my-list"         class="nav-tab">제안서 관리</a>
                     <a href="/bids/my-orders"       class="nav-tab">주문 관리</a>
@@ -322,9 +309,8 @@
                     <a href="/experts/my/info-edit" class="nav-tab">정보 수정</a>
                     <a href="/boards"               class="nav-tab">게시판</a>
                     <a href="/messages"             class="nav-tab">쪽지함</a>
-                    <a href="/chat/room"                 class="nav-tab">채팅방</a>
+                    <a href="/chat/room"            class="nav-tab">채팅방</a>
                 </nav>
-                {{! 드로어 (모바일) }}
                 <div class="nav-drawer" id="drawerExpert">
                     <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerExpert','hamburgerExpert')"></div>
                     <div class="nav-drawer-panel">
@@ -335,7 +321,7 @@
                         <a href="/experts/my/info-edit" class="nav-drawer-item">내 정보 수정</a>
                         <a href="/boards"               class="nav-drawer-item">게시판</a>
                         <a href="/messages"             class="nav-drawer-item">쪽지함</a>
-                        <a href="/chat/room"                 class="nav-drawer-item">채팅방</a>
+                        <a href="/chat/room"            class="nav-drawer-item">채팅방</a>
                     </div>
                 </div>
             {{/isDashboard}}
@@ -345,6 +331,15 @@
             {{/isDashboard}}
 
             <div class="nav-actions">
+                {{#isDashboard}}
+                    <button class="nav-hamburger" id="hamburgerExpert" aria-label="메뉴 열기">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                {{/isDashboard}}
                 {{^isDashboard}}
                     <a href="/experts/dashboard" class="btn-dashboard">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -408,19 +403,12 @@
 
             {{#isLoggedIn}}{{^isAdmin}}
                 {{#isDashboard}}
-                    <button class="nav-hamburger" id="hamburgerUser" aria-label="메뉴 열기" style="display:none;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
                     <nav class="nav-tabs" id="tabsUser">
                         <a href="/projects"  class="nav-tab">프로젝트</a>
                         <a href="/experts"   class="nav-tab">전문가</a>
                         <a href="/boards"    class="nav-tab">게시판</a>
                         <a href="/messages"  class="nav-tab">쪽지함</a>
-                        <a href="/chat/room"      class="nav-tab">채팅방</a>
+                        <a href="/chat/room" class="nav-tab">채팅방</a>
                     </nav>
                     <div class="nav-drawer" id="drawerUser">
                         <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerUser','hamburgerUser')"></div>
@@ -429,7 +417,7 @@
                             <a href="/experts"   class="nav-drawer-item">전문가</a>
                             <a href="/boards"    class="nav-drawer-item">게시판</a>
                             <a href="/messages"  class="nav-drawer-item">쪽지함</a>
-                            <a href="/chat/room"      class="nav-drawer-item">채팅방</a>
+                            <a href="/chat/room" class="nav-drawer-item">채팅방</a>
                         </div>
                     </div>
                 {{/isDashboard}}
@@ -477,20 +465,29 @@
             {{/isLoggedIn}}
 
             <div class="nav-actions">
+                {{#isLoggedIn}}{{^isAdmin}}
+                    {{#isDashboard}}
+                        <button class="nav-hamburger" id="hamburgerUser" aria-label="메뉴 열기">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                    {{/isDashboard}}
+                    {{^isDashboard}}
+                        <a href="/my-pages" class="btn-dashboard" id="dashBtnUser">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                            </svg>
+                            마이페이지
+                        </a>
+                    {{/isDashboard}}
+                {{/isAdmin}}{{/isLoggedIn}}
                 {{#isLoggedIn}}
-                    {{^isAdmin}}
-                        {{^isDashboard}}
-                            <a href="/my-pages" class="btn-dashboard" id="dashBtnUser">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-                                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-                                </svg>
-                                마이페이지
-                            </a>
-                        {{/isDashboard}}
-                    {{/isAdmin}}
                     <a href="/notifications" class="nav-bell" aria-label="알림">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -668,3 +665,4 @@
         });
     </script>
 {{/isAdmin}}
+
