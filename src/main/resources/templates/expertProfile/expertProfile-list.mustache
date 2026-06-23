@@ -121,8 +121,10 @@
     <div class="list-inner">
 
         <div class="search-bar">
-            <input type="text" class="search-input" placeholder="이름, 직종, 기술 스택으로 검색..." value="{{#keyword}}{{keyword}}{{/keyword}}" />
-            <button class="search-btn">검색</button>
+            <input type="text" id="searchInput" class="search-input"
+                   placeholder="이름, 직종, 기술 스택으로 검색..."
+                   value="{{keyword}}" />
+            <button class="search-btn" onclick="doSearch()">검색</button>
         </div>
 
         <div class="filter-row">
@@ -132,7 +134,7 @@
             <a href="/experts?career=프론트엔드" class="tab {{#isFrontend}}active{{/isFrontend}}">프론트엔드</a>
             <a href="/experts?career=앱개발" class="tab {{#isApp}}active{{/isApp}}">앱개발</a>
             <a href="/experts?career=UI/UX" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</a>
-            <a href="/experts?certified=true" class="tab" style="border-color:#fde68a; color:#b45309;">⭐ 인증 전문가만</a>
+
         </div>
 
         <div class="expert-grid">

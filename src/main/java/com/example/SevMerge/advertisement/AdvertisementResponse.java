@@ -20,6 +20,7 @@ public class AdvertisementResponse {
     private String status;
     private String customMessage;
     private String bannerImage;
+    private String avgRating;
 
     public AdvertisementResponse(Advertisement ad, String expertName, String speciality, String profileImage) {
         this.id = ad.getId();
@@ -37,6 +38,10 @@ public class AdvertisementResponse {
         this.bannerImage = ad.getBannerImage();
     }
 
+    public void setAvgRating(String avgRating) {
+        this.avgRating = avgRating;
+    }
+
     public boolean isActive()  { return "ACTIVE".equals(status); }
     public boolean isExpired() { return "EXPIRED".equals(status); }
 
@@ -45,5 +50,9 @@ public class AdvertisementResponse {
         if (img == null || img.isBlank()) return "/images/default.png";
         if (img.startsWith("http")) return img;
         return "/images/" + img;
+    }
+
+    public boolean isHasProfileImage() {
+        return profileImage != null && !profileImage.isBlank();
     }
 }
