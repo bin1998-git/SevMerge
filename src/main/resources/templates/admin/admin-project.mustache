@@ -322,13 +322,23 @@
                     <span class="cell-author">{{memberName}}</span>
                     <span class="cell-date">{{createdAt}}</span>
                     <span>
-            <span class="status-open">{{projectStatus}}</span>
-        </span>
-
+                        {{#isOpen}}<span class="status-open" style="border-color: #10b981; color: #10b981;">모집중</span>{{/isOpen}}
+                        {{#isClosed}}<span class="status-open"
+                                           style="border-color: #3b82f6; color: #3b82f6;">진행중</span>{{/isClosed}}
+                        {{#isCompleted}}<span class="status-open"
+                                              style="border-color: #6b7280; color: #6b7280;">완료됨</span>{{/isCompleted}}
+                        {{#isDone}}<span class="status-open"
+                                         style="border-color: #ef4444; color: #ef4444;">종료</span>{{/isDone}}
+                        {{#isProjectClosed}}<span class="status-open"
+                                                  style="border-color: #a0aec0; color: #a0aec0;">마감됨</span>{{/isProjectClosed}}
+                        {{#isCancelled}}<span class="status-open"
+                                              style="border-color: #f6ad55; color: #f6ad55;">취소됨</span>{{/isCancelled}}
+                        {{#isDraft}}<span class="status-open"
+                                          style="border-color: #cbd5e0; color: #718096;">임시저장</span>{{/isDraft}}
+                    </span>
                 </div>
             {{/projects}}
         </div>
-
         <div class="paging">
             {{#paging}}
                 {{#hasPrev}}<a href="/admin/projects?page={{prevPage}}" class="page-btn">이전</a>{{/hasPrev}}
@@ -338,8 +348,6 @@
                 {{#hasNext}}<a href="/admin/projects?page={{nextPage}}" class="page-btn">다음</a>{{/hasNext}}
             {{/paging}}
         </div>
-
     </main>
 </div>
-
 {{> layout/footer}}

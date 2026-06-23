@@ -37,6 +37,9 @@ public class ProjectResponseDTO {
         private Timestamp createdAt;
         private boolean isOpen;
         private boolean reviewSkipped;
+        private boolean isProjectClosed;
+        private boolean isCancelled;
+        private boolean isDraft;
 
         public ListDTO(Project project) {
             this.id = project.getId();
@@ -61,6 +64,9 @@ public class ProjectResponseDTO {
             this.isUrgent = this.dDay <= 3;
             this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
             this.isCompleted = project.getProjectStatus() == ProjectStatus.COMPLETED;
+            this.isProjectClosed = "CLOSED".equals(this.projectStatus);
+            this.isCancelled = "CANCELLED".equals(this.projectStatus);
+            this.isDraft = "DRAFT".equals(this.projectStatus);
         }
 
     }
