@@ -40,6 +40,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 로그인 체크
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/members/**",
+                        "/my-pages",
                         "/my-pages/**",
                         "/projects/save-form",
                         "/messages",
@@ -68,6 +69,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/",
                         "/login",
                         "/join",
+                        "/join-start",
+                        "/join-role",
                         "/logout",
                         "/boards",
                         "/boards/{id}",
@@ -80,6 +83,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/google-redirect",    // 구글 로그인 통과
                         "/kakao-redirect",     // 카카오 로그인 통과
                         "/social-role",        // 소셜 가입 페이지 통과
+                        "/social-join",
+                        "/social-pending",
+                        "/social-expert-form",
+                        "/social-expert-join",
+                        "/expert-rejected",
+                        "/expert-reapply-form",
+                        "/expert-reapply",
                         "/banned-info",
                         "/social-role",// 소셜 가입 페이지 통과
                         "/html/**",
@@ -87,7 +97,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/js/**",
                         "/images/**",
                         "/favicon.ico",
-                        "/notifications/subscribe"
+                        "/notifications/subscribe",
+                        "/find-account",
+                        "/api/member/find-email",
+                        "/api/member/find-by-phone",
+                        "/api/member/reset-password",
+                        "/api/member/check-email"
                 );
 
         // 관리자 체크

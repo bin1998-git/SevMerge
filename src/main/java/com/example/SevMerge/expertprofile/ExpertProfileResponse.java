@@ -1,5 +1,6 @@
 package com.example.SevMerge.expertprofile;
 
+import com.example.SevMerge.member.Status;
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,12 +27,20 @@ public class ExpertProfileResponse {
     private int totalReviews;
     private String grade;
     private boolean isCertified;
+    private Status memberStatus;
     private boolean bookmarked;
 
     // Mustache용 포맷 필드 — {{ratingDisplay}} 로 접근
     public String getRatingDisplay() {
         if (avgRating == null) return "0.0";
         return String.format("%.1f", avgRating);
+    }
+    public boolean isPending() {
+        return this.memberStatus == Status.PENDING;
+    }
+
+    public boolean isRejected() {
+        return this.memberStatus == Status.REJECTED;
     }
 
     public boolean isNormal()  { return "NORMAL".equals(grade); }
@@ -59,6 +68,7 @@ public class ExpertProfileResponse {
                 .githubUrl(sanitizeUrl(profile.getGithubUrl()))
                 .contactEmail(profile.getContactEmail())
                 .isCertified(profile.isCertified())
+                .memberStatus(profile.getMember().getStatus())
                 .bookmarked(profile.isBookmarked())
                 .grade(profile.getExpertGrade() != null ? profile.getExpertGrade().toString() : Grade.NORMAL.toString())
                 .build();
