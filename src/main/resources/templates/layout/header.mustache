@@ -282,10 +282,12 @@
         }
         @media (max-width: 960px) {
             .nav-links { display: none; }
+            #hamburgerGuest { display: flex; }
         }
         @media (max-width: 480px) {
             .nav-inner { padding: 0 12px; }
-            .btn-dashboard { display: none; }
+            .btn-dashboard { padding: 6px 12px; font-size: 12px; gap: 4px; }
+            .btn-dashboard svg { display: none; }
         }
     </style>
 </head>
@@ -462,6 +464,18 @@
                     <a href="/experts"    class="nav-link-other" style="display:none;">전문가</a>
                     <a href="/boards"     class="nav-link-other" style="display:none;">게시판</a>
                 </nav>
+                <div class="nav-drawer" id="drawerGuest">
+                    <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerGuest','hamburgerGuest')"></div>
+                    <div class="nav-drawer-panel">
+                        <a href="#features"   class="nav-drawer-item nav-drawer-intro">서비스 소개</a>
+                        <a href="#how"        class="nav-drawer-item nav-drawer-intro">이용 방법</a>
+                        <a href="#categories" class="nav-drawer-item nav-drawer-intro">분야</a>
+                        <a href="#trust"      class="nav-drawer-item nav-drawer-intro">안전 결제</a>
+                        <a href="/projects"   class="nav-drawer-item nav-drawer-other" style="display:none;">프로젝트</a>
+                        <a href="/experts"    class="nav-drawer-item nav-drawer-other" style="display:none;">전문가</a>
+                        <a href="/boards"     class="nav-drawer-item nav-drawer-other" style="display:none;">게시판</a>
+                    </div>
+                </div>
             {{/isLoggedIn}}
 
             <div class="nav-actions">
@@ -522,6 +536,13 @@
                     </div>
                 {{/isLoggedIn}}
                 {{^isLoggedIn}}
+                    <button class="nav-hamburger" id="hamburgerGuest" aria-label="메뉴 열기">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
                     <a href="/login" class="btn btn-outline">로그인</a>
                     <a href="/join-start" class="btn btn-primary">회원가입</a>
                 {{/isLoggedIn}}
@@ -574,18 +595,22 @@
         });
 
         /* 햄버거 버튼 클릭 */
-        ['hamburgerExpert','hamburgerUser'].forEach(function(id) {
-            const btn = document.getElementById(id);
+        [['hamburgerExpert','drawerExpert'],['hamburgerUser','drawerUser'],['hamburgerGuest','drawerGuest']].forEach(function(pair) {
+            const btn = document.getElementById(pair[0]);
             if (!btn) return;
-            const drawerId = id === 'hamburgerExpert' ? 'drawerExpert' : 'drawerUser';
             btn.addEventListener('click', function() {
-                const drawer = document.getElementById(drawerId);
+                const drawer = document.getElementById(pair[1]);
                 if (drawer) {
                     drawer.classList.toggle('open');
                     btn.setAttribute('aria-expanded', drawer.classList.contains('open'));
                 }
             });
         });
+
+        /* 비로그인 드로어 링크 전환 */
+        const isIntroPageForDrawer = window.location.pathname === '/' || window.location.pathname === '';
+        document.querySelectorAll('.nav-drawer-intro').forEach(el => el.style.display = isIntroPageForDrawer ? '' : 'none');
+        document.querySelectorAll('.nav-drawer-other').forEach(el => el.style.display = isIntroPageForDrawer ? 'none' : '');
 
         /* 프로필 이니셜 */
         document.querySelectorAll('.profile-thumb-default').forEach(el => {
@@ -665,4 +690,5 @@
         });
     </script>
 {{/isAdmin}}
-
+</body>
+</html>
