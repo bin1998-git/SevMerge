@@ -54,35 +54,41 @@ public class AdminController {
                                 @RequestParam(value = "endDate", required = false) String endDate,
                                 @RequestParam(value = "roleFilter", defaultValue = "ALL") String roleFilter,
                                 @RequestParam(value = "projectType", required = false) String projectType,
-                                @RequestParam(value = "statusFilter", defaultValue = "ALL") String statusFilter) {
+                                @RequestParam(value = "statusFilter", defaultValue = "ALL") String statusFilter,
+                                @RequestParam(value = "adRevenue", required = false) String adRevenue) {
 
         long newMemberCount = memberService.getNewMemberCountThisMonth();
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser);
 
-        // 전체회원 몇명이고 이번달 몇명 회원가입했는지 보여주는 코드
         model.addAttribute("stats", memberService.getAllMembers());
         model.addAttribute("newMemberCount", newMemberCount);
-
-        // 전체 프로젝트 보여주고 진행중 몇건인지 보여주는 코드
         model.addAttribute("projectCount", projectService.getTotalProjectCount());
         model.addAttribute("activeProjectCount", projectService.getActiveProjectsCount());
-
-        // 완료한 프로젝트 보여주고 이번달 몇번 완료했는지 보여주는 코드
         model.addAttribute("completedCount", projectService.getDoneProjectsCount());
         model.addAttribute("newCompletedCount", projectService.getMonthDoneProjectsCount());
-
-        // 승인 대기 조회하는 코드
         model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
+
+        // 광고 수익 통계
+        model.addAttribute("totalAdRevenue",
+                String.format("%,d", advertisementService.getTotalRevenue()));
+        model.addAttribute("thisMonthAdRevenue",
+                String.format("%,d", advertisementService.getThisMonthRevenue()));
 
         String defaultStartDate = (startDate != null && !startDate.isEmpty()) ?
                 startDate : LocalDate.now().minusDays(6).toString();
         String defaultEndDate = (endDate != null && !endDate.isEmpty()) ?
                 endDate : LocalDate.now().toString();
 
-        String memberChartName = "ALL".equalsIgnoreCase(roleFilter) ? "총 회원수" : ("CLIENT".equalsIgnoreCase(roleFilter) ? "일반 회원수" : "전문가 회원수");
+        LocalDate parsedStartDate = LocalDate.parse(defaultStartDate);
+        LocalDate parsedEndDate = LocalDate.parse(defaultEndDate);
 
+        List<Integer> adRevenueData = advertisementService.getRevenueTrendByPeriod(parsedStartDate, parsedEndDate);
+        model.addAttribute("adRevenueData", adRevenueData);
+
+        String memberChartName = "ALL".equalsIgnoreCase(roleFilter) ? "총 회원수" :
+                ("CLIENT".equalsIgnoreCase(roleFilter) ? "일반 회원수" : "전문가 회원수");
         String statusChartName = "IN_PROGRESS".equalsIgnoreCase(statusFilter) ? "진행중 프로젝트 수" :
                 ("COMPLETED".equalsIgnoreCase(statusFilter) ? "완료 프로젝트수" : "취소 프로젝트수");
 
@@ -93,9 +99,6 @@ public class AdminController {
         model.addAttribute("projectType", projectType);
         model.addAttribute("statusFilter", statusFilter);
         model.addAttribute("statusChartName", statusChartName);
-
-        LocalDate parsedStartDate = LocalDate.parse(defaultStartDate);
-        LocalDate parsedEndDate = LocalDate.parse(defaultEndDate);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
         long daysBetween = ChronoUnit.DAYS.between(parsedStartDate, parsedEndDate);
@@ -109,10 +112,20 @@ public class AdminController {
         List<Integer> completeData = new ArrayList<>();
         List<Integer> emptyZeroList = chartLabels.stream().map(i -> 0).toList();
 
-        if (projectType != null && !projectType.isEmpty()) {
+        // adRevenue 체크를 맨 앞으로
+        if ("true".equals(adRevenue)) {
+            model.addAttribute("isStatusAll", false);
+            model.addAttribute("selectedProjectType", null);
+            model.addAttribute("isStatusFilterActive", false);
+            model.addAttribute("isAdRevenue", true);
+            memberData = emptyZeroList;
+            projectData = emptyZeroList;
+            completeData = emptyZeroList;
+        } else if (projectType != null && !projectType.isEmpty()) {
             model.addAttribute("isStatusAll", false);
             model.addAttribute("selectedProjectType", projectType);
             model.addAttribute("isStatusFilterActive", false);
+            model.addAttribute("isAdRevenue", false);
             projectData = projectService.getProjectCountByPeriodAndType(parsedStartDate, parsedEndDate, projectType);
             memberData = emptyZeroList;
             completeData = emptyZeroList;
@@ -120,13 +133,15 @@ public class AdminController {
             model.addAttribute("isStatusAll", false);
             model.addAttribute("selectedProjectType", null);
             model.addAttribute("isStatusFilterActive", false);
+            model.addAttribute("isAdRevenue", false);
             memberData = memberService.getMemberTrendByRoleAndPeriod(roleFilter, parsedStartDate, parsedEndDate);
             projectData = emptyZeroList;
             completeData = emptyZeroList;
         } else if (!"ALL".equalsIgnoreCase(statusFilter)) {
             model.addAttribute("isStatusAll", false);
             model.addAttribute("selectedProjectType", null);
-            model.addAttribute("isStatusFilterActive", true); // 완료 프로젝트 단독 활성화 플래그 온
+            model.addAttribute("isStatusFilterActive", true);
+            model.addAttribute("isAdRevenue", false);
             completeData = projectService.getProjectTrendByStatusAndPeriod(statusFilter, parsedStartDate, parsedEndDate);
             memberData = emptyZeroList;
             projectData = emptyZeroList;
@@ -134,6 +149,7 @@ public class AdminController {
             model.addAttribute("isStatusAll", true);
             model.addAttribute("selectedProjectType", null);
             model.addAttribute("isStatusFilterActive", false);
+            model.addAttribute("isAdRevenue", false);
             memberData = memberService.getMemberTrendByPeriod(parsedStartDate, parsedEndDate);
             projectData = projectService.getProjectTrendByPeriod(parsedStartDate, parsedEndDate);
             completeData = projectService.getCompletedTrendByPeriod(parsedStartDate, parsedEndDate);
@@ -146,7 +162,6 @@ public class AdminController {
         model.addAttribute("recentPartnerships", partnerShipService.list());
         return "admin/admin-main";
     }
-
 
 
     // 관리자 공지사항 관리
@@ -297,10 +312,10 @@ public class AdminController {
         model.addAttribute("withdrawals", withdrawals);
         model.addAttribute("totalCount", withdrawals.size());
         model.addAttribute("pendingCount", pendingCount);
-        model.addAttribute("isWithdrawAll",       status == null);
-        model.addAttribute("isWithdrawPending",   "PENDING".equals(status));
+        model.addAttribute("isWithdrawAll", status == null);
+        model.addAttribute("isWithdrawPending", "PENDING".equals(status));
         model.addAttribute("isWithdrawCompleted", "COMPLETED".equals(status));
-        model.addAttribute("isWithdrawRejected",  "REJECTED".equals(status));
+        model.addAttribute("isWithdrawRejected", "REJECTED".equals(status));
         return "admin/admin-withdraw";
     }
 

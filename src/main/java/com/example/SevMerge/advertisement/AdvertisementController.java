@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,7 +78,9 @@ public class AdvertisementController {
 
     // 전문가 본인 광고 내역
     @GetMapping("/advertisements/my")
-    public String myAds(HttpSession session, Model model) {
+    public String myAds(HttpSession session, Model model,
+                        @ModelAttribute("successMsg") String successMsg,
+                        @ModelAttribute("errorMsg") String errorMsg) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
 
