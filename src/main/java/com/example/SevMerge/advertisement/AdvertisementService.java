@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 /**
  * 전문가 광고 슬롯 구매/노출
@@ -148,6 +150,31 @@ public class AdvertisementService {
                 .stream().map(this::toResponse).toList();
     }
 
+    public Long getTotalRevenue() {
+        return advertisementRepository.findTotalRevenue();
+    }
+
+    public Long getThisMonthRevenue() {
+        return advertisementRepository.findThisMonthRevenue();
+    }
+
+    public List<Integer> getRevenueTrendByPeriod(LocalDate startDate, LocalDate endDate) {
+        Timestamp start = Timestamp.valueOf(startDate.atStartOfDay());
+        Timestamp end = Timestamp.valueOf(endDate.plusDays(1).atStartOfDay());
+
+        List<Object[]> rawData = advertisementRepository.findRevenueByPeriod(start, end);
+        Map<String, Integer> dateMap = new HashMap<>();
+        for (Object[] row : rawData) {
+            dateMap.put((String) row[0], ((Number) row[1]).intValue());
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        List<Integer> result = new ArrayList<>();
+        for (long i = 0; i <= ChronoUnit.DAYS.between(startDate, endDate); i++) {
+            result.add(dateMap.getOrDefault(startDate.plusDays(i).format(formatter), 0));
+        }
+        return result;
+    }
     // private
     private AdvertisementResponse toResponse(Advertisement ad) {
         Member expert = memberRepository.findById(ad.getExpertId()).orElse(null);
