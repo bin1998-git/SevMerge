@@ -1,122 +1,142 @@
-{{> layout/header}}
+    {{> layout/header}}
 
-<style>
-    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    <style>
+        body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .page-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
-    .page-inner   { max-width: 1200px; margin: 0 auto; }
-    .page-head    { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .page-title   { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; }
-    .page-count   { font-size: 13px; color: #4a6fa5; font-weight: 500; }
-    .page-count strong { color: #1e3a6e; }
+        .page-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
+        .page-inner   { max-width: 1200px; margin: 0 auto; }
+        .page-head    { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .page-title   { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; }
+        .page-count   { font-size: 13px; color: #4a6fa5; font-weight: 500; }
+        .page-count strong { color: #1e3a6e; }
 
-    .order-table {
-        width: 100%;
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        background: rgba(255,255,255,.55);
-        border: 1.5px solid rgba(255,255,255,.8); border-radius: 18px; overflow: hidden;
-        box-shadow: 0 4px 20px rgba(37,99,235,.07);
-    }
-    .order-table-head { display: grid; grid-template-columns: 1fr 120px 120px 90px 110px 140px; gap: 12px; padding: 13px 24px; background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(37,99,235,.08); font-size: 12px; font-weight: 700; color: #4a6fa5; letter-spacing: .3px; }
-    .order-row { display: grid; grid-template-columns: 1fr 120px 120px 90px 110px 140px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid rgba(37,99,235,.06); align-items: center; transition: background .12s; }
-    .order-row:last-child { border-bottom: none; }
-    .order-row:hover { background: rgba(255,255,255,.5); }
-    .cell        { font-size: 13px; color: #4a6fa5; }
-    .cell-title  { font-weight: 700; color: #1e3a6e; font-size: 14px; }
-    .cell-price  { font-weight: 700; color: #1e3a6e; }
-    .cell-settle { font-weight: 700; color: #2563eb; }
+        .order-table {
+            width: 100%;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            background: rgba(255,255,255,.55);
+            border: 1.5px solid rgba(255,255,255,.8); border-radius: 18px; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(37,99,235,.07);
+        }
+        .order-table-head { display: grid; grid-template-columns: 1fr 120px 120px 90px 110px 140px; gap: 12px; padding: 13px 24px; background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(37,99,235,.08); font-size: 12px; font-weight: 700; color: #4a6fa5; letter-spacing: .3px; }
+        .order-row { display: grid; grid-template-columns: 1fr 120px 120px 90px 110px 140px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid rgba(37,99,235,.06); align-items: center; transition: background .12s; }
+        .order-row:last-child { border-bottom: none; }
+        .order-row:hover { background: rgba(255,255,255,.5); }
+        .cell        { font-size: 13px; color: #4a6fa5; }
+        .cell-title  { font-weight: 700; color: #1e3a6e; font-size: 14px; }
+        .cell-price  { font-weight: 700; color: #1e3a6e; }
+        .cell-settle { font-weight: 700; color: #2563eb; }
 
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-    .badge-progress { background: rgba(37,99,235,.1);  color: #1d4ed8; border: 1px solid rgba(37,99,235,.2); }
-    .badge-waiting  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-    .badge-settled  { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-progress { background: rgba(37,99,235,.1);  color: #1d4ed8; border: 1px solid rgba(37,99,235,.2); }
+        .badge-waiting  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-settled  { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
 
-    .btn-done {
-        padding: 6px 14px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #fff; border: none; border-radius: 20px;
-        font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
-        box-shadow: 0 4px 10px rgba(37,99,235,.2); transition: all .15s;
-    }
-    .btn-done:hover { transform: translateY(-1px); }
-    .btn-view {
-        padding: 6px 14px;
-        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
-        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
-        border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; display: inline-block; transition: all .15s;
-    }
-    .btn-view:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
-    .cell-actions { display: flex; gap: 6px; align-items: center; }
+        .btn-done {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff; border: none; border-radius: 20px;
+            font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+            box-shadow: 0 4px 10px rgba(37,99,235,.2); transition: all .15s;
+        }
+        .btn-done:hover { transform: translateY(-1px); }
+        .btn-view {
+            padding: 6px 14px;
+            backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+            border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+            border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; display: inline-block; transition: all .15s;
+        }
+        .btn-view:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+        .cell-actions { display: flex; gap: 6px; align-items: center; }
 
-    .empty-state { text-align: center; padding: 80px 0; }
-    .empty-icon  { font-size: 36px; margin-bottom: 14px; }
-    .empty-msg   { font-size: 14px; color: #93aecf; margin-bottom: 18px; }
-</style>
+        .empty-state { text-align: center; padding: 80px 0; }
+        .empty-icon  { font-size: 36px; margin-bottom: 14px; }
+        .empty-msg   { font-size: 14px; color: #93aecf; margin-bottom: 18px; }
+    </style>
 
-<section class="page-section">
-    <div class="page-inner">
+    <section class="page-section">
+        <div class="page-inner">
 
-        <div class="page-head">
-            <h1 class="page-title">📦 주문 관리</h1>
-            <span class="page-count">총 <strong>{{orderCount}}</strong>건</span>
+            <div class="page-head">
+                <h1 class="page-title">📦 주문 관리</h1>
+                <span class="page-count">총 <strong>{{orderCount}}</strong>건</span>
+            </div>
+
+            <div class="order-table">
+                <div class="order-table-head">
+                    <span>프로젝트</span>
+                    <span>제안 금액</span>
+                    <span>정산 예정액</span>
+                    <span>예상 기간</span>
+                    <span>상태</span>
+                    <span>액션</span>
+                </div>
+
+                {{#orders}}
+                <div class="order-row">
+                    <span class="cell cell-title">{{projectTitle}}</span>
+                    <span class="cell cell-price">{{proposedPrice}}원</span>
+                    <span class="cell cell-settle">{{payment.netAmount}}원</span>
+                    <span class="cell">{{estimatedDays}}일</span>
+                    <span class="cell">
+                        {{#isInProgress}}<span class="badge badge-progress">진행중</span>{{/isInProgress}}
+                        {{#isDone}}
+                            {{^payment.isSettled}}<span class="badge badge-waiting">승인 대기</span>{{/payment.isSettled}}
+                            {{#payment.isSettled}}<span class="badge badge-settled">정산완료</span>{{/payment.isSettled}}
+                        {{/isDone}}
+                    </span>
+                    <span class="cell cell-actions">
+                        <a href="/projects/{{projectId}}" class="btn-view">보기</a>
+                        {{#isInProgress}}
+                            <button class="btn-done" data-bid-id="{{id}}">✓ 완료</button>
+                        {{/isInProgress}}
+                    </span>
+                </div>
+                {{/orders}}
+
+                {{^orders}}
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <p class="empty-msg">아직 진행중인 주문이 없습니다.</p>
+                </div>
+                {{/orders}}
+            </div>
+            <!-- 페이징 UI -->
+                    <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:32px;">
+                        {{#hasPrev}}
+                        <a href="/bids/my-orders?page={{prevPage}}"
+                           style="padding:8px 18px; background:rgba(255,255,255,.6); border:1.5px solid rgba(255,255,255,.8); border-radius:8px; font-size:13px; font-weight:700; color:#4b5563; text-decoration:none;">
+                            ← 이전
+                        </a>
+                        {{/hasPrev}}
+
+                        <span style="font-size:13px; color:#4a6fa5; font-weight:500;">
+                            {{currentPage}} / {{totalPages}}
+                        </span>
+
+                        {{#hasNext}}
+                        <a href="/bids/my-orders?page={{nextPage}}"
+                           style="padding:8px 18px; background:#2563eb; border-radius:8px; font-size:13px; font-weight:700; color:#fff; text-decoration:none;">
+                            다음 →
+                        </a>
+                        {{/hasNext}}
+                    </div>
+
         </div>
+    </section>
 
-        <div class="order-table">
-            <div class="order-table-head">
-                <span>프로젝트</span>
-                <span>제안 금액</span>
-                <span>정산 예정액</span>
-                <span>예상 기간</span>
-                <span>상태</span>
-                <span>액션</span>
-            </div>
-
-            {{#orders}}
-            <div class="order-row">
-                <span class="cell cell-title">{{projectTitle}}</span>
-                <span class="cell cell-price">{{proposedPrice}}원</span>
-                <span class="cell cell-settle">{{payment.netAmount}}원</span>
-                <span class="cell">{{estimatedDays}}일</span>
-                <span class="cell">
-                    {{#isInProgress}}<span class="badge badge-progress">진행중</span>{{/isInProgress}}
-                    {{#isDone}}
-                        {{^payment.isSettled}}<span class="badge badge-waiting">승인 대기</span>{{/payment.isSettled}}
-                        {{#payment.isSettled}}<span class="badge badge-settled">정산완료</span>{{/payment.isSettled}}
-                    {{/isDone}}
-                </span>
-                <span class="cell cell-actions">
-                    <a href="/projects/{{projectId}}" class="btn-view">보기</a>
-                    {{#isInProgress}}
-                        <button class="btn-done" data-bid-id="{{id}}">✓ 완료</button>
-                    {{/isInProgress}}
-                </span>
-            </div>
-            {{/orders}}
-
-            {{^orders}}
-            <div class="empty-state">
-                <div class="empty-icon">📦</div>
-                <p class="empty-msg">아직 진행중인 주문이 없습니다.</p>
-            </div>
-            {{/orders}}
-        </div>
-
-    </div>
-</section>
-
-<script>
-    document.querySelectorAll('.btn-done').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const bidId = this.dataset.bidId;
-            if (!confirm('작업 완료 처리하시겠습니까?\n의뢰인에게 승인 요청이 전송됩니다.')) return;
-            fetch(`/bids/${bidId}/complete`, { method: 'POST' })
-                .then(res => {
-                    if (res.ok) { alert('작업 완료 신고가 전송되었습니다. 의뢰인의 승인을 기다려주세요.'); location.reload(); }
-                    else { res.json().then(d => alert(d.message || '처리 중 오류가 발생했습니다.')); }
-                })
-                .catch(() => alert('서버와 통신 중 오류가 발생했습니다.'));
+    <script>
+        document.querySelectorAll('.btn-done').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const bidId = this.dataset.bidId;
+                if (!confirm('작업 완료 처리하시겠습니까?\n의뢰인에게 승인 요청이 전송됩니다.')) return;
+                fetch(`/bids/${bidId}/complete`, { method: 'POST' })
+                    .then(res => {
+                        if (res.ok) { alert('작업 완료 신고가 전송되었습니다. 의뢰인의 승인을 기다려주세요.'); location.reload(); }
+                        else { res.json().then(d => alert(d.message || '처리 중 오류가 발생했습니다.')); }
+                    })
+                    .catch(() => alert('서버와 통신 중 오류가 발생했습니다.'));
+            });
         });
-    });
-</script>
+    </script>
 
-{{> layout/footer}}
+    {{> layout/footer}}

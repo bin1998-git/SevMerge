@@ -1,5 +1,7 @@
 package com.example.SevMerge.bid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,13 +11,29 @@ import java.util.Optional;
 
 public interface BidRepository extends JpaRepository<Bid, Long> {
 
-    // 프로젝트에 들어온 제안서 조회
+    // 프로젝트에 들어온 제안서 조회 (페이징용)
     @Query("""
-            SELECT b FROM Bid b JOIN FETCH b.expert
-             WHERE b.project.id = :projectId AND b.isDeleted = false
-             ORDER BY b.createdAt DESC
-            """)
-    List<Bid> findByProjectId(@Param("projectId") Long projectId);
+        SELECT b FROM Bid b JOIN FETCH b.expert
+         WHERE b.project.id = :projectId AND b.isDeleted = false
+         ORDER BY b.createdAt DESC
+        """)
+    Page<Bid> findByProjectId(@Param("projectId") Long projectId, Pageable pageable);
+
+    // 프로젝트에 들어온 제안서 전체 조회 (낙찰 처리 시 사용)
+    @Query("""
+        SELECT b FROM Bid b JOIN FETCH b.expert
+         WHERE b.project.id = :projectId AND b.isDeleted = false
+         ORDER BY b.createdAt DESC
+        """)
+    List<Bid> findAllByProjectId(@Param("projectId") Long projectId);
+
+    // 전체 조회용 (List) - findMyOrders에서 사용
+    @Query("""
+        SELECT b FROM Bid b JOIN FETCH b.project p JOIN FETCH p.member
+        WHERE b.expert.id = :expertId AND b.isDeleted = false
+        ORDER BY b.createdAt DESC
+        """)
+    List<Bid> findAllByExpertId(@Param("expertId") Long expertId);
 
     // 전문가가 제출 제안서 조회
     @Query("""
@@ -23,7 +41,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
             WHERE b.expert.id = :expertId AND b.isDeleted = false
             ORDER BY b.createdAt DESC
             """)
-    List<Bid> findByExpertId(@Param("expertId") Long expertId);
+    Page<Bid> findByExpertId(@Param("expertId") Long expertId, Pageable pageable);
 
     // 중복된 입찰 체크
     @Query("""
@@ -42,7 +60,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
                                              @Param("status") BidStatus status);
 
     // 클라이언트 입장에서 입찰한 전문가 조회 - 현재 쪽지 보낼사람 용도로 사용
-    @Query("""                                                                                                                                                                                                   
+    @Query("""
            SELECT b FROM Bid b JOIN FETCH b.expert JOIN FETCH b.project
            WHERE b.project.member.id = :memberId AND b.isDeleted = false
            ORDER BY b.createdAt DESC
@@ -58,7 +76,6 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
            OR (b.project.member.id = :memberId2 AND b.expert.id = :memberId1)
            """)
     boolean existsBidRelation(@Param("memberId1") Long memberId1, @Param("memberId2") Long memberId2);
-
 
     // 프로젝트별 입찰(제안서) 개수
     @Query("""
@@ -78,10 +95,18 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
     // 제안 받은 프로젝트중 완료된 프로젝트 계산
     @Query("""
-    SELECT COUNT(b) FROM Bid b
-    WHERE b.expert.id = :expertId
-    AND b.status = 'SELECTED'
-    AND b.project.projectStatus = 'DONE'
-""")
+        SELECT COUNT(b) FROM Bid b
+        WHERE b.expert.id = :expertId
+        AND b.status = 'SELECTED'
+        AND b.project.projectStatus = 'DONE'
+        """)
     Integer doneProjectsByExpert(@Param("expertId") Long expertId);
+    @Query("""
+        SELECT b FROM Bid b JOIN FETCH b.project p JOIN FETCH p.member
+        WHERE b.expert.id = :expertId AND b.status = :status AND b.isDeleted = false
+        ORDER BY b.createdAt DESC
+        """)
+    Page<Bid> findByExpertIdAndStatus(@Param("expertId") Long expertId,
+                                      @Param("status") BidStatus status,
+                                      Pageable pageable);
 }

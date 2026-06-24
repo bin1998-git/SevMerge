@@ -153,6 +153,27 @@
     </div>
 </section>
 
+<!-- 페이징 UI -->
+<div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:32px; padding-bottom:40px;">
+    {{#hasPrev}}
+    <a href="/bids?projectId={{projectId}}&page={{prevPage}}"
+       style="padding:8px 18px; background:#fff; border:1.5px solid #e2e5ef; border-radius:8px; font-size:13px; font-weight:700; color:#4b5563; text-decoration:none;">
+        ← 이전
+    </a>
+    {{/hasPrev}}
+
+    <span style="font-size:13px; color:#9ca3af; font-weight:500;">
+        {{currentPage}} / {{totalPages}}
+    </span>
+
+    {{#hasNext}}
+    <a href="/bids?projectId={{projectId}}&page={{nextPage}}"
+       style="padding:8px 18px; background:#2563eb; border-radius:8px; font-size:13px; font-weight:700; color:#fff; text-decoration:none;">
+        다음 →
+    </a>
+    {{/hasNext}}
+</div>
+
 <script>
 function selectBid(bidId) {
     if (!confirm("정말 이 전문가를 낙찰하시겠습니까? 낙찰 완료 후 보유 잔액에서 계약금이 자동 차감됩니다.")) return;

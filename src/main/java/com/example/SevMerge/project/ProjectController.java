@@ -117,7 +117,7 @@ public class ProjectController {
 
 
         // 일반 전문가도 빈 리스트나 전체 리스트를 안전하게 가져옵니다.
-        List<BidResponseDTO.ListDTO> bids = bidService.findByProjectId(id,sessionUser);
+        List<BidResponseDTO.ListDTO> bids = bidService.findAllByProjectId(id,sessionUser);
         model.addAttribute("bids", bids);
 
         // 로그인한 사용자가 프로젝트 작성자인지 확인

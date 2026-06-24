@@ -16,6 +16,10 @@ import com.example.SevMerge.project.ProjectStatus;
 import com.example.SevMerge.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,53 +93,41 @@ public class BidService {
         notificationService.notifyNewBid(project.getMember(), session.getEmail(), project.getTitle(), project.getId());
     }
 
-    // 제안서 조회 (의뢰인)
-    public List<BidResponseDTO.ListDTO> findByProjectId(Long projectId, Member session) {
+    // 제안서 조회 (의뢰인) - 페이징
+    public Page<BidResponseDTO.ListDTO> findByProjectId(Long projectId, Member session, int page) {
         log.info("제안서 조회 서비스 시작");
-        // 의뢰인 여부 체크
-        List<Bid> bidList = bidRepository.findByProjectId(projectId);
-        return bidList.stream()
-                .map(bid -> {
-                    BidResponseDTO.ListDTO dto = new BidResponseDTO.ListDTO(bid);
-                    Double avg = reviewRepository.avgRating(bid.getExpert().getId());
-                    dto.setAvgRating(avg != null ? String.format("%.1f", avg) : "0.0");
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Bid> bidPage = bidRepository.findByProjectId(projectId, pageable);
+        return bidPage.map(bid -> {
+            BidResponseDTO.ListDTO dto = new BidResponseDTO.ListDTO(bid);
+            Double avg = reviewRepository.avgRating(bid.getExpert().getId());
+            dto.setAvgRating(avg != null ? String.format("%.1f", avg) : "0.0");
+            return dto;
+        });
     }
 
-    // 제안서 조회(전문가)
-    public List<BidResponseDTO.ListDTO> findMyBids(Member session) {
+    public Page<BidResponseDTO.ListDTO> findMyBids(Member session, int page) {
         log.info("내 제안서 조회 서비스 시작");
-        // 전문가 여부 체크
         if (!session.isExpert()) {
             throw new ForbiddenException("전문가만 제안서를 조회할 수 있습니다.");
         }
-        List<Bid> bidList = bidRepository.findByExpertId(session.getId());
-        return bidList.stream()
-                .map(BidResponseDTO.ListDTO::new)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Bid> bidPage = bidRepository.findByExpertId(session.getId(), pageable);
+        return bidPage.map(BidResponseDTO.ListDTO::new);
     }
 
     // 주문 목록 조회(전문가) — SELECTED 낙찰 건만 반환
-    public List<BidResponseDTO.OrderDTO> findMyOrders(Member session) {
+    public Page<BidResponseDTO.OrderDTO> findMyOrders(Member session, int page) {
         log.info("내 주문 목록 조회 서비스 시작");
         if (!session.isExpert()) {
             throw new ForbiddenException("전문가만 주문 내역을 조회할 수 있습니다.");
         }
-        List<Bid> selectedBids = bidRepository.findByExpertId(session.getId())
-                .stream()
-                .filter(b -> b.getStatus() == BidStatus.SELECTED)
-                .collect(Collectors.toList());
-
-        return selectedBids.stream()
-                .map(bid -> {
-                    Payment payment = paymentRepository
-                            .findByProjectId(bid.getProject().getId())
-                            .orElse(null);
-                    return new BidResponseDTO.OrderDTO(bid, payment);
-                })
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Bid> bidPage = bidRepository.findByExpertIdAndStatus(session.getId(), BidStatus.SELECTED, pageable);
+        return bidPage.map(bid -> {
+            Payment payment = paymentRepository.findByProjectId(bid.getProject().getId()).orElse(null);
+            return new BidResponseDTO.OrderDTO(bid, payment);
+        });
     }
 
     // 제안서 수정
@@ -215,7 +207,7 @@ public class BidService {
         notificationService.notifyBidSelected(bid.getExpert(), bid.getProject().getTitle());
 
         // 나머지 대기중인 제안서 전부 탈락 처리
-        List<Bid> otherBids = bidRepository.findByProjectId(bid.getProject().getId());
+        List<Bid> otherBids = bidRepository.findAllByProjectId(bid.getProject().getId());
         for (Bid other : otherBids) {
             if (!other.getId().equals(bid.getId()) &&
                     (other.getStatus() == BidStatus.PENDING || other.getStatus() == BidStatus.HOLD)) {
@@ -349,5 +341,19 @@ public class BidService {
         );
 
         log.info("작업 완료 신고 완료 - bidId: {}, projectId: {}", bidId, project.getId());
+    }
+
+    // 제안서 조회
+    public List<BidResponseDTO.ListDTO> findAllByProjectId(Long projectId, Member session) {
+        log.info("제안서 전체 조회 서비스 시작");
+        List<Bid> bidList = bidRepository.findAllByProjectId(projectId);
+        return bidList.stream()
+                .map(bid -> {
+                    BidResponseDTO.ListDTO dto = new BidResponseDTO.ListDTO(bid);
+                    Double avg = reviewRepository.avgRating(bid.getExpert().getId());
+                    dto.setAvgRating(avg != null ? String.format("%.1f", avg) : "0.0");
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }

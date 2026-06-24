@@ -106,6 +106,27 @@
             {{/bids}}
         </div>
 
+        <!-- 페이징 UI -->
+        <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:32px;">
+            {{#hasPrev}}
+            <a href="/bids/my-list?page={{prevPage}}"
+               style="padding:8px 18px; background:rgba(255,255,255,.6); border:1.5px solid rgba(255,255,255,.8); border-radius:8px; font-size:13px; font-weight:700; color:#4b5563; text-decoration:none;">
+                ← 이전
+            </a>
+            {{/hasPrev}}
+
+            <span style="font-size:13px; color:#4a6fa5; font-weight:500;">
+                {{currentPage}} / {{totalPages}}
+            </span>
+
+            {{#hasNext}}
+            <a href="/bids/my-list?page={{nextPage}}"
+               style="padding:8px 18px; background:#2563eb; border-radius:8px; font-size:13px; font-weight:700; color:#fff; text-decoration:none;">
+                다음 →
+            </a>
+            {{/hasNext}}
+        </div>
+
     </div>
 </section>
 

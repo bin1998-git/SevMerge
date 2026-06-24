@@ -7,6 +7,7 @@ import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,39 +57,68 @@ public class BidController {
 
     // 3. 제안서 목록 조회 (의뢰인 시점)
     @GetMapping("/bids")
-    public String list(Model model, @RequestParam Long projectId, HttpSession session) {
+    public String list(Model model,
+                       @RequestParam Long projectId,
+                       @RequestParam(defaultValue = "0") int page,
+                       HttpSession session) {
         log.info("의뢰인의 제안서 목록 조회 요청 - projectId: {}", projectId);
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser != null) {
             model.addAttribute("sessionUser", sessionUser);
         }
-        model.addAttribute("bids", bidService.findByProjectId(projectId, sessionUser));
+
+        Page<BidResponseDTO.ListDTO> bidPage = bidService.findByProjectId(projectId, sessionUser, page);
+
+        model.addAttribute("bids", bidPage.getContent());
         model.addAttribute("projectId", projectId);
         model.addAttribute("projects", projectService.findProjectById(projectId));
-
+        model.addAttribute("currentPage", page + 1);
+        model.addAttribute("totalPages", bidPage.getTotalPages());
+        model.addAttribute("hasPrev", page > 0);
+        model.addAttribute("hasNext", page < bidPage.getTotalPages() - 1);
+        model.addAttribute("prevPage", page - 1);
+        model.addAttribute("nextPage", page + 1);
 
         return "bid/bid-list";
     }
 
     // 4. 내 제안서 목록 조회 (전문가)
     @GetMapping("/bids/my-list")
-    public String myList(Model model, HttpSession session) {
+    public String myList(Model model,
+                         @RequestParam(defaultValue = "0") int page,
+                         HttpSession session) {
         log.info("전문가 본인의 제안서 목록 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        List<BidResponseDTO.ListDTO> bids = bidService.findMyBids(sessionUser);
-        model.addAttribute("bids", bids);
-        model.addAttribute("bidCount", bids.size());
+
+        Page<BidResponseDTO.ListDTO> bidPage = bidService.findMyBids(sessionUser, page);
+
+        model.addAttribute("bids", bidPage.getContent());
+        model.addAttribute("bidCount", bidPage.getTotalElements());
+        model.addAttribute("currentPage", page + 1);
+        model.addAttribute("totalPages", bidPage.getTotalPages());
+        model.addAttribute("hasPrev", page > 0);
+        model.addAttribute("hasNext", page < bidPage.getTotalPages() - 1);
+        model.addAttribute("prevPage", page - 1);
+        model.addAttribute("nextPage", page + 1);
         return "bid/my-bids";
     }
-
-    // 4-1. 주문 관리 (전문가 — 낙찰된 건만)
     @GetMapping("/bids/my-orders")
-    public String myOrders(Model model, HttpSession session) {
+    public String myOrders(Model model,
+                           @RequestParam(defaultValue = "0") int page,
+                           HttpSession session) {
         log.info("전문가 주문 관리 요청");
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        List<BidResponseDTO.OrderDTO> orders = bidService.findMyOrders(sessionUser);
-        model.addAttribute("orders", orders);
-        model.addAttribute("orderCount", orders.size());
+
+        Page<BidResponseDTO.OrderDTO> orderPage = bidService.findMyOrders(sessionUser, page);
+
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("orderCount", orderPage.getTotalElements());
+        model.addAttribute("currentPage", page + 1);
+        model.addAttribute("totalPages", orderPage.getTotalPages());
+        model.addAttribute("hasPrev", page > 0);
+        model.addAttribute("hasNext", page < orderPage.getTotalPages() - 1);
+        model.addAttribute("prevPage", page - 1);
+        model.addAttribute("nextPage", page + 1);
         return "bid/my-orders";
     }
 
