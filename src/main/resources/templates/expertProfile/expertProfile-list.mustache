@@ -1,113 +1,119 @@
 {{> layout/header}}
 
 <style>
-    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
- .page-header-inner { max-width: 1140px; margin: 0 auto; }
- .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
- .page-desc { font-size: 14px; color: #9ca3af; }
- .list-section { padding: 36px 28px 80px; }
- .list-inner { max-width: 1140px; margin: 0 auto; }
- .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
- .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
- .tab:hover { border-color: #2563eb; color: #2563eb; }
- .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
- .search-bar { display: flex; gap: 10px; margin-bottom: 24px; }
- .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
- .search-input:focus { border-color: #2563eb; }
- .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
- .expert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
+    /* 페이지 헤더 - 글래스 */
+    .page-header {
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.65); border-bottom: 1px solid rgba(255,255,255,.7);
+        padding: 36px 28px 24px; position: relative; z-index: 1;
+    }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .page-desc { font-size: 14px; color: #4a6fa5; }
 
- .expert-card {
-    background: #f8f9ff;
-    border: 1.5px solid #bfdbfe;
-    border-radius: 16px;
-    padding: 22px;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: transform .15s, box-shadow .2s;
-    position: relative;
-}
-.expert-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(37,99,235,.08);
-    border-color: #93c5fd;
-}
+    .list-section { padding: 28px 28px 80px; position: relative; z-index: 1; }
+    .list-inner { max-width: 1140px; margin: 0 auto; }
 
- .expert-avatar-wrap { position: relative; flex-shrink: 0; }
- .expert-avatar { width: 48px; height: 48px; border-radius: 50%; background: #eff6ff; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 20px; }
- .expert-badge-icon { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; object-fit: contain; }
+    /* 검색 */
+    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-input {
+        flex: 1; padding: 12px 16px;
+        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .search-input::placeholder { color: #93aecf; }
+    .search-input:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.9); }
+    .search-btn {
+        padding: 12px 24px; background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
+        cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
+    }
+    .search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
 
- .expert-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
- .expert-info { flex: 1; min-width: 0; }
- .expert-name { font-size: 14px; font-weight: 800; color: #1c1e26; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
- .expert-career { font-size: 11px; color: #9ca3af; font-weight: 500; }
+    /* 필터 탭 */
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tab {
+        padding: 7px 18px; border-radius: 20px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600;
+        color: #2d4a7a; text-decoration: none; transition: all .15s;
+    }
+    .tab:hover { border-color: rgba(37,99,235,.3); color: #2563eb; background: rgba(255,255,255,.85); }
+    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
 
- .expert-rating { text-align: right; flex-shrink: 0; }
- .expert-rating-num { font-size: 20px; font-weight: 900; color: #f59e0b; line-height: 1; }
- .expert-rating-sub { font-size: 10px; color: #c4c9d9; margin-top: 2px; }
+    /* 전문가 카드 그리드 */
+    .expert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 36px; }
 
- .expert-introduce { font-size: 12px; color: #6b7280; line-height: 1.7; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .expert-card {
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 20px; padding: 22px;
+        text-decoration: none; color: inherit; display: block;
+        transition: all .2s; position: relative;
+        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    }
+    .expert-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(37,99,235,.12); border-color: rgba(37,99,235,.3); background: rgba(255,255,255,.75); }
 
- .expert-skills { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
- .skill-tag { padding: 3px 9px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 10px; font-weight: 600; color: #1d4ed8; }
+    .expert-avatar-wrap { position: relative; flex-shrink: 0; }
+    .expert-avatar {
+        width: 52px; height: 52px; border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        border: 2px solid rgba(255,255,255,.9);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px; font-weight: 900; color: #fff;
+        box-shadow: 0 4px 12px rgba(37,99,235,.2);
+    }
+    .expert-badge-icon { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; object-fit: contain; }
 
- .expert-bottom { border-top: 1px solid #e0e7ff; padding-top: 10px; font-size: 11px; color: #9ca3af; }
- .expert-stat { font-weight: 600; }
+    .expert-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .expert-info { flex: 1; min-width: 0; }
+    .expert-name { font-size: 14px; font-weight: 800; color: #1e3a6e; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+    .expert-career { font-size: 11px; color: #4a6fa5; font-weight: 500; }
 
- .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #c4c9d9; }
- .paging { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
- .page-btn { padding: 9px 15px; border-radius: 8px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; text-decoration: none; transition: all .15s; }
- .page-btn:hover { border-color: #2563eb; color: #2563eb; }
- .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .expert-rating { text-align: right; flex-shrink: 0; }
+    .expert-rating-num { font-size: 20px; font-weight: 900; color: #f59e0b; line-height: 1; }
+    .expert-rating-sub { font-size: 10px; color: #93aecf; margin-top: 2px; }
 
-    /* 🔖 책갈피 버튼 라운드 디자인 */
+    .expert-introduce { font-size: 12px; color: #4a6fa5; line-height: 1.7; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .expert-skills { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+    .skill-tag { padding: 3px 9px; background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.15); border-radius: 20px; font-size: 10px; font-weight: 600; color: #2563eb; }
+
+    .expert-bottom { border-top: 1px solid rgba(37,99,235,.08); padding-top: 10px; font-size: 11px; color: #4a6fa5; }
+    .expert-stat { font-weight: 600; }
+
+    .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #93aecf; }
+
+    /* 페이지네이션 */
+    .paging { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
+    .page-btn {
+        padding: 9px 15px; border-radius: 10px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600;
+        color: #2d4a7a; text-decoration: none; transition: all .15s;
+    }
+    .page-btn:hover { border-color: rgba(37,99,235,.3); color: #2563eb; background: rgba(255,255,255,.9); }
+    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+
+    /* 북마크 */
     .bookmark-btn {
-        position: absolute;
-        top: 18px;
-        right: 18px;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: #fff;
-        border: 1.5px solid #e2e5ef;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        transition: all 0.2s ease;
+        position: absolute; top: 14px; right: 14px;
+        width: 32px; height: 32px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.7);
+        border: 1.5px solid rgba(255,255,255,.9);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10; transition: all .2s;
     }
+    .bookmark-btn:hover { transform: scale(1.1); border-color: rgba(37,99,235,.3); }
+    .bookmark-btn svg { width: 14px; height: 14px; fill: none; stroke: #93aecf; stroke-width: 2; transition: all .2s; }
+    .bookmark-btn.active { border-color: rgba(37,99,235,.4); background: rgba(37,99,235,.1); }
+    .bookmark-btn.active svg { fill: #2563eb; stroke: #2563eb; }
 
-    /* 마우스 호버 시 효과 */
-    .bookmark-btn:hover {
-        transform: scale(1.1);
-        border-color: #2563eb;
-        background: #f0f4ff;
-    }
-
-    /* 내부 SVG 책갈피 아이콘 기본 (빈 모양) */
-    .bookmark-btn svg {
-        width: 16px;
-        height: 16px;
-        fill: none; /* 속을 비워둠 */
-        stroke: #9ca3af; /* 회색 테두리 */
-        stroke-width: 2;
-        transition: all 0.2s ease;
-    }
-
-    /* 북마크가 활성화(true) 되었을 때 스타일 */
-    .bookmark-btn.active {
-        border-color: #2563eb;
-        background: #eff6ff;
-    }
-
-    /* 활성화 상태일 때 책갈피 속을 파란색으로 꽉 채움 */
-    .bookmark-btn.active svg {
-        fill: #2563eb;
-        stroke: #2563eb;
-    }
+    @media (max-width: 960px) { .expert-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .expert-grid { grid-template-columns: 1fr; } .list-section { padding: 20px 16px 60px; } }
 </style>
 
 <div class="page-header">
@@ -142,7 +148,7 @@
                 <a href="/experts/{{memberId}}" class="expert-card">
                     <div class="expert-top">
                         <div class="expert-avatar-wrap">
-                            <div class="expert-avatar">👨‍💻</div>
+                            <div class="expert-avatar ep-avatar">{{memberName}}</div>
                             {{#normal}}<img src="/normal-badge.png" class="expert-badge-icon" alt="일반"/>{{/normal}}
                             {{#skilled}}<img src="/skilled-badge.png" class="expert-badge-icon" alt="숙련"/>{{/skilled}}
                             {{#master}}<img src="/master-badge.png" class="expert-badge-icon" alt="마스터"/>{{/master}}
@@ -221,4 +227,11 @@
     }
 </script>
 
+
+<script>
+    document.querySelectorAll('.ep-avatar').forEach(el => {
+        const t = el.textContent.trim();
+        el.textContent = t ? t.charAt(0) : '?';
+    });
+</script>
 {{> layout/footer}}

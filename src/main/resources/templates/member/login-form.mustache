@@ -1,95 +1,181 @@
 {{> layout/header}}
 
 <style>
+    :root {
+        --blue: #2563eb; --blue-dark: #1d4ed8;
+        --navy: #172554;
+    }
+
     .auth-section {
         min-height: calc(100vh - 64px);
-        background: #f0f4fa;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
+            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        position: relative; overflow: hidden;
         display: flex; align-items: center; justify-content: center;
-        padding: 48px 28px;
+        padding: 60px 28px;
     }
-    .auth-inner { width: 100%; max-width: 440px; }
+    .auth-section::before {
+        content: ''; position: fixed; inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 40px 40px; opacity: .35; pointer-events: none;
+    }
 
-    .auth-header { text-align: center; margin-bottom: 32px; }
-    .auth-logo {
-        font-size: 24px; font-weight: 900; color: #0f172a;
-        margin-bottom: 12px; letter-spacing: -1px;
+    /* 2컬럼 레이아웃 */
+    .auth-inner {
+        width: 100%; max-width: 1100px;
+        display: grid; grid-template-columns: 1fr 480px;
+        gap: 80px; align-items: center;
+        position: relative; z-index: 2;
     }
+
+    /* 좌측 히어로 */
+    .auth-hero { padding-right: 20px; }
+    .auth-logo { font-size: 30px; font-weight: 900; color: #1e3a8a; margin-bottom: 28px; letter-spacing: -1px; }
     .auth-logo .hl { color: var(--blue); }
-    .auth-title {
-        font-size: 22px; font-weight: 900; color: #0f172a;
-        letter-spacing: -0.5px; margin-bottom: 6px;
+    .auth-hero-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2);
+        border-radius: 999px; padding: 5px 14px;
+        font-size: 12px; font-weight: 700; color: var(--blue);
+        margin-bottom: 20px; letter-spacing: .3px;
     }
-    .auth-desc { font-size: 14px; color: var(--gray-lt); }
+    .auth-hero-title {
+        font-size: clamp(36px, 4vw, 52px); font-weight: 900; line-height: 1.1;
+        letter-spacing: -2px; color: var(--navy); margin-bottom: 18px;
+    }
+    .auth-hero-title .hl { color: var(--blue); }
+    .auth-hero-desc { font-size: 17px; color: #4a6fa5; line-height: 1.8; margin-bottom: 36px; }
 
-    /* 폼 카드 */
+    /* 신뢰 지표 */
+    .trust-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .trust-item {
+        display: flex; align-items: center; gap: 10px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.8);
+        border-radius: 14px; padding: 14px 18px;
+        box-shadow: 0 4px 16px rgba(37,99,235,.07);
+    }
+    .trust-icon { color: var(--blue); display: flex; }
+    .trust-val { font-size: 18px; font-weight: 900; color: var(--navy); letter-spacing: -.5px; }
+    .trust-val em { color: var(--blue); font-style: normal; }
+    .trust-label { font-size: 11px; color: #4a6fa5; font-weight: 500; }
+
+    /* 우측 폼 영역 */
+    .auth-card-wrap {}
+
+    /* 헤더 (카드 밖) */
+    .auth-header { margin-bottom: 20px; }
+    .auth-title { font-size: 22px; font-weight: 900; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 4px; }
+    .auth-desc { font-size: 14px; color: #4a6fa5; }
+
+    /* 반응형 */
+    @media (max-width: 1024px) {
+        .auth-inner { grid-template-columns: 1fr; gap: 40px; max-width: 520px; }
+        .auth-hero { text-align: center; padding-right: 0; }
+        .trust-row { justify-content: center; }
+        .auth-hero-title { font-size: 36px; }
+    }
+    @media (max-width: 640px) {
+        .auth-section { padding: 40px 20px; }
+        .auth-form { padding: 32px 24px; }
+    }
+
+    /* 글래스 카드 */
     .auth-form {
-        background: #fff; border: 1.5px solid var(--border);
-        border-radius: 20px; padding: 36px;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 28px; padding: 42px;
         display: flex; flex-direction: column; gap: 18px;
-        box-shadow: 0 4px 24px rgba(37,99,235,.06);
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative;
     }
+    .auth-form::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    }
+
+    /* 폼 요소 */
     .form-group { display: flex; flex-direction: column; gap: 7px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
     .form-input {
-        padding: 13px 16px; background: #f8faff;
-        border: 1.5px solid var(--border); border-radius: 10px;
-        font-size: 14px; font-family: inherit; color: #0f172a;
-        outline: none; transition: border-color .15s, background .15s;
+        padding: 13px 16px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 12px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .15s;
     }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: var(--blue); background: #fff; }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus {
+        border-color: var(--blue); background: rgba(255,255,255,.95);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
 
     .form-options { display: flex; justify-content: flex-end; }
-    .form-options a { font-size: 13px; color: var(--gray-lt); text-decoration: none; }
+    .form-options a { font-size: 13px; color: #4a6fa5; text-decoration: none; transition: color .15s; }
     .form-options a:hover { color: var(--blue); }
 
+    /* 구분선 */
     .divider {
         display: flex; align-items: center; gap: 12px;
-        color: var(--gray-lt); font-size: 12px; font-weight: 500;
+        color: #4a6fa5; font-size: 12px; font-weight: 500;
     }
     .divider::before, .divider::after {
-        content: ''; flex: 1; height: 1px; background: var(--border);
+        content: ''; flex: 1; height: 1px; background: rgba(37,99,235,.12);
     }
 
     /* 로그인 버튼 */
     .submit-btn {
-        padding: 14px; background: var(--blue); color: #fff;
+        padding: 15px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
         border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
-        cursor: pointer; font-family: inherit; transition: background .15s;
+        cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
     }
-    .submit-btn:hover { background: var(--blue-dark); }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
     /* 소셜 버튼 */
     .social-login-group { display: flex; flex-direction: column; gap: 10px; }
     .social-btn {
         display: flex; align-items: center; justify-content: center; gap: 10px;
-        width: 100%; padding: 13px; border-radius: 25px;
+        width: 100%; padding: 14px; border-radius: 25px;
         font-size: 14px; font-weight: 700; text-decoration: none;
-        transition: opacity .15s;
+        transition: all .2s; position: relative; overflow: hidden;
     }
-    .social-btn:hover { opacity: .88; }
-    .social-btn-kakao { background: #FEE500; color: #191600; border: none; }
+    .social-btn::after {
+        content: ''; position: absolute; inset: 0; border-radius: 25px;
+        background: linear-gradient(180deg, rgba(255,255,255,.15), transparent);
+        pointer-events: none;
+    }
+    .social-btn:hover { transform: translateY(-2px); }
+    .social-btn-kakao {
+        background: #FEE500; color: #191600;
+        box-shadow: 0 4px 14px rgba(254,229,0,.35);
+    }
+    .social-btn-kakao:hover { box-shadow: 0 8px 20px rgba(254,229,0,.45); }
     .social-btn-google {
-        background: #fff; color: #374151;
-        border: 1.5px solid var(--border);
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.8); color: #374151;
+        border: 1.5px solid rgba(255,255,255,.9);
+        box-shadow: 0 4px 14px rgba(0,0,0,.05);
     }
-    .social-btn-kakao-icon {
-        width: 20px; height: 20px;
-    }
+    .social-btn-google:hover { background: rgba(255,255,255,.95); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
 
     /* 에러 */
     .error-box {
-        background: #fff3f3; border: 1px solid #fecaca;
+        background: rgba(255,243,243,.85); border: 1px solid #fecaca;
         border-radius: 10px; padding: 12px 14px;
         font-size: 13px; color: #ef4444; font-weight: 600;
         display: flex; align-items: center; gap: 8px;
     }
     .error-box::before { content: '⚠️'; font-size: 14px; }
 
-    /* 푸터 링크 */
+    /* 하단 링크 */
     .auth-footer {
         text-align: center; margin-top: 20px;
-        font-size: 14px; color: var(--gray-lt);
+        font-size: 14px; color: #4a6fa5;
     }
     .auth-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
     .auth-footer a:hover { text-decoration: underline; }
@@ -98,58 +184,82 @@
 <section class="auth-section">
     <div class="auth-inner">
 
-        <div class="auth-header">
+        <!-- 좌측 히어로 -->
+        <div class="auth-hero">
             <div class="auth-logo">I<span class="hl">code</span>U</div>
-            <h1 class="auth-title">로그인</h1>
-            <p class="auth-desc">코드요에 오신 것을 환영합니다.</p>
-        </div>
-
-        <form class="auth-form" action="/login" method="POST">
-
-            <div class="form-group">
-                <label class="form-label">이메일</label>
-                <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요"/>
+            <div class="auth-hero-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                IT 프리랜서 매칭 플랫폼
             </div>
-
-            <div class="form-group">
-                <label class="form-label">비밀번호</label>
-                <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요"/>
-                <div class="form-options">
-                    <a href="/find-account" id="findPwLink"
-                       style="{{#errorMessage}}color:#2563eb;font-weight:700;{{/errorMessage}}">
-                        비밀번호를 잊으셨나요?
-                    </a>
+            <h1 class="auth-hero-title">다시 만나서<br>반갑습니다 <span class="hl">👋</span></h1>
+            <p class="auth-hero-desc">코드요와 함께 프로젝트를 시작하세요.<br>검증된 전문가와 의뢰인을 연결합니다.</p>
+            <div class="trust-row">
+                <div class="trust-item">
+                    <div class="trust-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg>
+                    </div>
+                    <div><div class="trust-val">1,200<em>+</em></div><div class="trust-label">등록 전문가</div></div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 22H5v-2h14v2ZM5 20H3V10h2v10Zm16 0h-2V10h2v10ZM9 8h10v2H5V8h2V4h2v4Zm8-2h-2V4h2v2Zm-2-2H9V2h6v2Z"/></svg>
+                    </div>
+                    <div><div class="trust-val">98<em>%</em></div><div class="trust-label">의뢰인 만족도</div></div>
                 </div>
             </div>
+        </div>
 
-            {{#errorMessage}}
-                <div class="error-box">{{errorMessage}}</div>
-            {{/errorMessage}}
-
-            <button type="submit" class="submit-btn">로그인</button>
-
-            <div class="divider">또는</div>
-
-            <div class="social-login-group">
-                <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code"
-                   class="social-btn social-btn-kakao">
-                    <svg class="social-btn-kakao-icon" viewBox="0 0 24 24" fill="#191600">
-                        <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.636 5.076 4.1 6.514L5.1 21l4.373-2.329C10.243 18.88 11.11 19 12 19c5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
-                    </svg>
-                    카카오로 시작하기
-                </a>
-                <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
-                class="social-btn social-btn-google">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google"/>
-                Google로 로그인
-                </a>
+        <!-- 우측 폼 -->
+        <div class="auth-card-wrap">
+            <div class="auth-header">
+                <h2 class="auth-title">로그인</h2>
+                <p class="auth-desc">코드요에 오신 것을 환영합니다.</p>
             </div>
 
-        </form>
+            <form class="auth-form" action="/login" method="POST">
 
-        <div class="auth-footer">
-            아직 계정이 없으신가요? <a href="/join-start">회원가입</a>
-        </div>
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" name="email" class="form-input" placeholder="이메일을 입력하세요"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요"/>
+                    <div class="form-options">
+                        <a href="/find-account">비밀번호를 잊으셨나요?</a>
+                    </div>
+                </div>
+
+                {{#errorMessage}}
+                    <div class="error-box">{{errorMessage}}</div>
+                {{/errorMessage}}
+
+                <button type="submit" class="submit-btn">로그인</button>
+
+                <div class="divider">또는</div>
+
+                <div class="social-login-group">
+                    <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code"
+                       class="social-btn social-btn-kakao">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#191600">
+                            <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.636 5.076 4.1 6.514L5.1 21l4.373-2.329C10.243 18.88 11.11 19 12 19c5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
+                        </svg>
+                        카카오로 시작하기
+                    </a>
+                    <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
+                    class="social-btn social-btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google"/>
+                    Google로 로그인
+                    </a>
+                </div>
+
+            </form>
+
+            <div class="auth-footer">
+                아직 계정이 없으신가요? <a href="/join-start">회원가입</a>
+            </div>
+        </div><!-- auth-card-wrap -->
 
     </div>
 </section>

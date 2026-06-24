@@ -111,7 +111,7 @@ public class MemberController {
     public String loginForm(HttpSession session ,Model model) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember != null) {
-            return "redirect:/exmain";
+            return "redirect:/main";
         }
         model.addAttribute("email", "");
         model.addAttribute("googleClientId", googleClientId);
@@ -138,7 +138,7 @@ public class MemberController {
             if ("ADMIN".equals(String.valueOf(member.getRole()))) {
                 return "redirect:/admin/main";
             }
-            return "redirect:/exmain";
+            return "redirect:/main";
         }
         catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());

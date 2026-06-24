@@ -1,495 +1,288 @@
 {{> layout/header}}
 
 <style>
-    /* ── BOARD DETAIL ── */
-    .detail-section {
-        padding: 52px 28px 80px;
-    }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .detail-inner {
-        max-width: 860px;
-        margin: 0 auto;
-    }
+    .detail-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
+    .detail-inner { max-width: 860px; margin: 0 auto; }
 
-    /* 상단 네비 */
-    .detail-nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #9ca3af;
-        margin-bottom: 32px;
-    }
+    .detail-nav { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4a6fa5; margin-bottom: 28px; }
+    .detail-nav a { color: #4a6fa5; text-decoration: none; }
+    .detail-nav a:hover { color: #2563eb; }
+    .detail-nav span { color: #93aecf; }
 
-    .detail-nav a {
-        color: #9ca3af;
+    /* 게시글 카드 */
+    .detail-card {
+        backdrop-filter: blur(16px); background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 24px;
+        padding: 36px 40px; margin-bottom: 16px;
+        box-shadow: 0 8px 32px rgba(37,99,235,.08);
     }
+    .detail-header { padding-bottom: 20px; border-bottom: 1px solid rgba(37,99,235,.08); margin-bottom: 24px; }
+    .detail-category { font-size: 11px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.15); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
+    .detail-title { font-size: 24px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; line-height: 1.35; margin-bottom: 14px; }
+    .detail-meta { display: flex; align-items: center; gap: 16px; font-size: 13px; color: #4a6fa5; font-weight: 500; }
+    .detail-meta .author { color: #1e3a6e; font-weight: 700; }
+    .detail-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #93aecf; }
+    .detail-actions { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 0; }
+    .detail-content { font-size: 15px; color: #2d4a7a; line-height: 1.9; min-height: 160px; padding: 8px 0; white-space: pre-wrap; }
+    .detail-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid rgba(37,99,235,.08); }
 
-    .detail-nav a:hover {
-        color: #2563eb;
-    }
-
-    .detail-nav span {
-        color: #d1d5db;
-    }
-
-    /* 게시글 헤더 */
-    .detail-header {
-        padding-bottom: 24px;
-        border-bottom: 1.5px solid #eaecf4;
-        margin-bottom: 28px;
-    }
-
-    .detail-category {
-        font-size: 11px;
-        font-weight: 700;
-        color: #2563eb;
-        background: #eff6ff;
-        padding: 4px 10px;
-        border-radius: 6px;
-        display: inline-block;
-        margin-bottom: 14px;
-    }
-
-    .detail-title {
-        font-size: 26px;
-        font-weight: 900;
-        color: #1c1e26;
-        letter-spacing: -0.5px;
-        line-height: 1.35;
-        margin-bottom: 16px;
-    }
-
-    .detail-meta {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        font-size: 13px;
-        color: #9ca3af;
-        font-weight: 500;
-    }
-
-    .detail-meta .author {
-        color: #374151;
-        font-weight: 700;
-    }
-
-    .detail-meta-dot {
-        width: 3px;
-        height: 3px;
-        border-radius: 50%;
-        background: #d1d5db;
-    }
-
-    /* 게시글 액션 버튼 */
-    .detail-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        margin-bottom: 28px;
-    }
-
-    /* 본문 */
-    .detail-content {
-        font-size: 15px;
-        color: #374151;
-        line-height: 1.9;
-        min-height: 200px;
-        margin-bottom: 48px;
-        white-space: pre-wrap;
-    }
-
-    /* 목록으로 */
-    .detail-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 28px;
-        border-top: 1px solid #eaecf4;
-        margin-bottom: 56px;
-    }
+    .btn { display: inline-block; padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 20px; }
+    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-outline { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; }
+    .btn-outline:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
 
     /* 댓글 섹션 */
-    .comment-section {
-        border-top: 2px solid #1c1e26;
-        padding-top: 32px;
-    }
-
-    .comment-title {
-        font-size: 16px;
-        font-weight: 900;
-        color: #1c1e26;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .comment-count {
-        font-size: 14px;
-        font-weight: 700;
-        color: #2563eb;
-        background: #eff6ff;
-        padding: 2px 10px;
-        border-radius: 20px;
-    }
-
-    /* 댓글 작성 폼 */
-    .comment-form {
-        background: #f8f9fc;
-        border-radius: 12px;
-        padding: 18px;
-        margin-bottom: 28px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .comment-textarea {
-        width: 100%;
-        padding: 12px 14px;
-        background: #fff;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 9px;
-        font-size: 14px;
-        font-family: inherit;
-        color: #1c1e26;
-        outline: none;
-        resize: none;
-        height: 90px;
-        line-height: 1.7;
-        transition: border-color .15s;
-    }
-
-    .comment-textarea::placeholder {
-        color: #c4c9d9;
-    }
-
-    .comment-textarea:focus {
-        border-color: #2563eb;
-    }
-
-    .comment-form-footer {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    /* 댓글 목록 */
-    .comment-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .comment-item {
-        padding: 20px 0;
-        border-bottom: 1px solid #f3f4f8;
-    }
-
-    .comment-item:last-child {
-        border-bottom: none;
-    }
-
-    .comment-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .comment-author-wrap {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .comment-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 15px;
-        flex-shrink: 0;
-    }
-
-    .comment-author {
-        font-size: 13px;
-        font-weight: 700;
-        color: #1c1e26;
-    }
-
-    .comment-date {
-        font-size: 11px;
-        color: #c4c9d9;
-        margin-top: 2px;
-    }
-
-    .comment-actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .comment-btn {
-        font-size: 12px;
-        color: #9ca3af;
-        font-weight: 600;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-family: inherit;
-        padding: 0;
-    }
-
-    .comment-btn:hover {
-        color: #2563eb;
-    }
-
-    .comment-btn.delete:hover {
-        color: #ef4444;
-    }
-
-    .comment-content {
-        font-size: 14px;
-        color: #374151;
-        line-height: 1.75;
-        padding-left: 44px;
-    }
-
-    /* 댓글 없을 때 */
-    .comment-empty {
-        text-align: center;
-        padding: 40px 0;
-        font-size: 14px;
-        color: #c4c9d9;
-    }
+    .comment-section { backdrop-filter: blur(16px); background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8); border-radius: 24px; padding: 32px 40px; box-shadow: 0 4px 20px rgba(37,99,235,.07); }
+    .comment-title { font-size: 16px; font-weight: 900; color: #1e3a6e; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .comment-count { font-size: 14px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); padding: 2px 10px; border-radius: 20px; }
+    .comment-form { background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.8); border-radius: 14px; padding: 16px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+    .comment-textarea { width: 100%; padding: 12px 14px; background: rgba(255,255,255,.8); border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; resize: none; height: 90px; line-height: 1.7; transition: all .15s; }
+    .comment-textarea::placeholder { color: #93aecf; }
+    .comment-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .comment-form-footer { display: flex; justify-content: flex-end; }
+    .comment-list { display: flex; flex-direction: column; }
+    .comment-item { padding: 18px 0; border-bottom: 1px solid rgba(37,99,235,.06); }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .comment-author-wrap { display: flex; align-items: center; gap: 10px; }
+    .comment-avatar { width: 34px; height: 34px; border-radius: 10px; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.15); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #2563eb; flex-shrink: 0; }
+    .comment-author { font-size: 13px; font-weight: 700; color: #1e3a6e; }
+    .comment-date { font-size: 11px; color: #93aecf; margin-top: 2px; }
+    .comment-actions { display: flex; gap: 8px; }
+    .comment-btn { font-size: 12px; color: #4a6fa5; font-weight: 600; background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; transition: color .15s; }
+    .comment-btn:hover { color: #2563eb; }
+    .comment-btn.delete:hover { color: #ef4444; }
+    .comment-content { font-size: 14px; color: #2d4a7a; line-height: 1.75; padding-left: 44px; }
+    .comment-empty { text-align: center; padding: 32px 0; font-size: 14px; color: #93aecf; }
 </style>
 
 <section class="detail-section">
     <div class="detail-inner">
+        <div class="detail-card">
 
-        <!-- 브레드크럼 -->
-        <div class="detail-nav">
-            <a href="/boards?boardType={{board.boardType}}">게시판</a>
-            <span>›</span>
-            <span>{{board.title}}</span>
-        </div>
+            <!-- 브레드크럼 -->
+            <div class="detail-nav">
+                <a href="/boards?boardType={{board.boardType}}">게시판</a>
+                <span>›</span>
+                <span>{{board.title}}</span>
+            </div>
 
-        <!-- 게시글 헤더 -->
-        <div class="detail-header"
-             style="display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1.5px solid #eaecf4; margin-bottom: 28px;">
+            <!-- 게시글 헤더 -->
+            <div class="detail-header"
+                 style="display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1.5px solid #eaecf4; margin-bottom: 28px;">
 
-            <div style="text-align: left;">
-                <span class="detail-category">{{board.boardType}}</span>
-                <h1 class="detail-title" style="margin-bottom: 16px;">{{board.title}}</h1>
-                <div class="detail-meta">
-                    <span class="author">{{board.memberName}}</span>
-                    <div class="detail-meta-dot"></div>
-                    <span>{{board.createdAt}}</span>
-                    <div class="detail-meta-dot"></div>
-                    <span>조회 {{board.viewCount}}</span>
+                <div style="text-align: left;">
+                    <span class="detail-category">{{board.boardType}}</span>
+                    <h1 class="detail-title" style="margin-bottom: 16px;">{{board.title}}</h1>
+                    <div class="detail-meta">
+                        <span class="author">{{board.memberName}}</span>
+                        <div class="detail-meta-dot"></div>
+                        <span>{{board.createdAt}}</span>
+                        <div class="detail-meta-dot"></div>
+                        <span>조회 {{board.viewCount}}</span>
+                    </div>
+                </div>
+
+                <div class="detail-actions"
+                     style="margin-bottom: 0; padding-bottom: 2px; flex-shrink: 0; display: flex; gap: 8px; align-items: center;">
+                    <!-- 1. 작성자 본인일 때만 뜨는 수정/삭제 -->
+                    {{^isNotice}}
+                        {{#isOwner}}
+                            <a href="/boards/{{board.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+                        {{/isOwner}}
+                    {{/isNotice}}
+                    {{#isNotice}}
+                        {{#isAdmin}}
+                            <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm">수정</a>
+                        {{/isAdmin}}
+                    {{/isNotice}}
+                    <!-- 관리자가 아닐 때만 일반 회원용 삭제 버튼 노출 -->
+                    {{#isOwner}}
+                        {{^isAdmin}}
+                            <button type="button" onclick="deleteBoard({{board.id}})" class="btn btn-sm"
+                                    style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca;">삭제
+                            </button>
+                        {{/isAdmin}}
+                    {{/isOwner}}
+
+                    <!-- 관리자일 때 무조건 노출되는 강제 삭제 버튼 -->
+
+                    {{#isAdmin}}
+                        <!-- 1. 공지사항 상세글일 때 처리하는 삭제 폼 -->
+                        {{#isNotice}}
+                            <form action="/admin/notices/{{board.id}}/delete" method="POST"
+                                  onsubmit="return confirm('관리자 권한으로 이 공지사항을 강제 삭제하시겠습니까?');"
+                                  style="display:inline; margin: 0;">
+                                <button type="submit" class="btn btn-sm"
+                                        style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca; font-weight: 700;">
+                                    삭제
+                                </button>
+                            </form>
+                        {{/isNotice}}
+
+                        <!-- 2. 일반 자유게시판 상세글일 때 처리하는 삭제 폼 (기존 주소 유지) -->
+                        {{^isNotice}}
+                            <form action="/admin/boards/{{board.id}}/delete" method="POST"
+                                  onsubmit="return confirm('관리자 권한으로 이 게시글을 강제 삭제하시겠습니까?');"
+                                  style="display:inline; margin: 0;">
+                                <button type="submit" class="btn btn-sm"
+                                        style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca; font-weight: 700;">
+                                    삭제
+                                </button>
+                            </form>
+                        {{/isNotice}}
+                    {{/isAdmin}}
                 </div>
             </div>
 
-            <div class="detail-actions"
-                 style="margin-bottom: 0; padding-bottom: 2px; flex-shrink: 0; display: flex; gap: 8px; align-items: center;">
-                <!-- 1. 작성자 본인일 때만 뜨는 수정/삭제 -->
-                {{^isNotice}}
-                    {{#isOwner}}
-                        <a href="/boards/{{board.id}}/edit" class="btn btn-outline btn-sm">수정</a>
-                    {{/isOwner}}
-                {{/isNotice}}
-                {{#isNotice}}
-                    {{#isAdmin}}
-                        <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm">수정</a>
-                    {{/isAdmin}}
-                {{/isNotice}}
-                <!-- 관리자가 아닐 때만 일반 회원용 삭제 버튼 노출 -->
-                {{#isOwner}}
-                    {{^isAdmin}}
-                        <button type="button" onclick="deleteBoard({{board.id}})" class="btn btn-sm"
-                                style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca;">삭제
-                        </button>
-                    {{/isAdmin}}
-                {{/isOwner}}
+            <!-- 본문 -->
+            <div class="detail-content">{{board.content}}</div>
 
-                <!-- 관리자일 때 무조건 노출되는 강제 삭제 버튼 -->
-
-                {{#isAdmin}}
-                    <!-- 1. 공지사항 상세글일 때 처리하는 삭제 폼 -->
-                    {{#isNotice}}
-                        <form action="/admin/notices/{{board.id}}/delete" method="POST"
-                              onsubmit="return confirm('관리자 권한으로 이 공지사항을 강제 삭제하시겠습니까?');"
-                              style="display:inline; margin: 0;">
-                            <button type="submit" class="btn btn-sm"
-                                    style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca; font-weight: 700;">
-                                삭제
-                            </button>
-                        </form>
-                    {{/isNotice}}
-
-                    <!-- 2. 일반 자유게시판 상세글일 때 처리하는 삭제 폼 (기존 주소 유지) -->
-                    {{^isNotice}}
-                        <form action="/admin/boards/{{board.id}}/delete" method="POST"
-                              onsubmit="return confirm('관리자 권한으로 이 게시글을 강제 삭제하시겠습니까?');"
-                              style="display:inline; margin: 0;">
-                            <button type="submit" class="btn btn-sm"
-                                    style="background:#fff3f3; color:#ef4444; border:1.5px solid #fecaca; font-weight: 700;">
-                                삭제
-                            </button>
-                        </form>
-                    {{/isNotice}}
-                {{/isAdmin}}
-            </div>
-        </div>
-
-        <!-- 본문 -->
-        <div class="detail-content">{{board.content}}</div>
-
-        <!-- 하단 -->
-        <div class="detail-footer">
-            <a href="/boards?boardType={{board.boardType}}" class="btn btn-outline">← 목록으로</a>
-        </div>
-
-        <!-- =====================================================
-             댓글 섹션
-             - comments : 댓글 리스트
-             - comment.id / memberName / content / createdAt
-             - isCommentOwner : 댓글 작성자 본인 여부
-        ====================================================== -->
-        <div class="comment-section">
-
-            <div class="comment-title">
-                댓글
+            <!-- 하단 -->
+            <div class="detail-footer">
+                <a href="/boards?boardType={{board.boardType}}" class="btn btn-outline">← 목록으로</a>
             </div>
 
-            <!-- 댓글 작성 폼 -->
-            <form class="comment-form" action="/boards/{{board.id}}/comments/save" method="POST">
+            <!-- =====================================================
+                 댓글 섹션
+                 - comments : 댓글 리스트
+                 - comment.id / memberName / content / createdAt
+                 - isCommentOwner : 댓글 작성자 본인 여부
+            ====================================================== -->
+            <div class="comment-section">
+
+                <div class="comment-title">
+                    댓글
+                </div>
+
+                <!-- 댓글 작성 폼 -->
+                <form class="comment-form" action="/boards/{{board.id}}/comments/save" method="POST">
                 <textarea
                         class="comment-textarea"
                         name="content"
                         placeholder="댓글을 입력하세요..."
                 ></textarea>
-                <div class="comment-form-footer">
-                    <button type="submit" class="btn btn-primary btn-sm">등록</button>
-                </div>
-            </form>
+                    <div class="comment-form-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">등록</button>
+                    </div>
+                </form>
 
-            <!-- 댓글 목록 -->
-            <div class="comment-list">
-                {{#comments}}
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <div class="comment-author-wrap">
-                                <div class="comment-avatar">👤</div>
-                                <div>
-                                    <div class="comment-author">{{memberName}}</div>
-                                    <div class="comment-date">{{createdAt}}</div>
+                <!-- 댓글 목록 -->
+                <div class="comment-list">
+                    {{#comments}}
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-author-wrap">
+                                    <div class="comment-avatar">{{memberName}}</div>
+                                    <div>
+                                        <div class="comment-author">{{memberName}}</div>
+                                        <div class="comment-date">{{createdAt}}</div>
+                                    </div>
+                                </div>
+
+                                <!-- 버튼 영역 시작 -->
+                                <div class="comment-actions-container">
+                                    {{^isAdmin}}
+                                        {{#isOwner}}
+                                            <div class="comment-actions" id="comment-actions-{{id}}"
+                                                 style="display:inline-block;">
+                                                <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
+                                                <form action="/comments/{{id}}/delete" method="POST"
+                                                      style="display:inline;">
+                                                    <input type="hidden" name="boardId" value="{{boardId}}">
+                                                    <button type="submit" class="comment-btn delete">삭제</button>
+                                                </form>
+                                            </div>
+                                        {{/isOwner}}
+
+                                        {{^isOwner}}
+                                            {{^isCommentAdmin}}
+                                                <div class="comment-actions" style="display:inline-block;">
+                                                    <button type="button" class="comment-btn report"
+                                                            onclick="openReportModal({{id}}, {{boardId}})"
+                                                            style="background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
+                                                        신고
+                                                    </button>
+                                                </div>
+                                            {{/isCommentAdmin}}
+                                        {{/isOwner}}
+                                    {{/isAdmin}}
+
                                 </div>
                             </div>
 
-                            <!-- 버튼 영역 시작 -->
-                            <div class="comment-actions-container">
-                                {{^isAdmin}}
-                                    {{#isOwner}}
-                                        <div class="comment-actions" id="comment-actions-{{id}}"
-                                             style="display:inline-block;">
-                                            <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
-                                            <form action="/comments/{{id}}/delete" method="POST"
-                                                  style="display:inline;">
-                                                <input type="hidden" name="boardId" value="{{boardId}}">
-                                                <button type="submit" class="comment-btn delete">삭제</button>
-                                            </form>
-                                        </div>
-                                    {{/isOwner}}
+                            <div class="comment-content">
+                                <div id="comment-text-{{id}}" style="display: block;">
+                                    {{comment}}
+                                </div>
 
-                                    {{^isOwner}}
-                                        {{^isCommentAdmin}}
-                                            <div class="comment-actions" style="display:inline-block;">
-                                                <button type="button" class="comment-btn report"
-                                                        onclick="openReportModal({{id}}, {{boardId}})"
-                                                        style="background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
-                                                    신고
-                                                </button>
-                                            </div>
-                                        {{/isCommentAdmin}}
-                                    {{/isOwner}}
-                                {{/isAdmin}}
+                                <div id="comment-edit-form-{{id}}" style="display: none; width: 100%; margin-top: 10px;">
+                                    <form action="/comments/{{id}}/update" method="POST"
+                                          style="display: flex; align-items: center; width: 100%; gap: 10px;">
+                                        <input type="hidden" name="boardId" value="{{boardId}}">
 
+                                        <input type="text" name="comment" value="{{comment}}" required
+                                               style="flex: 1; padding: 6px 10px; border: 1px solid #007bff; border-radius: 4px; font-size: 14px;">
+
+                                        <button type="submit" class="comment-btn"
+                                                style="background-color: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px;">
+                                            수정완료
+                                        </button>
+                                        <button type="button" class="comment-btn" onclick="toggleEdit('{{id}}')"
+                                                style="background-color: #6c757d; color: white; border: none; padding: 6px 10px; border-radius: 4px;">
+                                            취소
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
+                    {{/comments}}
+                </div>
 
-                        <div class="comment-content">
-                            <div id="comment-text-{{id}}" style="display: block;">
-                                {{comment}}
-                            </div>
+                <script>
+                    function toggleEdit(commentId) {
+                        const textView = document.getElementById('comment-text-' + commentId);
+                        const editForm = document.getElementById('comment-edit-form-' + commentId);
+                        const actions = document.getElementById('comment-actions-' + commentId);
 
-                            <div id="comment-edit-form-{{id}}" style="display: none; width: 100%; margin-top: 10px;">
-                                <form action="/comments/{{id}}/update" method="POST"
-                                      style="display: flex; align-items: center; width: 100%; gap: 10px;">
-                                    <input type="hidden" name="boardId" value="{{boardId}}">
+                        if (editForm.style.display === 'none') {
+                            editForm.style.display = 'block';
+                            textView.style.display = 'none';
+                            if (actions) actions.style.display = 'none';
+                        } else {
+                            editForm.style.display = 'none';
+                            textView.style.display = 'block';
+                            if (actions) actions.style.display = 'block';
+                        }
+                    }
 
-                                    <input type="text" name="comment" value="{{comment}}" required
-                                           style="flex: 1; padding: 6px 10px; border: 1px solid #007bff; border-radius: 4px; font-size: 14px;">
+                    async function deleteBoard(boardId) {
+                        try {
+                            if (!confirm("정말 삭제하시겠습니까?")) {
+                                return;
+                            }
+                            const res = await fetch("/boards/" + boardId, {
+                                method: "DELETE",
+                            });
 
-                                    <button type="submit" class="comment-btn"
-                                            style="background-color: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px;">
-                                        수정완료
-                                    </button>
-                                    <button type="button" class="comment-btn" onclick="toggleEdit('{{id}}')"
-                                            style="background-color: #6c757d; color: white; border: none; padding: 6px 10px; border-radius: 4px;">
-                                        취소
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                            if (res.ok) {
+                                location.href = "/boards";
+                            }
+                        } catch (e) {
+                            alert(e.message);
+                        }
+                    }
+                </script>
+                {{^comments}}
+                    <div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</div>
                 {{/comments}}
+
             </div>
-
-            <script>
-                function toggleEdit(commentId) {
-                    const textView = document.getElementById('comment-text-' + commentId);
-                    const editForm = document.getElementById('comment-edit-form-' + commentId);
-                    const actions = document.getElementById('comment-actions-' + commentId);
-
-                    if (editForm.style.display === 'none') {
-                        editForm.style.display = 'block';
-                        textView.style.display = 'none';
-                        if (actions) actions.style.display = 'none';
-                    } else {
-                        editForm.style.display = 'none';
-                        textView.style.display = 'block';
-                        if (actions) actions.style.display = 'block';
-                    }
-                }
-
-                async function deleteBoard(boardId) {
-                    try {
-                        if (!confirm("정말 삭제하시겠습니까?")) {
-                            return;
-                        }
-                        const res = await fetch("/boards/" + boardId, {
-                            method: "DELETE",
-                        });
-
-                        if (res.ok) {
-                            location.href = "/boards";
-                        }
-                    } catch (e) {
-                        alert(e.message);
-                    }
-                }
-            </script>
-            {{^comments}}
-                <div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</div>
-            {{/comments}}
-
         </div>
-    </div>
 
     </div>
 </section>
@@ -564,5 +357,10 @@
             closeReportModal();
         }
     }
+</script>
+<script>
+    document.querySelectorAll('.comment-avatar').forEach(el => {
+        const t = el.textContent.trim(); el.textContent = t ? t.charAt(0) : '?';
+    });
 </script>
 {{> layout/footer}}

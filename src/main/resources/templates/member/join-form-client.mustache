@@ -1,445 +1,362 @@
 {{> layout/header}}
-
 <style>
-    /* ══ 글래스모피즘 배경 ══ */
-    body {
-        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
-        background-attachment: fixed;
-        color: #1e293b; line-height: 1.6; min-height: 100vh;
+
+    :root {
+        --blue: #2563eb; --blue-dark: #1d4ed8;
+        --navy: #172554; --cyan: #00c8e0;
     }
-    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
-    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
-    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
-    .bg-glow-3 { width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(0,200,224,.08) 0%, transparent 70%); top: 40%; left: 30%; }
 
-    .auth-section { padding: 72px 28px 80px; position: relative; z-index: 1; }
-    .auth-inner { max-width: 480px; margin: 0 auto; }
-    .auth-header { text-align: center; margin-bottom: 36px; }
-    .auth-logo { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 10px; }
-    .auth-logo span { color: #2563eb; }
-    .auth-title { font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .auth-desc { font-size: 14px; color: #4a6fa5; }
-
-    /* ══ 글래스 폼 카드 ══ */
-    .auth-form {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.55);
-        border: 1.5px solid rgba(255,255,255,.8);
-        border-radius: 24px; padding: 36px;
-        display: flex; flex-direction: column; gap: 18px;
-        box-shadow: 0 8px 32px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.9);
+    .page-section {
+        min-height: calc(100vh - 64px);
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
+            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
         position: relative; overflow: hidden;
+        display: flex; align-items: flex-start; justify-content: center;
+        padding: 52px 28px 80px;
     }
-    .auth-form::before {
-        content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    .page-section::before {
+        content: ''; position: fixed; inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 40px 40px; opacity: .35; pointer-events: none;
+    }
+
+    .page-inner {
+        width: 100%; max-width: 680px;
+        position: relative; z-index: 2;
+    }
+
+    /* 헤더 */
+    .form-page-header { text-align: center; margin-bottom: 32px; }
+    .form-page-logo { font-size: 26px; font-weight: 900; color: #1e3a8a; margin-bottom: 10px; letter-spacing: -1px; }
+    .form-page-logo .hl { color: var(--blue); }
+    .form-page-title { font-size: 26px; font-weight: 900; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 6px; }
+    .form-page-desc { font-size: 14px; color: #4a6fa5; line-height: 1.6; }
+
+    /* 글래스 카드 */
+    .glass-card {
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 28px; padding: 48px 52px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative;
+    }
+    .glass-card::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
     }
 
-    .form-group { display: flex; flex-direction: column; gap: 7px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #1e293b; }
+    /* 섹션 구분 */
+    .section-label {
+        font-size: 11px; font-weight: 700; color: var(--blue);
+        letter-spacing: .8px; text-transform: uppercase;
+        margin-bottom: 16px; margin-top: 4px;
+    }
+    .f-divider, .section-divider {
+        height: 1px; background: rgba(37,99,235,.1);
+        margin: 20px 0; border: none;
+    }
+
+    /* 2컬럼 폼 그리드 */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+
+    /* 폼 요소 */
+    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
     .form-label .required { color: #ef4444; margin-left: 2px; }
-
-    /* ══ 글래스 인풋 ══ */
-    .form-input {
+    .form-label .opt { color: #93aecf; font-weight: 500; margin-left: 4px; }
+    .form-input, .form-textarea {
         padding: 13px 16px;
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        background: rgba(255,255,255,.6);
-        border: 1.5px solid rgba(255,255,255,.75);
-        border-radius: 10px; font-size: 14px; font-family: inherit;
-        color: #1e293b; outline: none; transition: all .15s;
-        box-shadow: inset 0 1px 3px rgba(37,99,235,.04);
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 12px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .15s;
     }
-    .form-input::placeholder { color: #94a3b8; }
-    .form-input:focus {
-        border-color: rgba(37,99,235,.5);
-        background: rgba(255,255,255,.85);
-        box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--blue); background: rgba(255,255,255,.95);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
     }
-    .form-input:disabled { background: rgba(255,255,255,.3); color: #94a3b8; cursor: not-allowed; }
-    .form-hint { font-size: 12px; color: #64748b; }
-    .divider { height: 1px; background: rgba(255,255,255,.6); margin: 4px 0; }
+    .form-input:disabled { color: #93aecf; background: rgba(240,244,250,.6); cursor: not-allowed; }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: #4a6fa5; }
 
-    .submit-btn {
-        padding: 15px; background: #2563eb; color: #fff; border: none;
-        border-radius: 10px; font-size: 15px; font-weight: 700;
-        cursor: pointer; font-family: inherit; margin-top: 4px;
-        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
-    }
-    .submit-btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,.4); }
-
-    .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #4a6fa5; }
-    .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
-    .auth-footer a:hover { text-decoration: underline; }
-
+    /* 인증 버튼 */
     .email-verify-wrap { display: flex; gap: 8px; }
     .email-verify-wrap .form-input { flex: 1; }
-
     .verify-btn {
-        padding: 0 18px;
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        background: rgba(28,30,38,.75); color: #fff; border: none;
-        border-radius: 10px; font-size: 13px; font-weight: 700;
+        padding: 0 20px; background: #1e3a6e; color: #fff;
+        border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
         cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
     }
-    .verify-btn:hover { background: #2563eb; }
-    .verify-btn:disabled { background: rgba(148,163,184,.5); cursor: not-allowed; }
+    .verify-btn:hover { background: var(--blue); }
+    .verify-btn:disabled { background: #93aecf; cursor: not-allowed; }
 
-    /* ══ 글래스 role-tag ══ */
-    .role-tag {
-        display: inline-block; font-size: 12px; font-weight: 700; color: #2563eb;
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        background: rgba(219,234,254,.6);
-        border: 1px solid rgba(147,197,253,.5);
-        padding: 4px 12px; border-radius: 20px;
+    /* 제출 버튼 */
+    .submit-btn {
+        width: 100%; padding: 16px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
+        cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s; margin-top: 8px;
     }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
-    /* ══ 에러 박스 (글래스) ══ */
-    .error-box {
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        background: rgba(254,226,226,.6);
-        border: 1px solid rgba(252,165,165,.6);
-        border-radius: 10px; padding: 12px 14px;
-        font-size: 13px; color: #dc2626; font-weight: 600;
-    }
-
-    /* ══ 프로필 업로드 버튼 ══ */
+    /* 업로드 버튼 */
     .upload-btn {
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        background: rgba(255,255,255,.7) !important;
-        border: 1.5px solid rgba(37,99,235,.4) !important;
-        transition: all .15s;
+        display: inline-block; padding: 10px 22px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.3);
+        color: var(--blue); border-radius: 10px; font-size: 13px; font-weight: 700;
+        cursor: pointer; transition: all .15s;
     }
-    .upload-btn:hover { background: rgba(255,255,255,.9) !important; border-color: #2563eb !important; }
+    .upload-btn:hover { background: rgba(255,255,255,.95); border-color: var(--blue); }
+
+    /* 역할 태그 */
+    .role-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 12px; font-weight: 700; color: var(--blue);
+        background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2);
+        padding: 5px 14px; border-radius: 20px; margin-bottom: 4px;
+    }
+
+    /* 공지 박스 */
+    .notice-box {
+        background: rgba(254,243,199,.75); border: 1px solid rgba(253,230,138,.8);
+        border-radius: 12px; padding: 14px 16px;
+        font-size: 13px; color: #b45309; line-height: 1.6; margin-bottom: 24px;
+    }
+
+    /* 에러 박스 */
+    .error-box {
+        background: rgba(255,243,243,.85); border: 1px solid #fecaca;
+        border-radius: 10px; padding: 12px 14px;
+        font-size: 13px; color: #ef4444; font-weight: 600; margin-bottom: 8px;
+    }
+
+    /* 약관 */
+    .terms-box {
+        background: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.7);
+        border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+        margin-bottom: 8px;
+    }
+    .terms-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #2d4a7a; }
+    .terms-item input { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; }
+    .terms-item label { cursor: pointer; }
+
+    /* 기술 스택 */
+    .sp-chip {
+        padding: 6px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        cursor: pointer; border: 1.5px solid rgba(37,99,235,.2);
+        background: rgba(255,255,255,.7); color: #2d4a7a;
+        font-family: inherit; transition: all .12s; user-select: none;
+    }
+    .sp-chip:hover { border-color: var(--blue); color: var(--blue); background: rgba(255,255,255,.95); }
+    .sp-chip.selected { background: var(--blue); border-color: var(--blue); color: #fff; }
+    #spBody {
+        background: rgba(255,255,255,.5); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 10px; padding: 14px;
+        display: flex; flex-wrap: wrap; gap: 8px; min-height: 72px;
+    }
+    .skill-tag {
+        display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px;
+        background: rgba(37,99,235,.1); color: var(--blue);
+        border: 1px solid rgba(37,99,235,.2); border-radius: 20px; font-size: 12px; font-weight: 600;
+    }
+    .skill-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+    .skill-tag button:hover { color: #ef4444; }
+    .skill-empty { font-size: 12px; color: #93aecf; }
+    select.form-input { background: rgba(255,255,255,.7); color: #1e3a6e; }
+
+    /* 하단 링크 */
+    .auth-footer {
+        text-align: center; margin-top: 20px; color: #4a6fa5; font-size: 14px; line-height: 1.9;
+    }
+    .auth-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* 반응형 */
+    @media (max-width: 720px) {
+        .glass-card { padding: 32px 24px; }
+        .form-grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+        .page-section { padding: 32px 16px 60px; }
+    }
+
 </style>
 
-<!-- 배경 글로우 -->
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-2"></div>
-<div class="bg-glow bg-glow-3"></div>
-
-<section class="auth-section">
-    <div class="auth-inner">
-
-        <div class="auth-header">
-            <div class="auth-logo">Sev<span>Merge</span></div>
-            <h1 class="auth-title">의뢰인 회원가입</h1>
-            <p class="auth-desc"><span class="role-tag">💼 의뢰인</span></p>
+<section class="page-section">
+    <div class="page-inner">
+        <div class="form-page-header">
+            <div class="form-page-logo">I<span class="hl">code</span>U</div>
+            <h1 class="form-page-title">의뢰인 회원가입</h1>
+            <div class="role-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 22H4v-4h2v4Zm14 0h-2v-4h2v4ZM8 18H6v-2h2v2Zm10 0h-2v-2h2v2Zm-2-2H8v-2h8v2Zm-1-4H9v-2h6v2Zm-6-2H7V4h2v6Zm8 0h-2V4h2v6Zm-2-6H9V2h6v2Z"/></svg>
+                의뢰인
+            </div>
         </div>
 
-        <form class="auth-form" action="/join" method="POST" id="joinForm" enctype="multipart/form-data">
-            <input type="hidden" name="role" value="CLIENT"/>
+        <div class="glass-card">
+            <form action="/join" method="POST" id="joinForm" enctype="multipart/form-data">
+                <input type="hidden" name="role" value="CLIENT"/>
 
-            <div class="form-group" style="align-items:center; margin-bottom:8px;">
-
-                <div id="preview" style="width:110px; height:110px; border-radius:50%; background:#f0f1f5; border:2px solid #e2e5ef; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-size:44px; color:#c4c9d9; margin-bottom:14px;">👤</div>
-
-                <input type="file" name="profileImageFile" id="profileImageFile" accept="image/*" style="display:none;" />
-                <label for="profileImageFile" class="upload-btn" style="display:inline-block; padding:10px 22px; background:#fff; border:1.5px solid #2563eb; color:#2563eb; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">프로필 이미지 선택</label>
-                <span class="form-hint" id="fileName" style="margin-top:6px;">선택 사항이에요</span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">이름 <span class="required">*</span></label>
-                <input type="text" name="name" class="form-input"value="최원종" placeholder="이름을 입력하세요" maxlength="20"/>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">이메일 <span class="required">*</span></label>
-                <div class="email-verify-wrap">
-                    <input type="email" name="email" id="emailInput" class="form-input"value="test@test" placeholder="이메일을 입력하세요"/>
-                    <button type="button" id="sendCodeBtn" class="verify-btn">인증</button>
+                <!-- 프로필 이미지 -->
+                <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:28px;">
+                    <div id="preview" style="width:96px;height:96px;border-radius:50%;background:rgba(37,99,235,.08);border:2px solid rgba(37,99,235,.2);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:38px;color:#93aecf;margin-bottom:12px;">👤</div>
+                    <input type="file" name="profileImageFile" id="profileImageFile" accept="image/*" style="display:none;"/>
+                    <label for="profileImageFile" class="upload-btn">프로필 이미지 선택</label>
+                    <span class="form-hint" id="fileName" style="margin-top:6px;text-align:center;">선택 사항이에요</span>
                 </div>
-            </div>
 
-            <div class="form-group" id="codeGroup" style="display:none;">
-                <label class="form-label">인증 코드 <span class="required">*</span></label>
-                <div class="email-verify-wrap">
-                    <input type="text" name="authCode" id="codeInput" class="form-input" placeholder="인증 코드 6자리"
-                           maxlength="6"/>
-                    <button type="button" id="verifyCodeBtn" class="verify-btn">확인</button>
+                <div class="f-divider"></div>
+                <div class="section-label">기본 정보</div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label">이름 <span class="required">*</span></label>
+                        <input type="text" name="name" class="form-input" placeholder="이름을 입력하세요" maxlength="20"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">휴대폰 번호 <span class="required">*</span></label>
+                        <div class="email-verify-wrap">
+                            <input type="tel" name="phone" id="phoneInput" class="form-input" placeholder="010-0000-0000"/>
+                            <button type="button" id="sendSmsBtn" class="verify-btn">인증</button>
+                        </div>
+                    </div>
                 </div>
-                <span class="form-hint" id="codeHint"></span>
-            </div>
 
-            <div class="form-group">
-                <label class="form-label">비밀번호 <span class="required">*</span></label>
-                <input type="password" name="password" id="pwInput" class="form-input" value="dnjswhd1435!" placeholder="비밀번호를 입력하세요"/>
-                <span class="form-hint">영문, 숫자, 특수문자 포함 8자 이상</span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">비밀번호 확인 <span class="required">*</span></label>
-                <input type="password" name="passwordConfirm" id="pwConfirmInput" value="dnjswhd1435!" class="form-input"
-                       placeholder="비밀번호를 다시 입력하세요"/>
-                <span class="form-hint" id="pwMatchHint"></span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">휴대폰 번호 <span class="required">*</span></label>
-                <div class="email-verify-wrap">
-                    <input type="tel" name="phone" id="phoneInput" class="form-input" value="010-5680-6698"placeholder="010-0000-0000" />
-                    <button type="button" id="sendSmsBtn" class="verify-btn">인증</button>
+                <div class="form-group" id="smsCodeGroup" style="display:none;">
+                    <label class="form-label">SMS 인증 코드 <span class="required">*</span></label>
+                    <div class="email-verify-wrap">
+                        <input type="text" id="smsCodeInput" class="form-input" placeholder="인증번호 6자리" maxlength="6"/>
+                        <button type="button" id="verifySmsBtn" class="verify-btn">확인</button>
+                    </div>
+                    <span class="form-hint" id="smsHint"></span>
                 </div>
-            </div>
 
-            <div class="form-group" id="smsCodeGroup" style="display:none;">
-                <label class="form-label">인증 코드 <span class="required">*</span></label>
-                <div class="email-verify-wrap">
-                    <input type="text" id="smsCodeInput" class="form-input" placeholder="인증번호 6자리" maxlength="6" />
-                    <button type="button" id="verifySmsBtn" class="verify-btn">확인</button>
+                <div class="form-group">
+                    <label class="form-label">이메일 <span class="required">*</span></label>
+                    <div class="email-verify-wrap">
+                        <input type="email" name="email" id="emailInput" class="form-input" placeholder="이메일을 입력하세요"/>
+                        <button type="button" id="sendCodeBtn" class="verify-btn">인증</button>
+                    </div>
                 </div>
-                <span class="form-hint" id="smsHint"></span>
-            </div>
+                <div class="form-group" id="codeGroup" style="display:none;">
+                    <label class="form-label">이메일 인증 코드 <span class="required">*</span></label>
+                    <div class="email-verify-wrap">
+                        <input type="text" name="authCode" id="codeInput" class="form-input" placeholder="인증 코드 6자리" maxlength="6"/>
+                        <button type="button" id="verifyCodeBtn" class="verify-btn">확인</button>
+                    </div>
+                    <span class="form-hint" id="codeHint"></span>
+                </div>
 
-            {{#errorMessage}}
-                <div class="error-box">{{errorMessage}}</div>
-            {{/errorMessage}}
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label">비밀번호 <span class="required">*</span></label>
+                        <input type="password" name="password" id="pwInput" class="form-input" placeholder="비밀번호 입력"/>
+                        <span class="form-hint">영문+숫자+특수문자 8자 이상</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">비밀번호 확인 <span class="required">*</span></label>
+                        <input type="password" name="passwordConfirm" id="pwConfirmInput" class="form-input" placeholder="비밀번호 재입력"/>
+                        <span class="form-hint" id="pwMatchHint"></span>
+                    </div>
+                </div>
 
-            <div class="divider"></div>
-            <button type="submit" class="submit-btn">회원가입</button>
-        </form>
+                {{#errorMessage}}<div class="error-box">{{errorMessage}}</div>{{/errorMessage}}
+                <button type="submit" class="submit-btn">회원가입</button>
+            </form>
+        </div>
 
         <div class="auth-footer">
-            전문가로 가입하시나요? <a href="/join-start">전문가 회원가입</a><br>
+            전문가로 가입하시나요? <a href="/join?role=EXPERT">전문가 회원가입</a><br>
             이미 계정이 있으신가요? <a href="/login">로그인</a>
         </div>
-
     </div>
 </section>
 
 <script>
-    const form = document.getElementById("joinForm");
-    const emailInput    = document.getElementById("emailInput");
-    const sendCodeBtn   = document.getElementById("sendCodeBtn");
-    const codeGroup     = document.getElementById("codeGroup");
-    const codeInput     = document.getElementById("codeInput");
-    const verifyCodeBtn = document.getElementById("verifyCodeBtn");
-    const codeHint      = document.getElementById("codeHint");
-    const pwInput        = document.getElementById("pwInput");
-    const pwConfirmInput = document.getElementById("pwConfirmInput");
-    const pwMatchHint    = document.getElementById("pwMatchHint");
 
-    // 비밀번호 일치 실시간 확인 (빨간 테두리)
+    const form = document.getElementById('joinForm');
+    const emailInput=document.getElementById('emailInput'), sendCodeBtn=document.getElementById('sendCodeBtn');
+    const codeGroup=document.getElementById('codeGroup'), codeInput=document.getElementById('codeInput');
+    const verifyCodeBtn=document.getElementById('verifyCodeBtn'), codeHint=document.getElementById('codeHint');
+    const pwInput=document.getElementById('pwInput'), pwConfirmInput=document.getElementById('pwConfirmInput'), pwMatchHint=document.getElementById('pwMatchHint');
+
     function checkPwMatch() {
-        if (pwConfirmInput.value === "") {
-            pwConfirmInput.style.borderColor = "#e2e5ef";
-            pwMatchHint.textContent = "";
-            return;
-        }
-        if (pwInput.value === pwConfirmInput.value) {
-            pwConfirmInput.style.borderColor = "#10b981";
-            pwMatchHint.textContent = "✓ 비밀번호가 일치합니다.";
-            pwMatchHint.style.color = "#10b981";
-        } else {
-            pwConfirmInput.style.borderColor = "#ef4444";
-            pwMatchHint.textContent = "✗ 비밀번호가 일치하지 않습니다.";
-            pwMatchHint.style.color = "#ef4444";
-        }
+        if(!pwConfirmInput.value){pwConfirmInput.style.borderColor='rgba(37,99,235,.15)';pwMatchHint.textContent='';return;}
+        if(pwInput.value===pwConfirmInput.value){pwConfirmInput.style.borderColor='#10b981';pwMatchHint.textContent='✓ 비밀번호가 일치합니다.';pwMatchHint.style.color='#10b981';}
+        else{pwConfirmInput.style.borderColor='#ef4444';pwMatchHint.textContent='✗ 비밀번호가 일치하지 않습니다.';pwMatchHint.style.color='#ef4444';}
     }
-    pwInput.addEventListener("input", checkPwMatch);
-    pwConfirmInput.addEventListener("input", checkPwMatch);
+    pwInput.addEventListener('input',checkPwMatch); pwConfirmInput.addEventListener('input',checkPwMatch);
 
-    // 제출 시 필수값 + 비밀번호 검증
-    form.addEventListener("submit", function (e) {
-        const name = form.name.value.trim();
-        const email = form.email.value.trim();
-        const pw = pwInput.value;
-        const pwConfirm = pwConfirmInput.value;
-        const phone = form.phone.value.trim();
-
-        if (!name || !email || !pw || !pwConfirm || !phone) {
-            e.preventDefault();
-            alert("필수 항목을 모두 입력해 주세요.");
-            return;
-        }
-        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-        if (!pwRegex.test(pw)) {
-              e.preventDefault();
-              alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
-             return;
-        }
-        if (pw !== pwConfirm) {
-            e.preventDefault();
-            alert("비밀번호가 일치하지 않습니다.");
-            return;
-        }
-    });
-    // 전화번호 하이픈 자동 입력
-    const phoneInput = form.phone;
-    phoneInput.addEventListener("input", function () {
-        let v = phoneInput.value.replace(/[^0-9]/g, "");  // 숫자만 남김
-        if (v.length > 11) v = v.slice(0, 11);            // 최대 11자리
-        if (v.length < 4) {
-            phoneInput.value = v;
-        } else if (v.length < 8) {
-            phoneInput.value = v.slice(0, 3) + "-" + v.slice(3);
-        } else {
-            phoneInput.value = v.slice(0, 3) + "-" + v.slice(3, 7) + "-" + v.slice(7);
-        }
-    });
-    // ===== 휴대폰 SMS 인증 =====
-    const sendSmsBtn   = document.getElementById("sendSmsBtn");
-    const smsCodeGroup = document.getElementById("smsCodeGroup");
-    const smsCodeInput = document.getElementById("smsCodeInput");
-    const verifySmsBtn = document.getElementById("verifySmsBtn");
-    const smsHint      = document.getElementById("smsHint");
-
-    sendSmsBtn.addEventListener("click", async function () {
-        const phone = document.getElementById("phoneInput").value.trim();
-        if (!phone) { alert("휴대폰 번호를 입력해주세요."); return; }
-        const res = await fetch("/api/sms/send", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: phone })
-        });
-        if (res.ok) {
-            alert("인증번호가 발송되었습니다.");
-            smsCodeGroup.style.display = "flex";
-            smsCodeGroup.style.flexDirection = "column";
-        } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
+    document.getElementById('phoneInput').addEventListener('input',function(){
+        let v=this.value.replace(/[^0-9]/g,''); if(v.length>11)v=v.slice(0,11);
+        this.value=v.length<4?v:v.length<8?v.slice(0,3)+'-'+v.slice(3):v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
     });
 
-    verifySmsBtn.addEventListener("click", async function () {
-        const phone = document.getElementById("phoneInput").value.trim();
-        const code  = smsCodeInput.value.trim();
-        if (!code) { alert("인증번호를 입력해주세요."); return; }
-        const res = await fetch("/api/sms/verify", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: phone, code: code })
-        });
-        if (res.ok) {
-            smsHint.textContent = "✓ 인증이 완료되었습니다.";
-            smsHint.style.color = "#10b981";
-            document.getElementById("phoneInput").readOnly = true;
-            sendSmsBtn.disabled = true;
-            smsCodeInput.disabled = true;
-            verifySmsBtn.disabled = true;
-        } else {
-            smsHint.textContent = "✗ 인증번호가 일치하지 않습니다.";
-            smsHint.style.color = "#ef4444";
-        }
+    sendCodeBtn.addEventListener('click',async function(){
+        const email=emailInput.value.trim(); if(!email){alert('이메일을 입력해주세요.');return;}
+        sendCodeBtn.disabled=true; showSendingToast('이메일 발송중입니다');
+        try{
+            const res=await fetch('/api/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+            if(res.ok){alert('인증 코드가 발송되었습니다.');codeGroup.style.display='flex';codeGroup.style.flexDirection='column';}
+            else alert('발송에 실패했습니다.');
+        }catch(e){alert('발송에 실패했습니다.');}finally{hideSendingToast();sendCodeBtn.disabled=false;}
+    });
+    verifyCodeBtn.addEventListener('click',async function(){
+        const email=emailInput.value.trim(),code=codeInput.value.trim(); if(!code){alert('인증 코드를 입력해주세요.');return;}
+        const res=await fetch('/api/email/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,code})});
+        if(res.ok){codeHint.textContent='✓ 인증이 완료되었습니다.';codeHint.style.color='#10b981';emailInput.readOnly=true;sendCodeBtn.disabled=true;codeInput.disabled=true;verifyCodeBtn.disabled=true;}
+        else{codeHint.textContent='✗ 인증 코드가 일치하지 않습니다.';codeHint.style.color='#ef4444';}
     });
 
-    // ===== 이메일 인증 =====
-    sendCodeBtn.addEventListener("click", async function () {
-        const email = emailInput.value.trim();
-        if (!email) { alert("이메일을 입력해주세요."); return; }
-
-        sendCodeBtn.disabled = true;
-        showSendingToast("이메일 발송중입니다");
-        try {
-            const res = await fetch("/api/email/send", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: email })
-            });
-            if (res.ok) {
-                alert("인증 코드가 발송되었습니다.");
-                codeGroup.style.display = "flex";
-                codeGroup.style.flexDirection = "column";
-            } else { alert("발송에 실패했습니다. 다시 시도해주세요."); }
-        } catch (e) {
-            alert("발송에 실패했습니다. 다시 시도해주세요.");
-        } finally {
-            hideSendingToast();
-            sendCodeBtn.disabled = false;
-        }
+    const sendSmsBtn=document.getElementById('sendSmsBtn'),smsCodeGroup=document.getElementById('smsCodeGroup'),smsCodeInput=document.getElementById('smsCodeInput'),verifySmsBtn=document.getElementById('verifySmsBtn'),smsHint=document.getElementById('smsHint');
+    sendSmsBtn.addEventListener('click',async function(){
+        const phone=document.getElementById('phoneInput').value.trim(); if(!phone){alert('휴대폰 번호를 입력해주세요.');return;}
+        const res=await fetch('/api/sms/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone})});
+        if(res.ok){alert('인증번호가 발송되었습니다.');smsCodeGroup.style.display='flex';smsCodeGroup.style.flexDirection='column';}else alert('발송에 실패했습니다.');
+    });
+    verifySmsBtn.addEventListener('click',async function(){
+        const phone=document.getElementById('phoneInput').value.trim(),code=smsCodeInput.value.trim(); if(!code){alert('인증번호를 입력해주세요.');return;}
+        const res=await fetch('/api/sms/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone,code})});
+        if(res.ok){smsHint.textContent='✓ 인증이 완료되었습니다.';smsHint.style.color='#10b981';document.getElementById('phoneInput').readOnly=true;sendSmsBtn.disabled=true;smsCodeInput.disabled=true;verifySmsBtn.disabled=true;}
+        else{smsHint.textContent='✗ 인증번호가 일치하지 않습니다.';smsHint.style.color='#ef4444';}
     });
 
-    // 이메일 발송중 오버레이 (중앙 원형 점 스피너)
-    function showSendingToast(message) {
-        let overlay = document.getElementById("sendingOverlay");
-        if (!overlay) {
-            // 스피너 점 8개를 원형으로 배치
-            let dots = "";
-            const total = 8;
-            for (let i = 0; i < total; i++) {
-                const angle = i * (360 / total);
-                const opacity = 0.15 + (0.85 * i / (total - 1)); // 연함→진함
-                dots +=
-                    '<span style="position:absolute;top:50%;left:50%;width:15px;height:15px;margin:-7.5px;' +
-                    'border-radius:50%;background:#2563eb;opacity:' + opacity.toFixed(2) + ';' +
-                    'transform:rotate(' + angle + 'deg) translateY(-32px);"></span>';
-            }
 
-            overlay = document.createElement("div");
-            overlay.id = "sendingOverlay";
-            overlay.style.cssText =
-                "position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;" +
-                "align-items:center;justify-content:center;gap:26px;" +
-                "background:rgba(245,246,250,.78);backdrop-filter:blur(2px);font-family:inherit;";
-            overlay.innerHTML =
-                '<div style="position:relative;width:80px;height:80px;animation:sendingSpin .8s steps(8) infinite;">' +
-                dots +
-                '</div>' +
-                '<div style="font-size:16px;font-weight:700;color:#1c1e26;letter-spacing:-0.3px;">' +
-                '<span id="sendingOverlayMsg"></span>' +
-                '<span id="sendingOverlayDots" style="display:inline-block;width:1.2em;text-align:left;"></span>' +
-                '</div>';
-            document.body.appendChild(overlay);
-
-            const style = document.createElement("style");
-            style.textContent = "@keyframes sendingSpin{to{transform:rotate(360deg)}}";
-            document.head.appendChild(style);
+    function showSendingToast(msg) {
+        let o = document.getElementById('sendingOverlay');
+        if (!o) {
+            let dots = '';
+            for (let i=0;i<8;i++) { const a=i*45, op=(0.15+0.85*i/7).toFixed(2); dots += `<span style="position:absolute;top:50%;left:50%;width:15px;height:15px;margin:-7.5px;border-radius:50%;background:#2563eb;opacity:${op};transform:rotate(${a}deg) translateY(-32px);"></span>`; }
+            o = document.createElement('div'); o.id = 'sendingOverlay';
+            o.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:rgba(200,216,240,.85);backdrop-filter:blur(4px);font-family:inherit;';
+            o.innerHTML = `<div style="position:relative;width:80px;height:80px;animation:ss .8s steps(8) infinite;">${dots}</div><div style="font-size:16px;font-weight:700;color:#1e3a6e;"><span id="som"></span><span id="sod" style="display:inline-block;width:1.2em;text-align:left;"></span></div>`;
+            document.body.appendChild(o);
+            const s=document.createElement('style'); s.textContent='@keyframes ss{to{transform:rotate(360deg)}}'; document.head.appendChild(s);
         }
-        // 메시지는 고정, 점만 칸 안에서 늘어남 (. → .. → ...)
-        document.getElementById("sendingOverlayMsg").textContent = message;
-        const dotEl = document.getElementById("sendingOverlayDots");
-        let step = 1;
-        dotEl.textContent = ".";
-        clearInterval(window._sendingDotTimer);
-        window._sendingDotTimer = setInterval(function () {
-            step = (step % 3) + 1;
-            dotEl.textContent = ".".repeat(step);
-        }, 400);
-
-        overlay.style.display = "flex";
+        document.getElementById('som').textContent = msg;
+        const d = document.getElementById('sod'); let step=1; d.textContent='.';
+        clearInterval(window._sdt); window._sdt = setInterval(()=>{step=step%3+1;d.textContent='.'.repeat(step);},400);
+        o.style.display='flex';
     }
+    function hideSendingToast() { clearInterval(window._sdt); const o=document.getElementById('sendingOverlay'); if(o) o.style.display='none'; }
 
-    function hideSendingToast() {
-        clearInterval(window._sendingDotTimer);
-        const overlay = document.getElementById("sendingOverlay");
-        if (overlay) overlay.style.display = "none";
-    }
 
-    verifyCodeBtn.addEventListener("click", async function () {
-        const email = emailInput.value.trim();
-        const code  = codeInput.value.trim();
-        if (!code) { alert("인증 코드를 입력해주세요."); return; }
-        const res = await fetch("/api/email/verify", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email, code: code })
-        });
-        if (res.ok) {
-            codeHint.textContent = "✓ 인증이 완료되었습니다.";
-            codeHint.style.color = "#10b981";
-            emailInput.readOnly = true;
-            sendCodeBtn.disabled = true;
-            codeInput.disabled = true;
-            verifyCodeBtn.disabled = true;
-        } else {
-            codeHint.textContent = "✗ 인증 코드가 일치하지 않습니다.";
-            codeHint.style.color = "#ef4444";
-        }
+    const pif=document.getElementById('profileImageFile'), pv=document.getElementById('preview'), fn=document.getElementById('fileName');
+    pif.addEventListener('change', function() {
+        const f=pif.files[0];
+        if(f){const r=new FileReader();r.onload=e=>{pv.style.backgroundImage='url('+e.target.result+')';pv.textContent='';};r.readAsDataURL(f);fn.textContent=f.name;}
+        else{pv.style.backgroundImage='';pv.textContent='👤';fn.textContent='선택 사항이에요';}
     });
-    // 프로필 이미지 원형 미리보기
-    const profileImageFile = document.getElementById("profileImageFile");
-    const preview = document.getElementById("preview");
-    const fileName = document.getElementById("fileName");
-    profileImageFile.addEventListener("change", function () {
-        const file = profileImageFile.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.style.backgroundImage = "url(" + e.target.result + ")";
-                preview.textContent = "";
-            };
-            reader.readAsDataURL(file);
-            fileName.textContent = file.name;
-        } else {
-            preview.style.backgroundImage = "";
-            preview.textContent = "👤";
-            fileName.textContent = "선택 사항이에요";
-        }
+
+    form.addEventListener('submit',function(e){
+        if(!form.name.value.trim()||!form.email.value.trim()||!pwInput.value||!pwConfirmInput.value||!form.phone.value.trim()){e.preventDefault();alert('필수 항목을 모두 입력해 주세요.');return;}
+        if(pwInput.value!==pwConfirmInput.value){e.preventDefault();alert('비밀번호가 일치하지 않습니다.');}
     });
 </script>
-
 {{> layout/footer}}

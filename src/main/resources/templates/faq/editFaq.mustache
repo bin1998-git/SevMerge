@@ -310,114 +310,127 @@
         .ef-content { grid-template-columns: 1fr; }
         .ef-sidebar { display: none; }
     }
+
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    .ef-hero { backdrop-filter: blur(20px); background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6); }
+    .ef-content-bg { background: rgba(176,200,232,.25); backdrop-filter: blur(8px); }
+    .ef-card { backdrop-filter: blur(16px); background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85); box-shadow: 0 8px 32px rgba(37,99,235,.08); }
+    .ef-input, .ef-textarea { background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); color: #1e3a6e; }
+    .ef-input:focus, .ef-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .ef-side-card { backdrop-filter: blur(12px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); }
+    .ef-warn-card { background: rgba(254,243,199,.7); border: 1px solid rgba(253,230,138,.8); }
+    .ef-btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 4px 14px rgba(37,99,235,.3); border-radius: 20px; }
+    .ef-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .ef-btn-secondary { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; border-radius: 20px; }
+    .ef-btn-secondary:hover { background: rgba(255,255,255,.9); }
 </style>
 
 <div class="ef-wrap">
 
-<section class="ef-hero">
-    <div class="ef-eyebrow">FAQ Management</div>
-    <div class="ef-hero-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </div>
-    <h1>FAQ 수정</h1>
-    <p>등록된 질문과 답변을 수정합니다.</p>
-</section>
-
-<div class="ef-content-bg">
-    <div class="ef-content">
-
-        <!-- 폼 -->
-        <div class="ef-card">
-            <h2 class="ef-card-title">
-                FAQ 수정
-                <span class="ef-id-badge">#{{faq.id}}</span>
-            </h2>
-            <form action="/faqs/update/{{faq.id}}" method="post">
-                <div class="ef-group">
-                    <div class="ef-label-row">
-                        <span class="ef-label">질문</span>
-                        <span class="ef-required">REQUIRED</span>
-                    </div>
-                    <input class="ef-input" type="text" name="question"
-                           value="{{faq.question}}" required>
-                </div>
-                <div class="ef-group">
-                    <div class="ef-label-row">
-                        <span class="ef-label">답변</span>
-                        <span class="ef-required">REQUIRED</span>
-                    </div>
-                    <textarea class="ef-textarea" name="answer" rows="8" required>{{faq.answer}}</textarea>
-                </div>
-                <hr class="ef-divider">
-                <div class="ef-actions">
-                    <a href="/policys/faq" class="ef-btn-secondary">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        취소
-                    </a>
-                    <button type="submit" class="ef-btn-primary">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-                            <path d="M4 10L8.5 14.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        저장하기
-                    </button>
-                </div>
-            </form>
+    <section class="ef-hero">
+        <div class="ef-eyebrow">FAQ Management</div>
+        <div class="ef-hero-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </div>
+        <h1>FAQ 수정</h1>
+        <p>등록된 질문과 답변을 수정합니다.</p>
+    </section>
 
-        <!-- 사이드바 -->
-        <aside class="ef-sidebar">
-            <div class="ef-warn-card">
-                <div class="ef-warn-title">
-                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-                        <path d="M10 3L18 17H2L10 3Z" stroke="#92400e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10 9v4M10 14.5v.5" stroke="#92400e" stroke-width="1.6" stroke-linecap="round"/>
-                    </svg>
-                    수정 전 확인
-                </div>
-                <div class="ef-warn-body">
-                    저장하면 <strong>기존 내용이 즉시 교체</strong>됩니다.<br>
-                    수정 전 내용으로 되돌릴 수 없으니 신중하게 작성해 주세요.
-                </div>
+    <div class="ef-content-bg">
+        <div class="ef-content">
+
+            <!-- 폼 -->
+            <div class="ef-card">
+                <h2 class="ef-card-title">
+                    FAQ 수정
+                    <span class="ef-id-badge">#{{faq.id}}</span>
+                </h2>
+                <form action="/faqs/update/{{faq.id}}" method="post">
+                    <div class="ef-group">
+                        <div class="ef-label-row">
+                            <span class="ef-label">질문</span>
+                            <span class="ef-required">REQUIRED</span>
+                        </div>
+                        <input class="ef-input" type="text" name="question"
+                               value="{{faq.question}}" required>
+                    </div>
+                    <div class="ef-group">
+                        <div class="ef-label-row">
+                            <span class="ef-label">답변</span>
+                            <span class="ef-required">REQUIRED</span>
+                        </div>
+                        <textarea class="ef-textarea" name="answer" rows="8" required>{{faq.answer}}</textarea>
+                    </div>
+                    <hr class="ef-divider">
+                    <div class="ef-actions">
+                        <a href="/policys/faq" class="ef-btn-secondary">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                                <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            취소
+                        </a>
+                        <button type="submit" class="ef-btn-primary">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                                <path d="M4 10L8.5 14.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            저장하기
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <div class="ef-side-card">
-                <div class="ef-side-title">
-                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
-                        <path d="M10 9v5M10 6.5v.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    </svg>
-                    수정 가이드
+            <!-- 사이드바 -->
+            <aside class="ef-sidebar">
+                <div class="ef-warn-card">
+                    <div class="ef-warn-title">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+                            <path d="M10 3L18 17H2L10 3Z" stroke="#92400e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 9v4M10 14.5v.5" stroke="#92400e" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                        수정 전 확인
+                    </div>
+                    <div class="ef-warn-body">
+                        저장하면 <strong>기존 내용이 즉시 교체</strong>됩니다.<br>
+                        수정 전 내용으로 되돌릴 수 없으니 신중하게 작성해 주세요.
+                    </div>
                 </div>
-                <ul class="ef-tip-list">
-                    <li><span class="tip-dot"></span>질문의 의미가 바뀌지 않도록 주의하세요.</li>
-                    <li><span class="tip-dot"></span>오탈자나 잘못된 정보를 우선 확인하세요.</li>
-                    <li><span class="tip-dot"></span>답변이 길 경우 줄바꿈으로 구조를 정리하세요.</li>
-                    <li><span class="tip-dot"></span>관련 링크나 페이지를 언급하면 더 유용합니다.</li>
-                </ul>
-            </div>
 
-            <div class="ef-side-card">
-                <div class="ef-side-title">
-                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10 2a8 8 0 1 1 0 16A8 8 0 0 1 10 2Z" stroke="currentColor" stroke-width="1.6"/>
-                        <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    좋은 답변의 조건
+                <div class="ef-side-card">
+                    <div class="ef-side-title">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M10 9v5M10 6.5v.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                        수정 가이드
+                    </div>
+                    <ul class="ef-tip-list">
+                        <li><span class="tip-dot"></span>질문의 의미가 바뀌지 않도록 주의하세요.</li>
+                        <li><span class="tip-dot"></span>오탈자나 잘못된 정보를 우선 확인하세요.</li>
+                        <li><span class="tip-dot"></span>답변이 길 경우 줄바꿈으로 구조를 정리하세요.</li>
+                        <li><span class="tip-dot"></span>관련 링크나 페이지를 언급하면 더 유용합니다.</li>
+                    </ul>
                 </div>
-                <ul class="ef-tip-list">
-                    <li><span class="tip-dot"></span>핵심을 먼저, 부연 설명은 뒤에</li>
-                    <li><span class="tip-dot"></span>전문 용어는 쉬운 말로 풀어서</li>
-                    <li><span class="tip-dot"></span>단계가 있으면 번호 매기기 활용</li>
-                </ul>
-            </div>
-        </aside>
 
+                <div class="ef-side-card">
+                    <div class="ef-side-title">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 2a8 8 0 1 1 0 16A8 8 0 0 1 10 2Z" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        좋은 답변의 조건
+                    </div>
+                    <ul class="ef-tip-list">
+                        <li><span class="tip-dot"></span>핵심을 먼저, 부연 설명은 뒤에</li>
+                        <li><span class="tip-dot"></span>전문 용어는 쉬운 말로 풀어서</li>
+                        <li><span class="tip-dot"></span>단계가 있으면 번호 매기기 활용</li>
+                    </ul>
+                </div>
+            </aside>
+
+        </div>
     </div>
-</div>
 
 </div><!-- /ef-wrap -->
 

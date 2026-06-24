@@ -17,6 +17,7 @@ public class ChatMessageResponse {
     private Long senderId;
     private String senderName;
     private String text;
+    private String type;
     private Timestamp createdAt;
     private String date;   // yyyy/MM/dd (날짜 구분선용)
     private String time;   // HH:mm (메시지 옆 시간)

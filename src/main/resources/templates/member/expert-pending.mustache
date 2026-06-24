@@ -1,14 +1,171 @@
 {{> layout/header}}
-<section style="padding:100px 28px; text-align:center;">
-    <div style="max-width:480px; margin:0 auto;">
-        <div style="font-size:56px; margin-bottom:20px;">🕐</div>
-        <h1 style="font-size:24px; font-weight:900; color:#1c1e26; margin-bottom:12px;">승인 대기 중입니다</h1>
-        <p style="font-size:15px; color:#9ca3af; line-height:1.7;">
-            전문가 가입 신청이 완료되었습니다.<br>
-            관리자 승인 후 로그인하여 활동하실 수 있어요.<br>
-            승인까지 시간이 걸릴 수 있습니다.
-        </p>
-        <a href="/" style="display:inline-block; margin-top:32px; padding:13px 28px; background:#2563eb; color:#fff; border-radius:10px; font-size:14px; font-weight:700; text-decoration:none;">홈으로</a>
+<style>
+
+    :root { --blue: #2563eb; --blue-dark: #1d4ed8; --navy: #172554; }
+
+    .status-section {
+        min-height: calc(100vh - 64px);
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
+            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        position: relative; overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        padding: 60px 28px;
+    }
+    .status-section::before {
+        content: ''; position: fixed; inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 40px 40px; opacity: .35; pointer-events: none;
+    }
+    .status-inner {
+        width: 100%; max-width: 560px;
+        position: relative; z-index: 2;
+    }
+    .glass-card {
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 28px; padding: 52px 48px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative; text-align: center;
+    }
+    .glass-card::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    }
+    .page-logo { font-size: 22px; font-weight: 900; color: #1e3a8a; margin-bottom: 28px; letter-spacing: -1px; }
+    .page-logo .hl { color: var(--blue); }
+    .status-icon-wrap {
+        width: 80px; height: 80px; border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 24px;
+    }
+    .status-title { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 10px; letter-spacing: -0.5px; }
+    .status-desc { font-size: 14px; color: #4a6fa5; line-height: 1.8; margin-bottom: 28px; }
+
+    /* 사유 박스 */
+    .reason-box {
+        background: rgba(254,226,226,.5); border: 1px solid rgba(252,165,165,.6);
+        border-radius: 14px; padding: 18px 20px; text-align: left; margin-bottom: 28px;
+    }
+    .reason-label { font-size: 11px; font-weight: 700; color: #ef4444; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 8px; }
+    .reason-text { font-size: 14px; color: #1e3a6e; line-height: 1.6; }
+
+    /* 버튼 */
+    .status-btn-primary {
+        display: block; width: 100%; padding: 15px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
+        cursor: pointer; font-family: inherit; text-decoration: none;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s; margin-bottom: 10px;
+    }
+    .status-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+    .status-btn-outline {
+        display: block; width: 100%; padding: 14px;
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.6); color: #2d4a7a;
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 25px;
+        font-size: 14px; font-weight: 700; text-decoration: none;
+        transition: all .15s; box-sizing: border-box;
+    }
+    .status-btn-outline:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); }
+
+    /* 하단 링크 */
+    .status-links {
+        display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px;
+        margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(37,99,235,.1);
+    }
+    .status-links a { font-size: 13px; color: #4a6fa5; text-decoration: none; transition: color .15s; }
+    .status-links a:hover { color: var(--blue); text-decoration: underline; }
+
+    /* 폼 (재신청용) */
+    .form-section { text-align: left; }
+    .section-label {
+        font-size: 11px; font-weight: 700; color: var(--blue);
+        letter-spacing: .8px; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .f-divider { height: 1px; background: rgba(37,99,235,.1); margin: 20px 0; border: none; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-label .opt { color: #93aecf; font-weight: 500; margin-left: 4px; }
+    .form-input, .form-textarea {
+        padding: 13px 16px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 12px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--blue); background: rgba(255,255,255,.95);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: #4a6fa5; }
+
+    .skill-input-wrap { display: flex; gap: 8px; }
+    .skill-input-wrap .form-input { flex: 1; }
+    .skill-add-btn {
+        padding: 0 18px; background: #1e3a6e; color: #fff;
+        border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
+    }
+    .skill-add-btn:hover { background: var(--blue); }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .skill-tag {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+        background: rgba(37,99,235,.1); color: var(--blue);
+        border: 1px solid rgba(37,99,235,.2); border-radius: 20px;
+        font-size: 12px; font-weight: 600;
+    }
+    .skill-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .skill-tag button:hover { color: #ef4444; }
+
+    @media (max-width: 640px) {
+        .status-section { padding: 40px 16px; }
+        .glass-card { padding: 36px 24px; }
+    }
+
+</style>
+
+<section class="status-section">
+    <div class="status-inner">
+        <div class="glass-card">
+            <div class="page-logo">I<span class="hl">code</span>U</div>
+
+            <div class="status-icon-wrap" style="background: rgba(37,99,235,.1);">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" style="color:#2563eb;">
+                    <path d="M18 22H6v-2h12v2ZM6 20H4v-2h2v2Zm14 0h-2v-2h2v2ZM4 18H2V6h2v12Zm18 0h-2V6h2v12Zm-5-1h-2v-2h2v2Zm-2-2h-2v-2h2v2Zm-2-2h-2V6h2v7ZM6 6H4V4h2v2Zm14 0h-2V4h2v2Zm-2-2H6V2h12v2Z"/>
+                </svg>
+            </div>
+
+            <h1 class="status-title">승인 대기 중입니다</h1>
+            <p class="status-desc">
+                전문가 가입 신청이 완료되었습니다.<br>
+                관리자 승인 후 로그인하여 활동하실 수 있어요.<br>
+                승인까지 1~2 영업일이 소요될 수 있습니다.
+            </p>
+
+            <div style="background:rgba(37,99,235,.06); border:1px solid rgba(37,99,235,.12); border-radius:14px; padding:18px 20px; margin-bottom:28px; display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:#2d4a7a; font-weight:600;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color:#2563eb; flex-shrink:0;">
+                        <path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/>
+                    </svg>
+                    신청서 검토 중
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:#93aecf;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">
+                        <path d="M5 23H3v-2h2v2Zm8 0h-2v-4h2v4ZM3 21H1v-2h2v2Zm4 0H5v-2h2v2Zm-2-2H3v-2h2v2Zm6 0H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10 0h-4v-2h4v2ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm6-6h2v2h-2v2h-2V5h-2V3h2V1h2v2Zm-8 2h-2V1h2v4Z"/>
+                    </svg>
+                    승인 완료 후 활동 시작
+                </div>
+            </div>
+
+            <a href="/" class="status-btn-primary">홈으로 돌아가기</a>
+        </div>
     </div>
 </section>
 {{> layout/footer}}

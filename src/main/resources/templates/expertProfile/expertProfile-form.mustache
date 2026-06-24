@@ -1,495 +1,85 @@
 {{> layout/header}}
 
 <style>
-    /* ── 탭 헤더 ── */
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
     .edit-tab-header {
-        background: #fff;
-        border-bottom: 1.5px solid #eaecf4;
-        position: sticky;
-        top: 64px;
-        z-index: 90;
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6);
+        position: sticky; top: 64px; z-index: 90;
     }
-    .edit-tab-inner {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 0 28px;
-        height: 58px;
-        display: flex;
-        align-items: center;
-        gap: 0;
-    }
-    .edit-tab-title {
-        font-size: 14px;
-        font-weight: 900;
-        color: #1c1e26;
-        padding-right: 20px;
-        margin-right: 4px;
-        white-space: nowrap;
-        letter-spacing: -0.3px;
-    }
-    .edit-tab {
-        padding: 0 18px;
-        height: 58px;
-        display: flex;
-        align-items: center;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: #9ca3af;
-        border-bottom: 2.5px solid transparent;
-        text-decoration: none;
-        transition: color .15s, border-color .15s;
-        white-space: nowrap;
-    }
-    .edit-tab:hover  { color: #374151; }
+    .edit-tab-inner { max-width: 860px; margin: 0 auto; padding: 0 28px; height: 58px; display: flex; align-items: center; }
+    .edit-tab-title { font-size: 14px; font-weight: 900; color: #1e3a6e; padding-right: 20px; margin-right: 4px; white-space: nowrap; letter-spacing: -0.3px; }
+    .edit-tab { padding: 0 18px; height: 58px; display: flex; align-items: center; font-size: 13.5px; font-weight: 600; color: #4a6fa5; border-bottom: 2.5px solid transparent; text-decoration: none; transition: all .15s; white-space: nowrap; }
+    .edit-tab:hover { color: #1e3a6e; }
     .edit-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
 
-    /* ── 페이지 래퍼 ── */
-    .profile-page {
-        flex: 1;
-        background: #f5f6fa;
-        padding: 40px 28px 60px;
-    }
-    .profile-page-inner {
-        max-width: 860px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
+    .profile-page { flex: 1; padding: 36px 28px 60px; position: relative; z-index: 1; }
+    .profile-page-inner { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
 
-    /* ── 메인 폼 카드 ── */
+    /* 글래스 폼 카드 */
     .form-card {
-        background: #fff;
-        border: 1.5px solid #eaecf4;
-        border-radius: 16px;
-        overflow: hidden;
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 24px; overflow: hidden;
+        box-shadow: 0 16px 48px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
     }
-    .form-card-header {
-        padding: 24px 28px 20px;
-        border-bottom: 1.5px solid #f1f3f9;
-    }
-    .form-card-title {
-        font-size: 16px;
-        font-weight: 800;
-        color: #1c1e26;
-        letter-spacing: -0.4px;
-        margin-bottom: 4px;
-    }
-    .form-card-sub {
-        font-size: 13px;
-        color: #9ca3af;
-        font-weight: 400;
-    }
-    .form-card-body {
-        padding: 28px;
-        display: flex;
-        flex-direction: column;
-        gap: 26px;
-    }
+    .form-card-header { padding: 24px 28px 20px; border-bottom: 1px solid rgba(37,99,235,.08); }
+    .form-card-title { font-size: 16px; font-weight: 800; color: #1e3a6e; letter-spacing: -0.4px; margin-bottom: 4px; }
+    .form-card-sub { font-size: 13px; color: #4a6fa5; }
+    .form-card-body { padding: 28px; display: flex; flex-direction: column; gap: 26px; }
 
-    /* ── 폼 필드 공통 ── */
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    .form-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: #374151;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        letter-spacing: -0.1px;
-    }
-    .form-label .req {
-        color: #ef4444;
-        font-size: 14px;
-        line-height: 1;
-    }
-    .form-label-badge {
-        font-size: 11px;
-        font-weight: 600;
-        color: #6b7280;
-        background: #f3f4f8;
-        border-radius: 5px;
-        padding: 2px 7px;
-        margin-left: 2px;
-    }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; display: flex; align-items: center; gap: 5px; }
+    .form-label .req { color: #ef4444; font-size: 14px; }
+    .form-label-badge { font-size: 11px; font-weight: 600; color: #4a6fa5; background: rgba(37,99,235,.08); border-radius: 5px; padding: 2px 7px; margin-left: 2px; }
 
-    /* select */
-    .form-select-wrap {
-        position: relative;
-    }
-    .form-select-wrap::after {
-        content: '';
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-left: 4.5px solid transparent;
-        border-right: 4.5px solid transparent;
-        border-top: 5.5px solid #9ca3af;
-        pointer-events: none;
-    }
-    .form-select {
-        width: 100%;
-        padding: 13px 44px 13px 16px;
-        background: #f8f9fc;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 10px;
-        font-size: 14px;
-        font-family: inherit;
-        color: #1c1e26;
-        outline: none;
-        cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        transition: border-color .15s, background .15s;
-    }
-    .form-select:focus {
-        border-color: #2563eb;
-        background: #fff;
-    }
-    .form-select option[value=""] { color: #c4c9d9; }
+    .form-select-wrap { position: relative; }
+    .form-select-wrap::after { content: ''; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 4.5px solid transparent; border-right: 4.5px solid transparent; border-top: 5.5px solid #93aecf; pointer-events: none; }
+    .form-select { width: 100%; padding: 13px 44px 13px 16px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; transition: all .15s; }
+    .form-select:focus { border-color: #2563eb; background: rgba(255,255,255,.95); }
 
-    /* input */
-    .form-input-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-    .form-input-icon {
-        position: absolute;
-        left: 14px;
-        color: #c4c9d9;
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-        pointer-events: none;
-    }
-    .form-input {
-        width: 100%;
-        padding: 13px 16px 13px 42px;
-        background: #f8f9fc;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 10px;
-        font-size: 14px;
-        font-family: inherit;
-        color: #1c1e26;
-        outline: none;
-        transition: border-color .15s, background .15s;
-    }
-    .form-input:focus {
-        border-color: #2563eb;
-        background: #fff;
-    }
-    .form-input::placeholder { color: #c4c9d9; }
+    .form-input-wrap { position: relative; display: flex; align-items: center; }
+    .form-input-icon { position: absolute; left: 14px; color: #93aecf; width: 16px; height: 16px; flex-shrink: 0; pointer-events: none; }
+    .form-input { width: 100%; padding: 13px 16px 13px 42px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-input::placeholder { color: #93aecf; }
 
-    /* textarea */
-    .form-textarea {
-        width: 100%;
-        padding: 14px 16px;
-        background: #f8f9fc;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 10px;
-        font-size: 14px;
-        font-family: inherit;
-        color: #1c1e26;
-        outline: none;
-        resize: vertical;
-        min-height: 160px;
-        line-height: 1.75;
-        transition: border-color .15s, background .15s;
-    }
-    .form-textarea:focus {
-        border-color: #2563eb;
-        background: #fff;
-    }
-    .form-textarea::placeholder { color: #c4c9d9; }
+    .form-textarea { width: 100%; padding: 14px 16px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; resize: vertical; min-height: 160px; line-height: 1.75; transition: all .15s; }
+    .form-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-textarea::placeholder { color: #93aecf; }
 
-    /* hint */
-    .form-hint {
-        font-size: 12px;
-        color: #b0b8cc;
-        font-weight: 400;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .form-hint::before {
-        content: '';
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23c4c9d9' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
-        background-size: cover;
-        flex-shrink: 0;
-    }
+    .form-hint { font-size: 12px; color: #4a6fa5; display: flex; align-items: center; gap: 5px; }
+    .form-hint::before { content: ''; display: inline-block; width: 14px; height: 14px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2393aecf' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E"); background-size: cover; flex-shrink: 0; }
 
-    /* ── 구분선 ── */
-    .form-divider {
-        border: none;
-        border-top: 1.5px solid #f1f3f9;
-        margin: 2px 0;
-    }
+    .form-divider { border: none; border-top: 1px solid rgba(37,99,235,.08); margin: 2px 0; }
 
-    /* ── 기술 스택 박스 ── */
-    .stack-section {
-        display: none;
-        flex-direction: column;
-        gap: 14px;
-        animation: stackFadeIn .2s ease;
-    }
+    /* 기술 스택 */
+    .stack-section { display: none; flex-direction: column; gap: 14px; animation: stackFadeIn .2s ease; }
     .stack-section.visible { display: flex; }
-    @keyframes stackFadeIn {
-        from { opacity: 0; transform: translateY(-6px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    .stack-box {
-        background: #f8f9fc;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 10px;
-        padding: 18px 16px 14px;
-    }
-    .stack-box-label {
-        font-size: 11.5px;
-        font-weight: 700;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 12px;
-    }
-    .stack-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
+    @keyframes stackFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .stack-box { background: rgba(255,255,255,.5); border: 1.5px solid rgba(37,99,235,.12); border-radius: 12px; padding: 18px 16px 14px; }
+    .stack-box-label { font-size: 11px; font-weight: 700; color: #4a6fa5; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .stack-grid { display: flex; flex-wrap: wrap; gap: 8px; }
     .stack-chip { display: flex; align-items: center; cursor: pointer; }
     .stack-chip input[type="checkbox"] { display: none; }
-    .stack-chip-label {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12.5px;
-        font-weight: 600;
-        border: 1.5px solid #e2e5ef;
-        background: #fff;
-        color: #6b7280;
-        cursor: pointer;
-        transition: all .15s;
-        user-select: none;
-        letter-spacing: -0.1px;
-    }
-    .stack-chip input:checked + .stack-chip-label {
-        background: #2563eb;
-        color: #fff;
-        border-color: #2563eb;
-        box-shadow: 0 2px 8px rgba(37,99,235,.25);
-    }
-    .stack-chip-label:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: #eff6ff;
-    }
-    .stack-chip input:checked + .stack-chip-label:hover {
-        background: #1d4ed8;
-        border-color: #1d4ed8;
-        color: #fff;
-    }
-    .stack-preview {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #eaecf4;
-        font-size: 12.5px;
-        color: #6b7280;
-        min-height: 22px;
-        flex-wrap: wrap;
-    }
-    .stack-preview-label {
-        font-weight: 700;
-        color: #2563eb;
-        flex-shrink: 0;
-    }
-    .stack-empty-hint {
-        font-size: 12.5px;
-        color: #c4c9d9;
-    }
+    .stack-chip-label { padding: 6px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 600; border: 1.5px solid rgba(37,99,235,.15); background: rgba(255,255,255,.7); color: #2d4a7a; cursor: pointer; transition: all .15s; user-select: none; }
+    .stack-chip input:checked + .stack-chip-label { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 2px 8px rgba(37,99,235,.25); }
+    .stack-chip-label:hover { border-color: #2563eb; color: #2563eb; background: rgba(255,255,255,.95); }
+    .stack-chip input:checked + .stack-chip-label:hover { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+    .stack-preview { display: flex; align-items: center; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(37,99,235,.08); font-size: 12.5px; color: #4a6fa5; min-height: 22px; flex-wrap: wrap; }
+    .stack-preview-label { font-weight: 700; color: #2563eb; flex-shrink: 0; }
+    .stack-empty-hint { font-size: 12.5px; color: #93aecf; }
 
-    /* ── 폼 하단 버튼 영역 ── */
-    .form-footer {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 10px;
-        padding: 20px 28px 26px;
-        border-top: 1.5px solid #f1f3f9;
-    }
-    .btn-cancel {
-        padding: 11px 24px;
-        border-radius: 9px;
-        font-size: 14px;
-        font-weight: 600;
-        background: #fff;
-        border: 1.5px solid #e2e5ef;
-        color: #6b7280;
-        cursor: pointer;
-        font-family: inherit;
-        text-decoration: none;
-        transition: border-color .15s, color .15s;
-        display: inline-flex;
-        align-items: center;
-    }
-    .btn-cancel:hover {
-        border-color: #9ca3af;
-        color: #374151;
-    }
-    .btn-submit {
-        padding: 12px 30px;
-        border-radius: 10px;
-        font-size: 14.5px;
-        font-weight: 700;
-        background: #2563eb;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        font-family: inherit;
-        transition: background .15s, box-shadow .15s, transform .1s;
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        letter-spacing: -0.2px;
-    }
-    .btn-submit:hover {
-        background: #1d4ed8;
-        box-shadow: 0 4px 14px rgba(37,99,235,.35);
-    }
-    .btn-submit:active { transform: translateY(1px); }
-    .btn-submit-icon {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-    }
+    /* 버튼 */
+    .form-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 20px 28px 26px; border-top: 1px solid rgba(37,99,235,.08); }
+    .btn-cancel { padding: 11px 24px; border-radius: 20px; font-size: 14px; font-weight: 600; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; cursor: pointer; font-family: inherit; text-decoration: none; transition: all .15s; display: inline-flex; align-items: center; }
+    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-submit { padding: 12px 28px; border-radius: 20px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; cursor: pointer; font-family: inherit; transition: all .15s; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 4px 14px rgba(37,99,235,.3); }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+    .btn-submit-icon { width: 16px; height: 16px; flex-shrink: 0; }
 
-    /* ── FOOTER dark 오버라이드 ── */
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-sky:       #6BA0FF;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
-    }
-    .footer {
-        background: var(--brand-ink) !important;
-        border-top: 1px solid rgba(255,255,255,.06) !important;
-        padding: 40px 32px 28px !important;
-    }
-    .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .footer-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-    .footer-brand-logo {
-        font-size: 20px;
-        font-weight: 800;
-        color: rgba(255,255,255,.85);
-        letter-spacing: .05em;
-    }
-    .footer-brand-logo span { color: var(--brand-sky); }
-    .footer-actions { display: flex; gap: 8px; }
-    .footer-actions .btn-outline {
-        background: transparent;
-        border: 1.5px solid rgba(255,255,255,.18);
-        color: rgba(255,255,255,.55);
-        font-size: 13px;
-        padding: 8px 16px;
-        border-radius: 7px;
-        transition: border-color .15s, color .15s;
-    }
-    .footer-actions .btn-outline:hover {
-        border-color: var(--brand-sky);
-        color: var(--brand-sky);
-    }
-    .footer-nav {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-    }
-    .footer-nav a {
-        font-size: 13px;
-        color: rgba(255,255,255,.45);
-        transition: color .15s;
-    }
-    .footer-nav a:hover { color: rgba(255,255,255,.8); }
-    .footer-nav-sep {
-        display: inline-block;
-        width: 1px;
-        height: 12px;
-        background: rgba(255,255,255,.15);
-        vertical-align: middle;
-    }
-    .footer-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255,255,255,.07);
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .footer-policy-links {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .footer-policy-links a {
-        font-size: 12px;
-        color: rgba(255,255,255,.32);
-        transition: color .15s;
-    }
-    .footer-policy-links a:hover { color: rgba(255,255,255,.6); }
-    .footer-policy-strong {
-        font-weight: 700;
-        color: rgba(255,255,255,.5) !important;
-    }
-    .footer-hours-inline {
-        font-size: 12px;
-        color: rgba(255,255,255,.22);
-    }
-    .footer-copy {
-        font-size: 11px;
-        color: var(--brand-muted) !important;
-        letter-spacing: .02em;
-    }
-
-    /* ── 반응형 ── */
-    @media (max-width: 640px) {
-        .profile-page { padding: 24px 16px 48px; }
-        .form-card-body { padding: 20px 18px; }
-        .form-card-header { padding: 18px 18px 14px; }
-        .form-footer { padding: 16px 18px 20px; }
-        .edit-tab-inner { padding: 0 16px; }
-        .btn-submit { padding: 11px 22px; font-size: 14px; }
-    }
+    @media (max-width: 640px) { .profile-page { padding: 20px 16px 48px; } .form-card-body { padding: 20px 18px; } .form-card-header { padding: 18px 18px 14px; } .form-footer { padding: 16px 18px 20px; } }
 </style>
 
 <!-- 탭 헤더 -->
@@ -569,10 +159,10 @@
                             <span class="req">*</span>
                         </label>
                         <textarea
-                            id="introTextarea"
-                            name="intro"
-                            class="form-textarea"
-                            placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 자유롭게 소개해주세요. (예: 5년차 백엔드 개발자로 ...)"
+                                id="introTextarea"
+                                name="intro"
+                                class="form-textarea"
+                                placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 자유롭게 소개해주세요. (예: 5년차 백엔드 개발자로 ...)"
                         >{{expertProfile.intro}}</textarea>
                         <span class="form-hint">클라이언트가 가장 먼저 읽는 항목입니다. 구체적으로 작성할수록 수주 확률이 높아집니다.</span>
                     </div>
@@ -589,11 +179,11 @@
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
                             </svg>
                             <input
-                                id="githubInput"
-                                type="url"
-                                name="githubUrl"
-                                class="form-input"
-                                placeholder="https://github.com/your-handle"
+                                    id="githubInput"
+                                    type="url"
+                                    name="githubUrl"
+                                    class="form-input"
+                                    placeholder="https://github.com/your-handle"
                             />
                         </div>
                         <span class="form-hint">GitHub, Notion 포트폴리오, 개인 블로그 등 어떤 URL이든 입력 가능합니다.</span>
@@ -619,87 +209,87 @@
 </div><!-- /.profile-page -->
 
 <script>
-(function () {
-    var ALL_STACKS = [
-        'Java','Spring Boot','Python','Django','FastAPI','Node.js','Express',
-        'React','Vue','Angular','TypeScript','Next.js','Nuxt.js','JavaScript','HTML/CSS','Tailwind CSS','SCSS','Webpack','Vite',
-        'Flutter','React Native','Swift','Kotlin','Android','iOS','Dart',
-        'MySQL','PostgreSQL','MongoDB','Redis','Firebase','Docker','AWS',
-        'Figma','Adobe XD','Sketch','Zeplin','Photoshop','Illustrator',
-        'Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','R',
-        'Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender',
-        'Git','Linux','WordPress','Shopify','Nginx','Jenkins','Kubernetes'
-    ];
+    (function () {
+        var ALL_STACKS = [
+            'Java','Spring Boot','Python','Django','FastAPI','Node.js','Express',
+            'React','Vue','Angular','TypeScript','Next.js','Nuxt.js','JavaScript','HTML/CSS','Tailwind CSS','SCSS','Webpack','Vite',
+            'Flutter','React Native','Swift','Kotlin','Android','iOS','Dart',
+            'MySQL','PostgreSQL','MongoDB','Redis','Firebase','Docker','AWS',
+            'Figma','Adobe XD','Sketch','Zeplin','Photoshop','Illustrator',
+            'Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','R',
+            'Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender',
+            'Git','Linux','WordPress','Shopify','Nginx','Jenkins','Kubernetes'
+        ];
 
-    var stackGrid       = document.getElementById('stackGrid');
-    var stackPreview    = document.getElementById('stackPreview');
-    var specialityInput = document.getElementById('specialityInput');
-    var profileForm     = document.getElementById('profileForm');
-    var profileData     = document.getElementById('profileData');
-    var githubInput     = document.getElementById('githubInput');
-    var careerSelect    = document.getElementById('careerSelect');
+        var stackGrid       = document.getElementById('stackGrid');
+        var stackPreview    = document.getElementById('stackPreview');
+        var specialityInput = document.getElementById('specialityInput');
+        var profileForm     = document.getElementById('profileForm');
+        var profileData     = document.getElementById('profileData');
+        var githubInput     = document.getElementById('githubInput');
+        var careerSelect    = document.getElementById('careerSelect');
 
-    var savedCareer     = profileData ? profileData.getAttribute('data-career')     || '' : '';
-    var savedSpeciality = profileData ? profileData.getAttribute('data-speciality') || '' : '';
-    var savedGithub     = profileData ? profileData.getAttribute('data-github')     || '' : '';
+        var savedCareer     = profileData ? profileData.getAttribute('data-career')     || '' : '';
+        var savedSpeciality = profileData ? profileData.getAttribute('data-speciality') || '' : '';
+        var savedGithub     = profileData ? profileData.getAttribute('data-github')     || '' : '';
 
-    // github URL: data 속성 → input (HTML attribute injection 방지)
-    if (githubInput && savedGithub) {
-        githubInput.value = savedGithub;
-    }
-
-    // career select 복원
-    if (careerSelect && savedCareer) {
-        careerSelect.value = savedCareer;
-    }
-
-    var preChecked = savedSpeciality
-        ? savedSpeciality.split(',').map(function (s) { return s.trim(); }).filter(Boolean)
-        : [];
-
-    function getChecked() {
-        return Array.from(stackGrid.querySelectorAll('input[type="checkbox"]:checked'))
-                    .map(function (cb) { return cb.value; });
-    }
-
-    function syncHidden() {
-        var checked = getChecked();
-        specialityInput.value = checked.join(', ');
-        if (checked.length) {
-            stackPreview.innerHTML =
-                '<span class="stack-preview-label">선택됨 ' + checked.length + '개</span> ' +
-                checked.join(', ');
-        } else {
-            stackPreview.innerHTML = '<span class="stack-empty-hint">선택된 기술이 없습니다.</span>';
+        // github URL: data 속성 → input (HTML attribute injection 방지)
+        if (githubInput && savedGithub) {
+            githubInput.value = savedGithub;
         }
-    }
 
-    // 전체 스택 항상 표시
-    ALL_STACKS.forEach(function (tech) {
-        var labelEl = document.createElement('label');
-        labelEl.className = 'stack-chip';
+        // career select 복원
+        if (careerSelect && savedCareer) {
+            careerSelect.value = savedCareer;
+        }
 
-        var cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.value = tech;
-        cb.checked = preChecked.indexOf(tech) !== -1;
-        cb.addEventListener('change', syncHidden);
+        var preChecked = savedSpeciality
+            ? savedSpeciality.split(',').map(function (s) { return s.trim(); }).filter(Boolean)
+            : [];
 
-        var span = document.createElement('span');
-        span.className = 'stack-chip-label';
-        span.textContent = tech;
+        function getChecked() {
+            return Array.from(stackGrid.querySelectorAll('input[type="checkbox"]:checked'))
+                        .map(function (cb) { return cb.value; });
+        }
 
-        labelEl.appendChild(cb);
-        labelEl.appendChild(span);
-        stackGrid.appendChild(labelEl);
-    });
+        function syncHidden() {
+            var checked = getChecked();
+            specialityInput.value = checked.join(', ');
+            if (checked.length) {
+                stackPreview.innerHTML =
+                    '<span class="stack-preview-label">선택됨 ' + checked.length + '개</span> ' +
+                    checked.join(', ');
+            } else {
+                stackPreview.innerHTML = '<span class="stack-empty-hint">선택된 기술이 없습니다.</span>';
+            }
+        }
 
-    syncHidden();
+        // 전체 스택 항상 표시
+        ALL_STACKS.forEach(function (tech) {
+            var labelEl = document.createElement('label');
+            labelEl.className = 'stack-chip';
 
-    profileForm.addEventListener('submit', function () {
-        specialityInput.value = getChecked().join(', ');
-    });
-}());
+            var cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = tech;
+            cb.checked = preChecked.indexOf(tech) !== -1;
+            cb.addEventListener('change', syncHidden);
+
+            var span = document.createElement('span');
+            span.className = 'stack-chip-label';
+            span.textContent = tech;
+
+            labelEl.appendChild(cb);
+            labelEl.appendChild(span);
+            stackGrid.appendChild(labelEl);
+        });
+
+        syncHidden();
+
+        profileForm.addEventListener('submit', function () {
+            specialityInput.value = getChecked().join(', ');
+        });
+    }());
 </script>
 
 {{> layout/footer}}

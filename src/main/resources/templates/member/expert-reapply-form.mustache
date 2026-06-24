@@ -1,37 +1,120 @@
 {{> layout/header}}
 
 <style>
-    .auth-section { padding: 60px 28px 80px; }
-    .auth-inner { max-width: 480px; margin: 0 auto; }
-    .auth-header { text-align: center; margin-bottom: 32px; }
-    .auth-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 8px; }
-    .auth-desc { font-size: 14px; color: #9ca3af; }
-    .auth-form { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 36px; display: flex; flex-direction: column; gap: 18px; }
+    :root { --blue: #2563eb; --blue-dark: #1d4ed8; --navy: #172554; }
+
+    .auth-section {
+        min-height: calc(100vh - 64px);
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
+            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        position: relative; overflow: hidden;
+        display: flex; align-items: flex-start; justify-content: center;
+        padding: 52px 28px 80px;
+    }
+    .auth-section::before {
+        content: ''; position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 40px 40px; opacity: .35; pointer-events: none;
+    }
+
+    .auth-inner {
+        width: 100%; max-width: 640px;
+        position: relative; z-index: 2;
+    }
+
+    .auth-header { text-align: center; margin-bottom: 28px; }
+    .page-logo { font-size: 24px; font-weight: 900; color: #1e3a8a; margin-bottom: 10px; letter-spacing: -1px; }
+    .page-logo .hl { color: var(--blue); }
+    .auth-title { font-size: 24px; font-weight: 900; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 6px; }
+    .auth-desc { font-size: 14px; color: #4a6fa5; }
+
+    /* 글래스 카드 */
+    .auth-form {
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 28px; padding: 48px 52px;
+        display: flex; flex-direction: column; gap: 18px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative;
+    }
+    .auth-form::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    }
+
+    /* 거절 사유 */
+    .reason-box {
+        background: rgba(254,226,226,.5); border: 1px solid rgba(252,165,165,.6);
+        border-radius: 14px; padding: 18px 20px;
+    }
+    .reason-label { font-size: 11px; font-weight: 700; color: #ef4444; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 8px; }
+    .reason-text { font-size: 14px; color: #1e3a6e; line-height: 1.6; }
+
+    /* 폼 요소 */
     .form-group { display: flex; flex-direction: column; gap: 7px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
     .form-label .required { color: #ef4444; margin-left: 2px; }
-    .form-label .opt { color: #c4c9d9; font-weight: 500; margin-left: 4px; }
-    .form-input, .form-textarea { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
-    .form-input:focus, .form-textarea:focus { border-color: #2563eb; background: #fff; }
-    .form-textarea { resize: vertical; min-height: 84px; line-height: 1.6; }
-    .form-hint { font-size: 12px; color: #9ca3af; }
-    .submit-btn { padding: 15px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .submit-btn:hover { background: #1d4ed8; }
-    .reason-box { background: #fff3f3; border: 1px solid #fecaca; border-radius: 12px; padding: 16px 18px; }
-    .reason-label { font-size: 12px; font-weight: 700; color: #ef4444; margin-bottom: 6px; }
-    .reason-text { font-size: 13px; color: #1c1e26; line-height: 1.6; }
+    .form-label .opt { color: #93aecf; font-weight: 500; margin-left: 4px; }
+    .form-input, .form-textarea {
+        padding: 13px 16px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 12px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--blue); background: rgba(255,255,255,.95);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: #4a6fa5; }
+
+    /* 기술 스택 */
     .skill-input-wrap { display: flex; gap: 8px; }
     .skill-input-wrap .form-input { flex: 1; }
-    .skill-add-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
-    .skill-add-btn:hover { background: #2563eb; }
+    .skill-add-btn {
+        padding: 0 18px; background: #1e3a6e; color: #fff;
+        border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
+    }
+    .skill-add-btn:hover { background: var(--blue); }
     .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .skill-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; font-size: 13px; font-weight: 600; }
-    .skill-tag button { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .skill-tag {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+        background: rgba(37,99,235,.1); color: var(--blue);
+        border: 1px solid rgba(37,99,235,.2); border-radius: 20px;
+        font-size: 12px; font-weight: 600;
+    }
+    .skill-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .skill-tag button:hover { color: #ef4444; }
+
+    /* 제출 버튼 */
+    .reapply-submit-btn {
+        padding: 15px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
+        cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+    }
+    .reapply-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+
+    @media (max-width: 720px) {
+        .auth-form { padding: 32px 24px; }
+    }
+    @media (max-width: 480px) {
+        .auth-section { padding: 32px 16px 60px; }
+    }
 </style>
 
 <section class="auth-section">
     <div class="auth-inner">
         <div class="auth-header">
+            <div class="page-logo">I<span class="hl">code</span>U</div>
             <h1 class="auth-title">전문가 재신청</h1>
             <p class="auth-desc">거절 사유를 보완해 다시 신청해 주세요.</p>
         </div>
@@ -47,48 +130,45 @@
 
             <div class="form-group">
                 <label class="form-label">한 줄 소개 <span class="required">*</span></label>
-                <input type="text" name="intro" class="form-input" value="{{profile.intro}}" placeholder="예) 5년차 React 개발자입니다" />
+                <input type="text" name="intro" class="form-input" value="{{profile.intro}}" placeholder="예) 5년차 React 개발자입니다"/>
             </div>
 
             <div class="form-group">
                 <label class="form-label">경력 <span class="required">*</span></label>
                 <textarea name="career" class="form-textarea">{{profile.career}}</textarea>
+                <span class="form-hint">주요 경력을 자유롭게 작성해 주세요.</span>
             </div>
 
             <div class="form-group">
                 <label class="form-label">GitHub 주소 <span class="opt">(선택)</span></label>
-                <input type="text" name="githubUrl" class="form-input" value="{{profile.githubUrl}}" placeholder="https://github.com/username" />
+                <input type="text" name="githubUrl" class="form-input" value="test" placeholder="https://github.com/username"/>
             </div>
 
             <div class="form-group">
                 <label class="form-label">기술 스택 <span class="required">*</span></label>
                 <div class="skill-input-wrap">
-                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter" />
+                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter"/>
                     <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
                 </div>
                 <div id="skillTags" class="skill-tags"></div>
                 <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요.</span>
-                <input type="hidden" name="speciality" id="specialityHidden" value="{{profile.speciality}}" />
+                <input type="hidden" name="speciality" id="specialityHidden" value="{{profile.speciality}}"/>
             </div>
 
-            <button type="submit" class="submit-btn">다시 신청하기</button>
+            <button type="submit" class="reapply-submit-btn">다시 신청하기</button>
         </form>
     </div>
 </section>
 
 <script>
-    // ===== 기술 스택 태그 (기존 값으로 초기화) =====
     const skillInput = document.getElementById("skillInput");
     const skillAddBtn = document.getElementById("skillAddBtn");
     const skillTags = document.getElementById("skillTags");
     const specialityHidden = document.getElementById("specialityHidden");
 
-    // 기존 speciality를 콤마로 분리해서 초기 칩으로
     let skills = [];
     const initial = specialityHidden.value.trim();
-    if (initial) {
-        skills = initial.split(",").map(s => s.trim()).filter(s => s);
-    }
+    if (initial) skills = initial.split(",").map(s => s.trim()).filter(s => s);
 
     function renderSkills() {
         skillTags.innerHTML = "";
@@ -100,41 +180,28 @@
         });
         specialityHidden.value = skills.join(",");
     }
-
     function addSkill() {
         const val = skillInput.value.trim();
         if (!val) return;
         if (skills.includes(val)) { skillInput.value = ""; return; }
-        skills.push(val);
-        skillInput.value = "";
-        renderSkills();
+        skills.push(val); skillInput.value = ""; renderSkills();
     }
-
     skillAddBtn.addEventListener("click", addSkill);
-    skillInput.addEventListener("keydown", function (e) {
+    skillInput.addEventListener("keydown", function(e) {
         if (e.key === "Enter") { e.preventDefault(); addSkill(); }
     });
-    skillTags.addEventListener("click", function (e) {
+    skillTags.addEventListener("click", function(e) {
         if (e.target.tagName === "BUTTON") {
-            skills.splice(parseInt(e.target.dataset.idx), 1);
-            renderSkills();
+            skills.splice(parseInt(e.target.dataset.idx), 1); renderSkills();
         }
     });
-    renderSkills();  // 페이지 로드 시 기존 칩 표시
+    renderSkills();
 
-    // 제출 검증
-    document.getElementById("reapplyForm").addEventListener("submit", function (e) {
-        const intro = e.target.intro.value.trim();
-        const career = e.target.career.value.trim();
-        if (!intro || !career) {
-            e.preventDefault();
-            alert("한 줄 소개와 경력을 입력해 주세요.");
-            return;
+    document.getElementById("reapplyForm").addEventListener("submit", function(e) {
+        if (!e.target.intro.value.trim() || !e.target.career.value.trim()) {
+            e.preventDefault(); alert("한 줄 소개와 경력을 입력해 주세요."); return;
         }
-        if (skills.length === 0) {
-            e.preventDefault();
-            alert("기술 스택을 최소 1개 이상 입력해 주세요.");
-        }
+        if (skills.length === 0) { e.preventDefault(); alert("기술 스택을 최소 1개 이상 입력해 주세요."); }
     });
 </script>
 

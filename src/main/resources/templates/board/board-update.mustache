@@ -1,22 +1,43 @@
 {{> layout/header}}
 
 <style>
-    /* ── BOARD EDIT ── */
-    .save-section { padding: 52px 28px 80px; }
-    .save-inner { max-width: 760px; margin: 0 auto; }
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
-    .save-form { display: flex; flex-direction: column; gap: 20px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .save-section { padding: 40px 28px 80px; position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: center; }
+    .save-inner { width: 100%; max-width: 760px; }
+    .save-header { margin-bottom: 28px; }
+    .save-title { font-size: 24px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .save-desc { font-size: 14px; color: #4a6fa5; }
+
+    .save-form {
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 24px; padding: 40px;
+        display: flex; flex-direction: column; gap: 20px;
+        box-shadow: 0 16px 48px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative;
+    }
+    .save-form::before { content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent); }
+
     .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
-    .form-textarea::placeholder { color: #c4c9d9; }
-    .form-textarea:focus { border-color: #2563eb; }
-    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
+    .form-input { padding: 13px 16px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s; }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-textarea { padding: 13px 16px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
+    .form-textarea::placeholder { color: #93aecf; }
+    .form-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+
+    .form-btns { display: flex; justify-content: flex-end; gap: 10px; }
+    .btn { display: inline-block; padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.35); }
+    .btn-outline { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; }
+    .btn-outline:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    .form-select { width: 100%; padding: 13px 16px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s; }
+    .form-select:focus { border-color: #2563eb; background: rgba(255,255,255,.95); }
 </style>
 
 <section class="save-section">
@@ -59,7 +80,7 @@
 
             <div class="form-btns">
                 {{#isAdmin}}
-                <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
+                    <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
                 {{/isAdmin}}
                 {{^isAdmin}}
                     <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>

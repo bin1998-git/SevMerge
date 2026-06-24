@@ -450,154 +450,166 @@
         .faq-stats { grid-template-columns: 1fr; }
         .faq-hero-inner h1 { font-size: 26px; }
     }
+
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    .faq-hero { backdrop-filter: blur(20px); background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6); }
+    .faq-stats-wrap { backdrop-filter: blur(16px); background: rgba(255,255,255,.55); border-bottom: 1px solid rgba(255,255,255,.6); }
+    .faq-stat-card { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); box-shadow: 0 4px 16px rgba(37,99,235,.06); }
+    a.faq-stat-card:hover { border-color: rgba(37,99,235,.3); box-shadow: 0 8px 24px rgba(37,99,235,.1); }
+    .faq-section-bg { background: rgba(176,200,232,.25); backdrop-filter: blur(8px); }
+    .faq-list { backdrop-filter: blur(16px); background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85); border-radius: 18px; box-shadow: 0 8px 32px rgba(37,99,235,.07); }
+    .faq-item { border-bottom: 1px solid rgba(37,99,235,.07); }
+    .faq-question:hover { background: rgba(37,99,235,.04); }
+    .faq-question.open { background: rgba(37,99,235,.04); }
+    .faq-float-card { backdrop-filter: blur(12px); background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.85); }
 </style>
 
 <div class="faq-wrap">
 
-<section class="faq-hero">
-    <!-- 플로팅 FAQ 카드 -->
-    <div class="faq-float-card fc-1">
-        <div class="faq-float-label"><span class="faq-float-dot"></span>결제</div>
-        <div class="faq-float-q">에스크로 결제란 무엇인가요?</div>
-        <div class="faq-float-a">작업 완료 후 자동으로 정산되는 안전 결제 시스템입니다.</div>
-    </div>
-    <div class="faq-float-card fc-2">
-        <div class="faq-float-label"><span class="faq-float-dot"></span>계정</div>
-        <div class="faq-float-q">전문가로 등록하려면?</div>
-        <div class="faq-float-a">회원가입 후 전문가 신청서를 작성하세요.</div>
-    </div>
-    <div class="faq-float-card fc-3">
-        <div class="faq-float-label"><span class="faq-float-dot"></span>프로젝트</div>
-        <div class="faq-float-q">프로젝트 취소 시 환불되나요?</div>
-        <div class="faq-float-a">작업 시작 전이라면 100% 환불 보장됩니다.</div>
-    </div>
-    <div class="faq-float-card fc-4">
-        <div class="faq-float-label"><span class="faq-float-dot"></span>수수료</div>
-        <div class="faq-float-q">수수료는 얼마인가요?</div>
-        <div class="faq-float-a">완료된 프로젝트에 한해 소정의 수수료가 발생합니다.</div>
-    </div>
-
-    <div class="faq-hero-inner">
-        <div class="faq-eyebrow">Help Center</div>
-        <div class="faq-kw-badge">FAQ</div>
-        <div class="faq-hero-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 17.5V17.51M12 14.5C12 12 14.5 12 14.5 10C14.5 8.5 13.4 7.5 12 7.5C10.6 7.5 9.5 8.5 9.5 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-            </svg>
+    <section class="faq-hero">
+        <!-- 플로팅 FAQ 카드 -->
+        <div class="faq-float-card fc-1">
+            <div class="faq-float-label"><span class="faq-float-dot"></span>결제</div>
+            <div class="faq-float-q">에스크로 결제란 무엇인가요?</div>
+            <div class="faq-float-a">작업 완료 후 자동으로 정산되는 안전 결제 시스템입니다.</div>
         </div>
-        <h1>자주 묻는 질문</h1>
-        <p>SevMerge 이용 중 자주 묻는 질문을 확인하세요.</p>
-    </div>
-</section>
-
-<!-- 통계 카드 (전체 너비 배경) -->
-<div class="faq-stats-wrap">
-    <div class="faq-stats">
-        <div class="faq-stat-card">
-            <div class="faq-stat-icon" style="background: #dde8ff; color: var(--brand-blue);">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 10h8M8 14h5M5 5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <div>
-                <p class="faq-stat-label">Total FAQ</p>
-                <p class="faq-stat-value">{{faqList.size}}개</p>
-            </div>
+        <div class="faq-float-card fc-2">
+            <div class="faq-float-label"><span class="faq-float-dot"></span>계정</div>
+            <div class="faq-float-q">전문가로 등록하려면?</div>
+            <div class="faq-float-a">회원가입 후 전문가 신청서를 작성하세요.</div>
+        </div>
+        <div class="faq-float-card fc-3">
+            <div class="faq-float-label"><span class="faq-float-dot"></span>프로젝트</div>
+            <div class="faq-float-q">프로젝트 취소 시 환불되나요?</div>
+            <div class="faq-float-a">작업 시작 전이라면 100% 환불 보장됩니다.</div>
+        </div>
+        <div class="faq-float-card fc-4">
+            <div class="faq-float-label"><span class="faq-float-dot"></span>수수료</div>
+            <div class="faq-float-q">수수료는 얼마인가요?</div>
+            <div class="faq-float-a">완료된 프로젝트에 한해 소정의 수수료가 발생합니다.</div>
         </div>
 
-        <div class="faq-stat-card">
-            <div class="faq-stat-icon" style="background: #dcfce7; color: #166534;">
+        <div class="faq-hero-inner">
+            <div class="faq-eyebrow">Help Center</div>
+            <div class="faq-kw-badge">FAQ</div>
+            <div class="faq-hero-icon">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 17.5V17.51M12 14.5C12 12 14.5 12 14.5 10C14.5 8.5 13.4 7.5 12 7.5C10.6 7.5 9.5 8.5 9.5 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
                 </svg>
             </div>
-            <div>
-                <p class="faq-stat-label">평균 답변시간</p>
-                <p class="faq-stat-value">5분</p>
-            </div>
+            <h1>자주 묻는 질문</h1>
+            <p>SevMerge 이용 중 자주 묻는 질문을 확인하세요.</p>
         </div>
+    </section>
 
-        <a href="/supports" class="faq-stat-card">
-            <div class="faq-stat-icon" style="background: #fef9c3; color: #92400e;">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v4a5 5 0 0 1-5 5h-1l-4 3v-3H8a5 5 0 0 1-5-5V8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <div>
-                <p class="faq-stat-label">Need Help?</p>
-                <p class="faq-stat-value sm">고객센터 문의 →</p>
-            </div>
-        </a>
-    </div>
-</div>
-
-<!-- FAQ 목록 (전체 너비 배경 + 내용 중앙 정렬) -->
-<div class="faq-section-bg">
-    <section class="faq-section">
-
-        {{#isAdmin}}
-            <div class="faq-toolbar">
-                <a href="/faqs/save" class="faq-new-btn">
-                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- 통계 카드 (전체 너비 배경) -->
+    <div class="faq-stats-wrap">
+        <div class="faq-stats">
+            <div class="faq-stat-card">
+                <div class="faq-stat-icon" style="background: #dde8ff; color: var(--brand-blue);">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 10h8M8 14h5M5 5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    FAQ 등록
-                </a>
+                </div>
+                <div>
+                    <p class="faq-stat-label">Total FAQ</p>
+                    <p class="faq-stat-value">{{faqList.size}}개</p>
+                </div>
             </div>
-        {{/isAdmin}}
 
-        <div class="faq-list">
-            {{#faqList}}
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleAnswer(this)">
-                        <span class="badge">Q</span>
-                        <span class="q-text">{{question}}</span>
-                        <svg class="chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <div class="faq-stat-card">
+                <div class="faq-stat-icon" style="background: #dcfce7; color: #166534;">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="faq-stat-label">평균 답변시간</p>
+                    <p class="faq-stat-value">5분</p>
+                </div>
+            </div>
+
+            <a href="/supports" class="faq-stat-card">
+                <div class="faq-stat-icon" style="background: #fef9c3; color: #92400e;">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v4a5 5 0 0 1-5 5h-1l-4 3v-3H8a5 5 0 0 1-5-5V8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="faq-stat-label">Need Help?</p>
+                    <p class="faq-stat-value sm">고객센터 문의 →</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- FAQ 목록 (전체 너비 배경 + 내용 중앙 정렬) -->
+    <div class="faq-section-bg">
+        <section class="faq-section">
+
+            {{#isAdmin}}
+                <div class="faq-toolbar">
+                    <a href="/faqs/save" class="faq-new-btn">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-body">
-                            <div class="faq-answer-row">
-                                <span class="badge a-badge">A</span>
-                                <span class="a-text">{{answer}}</span>
-                            </div>
-                            {{#isAdmin}}
-                                <div class="faq-admin-inline">
-                                    <form action="/faqs/edit/{{id}}" method="get" style="display:inline;">
-                                        <button type="submit" class="faq-edit-btn">
-                                            <div style="display:flex; align-items:center;">
-                                                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                                <span>수정</span>
-                                            </div>
-                                        </button>
-                                    </form>
-                                    <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
-                                        <button type="submit" class="faq-delete-btn">
-                                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M4 5.5h12M8 5.5V3.5h4v2M5.5 5.5l.7 10a1 1 0 001 1h5.6a1 1 0 001-1l.7-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                            <span>삭제</span>
-                                        </button>
-                                    </form>
+                        FAQ 등록
+                    </a>
+                </div>
+            {{/isAdmin}}
+
+            <div class="faq-list">
+                {{#faqList}}
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleAnswer(this)">
+                            <span class="badge">Q</span>
+                            <span class="q-text">{{question}}</span>
+                            <svg class="chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-body">
+                                <div class="faq-answer-row">
+                                    <span class="badge a-badge">A</span>
+                                    <span class="a-text">{{answer}}</span>
                                 </div>
-                            {{/isAdmin}}
+                                {{#isAdmin}}
+                                    <div class="faq-admin-inline">
+                                        <form action="/faqs/edit/{{id}}" method="get" style="display:inline;">
+                                            <button type="submit" class="faq-edit-btn">
+                                                <div style="display:flex; align-items:center;">
+                                                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                    <span>수정</span>
+                                                </div>
+                                            </button>
+                                        </form>
+                                        <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
+                                            <button type="submit" class="faq-delete-btn">
+                                                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M4 5.5h12M8 5.5V3.5h4v2M5.5 5.5l.7 10a1 1 0 001 1h5.6a1 1 0 001-1l.7-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                <span>삭제</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                {{/isAdmin}}
+                            </div>
                         </div>
                     </div>
-                </div>
-            {{/faqList}}
+                {{/faqList}}
 
-            {{^faqList}}
-                <p class="faq-empty">— 등록된 FAQ가 없습니다 —</p>
-            {{/faqList}}
-        </div>
+                {{^faqList}}
+                    <p class="faq-empty">— 등록된 FAQ가 없습니다 —</p>
+                {{/faqList}}
+            </div>
 
-    </section>
-</div>
+        </section>
+    </div>
 
 </div><!-- /faq-wrap -->
 

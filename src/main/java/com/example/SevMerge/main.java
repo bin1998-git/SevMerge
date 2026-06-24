@@ -35,7 +35,7 @@ public class main {
         return "intro";
     }
 
-    @GetMapping("/exmain")
+    @GetMapping("/main")
     public String exmainPage(HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
 
@@ -129,6 +129,6 @@ public class main {
             model.addAttribute("recentReviews", List.of());
         }
 
-        return "exmain";
+        return "main";
     }
 }
