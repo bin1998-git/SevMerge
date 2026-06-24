@@ -1,84 +1,153 @@
 {{> layout/header}}
 
 <style>
-    .support-hero { background:#fff; border-bottom:1px solid #eaecf4; padding:48px 28px 0; }
+    body {
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+        color: #1e293b;
+    }
+
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+
+    .support-hero {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.55);
+        border-bottom: 1px solid rgba(255,255,255,.7);
+        padding:48px 28px 0;
+        position: relative; z-index: 1;
+    }
     .support-hero-inner { max-width:1140px; margin:0 auto; text-align:center; padding-bottom:36px; }
     .support-hero-inner h1 { font-size:32px; font-weight:900; color:#1c1e26; letter-spacing:-1px; margin-bottom:10px; }
     .support-hero-inner p { font-size:14px; color:#6b7280; margin-bottom:28px; }
 
     .support-tabs { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
 
-    .support-section { padding:48px 28px 80px; max-width:1140px; margin:0 auto; }
+    .support-section { padding:48px 28px 80px; max-width:1140px; margin:0 auto; position: relative; z-index: 1; }
 
     /* 고객센터 */
     .support-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:48px; }
-    .support-card { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; padding:28px; text-align:center; transition:all .2s; }
-    .support-card:hover { border-color:#bfdbfe; box-shadow:0 8px 28px rgba(37,99,235,.08); transform:translateY(-3px); }
+    .support-card {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:16px; padding:28px; text-align:center; transition:all .2s;
+        box-shadow: 0 4px 16px rgba(37,99,235,.05);
+    }
+    .support-card:hover { border-color: rgba(191,219,254,.9); box-shadow:0 8px 28px rgba(37,99,235,.1); transform:translateY(-3px); background: rgba(255,255,255,.8); }
     .support-card-icon { font-size:32px; margin-bottom:14px; }
     .support-card-title { font-size:15px; font-weight:700; color:#1c1e26; margin-bottom:8px; }
     .support-card-desc { font-size:12px; color:#9ca3af; line-height:1.7; margin-bottom:18px; }
 
-    .support-info { background:#f8f9ff; border:1px solid #e2e8ff; border-radius:16px; padding:32px; }
+    .support-info {
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:16px; padding:32px;
+        box-shadow: 0 4px 20px rgba(37,99,235,.05);
+    }
     .support-info h2 { font-size:16px; font-weight:900; color:#1c1e26; margin-bottom:18px; }
-    .support-info-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #e8ecf8; font-size:13px; }
+    .support-info-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.6); font-size:13px; }
     .support-info-row:last-child { border-bottom:none; }
     .support-info-label { color:#9ca3af; font-weight:600; }
     .support-info-value { color:#1c1e26; font-weight:700; }
 
     /* 회사소개 */
     .value-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin:32px 0 48px; }
-    .value-card { background:#fff; border:1.5px solid #eaecf4; border-radius:16px; padding:26px; }
+    .value-card {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:16px; padding:26px;
+        box-shadow: 0 4px 16px rgba(37,99,235,.05);
+    }
     .value-card-icon { font-size:28px; margin-bottom:12px; }
     .value-card-title { font-size:14px; font-weight:700; color:#1c1e26; margin-bottom:8px; }
     .value-card-desc { font-size:12px; color:#9ca3af; line-height:1.7; }
 
     .history-list { display:flex; flex-direction:column; gap:14px; }
-    .history-item { display:flex; gap:20px; align-items:flex-start; padding:16px 0; border-bottom:1px solid #f0f2f9; }
+    .history-item { display:flex; gap:20px; align-items:flex-start; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.5); }
     .history-year { font-size:15px; font-weight:900; color:#2563eb; width:70px; flex-shrink:0; }
     .history-desc { font-size:13px; color:#4b5563; line-height:1.7; }
 
     /* 인재채용 */
     .job-list { display:flex; flex-direction:column; gap:10px; margin-top:28px; }
-    .job-card { display:flex; justify-content:space-between; align-items:center; background:#fff; border:1.5px solid #eaecf4; border-radius:12px; padding:18px 22px; transition:all .15s; }
-    .job-card:hover { border-color:#bfdbfe; box-shadow:0 4px 14px rgba(37,99,235,.07); }
+    .job-card {
+        display:flex; justify-content:space-between; align-items:center;
+        backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:12px; padding:18px 22px; transition:all .15s;
+    }
+    .job-card:hover { border-color: rgba(191,219,254,.9); box-shadow:0 4px 14px rgba(37,99,235,.08); background: rgba(255,255,255,.8); }
     .job-title { font-size:14px; font-weight:700; color:#1c1e26; margin-bottom:4px; }
     .job-meta { font-size:12px; color:#9ca3af; }
-    .job-tag { font-size:11px; font-weight:700; color:#2563eb; background:#eff6ff; padding:3px 10px; border-radius:6px; }
+    .job-tag { font-size:11px; font-weight:700; color:#2563eb; background: rgba(239,246,255,.8); padding:3px 10px; border-radius:6px; }
 
     .culture-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:28px; }
-    .culture-item { background:#f8f9fc; border-radius:12px; padding:20px; font-size:13px; color:#4b5563; line-height:1.7; }
+    .culture-item {
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.5); border: 1.5px solid rgba(255,255,255,.7);
+        border-radius:12px; padding:20px; font-size:13px; color:#4b5563; line-height:1.7;
+    }
     .culture-item strong { display:block; color:#1c1e26; font-size:14px; margin-bottom:6px; }
 
     /* 제휴문의 */
     .partnership-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:28px; align-items:start; }
     .partnership-type { display:flex; flex-direction:column; gap:12px; }
-    .type-card { background:#fff; border:1.5px solid #eaecf4; border-radius:12px; padding:18px 20px; }
+    .type-card {
+        backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:12px; padding:18px 20px;
+    }
     .type-card-title { font-size:13px; font-weight:700; color:#1c1e26; margin-bottom:4px; }
     .type-card-desc { font-size:12px; color:#9ca3af; line-height:1.6; }
 
-    .partnership-form { background:#f8f9ff; border:1px solid #e2e8ff; border-radius:16px; padding:28px; }
+    .partnership-form {
+        backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:16px; padding:28px;
+        box-shadow: 0 4px 20px rgba(37,99,235,.06);
+    }
     .form-group { margin-bottom:16px; }
     .form-label { display:block; font-size:12px; font-weight:700; color:#374151; margin-bottom:6px; }
     .form-input, .form-textarea {
-        width:100%; padding:11px 14px; background:#fff; border:1.5px solid #e2e5ef;
+        width:100%; padding:11px 14px;
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.65); border: 1.5px solid rgba(255,255,255,.8);
         border-radius:9px; font-size:13px; font-family:inherit; color:#1c1e26; outline:none;
     }
-    .form-input:focus, .form-textarea:focus { border-color:#2563eb; }
+    .form-input:focus, .form-textarea:focus { border-color:#2563eb; background: rgba(255,255,255,.9); }
     .form-textarea { resize:vertical; min-height:100px; }
     .expert-steps { display:flex; flex-direction:column; gap:16px; margin-bottom:40px; }
-    .expert-step { display:flex; gap:20px; align-items:flex-start; background:#fff; border:1.5px solid #eaecf4; border-radius:14px; padding:22px; }
+    .expert-step {
+        display:flex; gap:20px; align-items:flex-start;
+        backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:14px; padding:22px;
+        box-shadow: 0 4px 16px rgba(37,99,235,.05);
+    }
     .step-num { width:36px; height:36px; border-radius:50%; color:#fff; font-size:15px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .step-title { font-size:14px; font-weight:800; color:#1c1e26; margin-bottom:6px; }
     .step-desc { font-size:13px; color:#6b7280; line-height:1.7; }
     .step-notice { margin-top:12px; border-radius:8px; padding:10px 14px; font-size:12px; }
     .step-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-    .step-tag { font-size:11px; font-weight:700; color:#2563eb; background:#eff6ff; padding:4px 12px; border-radius:6px; }
+    .step-tag { font-size:11px; font-weight:700; color:#2563eb; background: rgba(239,246,255,.8); padding:4px 12px; border-radius:6px; }
     .expert-benefits { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:36px; }
-    .benefit-card { background:#f8f9ff; border:1px solid #e2e8ff; border-radius:12px; padding:20px; text-align:center; }
+    .benefit-card {
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8);
+        border-radius:12px; padding:20px; text-align:center;
+        box-shadow: 0 4px 12px rgba(37,99,235,.05);
+    }
     .benefit-icon { font-size:28px; margin-bottom:10px; }
     .benefit-title { font-size:13px; font-weight:700; color:#1c1e26; margin-bottom:6px; }
     .benefit-desc { font-size:12px; color:#9ca3af; line-height:1.6; }
 </style>
+
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 
 <section class="support-hero">
     <div class="support-hero-inner">
