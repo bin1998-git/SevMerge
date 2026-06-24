@@ -26,4 +26,20 @@ public class ChatMessageController {
         simpMessagingTemplate.convertAndSend("/sub/chat/room/" + reqDTO.getChatRoomId(), resDTO);
     }
 
+    @MessageMapping("/chat/message/delete")
+    public void deleteMessage(ChatMessageRequest reqDTO, SimpMessageHeaderAccessor accessor) {
+        Member sender = (Member) accessor.getSessionAttributes().get(Define.SESSION_USER);
+        if (sender == null) return;
+
+        chatMessageService.deleteMessage(reqDTO.getMessageId(), sender, true);
+
+        simpMessagingTemplate.convertAndSend(
+                "/sub/chat/room/" + reqDTO.getChatRoomId(),
+                ChatMessageResponse.builder()
+                        .type("DELETE")
+                        .id(reqDTO.getMessageId())
+                        .build()
+        );
+    }
+
 }
