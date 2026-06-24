@@ -6,10 +6,7 @@ import com.example.SevMerge.Report.ReportService;
 import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
-import com.example.SevMerge.member.*;
-import com.example.SevMerge.project.ProjectRepository;
 import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
 import com.example.SevMerge.partnership.PartnerShipService;
@@ -21,14 +18,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 @Controller
@@ -37,7 +32,6 @@ public class AdminController {
 
     private final MemberService memberService;
     private final ProjectService projectService;
-    private final ProjectRepository projectRepository;
     private final BoardService boardService;
     private final BoardRepository boardRepository;
     private final BlacklistRepository blacklistRepository;
@@ -142,8 +136,6 @@ public class AdminController {
         model.addAttribute("recentPartnerships", partnerShipService.list());
         return "admin/admin-main";
     }
-
-
 
     // 관리자 공지사항 관리
     @GetMapping("/admin/notices")
