@@ -313,6 +313,23 @@ public class BidService {
         return bidRepository.findSelectedBidByProjectId(projectId, BidStatus.SELECTED);
     }
 
+    // 의뢰인의 전체 프로젝트에 들어온 제안서 목록 조회
+    public List<BidResponseDTO.ListDTO> findBidsForClient(Member session) {
+        log.info("의뢰인 전체 제안서 조회 시작");
+        if (!session.isClient()) {
+            throw new ForbiddenException("의뢰인만 제안서 목록을 조회할 수 있습니다.");
+        }
+        List<Bid> bids = bidRepository.findByProjectMemberId(session.getId());
+        return bids.stream()
+                .map(bid -> {
+                    BidResponseDTO.ListDTO dto = new BidResponseDTO.ListDTO(bid);
+                    Double avg = reviewRepository.avgRating(bid.getExpert().getId());
+                    dto.setAvgRating(avg != null ? String.format("%.1f", avg) : "0.0");
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
 
     // 작업 완료 신고 (전문가 -> 의뢰인 확인 요청)
     @Transactional

@@ -279,6 +279,7 @@ public class MemberController {
         // 북마크
         model.addAttribute("isBookmarks", tab.equalsIgnoreCase("bookmarks"));
         model.addAttribute("isWishlist", tab.equalsIgnoreCase("wishlist"));
+        model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
         // 탭별 데이터
         if (tab.equals("projects")) {
             List<ProjectResponseDTO.ListDTO> projects = myProjects.stream()
@@ -359,6 +360,13 @@ public class MemberController {
             model.addAttribute("wishPrevPage", wishPage - 1);
             model.addAttribute("wishNextPage", wishPage + 1);
             model.addAttribute("wishTotalElements", wishResult.getTotalElements());
+        } else if (tab.equals("bids")) {
+            try {
+                model.addAttribute("clientBids", bidService.findBidsForClient(loginMember));
+            } catch (Exception e) {
+                log.warn("제안서 목록 조회 실패 - {}", e.getMessage());
+                model.addAttribute("clientBids", List.of());
+            }
         }
         return "member/client-mypage";
     }

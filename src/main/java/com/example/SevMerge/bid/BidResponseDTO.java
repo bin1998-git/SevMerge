@@ -30,6 +30,7 @@ public class BidResponseDTO {
         private boolean isPending;
         private boolean isSelected;
         private boolean isRejected;
+        private boolean isHold;
         private Timestamp createdAt;
 
         public ListDTO(Bid bid) {
@@ -48,6 +49,7 @@ public class BidResponseDTO {
             this.isPending = bid.getStatus() == BidStatus.PENDING;
             this.isSelected = bid.getStatus() == BidStatus.SELECTED;
             this.isRejected = bid.getStatus() == BidStatus.REJECTED;
+            this.isHold = bid.getStatus() == BidStatus.HOLD;
             this.createdAt = bid.getCreatedAt();
         }
     }

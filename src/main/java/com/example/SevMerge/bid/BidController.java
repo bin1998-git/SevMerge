@@ -78,6 +78,7 @@ public class BidController {
         List<BidResponseDTO.ListDTO> bids = bidService.findMyBids(sessionUser);
         model.addAttribute("bids", bids);
         model.addAttribute("bidCount", bids.size());
+        model.addAttribute("isDashboard", true);
         return "bid/my-bids";
     }
 
@@ -89,6 +90,7 @@ public class BidController {
         List<BidResponseDTO.OrderDTO> orders = bidService.findMyOrders(sessionUser);
         model.addAttribute("orders", orders);
         model.addAttribute("orderCount", orders.size());
+        model.addAttribute("isDashboard", true);
         return "bid/my-orders";
     }
 

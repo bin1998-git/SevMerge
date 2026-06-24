@@ -37,6 +37,9 @@ public class PortfolioController {
         model.addAttribute("portfolioCount", portfolios.getTotalElements());
         model.addAttribute("expertProfile", expertProfile);
         model.addAttribute("isOwner", member != null && member.getId().equals(expertId));
+        if (member != null && member.isExpert() && member.getId().equals(expertId)) {
+            model.addAttribute("isDashboard", true);
+        }
 
         // 💡 머스태치 문법에 맞춰서 심플하게 가공하여 전달합니다.
         int totalPages = portfolios.getTotalPages();
@@ -83,7 +86,7 @@ public class PortfolioController {
         ExpertProfileResponse expertProfileEntity = expertProfileService.getByMemberId(member.getId());
 
         model.addAttribute("expertProfile", expertProfileEntity);
-
+        model.addAttribute("isDashboard", true);
         return "portfolio/portfolio-save";
     }
 
@@ -116,7 +119,7 @@ public class PortfolioController {
         PortfolioResponse.DetailDTO detailPortfolio = portfolioService.findPortfolio(portfolioId);
 
         model.addAttribute("portfolio", detailPortfolio);
-
+        model.addAttribute("isDashboard", true);
         return "portfolio/portfolio-update";
     }
 

@@ -1,19 +1,17 @@
 <style>
-    /* ── [FIX] 바닥 고정: body를 flex column으로, footer가 항상 하단에 */
-    html, body {
-        height: 100%;
-    }
+    /* ── 바닥 고정: body flex column, footer 항상 최하단 ── */
+    html { height: 100%; }
     body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+        min-height: 100%;        /* html 100% = 100vh, can grow beyond */
+        display: flex !important;
+        flex-direction: column !important;
     }
-    /* 헤더 아래 실제 페이지 컨텐츠 영역이 남은 공간을 모두 차지하도록 */
-    body > *:not(header):not(footer):not(.chatbot-toggle):not(.chatbot-window):not(.noti-toast) {
+    body > *:not(header):not(footer):not(style):not(script):not(.chatbot-toggle):not(.chatbot-window):not(.noti-toast) {
         flex: 1 0 auto;
     }
     .footer {
-        flex-shrink: 0; /* footer는 절대 줄어들지 않음 */
+        flex-shrink: 0;
+        margin-top: auto;
     }
     /* ──────────────────────────────────────────── */
 

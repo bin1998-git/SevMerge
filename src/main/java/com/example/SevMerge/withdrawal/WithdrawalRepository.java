@@ -10,6 +10,10 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
 
     List<Withdrawal> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 
+    List<Withdrawal> findAllByOrderByCreatedAtDesc();
+
+    List<Withdrawal> findAllByStatusOrderByCreatedAtDesc(WithdrawalStatus status);
+
     @Query("SELECT COALESCE(SUM(w.amount), 0) FROM Withdrawal w WHERE w.memberId = :memberId AND w.status = 'COMPLETED'")
     Integer sumCompletedAmountByMemberId(@Param("memberId") Long memberId);
 }

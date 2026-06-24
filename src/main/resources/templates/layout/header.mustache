@@ -314,56 +314,55 @@
         {{#isExpert}}
             <a href="/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
 
-            {{#isDashboard}}
-                <nav class="nav-tabs" id="tabsExpert">
-                    <a href="/bids/my-list"         class="nav-tab">제안서 관리</a>
-                    <a href="/bids/my-orders"       class="nav-tab">주문 관리</a>
-                    <a href="/payment/my"           class="nav-tab">수익&amp;정산</a>
-                    <a href="/reviews/my"           class="nav-tab">평가·리뷰</a>
-                    <a href="/experts/my/info-edit" class="nav-tab">정보 수정</a>
-                    <a href="/boards"               class="nav-tab">게시판</a>
-                    <a href="/messages"             class="nav-tab">쪽지함</a>
-                    <a href="/chat/room"            class="nav-tab">채팅방</a>
-                    <a href="/advertisements/my"    class="nav-tab">광고 신청</a>
-                </nav>
-                <div class="nav-drawer" id="drawerExpert">
-                    <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerExpert','hamburgerExpert')"></div>
-                    <div class="nav-drawer-panel">
-                        <a href="/bids/my-list"         class="nav-drawer-item">제안서 관리</a>
-                        <a href="/bids/my-orders"       class="nav-drawer-item">주문 관리</a>
-                        <a href="/payment/my"           class="nav-drawer-item">수익 &amp; 정산</a>
-                        <a href="/reviews/my"           class="nav-drawer-item">평가 및 리뷰</a>
-                        <a href="/experts/my/info-edit" class="nav-drawer-item">내 정보 수정</a>
-                        <a href="/boards"               class="nav-drawer-item">게시판</a>
-                        <a href="/messages"             class="nav-drawer-item">쪽지함</a>
-                        <a href="/chat/room"            class="nav-drawer-item">채팅방</a>
-                        <a href="/advertisements/my"    class="nav-drawer-item">광고 신청</a>
-                    </div>
+            {{^isMainPage}}
+            <nav class="nav-tabs" id="tabsExpert">
+                <a href="/bids/my-list"         class="nav-tab">제안서 관리</a>
+                <a href="/bids/my-orders"       class="nav-tab">주문 관리</a>
+                <a href="/payment/my"           class="nav-tab">수익&amp;정산</a>
+                <a href="/reviews/my"           class="nav-tab">평가·리뷰</a>
+                <a href="/experts/my/info-edit" class="nav-tab">정보 수정</a>
+                <a href="/boards"               class="nav-tab">게시판</a>
+                <a href="/messages"             class="nav-tab">쪽지함</a>
+                <a href="/chat/room"            class="nav-tab">채팅방</a>
+                <a href="/advertisements/my"    class="nav-tab">광고 신청</a>
+            </nav>
+            <div class="nav-drawer" id="drawerExpert">
+                <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerExpert','hamburgerExpert')"></div>
+                <div class="nav-drawer-panel">
+                    <a href="/bids/my-list"         class="nav-drawer-item">제안서 관리</a>
+                    <a href="/bids/my-orders"       class="nav-drawer-item">주문 관리</a>
+                    <a href="/payment/my"           class="nav-drawer-item">수익 &amp; 정산</a>
+                    <a href="/reviews/my"           class="nav-drawer-item">평가 및 리뷰</a>
+                    <a href="/experts/my/info-edit" class="nav-drawer-item">내 정보 수정</a>
+                    <a href="/boards"               class="nav-drawer-item">게시판</a>
+                    <a href="/messages"             class="nav-drawer-item">쪽지함</a>
+                    <a href="/chat/room"            class="nav-drawer-item">채팅방</a>
+                    <a href="/advertisements/my"    class="nav-drawer-item">광고 신청</a>
                 </div>
-            {{/isDashboard}}
-
-            {{^isDashboard}}
+            </div>
+            {{/isMainPage}}
+            {{#isMainPage}}
                 <div style="flex:1;"></div>
-            {{/isDashboard}}
+            {{/isMainPage}}
 
             <div class="nav-actions">
-                {{#isDashboard}}
-                    <button class="nav-hamburger" id="hamburgerExpert" aria-label="메뉴 열기">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
-                {{/isDashboard}}
-                {{^isDashboard}}
+                {{^isMainPage}}
+                <button class="nav-hamburger" id="hamburgerExpert" aria-label="메뉴 열기">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                {{/isMainPage}}
+                {{#isMainPage}}
                     <a href="/experts/dashboard" class="btn-dashboard">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 20h4v-6h2v6h4v2H4v-2h4v-6h2v6Zm-6 0H2V10h2v10Zm18 0h-2V10h2v10Zm-8-6h-4v-2h4v2Zm-8-4H4V8h2v2Zm14 0h-2V8h2v2ZM8 8H6V6h2v2Zm10 0h-2V6h2v2Zm-8-2H8V4h2v2Zm6 0h-2V4h2v2Zm-2-2h-4V2h4v2Z"/>
                         </svg>
                         대시보드
                     </a>
-                {{/isDashboard}}
+                {{/isMainPage}}
                 <a href="/notifications" class="nav-bell" aria-label="알림">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>

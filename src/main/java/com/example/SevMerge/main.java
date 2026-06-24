@@ -39,6 +39,8 @@ public class main {
     public String exmainPage(HttpSession session, Model model) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
 
+        model.addAttribute("isMainPage", true);
+
         if (loginMember != null) {
             model.addAttribute("isLoggedIn", true);
             model.addAttribute("sessionUser", loginMember);

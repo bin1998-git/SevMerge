@@ -224,6 +224,7 @@ public class ExpertProfileViewController {
         } else {
             model.addAttribute("isUpdate", false);
         }
+        model.addAttribute("isDashboard", true);
         return "expertProfile/expertProfile-form";
     }
 
@@ -256,6 +257,7 @@ public class ExpertProfileViewController {
         if (!sessionUser.isExpert()) return "redirect:/";
 
         model.addAttribute("member", memberService.getMyInfo(sessionUser.getId()));
+        model.addAttribute("isDashboard", true);
         return "expertProfile/expert-info-edit";
     }
 

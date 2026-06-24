@@ -44,4 +44,8 @@ public class Withdrawal {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
+
+    public void changeStatus(WithdrawalStatus newStatus) {
+        this.status = newStatus;
+    }
 }

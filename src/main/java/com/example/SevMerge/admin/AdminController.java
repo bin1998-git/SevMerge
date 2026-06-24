@@ -14,6 +14,7 @@ import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
 import com.example.SevMerge.partnership.PartnerShipService;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.withdrawal.WithdrawalService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,7 @@ public class AdminController {
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
     private final PartnerShipService partnerShipService;
+    private final WithdrawalService withdrawalService;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
@@ -285,9 +287,29 @@ public class AdminController {
 
     // 출금요청 관리 페이지
     @GetMapping("/admin/experts/withdraw")
-    public String adminExpertWithdraw(Model model) {
-        // 여기에 출금 요청 목록을 가져오는 로직 추가 예정 )  memberService.getWithdrawList
+    public String adminExpertWithdraw(@RequestParam(value = "status", required = false) String status,
+                                      Model model) {
+        List<WithdrawalService.AdminWithdrawalDTO> withdrawals = withdrawalService.getAllForAdmin(status);
+        long pendingCount = withdrawals.stream().filter(WithdrawalService.AdminWithdrawalDTO::isPending).count();
+
+        model.addAttribute("withdrawals", withdrawals);
+        model.addAttribute("totalCount", withdrawals.size());
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("isWithdrawAll",       status == null);
+        model.addAttribute("isWithdrawPending",   "PENDING".equals(status));
+        model.addAttribute("isWithdrawCompleted", "COMPLETED".equals(status));
+        model.addAttribute("isWithdrawRejected",  "REJECTED".equals(status));
         return "admin/admin-withdraw";
+    }
+
+    // 출금 승인/반려 API
+    @ResponseBody
+    @PatchMapping("/api/admin/withdraw/{id}")
+    public ResponseEntity<?> processWithdraw(@PathVariable Long id,
+                                             @RequestBody Map<String, String> body) {
+        String action = body.get("action");
+        withdrawalService.processWithdrawal(id, action);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/admin/experts/grade")

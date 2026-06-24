@@ -1,97 +1,174 @@
+{{> layout/header}}
+
 <style>
-    body {
-        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
-        background-attachment: fixed;
-    }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
     .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
     .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
     .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
-    .withdraw-wrap { padding: 36px; position: relative; z-index: 1; }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        background: rgba(255,255,255,.6);
-        border-radius: 14px;
-        border: 1.5px solid rgba(255,255,255,.8);
-        box-shadow: 0 4px 24px rgba(37,99,235,.06);
-        overflow: hidden;
-    }
-    thead tr th {
-        background: rgba(255,255,255,.4) !important;
-        border-bottom: 1px solid rgba(255,255,255,.6) !important;
-        padding: 12px 16px;
-        font-size: 11px;
-        font-weight: 700;
-        color: #9ca3af;
-        letter-spacing: .5px;
-        text-align: center;
-    }
-    tbody tr {
-        background: transparent !important;
-        border-bottom: 1px solid rgba(255,255,255,.5) !important;
-    }
-    tbody tr:hover {
-        background: rgba(239,246,255,.5) !important;
-    }
-    tbody tr td {
-        padding: 14px 16px;
-        font-size: 13px;
-        text-align: center;
-        color: #374151;
-    }
+    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
+    .admin-sidebar { width: 220px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(255,255,255,.7); border-right: 1px solid rgba(255,255,255,.8); padding: 28px 0; flex-shrink: 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
+    .sidebar-label { font-size: 11px; font-weight: 700; color: #c4c9d9; letter-spacing: 1.5px; text-transform: uppercase; padding: 0 20px; margin-bottom: 8px; margin-top: 20px; }
+    .sidebar-label:first-child { margin-top: 0; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .12s; border-left: 3px solid transparent; }
+    .sidebar-link:hover { color: #2563eb; background: rgba(239,246,255,.7); }
+    .sidebar-link.active { color: #2563eb; background: rgba(239,246,255,.6); border-left-color: #2563eb; }
+    .sidebar-icon { font-size: 16px; }
+    .admin-content { flex: 1; padding: 36px 36px 80px; background: transparent; position: relative; z-index: 1; }
+    .admin-header { margin-bottom: 24px; }
+    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .admin-desc { font-size: 14px; color: #9ca3af; }
+
+    .stats-row { display: flex; gap: 14px; margin-bottom: 24px; }
+    .stat-card { flex: 1; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 14px; padding: 18px 22px; box-shadow: 0 4px 24px rgba(37,99,235,.06); }
+    .stat-label { font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 6px; }
+    .stat-value { font-size: 26px; font-weight: 900; color: #1c1e26; }
+    .stat-value.accent { color: #2563eb; }
+    .stat-value.warn { color: #f59e0b; }
+
+    .filter-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); text-decoration: none; transition: all .15s; }
+    .tab:hover { border-color: #2563eb; color: #2563eb; }
+    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+
+    .wd-table-wrap { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 24px rgba(37,99,235,.06); }
+    .wd-table { width: 100%; border-collapse: collapse; }
+    .wd-table thead tr th { background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(255,255,255,.6); padding: 13px 16px; font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: .5px; text-align: left; white-space: nowrap; }
+    .wd-table tbody tr { border-bottom: 1px solid rgba(255,255,255,.5); }
+    .wd-table tbody tr:last-child { border-bottom: none; }
+    .wd-table tbody tr:hover { background: rgba(239,246,255,.45); }
+    .wd-table tbody td { padding: 14px 16px; font-size: 13px; color: #374151; vertical-align: middle; }
+    .td-name { font-weight: 700; color: #1c1e26; }
+    .td-email { font-size: 12px; color: #9ca3af; }
+    .td-amount { font-weight: 800; color: #2563eb; font-size: 15px; }
+    .td-bank { font-size: 12px; color: #6b7280; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-pending   { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-completed { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .badge-rejected  { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
+
+    .action-btns { display: flex; gap: 6px; }
+    .btn-approve { padding: 7px 14px; background: #2563eb; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .btn-approve:hover { background: #1d4ed8; }
+    .btn-reject  { padding: 7px 14px; background: #fff; color: #ef4444; border: 1.5px solid #fecaca; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .btn-reject:hover  { background: #fff3f3; }
+    .empty-state { text-align: center; padding: 60px 0; font-size: 15px; color: #c4c9d9; }
 </style>
-<!-- 배경 글로우 -->
+
 <div class="bg-glow bg-glow-1"></div>
 <div class="bg-glow bg-glow-2"></div>
-<div class="withdraw-wrap">
-<table>
-    <thead>
-        <tr>
-            <th>요청자</th>
-            <th>출금 금액</th>
-            <th>은행 정보</th>
-            <th>요청일</th>
-            <th>상태</th>
-            <th>관리</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#withdrawals}}
-        <tr>
-            <td>{{name}} ({{email}})</td>
-            <td>{{amount}} 원</td>
-            <td>{{bankName}} {{accountNumber}}</td>
-            <td>{{requestDate}}</td>
-            <td>{{status}}</td>
-            <td>
-                {{#isPending}}
-                <button onclick="processWithdraw({{id}}, 'APPROVE')">입금완료</button>
-                <button onclick="processWithdraw({{id}}, 'REJECT')">거절</button>
-                {{/isPending}}
-            </td>
-        </tr>
-        {{/withdrawals}}
-    </tbody>
-</table>
+
+<div class="admin-wrap">
+    <aside class="admin-sidebar">
+        <p class="sidebar-label">전문가 관리</p>
+        <a href="/admin/experts" class="sidebar-link">
+            <span class="sidebar-icon">👨‍💻</span> 전문가 승인
+        </a>
+        <a href="/admin/experts/withdraw" class="sidebar-link active">
+            <span class="sidebar-icon">💸</span> 출금요청 관리
+        </a>
+
+        <p class="sidebar-label">운영 관리</p>
+        <a href="/admin/main"       class="sidebar-link"><span class="sidebar-icon">📊</span> 대시보드</a>
+        <a href="/admin/members"    class="sidebar-link"><span class="sidebar-icon">👥</span> 회원 관리</a>
+        <a href="/admin/projects"   class="sidebar-link"><span class="sidebar-icon">📋</span> 프로젝트</a>
+        <a href="/admin/notices"    class="sidebar-link"><span class="sidebar-icon">📢</span> 공지사항</a>
+        <a href="/admin/boards"     class="sidebar-link"><span class="sidebar-icon">💬</span> 게시판</a>
+        <a href="/admin/blacklists" class="sidebar-link"><span class="sidebar-icon">🚫</span> 블랙리스트</a>
+        <a href="/admin/reports"    class="sidebar-link"><span class="sidebar-icon">⚠️</span> 신고 관리</a>
+    </aside>
+
+    <main class="admin-content">
+        <div class="admin-header">
+            <h1 class="admin-title">출금요청 관리</h1>
+            <p class="admin-desc">전문가의 출금 신청을 승인하거나 반려합니다.</p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">전체 요청</div>
+                <div class="stat-value">{{totalCount}}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">처리 대기</div>
+                <div class="stat-value warn">{{pendingCount}}</div>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <a href="/admin/experts/withdraw"                    class="tab {{#isWithdrawAll}}active{{/isWithdrawAll}}">전체</a>
+            <a href="/admin/experts/withdraw?status=PENDING"     class="tab {{#isWithdrawPending}}active{{/isWithdrawPending}}">대기중</a>
+            <a href="/admin/experts/withdraw?status=COMPLETED"   class="tab {{#isWithdrawCompleted}}active{{/isWithdrawCompleted}}">완료</a>
+            <a href="/admin/experts/withdraw?status=REJECTED"    class="tab {{#isWithdrawRejected}}active{{/isWithdrawRejected}}">반려</a>
+        </div>
+
+        <div class="wd-table-wrap">
+            <table class="wd-table">
+                <thead>
+                    <tr>
+                        <th>신청자</th>
+                        <th>출금 금액</th>
+                        <th>계좌 정보</th>
+                        <th>예금주</th>
+                        <th>신청일</th>
+                        <th>상태</th>
+                        <th>처리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#withdrawals}}
+                    <tr id="wd-row-{{id}}">
+                        <td>
+                            <div class="td-name">{{name}}</div>
+                            <div class="td-email">{{email}}</div>
+                        </td>
+                        <td class="td-amount">{{amount}}원</td>
+                        <td class="td-bank">{{bankName}}<br>{{accountNumber}}</td>
+                        <td>{{accountHolder}}</td>
+                        <td style="font-size:12px;color:#6b7280;">{{requestDate}}</td>
+                        <td>
+                            {{#isPending}}  <span class="badge badge-pending">처리중</span>  {{/isPending}}
+                            {{#isCompleted}}<span class="badge badge-completed">완료</span>   {{/isCompleted}}
+                            {{#isRejected}} <span class="badge badge-rejected">반려</span>    {{/isRejected}}
+                        </td>
+                        <td>
+                            {{#isPending}}
+                            <div class="action-btns">
+                                <button class="btn-approve" onclick="processWithdraw({{id}}, 'APPROVE')">입금완료</button>
+                                <button class="btn-reject"  onclick="processWithdraw({{id}}, 'REJECT')">반려</button>
+                            </div>
+                            {{/isPending}}
+                            {{^isPending}}<span style="font-size:12px;color:#d1d5db;">처리됨</span>{{/isPending}}
+                        </td>
+                    </tr>
+                    {{/withdrawals}}
+                    {{^withdrawals}}
+                    <tr><td colspan="7" class="empty-state">출금 요청 내역이 없습니다.</td></tr>
+                    {{/withdrawals}}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 
 <script>
 function processWithdraw(withdrawId, action) {
-    if (!confirm(action === 'APPROVE' ? "입금 완료 처리하시겠습니까?" : "거절하시겠습니까?")) return;
+    const msg = action === 'APPROVE' ? '입금 완료 처리하시겠습니까?\n(반려 시 잔액이 자동 환불됩니다)' : '출금 요청을 반려하시겠습니까?\n반려 시 전문가 잔액이 환불됩니다.';
+    if (!confirm(msg)) return;
 
-    fetch(`/api/admin/withdraw/${withdrawId}`, {
+    fetch('/api/admin/withdraw/' + withdrawId, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: action })
-    }).then(res => {
+    }).then(function(res) {
         if (res.ok) {
-            alert("처리되었습니다.");
-            location.reload(); // 새로고침
+            alert(action === 'APPROVE' ? '입금 완료 처리되었습니다.' : '반려 처리되었습니다. 잔액이 환불됩니다.');
+            location.reload();
         } else {
-            alert("처리 실패");
+            res.text().then(function(t) { alert('처리 실패: ' + t); });
         }
-    });
+    }).catch(function() { alert('네트워크 오류가 발생했습니다.'); });
 }
 </script>
-</div>
+
+{{> layout/footer}}

@@ -130,6 +130,7 @@
             <nav class="cm-menu">
                 <div class="cm-group">내 활동</div>
                 <a href="/my-pages?tab=projects" class="cm-link {{#isProjects}}active{{/isProjects}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H4v-2h16v2ZM4 20H2V4h2v16Zm18 0h-2V4h2v16Zm-11-4H9v-2h2v2Zm-2-2H7v-2h2v2Zm4 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm3-6H4V2h16v2Z"/></svg></span>내 프로젝트</a>
+                <a href="/my-pages?tab=bids" class="cm-link {{#isBids}}active{{/isBids}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2h16v2H4zm0 18h16v2H4zm16-2H4v-2h16v2zm0-12H4V4h16v2zM2 6h2v12H2zm18 0h2v12h-2zM8 10h8v4H8z"/></svg></span>제안서 관리</a>
                 <a href="/my-pages?tab=messages" class="cm-link {{#isMessages}}active{{/isMessages}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v14h2v2h4v2h2v-2h2v2h2v-2h6v-2h2V4h-2V2zm0 14H4V4h16v12z"/><path d="M6 7h12v2H6zm0 4h8v2H6z"/></svg></span>쪽지함 {{#messageCount}}<span style="background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">{{messageCount}}</span>{{/messageCount}}</a>
                 <a href="/my-pages?tab=chats" class="cm-link {{#isChats}}active{{/isChats}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v12h2v2h2v2h2v-2h2v2h2v-2h8v-2h2V4h-2V2zm0 14H4V4h16v12z"/><path d="M6 7h12v2H6zm0 4h6v2H6z"/></svg></span>1:1 채팅</a>
                 <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v18h2v-2h16v2h2V4h-2V2zm0 16H4V4h16v14zM6 7h12v2H6zm0 4h12v2H6zm0 4h8v2H6z"/></svg></span>내 게시글</a>
@@ -171,6 +172,64 @@
             </div>
             <!-- 콘텐츠 -->
             <section class="cm-content">
+
+                {{! ===== 제안서 관리 ===== }}
+                {{#isBids}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">제안서 관리</div>
+                        <div class="cm-content-sub">내 프로젝트에 들어온 전문가 제안서를 검토하고 낙찰하세요.</div>
+                    </div>
+
+                    {{#clientBids}}
+                        <div class="cm-item" style="flex-direction:column; align-items:stretch; gap:0;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div class="cm-item-body">
+                                    <span class="cm-item-cat">
+                                        <a href="/bids?projectId={{projectId}}" style="color:inherit; text-decoration:none;">{{projectTitle}}</a>
+                                    </span>
+                                    <div class="cm-item-title" style="margin-top:4px;">
+                                        <a href="/experts/{{expertId}}" style="color:inherit; text-decoration:none;">{{expertName}}</a>
+                                        <span style="font-size:12px; font-weight:500; color:#4a6fa5; margin-left:6px;">★ {{avgRating}}</span>
+                                    </div>
+                                    <div class="cm-item-meta">
+                                        희망금액 <strong style="color:#2563eb;">{{proposedPrice}}만원</strong>
+                                        &nbsp;·&nbsp; 예상기간 <strong style="color:#1e3a6e;">{{estimatedDays}}일</strong>
+                                    </div>
+                                </div>
+                                <div class="cm-item-right" style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:90px;">
+                                    {{#isPending}}<span class="cm-item-status" style="background:rgba(37,99,235,.08);color:#2563eb;border:1px solid rgba(37,99,235,.2);">검토중</span>{{/isPending}}
+                                    {{#isHold}}<span class="cm-item-status" style="background:rgba(245,158,11,.1);color:#d97706;border:1px solid rgba(245,158,11,.25);">보류</span>{{/isHold}}
+                                    {{#isSelected}}<span class="cm-item-status st-done">낙찰완료</span>{{/isSelected}}
+                                    {{#isRejected}}<span class="cm-item-status st-closed">거절</span>{{/isRejected}}
+                                </div>
+                            </div>
+
+                            {{#coverLetter}}
+                            <div style="margin-top:10px; padding:10px 12px; background:rgba(255,255,255,.5); border-radius:10px; border:1px solid rgba(37,99,235,.08); font-size:13px; color:#4a6fa5; line-height:1.6;">
+                                {{coverLetter}}
+                            </div>
+                            {{/coverLetter}}
+
+                            {{#isPending}}
+                            <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+                                <button type="button" onclick="selectBid({{id}}, this)" class="cm-btn cm-btn-primary" style="margin-top:0;">낙찰 선택</button>
+                                <button type="button" onclick="holdBid({{id}}, this)" class="cm-btn" style="margin-top:0; background:#fff; border:1.5px solid rgba(245,158,11,.4); color:#d97706;">보류</button>
+                                <button type="button" onclick="rejectBid({{id}}, this)" class="cm-btn" style="margin-top:0; background:#fff; border:1.5px solid rgba(239,68,68,.3); color:#ef4444;">거절</button>
+                            </div>
+                            {{/isPending}}
+                            {{#isHold}}
+                            <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+                                <button type="button" onclick="selectBid({{id}}, this)" class="cm-btn cm-btn-primary" style="margin-top:0;">낙찰 선택</button>
+                                <button type="button" onclick="rejectBid({{id}}, this)" class="cm-btn" style="margin-top:0; background:#fff; border:1.5px solid rgba(239,68,68,.3); color:#ef4444;">거절</button>
+                            </div>
+                            {{/isHold}}
+                        </div>
+                    {{/clientBids}}
+
+                    {{^clientBids}}
+                        <div class="cm-empty">아직 들어온 제안서가 없습니다.</div>
+                    {{/clientBids}}
+                {{/isBids}}
 
                 {{! ===== 내 프로젝트 ===== }}
                 {{#isProjects}}
@@ -817,6 +876,39 @@
             alert('처리 중 오류가 발생했습니다.');
         }
     }
+    async function selectBid(bidId, btn) {
+        if (!confirm('이 전문가를 낙찰하시겠습니까?\n낙찰 시 에스크로 결제가 자동으로 진행됩니다.')) return;
+        btn.disabled = true;
+        btn.textContent = '처리중...';
+        try {
+            const res = await fetch('/bids/' + bidId + '/select', { method: 'POST' });
+            if (res.ok) {
+                alert('낙찰 처리 완료! 에스크로 결제가 진행되었습니다.');
+                location.href = '/my-pages?tab=bids';
+            } else {
+                const data = await res.json().catch(() => ({}));
+                alert('낙찰 실패: ' + (data.message || '잠시 후 다시 시도해 주세요.'));
+                btn.disabled = false; btn.textContent = '낙찰 선택';
+            }
+        } catch (e) { alert('통신 오류가 발생했습니다.'); btn.disabled = false; btn.textContent = '낙찰 선택'; }
+    }
+
+    async function holdBid(bidId, btn) {
+        if (!confirm('이 제안서를 보류 처리하시겠습니까?')) return;
+        btn.disabled = true;
+        const res = await fetch('/bids/' + bidId + '/hold', { method: 'POST' });
+        if (res.ok) { location.href = '/my-pages?tab=bids'; }
+        else { alert('처리 중 오류가 발생했습니다.'); btn.disabled = false; }
+    }
+
+    async function rejectBid(bidId, btn) {
+        if (!confirm('이 제안서를 거절하시겠습니까?')) return;
+        btn.disabled = true;
+        const res = await fetch('/bids/' + bidId + '/reject', { method: 'DELETE' });
+        if (res.ok) { location.href = '/my-pages?tab=bids'; }
+        else { alert('처리 중 오류가 발생했습니다.'); btn.disabled = false; }
+    }
+
     function withdrawMember(event) {
         event.preventDefault();
         if (!confirm("정말 탈퇴하시겠습니까?\n탈퇴 후 복구가 불가능합니다.")) return;
