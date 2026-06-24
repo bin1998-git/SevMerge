@@ -2,7 +2,14 @@
 
 <style>
     /* ── BOARD EDIT ── */
-    .save-section { padding: 52px 28px 80px; }
+    body {
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+    }
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+    .save-section { padding: 52px 28px 80px; position: relative; z-index: 1; }
     .save-inner { max-width: 760px; margin: 0 auto; }
     .save-header { margin-bottom: 32px; }
     .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
@@ -10,16 +17,19 @@
     .save-form { display: flex; flex-direction: column; gap: 20px; }
     .form-group { display: flex; flex-direction: column; gap: 8px; }
     .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
+    .form-input { padding: 13px 16px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
     .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.9); }
+    .form-textarea { padding: 13px 16px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
     .form-textarea::placeholder { color: #c4c9d9; }
-    .form-textarea:focus { border-color: #2563eb; }
+    .form-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.9); }
     .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
 </style>
 
 
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 {{#isAdmin}}
     <section class="save-section">
         <div class="save-inner">
