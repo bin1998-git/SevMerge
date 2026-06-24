@@ -1,25 +1,30 @@
 {{> layout/header}}
 
 <style>
-    .ar-wrap { max-width: 1100px; margin: 0 auto; padding: 36px 28px 80px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+
+    .ar-wrap { max-width: 1100px; margin: 0 auto; padding: 36px 28px 80px; background: transparent; position: relative; z-index: 1; }
     .ar-head { margin-bottom: 24px; }
     .ar-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
     .ar-sub { font-size: 14px; color: #9ca3af; }
 
     .ar-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
-    .ar-tab { padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; color: #4b5563; background: #fff; border: 1.5px solid #e2e5ef; transition: all .15s; }
+    .ar-tab { padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; color: #4b5563; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); transition: all .15s; }
     .ar-tab:hover { border-color: #93c5fd; color: #2563eb; }
     .ar-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
 
-    .ar-card { background: #fff; border: 1px solid #e2e7f0; border-radius: 16px; padding: 22px 26px; margin-bottom: 14px; transition: box-shadow .15s; }
-    .ar-card:hover { box-shadow: 0 4px 16px rgba(37,99,235,.06); }
+    .ar-card { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 16px; padding: 22px 26px; margin-bottom: 14px; transition: box-shadow .15s; box-shadow: 0 4px 24px rgba(37,99,235,.06); }
+    .ar-card:hover { box-shadow: 0 4px 24px rgba(37,99,235,.12); }
     .ar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
     .ar-people { font-size: 14px; color: #1c1e26; }
     .ar-people strong { font-weight: 800; }
     .ar-arrow { color: #c4c9d9; margin: 0 6px; }
     .ar-meta { font-size: 12px; color: #9ca3af; margin-top: 4px; }
     .ar-cat { display: inline-block; font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 9px; border-radius: 5px; margin-bottom: 8px; }
-    .ar-reason { font-size: 13.5px; color: #374151; background: #f8f9fc; padding: 12px 14px; border-radius: 10px; line-height: 1.6; }
+    .ar-reason { font-size: 13.5px; color: #374151; background: rgba(255,255,255,.5); padding: 12px 14px; border-radius: 10px; line-height: 1.6; }
     .ar-comment { font-size: 12.5px; color: #6b7280; margin-top: 8px; padding-left: 2px; }
 
     .ar-status { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
@@ -27,7 +32,7 @@
     .ar-status.approved { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
     .ar-status.rejected { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
 
-    .ar-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #f3f4f8; }
+    .ar-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.5); }
     .ar-btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
     .ar-btn-approve { background: #2563eb; color: #fff; }
     .ar-btn-approve:hover { background: #1d4ed8; }
@@ -37,9 +42,9 @@
     .ar-empty { text-align: center; padding: 80px 0; color: #c4c9d9; font-size: 15px; }
 
     /* 모달 */
-    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9999; align-items: center; justify-content: center; }
+    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 9999; align-items: center; justify-content: center; }
     .ar-modal-bg.open { display: flex; }
-    .ar-modal { background: #fff; border-radius: 16px; padding: 28px; max-width: 440px; width: 90%; }
+    .ar-modal { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(255,255,255,.9); border: 1.5px solid rgba(255,255,255,.8); border-radius: 16px; padding: 28px; max-width: 440px; width: 90%; box-shadow: 0 8px 32px rgba(37,99,235,.1); }
     .ar-modal-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
     .ar-modal-sub { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
     .ar-modal-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 90px; }
@@ -49,6 +54,9 @@
     .ar-modal-confirm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; color: #fff; }
 </style>
 
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 <div class="ar-wrap">
     <div class="ar-head">
         <h1 class="ar-title">환불 신청 관리</h1>

@@ -1,6 +1,14 @@
 {{> layout/header}}
 
 <style>
+    body {
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+    }
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+
     .admin-wrap {
         display: flex;
         min-height: calc(100vh - 64px);
@@ -9,8 +17,10 @@
     /* 사이드바 */
     .admin-sidebar {
         width: 220px;
-        background: #fff;
-        border-right: 1px solid #eaecf4;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.7);
+        border-right: 1px solid rgba(255,255,255,.8);
         padding: 28px 0;
         flex-shrink: 0;
         position: sticky;
@@ -48,12 +58,12 @@
 
     .sidebar-link:hover {
         color: #2563eb;
-        background: #f8f9ff;
+        background: rgba(239,246,255,.7);
     }
 
     .sidebar-link.active {
         color: #2563eb;
-        background: #eff6ff;
+        background: rgba(239,246,255,.6);
         border-left-color: #2563eb;
     }
 
@@ -65,7 +75,9 @@
     .admin-content {
         flex: 1;
         padding: 36px 36px 80px;
-        background: #f5f6fa;
+        background: transparent;
+        position: relative;
+        z-index: 1;
     }
 
     .admin-header {
@@ -94,9 +106,11 @@
     }
 
     .stat-card {
-        background: #fff;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
         border-radius: 14px;
-        border: 1.5px solid #eaecf4;
+        border: 1.5px solid rgba(255,255,255,.8);
         padding: 22px 20px;
     }
 
@@ -134,16 +148,19 @@
 
     /* 테이블 공통 */
     .admin-table-wrap {
-        background: #fff;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
         border-radius: 14px;
-        border: 1.5px solid #eaecf4;
+        border: 1.5px solid rgba(255,255,255,.8);
+        box-shadow: 0 4px 24px rgba(37,99,235,.06);
         overflow: hidden;
         margin-bottom: 24px;
     }
 
     .admin-table-header {
         padding: 18px 22px;
-        border-bottom: 1px solid #eaecf4;
+        border-bottom: 1px solid rgba(255,255,255,.6);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -169,8 +186,8 @@
     .admin-table-head {
         display: grid;
         padding: 11px 22px;
-        background: #f8f9fc;
-        border-bottom: 1px solid #eaecf4;
+        background: rgba(255,255,255,.4);
+        border-bottom: 1px solid rgba(255,255,255,.6);
         font-size: 11px;
         font-weight: 700;
         color: #9ca3af;
@@ -180,9 +197,10 @@
     .admin-table-row {
         display: grid;
         padding: 14px 22px;
-        border-bottom: 1px solid #f3f4f8;
+        border-bottom: 1px solid rgba(255,255,255,.5);
         align-items: center;
         font-size: 13px;
+        background: transparent;
     }
 
     .admin-table-row:last-child {
@@ -190,7 +208,7 @@
     }
 
     .admin-table-row:hover {
-        background: #f8f9ff;
+        background: rgba(239,246,255,.5);
     }
 
     .col-member {
@@ -243,6 +261,9 @@
     }
 </style>
 <script src="/webjars/chart.js/4.4.1/dist/chart.umd.js"></script>
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 <div class="admin-wrap">
 
 
@@ -258,7 +279,7 @@
              style="display: flex; flex-direction: row; gap: 24px; align-items: flex-start; width: 100%; max-width: none !important; margin: 0 0 24px 0 !important; justify-content: flex-start !important; box-sizing: border-box;">
 
             <div class="dashboard-sidebar"
-                 style="width: 260px; height: 420px !important; max-height: 420px !important; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0;">
+                 style="width: 260px; height: 420px !important; max-height: 420px !important; background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.8); border-radius: 12px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0;">
                 <!-- 📅 달력 기간 선택 폼 -->
                 <form action="/admin/main" method="get"
                       style="display: flex; flex-direction: column; gap: 8px; margin: 0;">
@@ -408,7 +429,7 @@
 
 
             <div class="main-chart-wrapper"
-                 style="flex: 1 !important; min-width: 0 !important; width: auto !important; max-width: none !important; height: 420px !important; max-height: 420px !important; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-sizing: border-box; margin: 0 !important; display: flex; flex-direction: column;">
+                 style="flex: 1 !important; min-width: 0 !important; width: auto !important; max-width: none !important; height: 420px !important; max-height: 420px !important; background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; margin: 0 !important; display: flex; flex-direction: column;">
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; box-sizing: border-box; flex-shrink: 0;">
                     <button id="btn-total-status"
@@ -481,22 +502,22 @@
     <!-- 📊 1. 사각 통계 카드 그리드 -->
     <div class="stats-grid"
          style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; width: 100%; box-sizing: border-box; margin: 0 !important; padding: 0 !important;">
-        <div class="stat-card" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
+        <div class="stat-card" style="background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
             <div class="stat-card-label">전체 회원</div>
             <div class="stat-card-val">{{stats.size}}</div>
             <div class="stat-card-sub">이번 달 <span class="up">+{{newMemberCount}}</span></div>
         </div>
-        <div class="stat-card" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
+        <div class="stat-card" style="background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
             <div class="stat-card-label">전체 프로젝트</div>
             <div class="stat-card-val">{{projectCount}}</div>
             <div class="stat-card-sub">진행 중 {{activeProjectCount}}개</div>
         </div>
-        <div class="stat-card" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
+        <div class="stat-card" style="background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
             <div class="stat-card-label">완료 프로젝트</div>
             <div class="stat-card-val">{{completedCount}}</div>
             <div class="stat-card-sub">이번 달 <span class="up">+{{newCompletedCount}}</span></div>
         </div>
-        <div class="stat-card" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
+        <div class="stat-card" style="background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
             <div class="stat-card-label">승인 대기 전문가</div>
             <div class="stat-card-val">{{pendingExpertCount}}</div>
             <div class="stat-card-sub"><a href="/admin/experts" style="color:#2563eb; font-weight:700; text-decoration: none;">승인하러 가기 →</a></div>
