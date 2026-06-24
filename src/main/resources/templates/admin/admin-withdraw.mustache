@@ -1,3 +1,51 @@
+<style>
+    body {
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+    }
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+    .withdraw-wrap { padding: 36px; position: relative; z-index: 1; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
+        border-radius: 14px;
+        border: 1.5px solid rgba(255,255,255,.8);
+        box-shadow: 0 4px 24px rgba(37,99,235,.06);
+        overflow: hidden;
+    }
+    thead tr th {
+        background: rgba(255,255,255,.4) !important;
+        border-bottom: 1px solid rgba(255,255,255,.6) !important;
+        padding: 12px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ca3af;
+        letter-spacing: .5px;
+        text-align: center;
+    }
+    tbody tr {
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255,255,255,.5) !important;
+    }
+    tbody tr:hover {
+        background: rgba(239,246,255,.5) !important;
+    }
+    tbody tr td {
+        padding: 14px 16px;
+        font-size: 13px;
+        text-align: center;
+        color: #374151;
+    }
+</style>
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="withdraw-wrap">
 <table>
     <thead>
         <tr>
@@ -46,3 +94,4 @@ function processWithdraw(withdrawId, action) {
     });
 }
 </script>
+</div>
