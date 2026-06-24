@@ -1,35 +1,73 @@
 {{> layout/header}}
 
 <style>
-    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
-    .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
-    .list-section { padding: 36px 28px 80px; }
-    .list-inner { max-width: 1140px; margin: 0 auto; }
-    .list-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .list-count { font-size: 14px; color: #9ca3af; font-weight: 500; }
-    .list-count strong { color: #1c1e26; font-weight: 700; }
-    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .search-input { flex: 1; padding: 12px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .search-input:focus { border-color: #2563eb; }
-    .search-btn { padding: 12px 24px; background: #2563eb; color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    /* 필터 버튼 스타일 */
+    .page-header {
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6);
+        padding: 36px 28px 28px; position: relative; z-index: 1;
+    }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .page-desc  { font-size: 14px; color: #4a6fa5; font-weight: 400; }
+
+    .list-section { padding: 36px 28px 80px; position: relative; z-index: 1; }
+    .list-inner   { max-width: 1140px; margin: 0 auto; }
+
+    .list-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .list-count  { font-size: 14px; color: #4a6fa5; font-weight: 500; }
+    .list-count strong { color: #1e3a6e; font-weight: 700; }
+
+    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-input {
+        flex: 1; padding: 12px 16px;
+        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 9px;
+        font-size: 14px; color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .search-input::placeholder { color: #93aecf; }
+    .search-input:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.95); }
+    .search-btn {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
+    }
+    .search-btn:hover { transform: translateY(-1px); }
+
     .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid #e2e5ef; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; cursor: pointer; transition: all .15s; }
-    .tab:hover { border-color: #2563eb; color: #2563eb; }
-    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .tab {
+        padding: 8px 18px; border-radius: 20px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.8);
+        font-size: 13px; font-weight: 600; color: #2d4a7a; cursor: pointer; transition: all .15s;
+    }
+    .tab:hover { background: rgba(255,255,255,.85); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
 
     .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
-    .project-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; transition: transform .15s; }
-    .project-card:hover { transform: translateY(-3px); border-color: #bfdbfe; }
+    .project-card {
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 16px; overflow: hidden;
+        box-shadow: 0 4px 16px rgba(37,99,235,.06); transition: all .15s;
+    }
+    .project-card:hover { transform: translateY(-3px); border-color: rgba(37,99,235,.25); box-shadow: 0 8px 24px rgba(37,99,235,.1); }
     .project-card-link { display: block; padding: 24px; text-decoration: none; color: inherit; }
-    .project-category { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; }
-    .badge-certified { font-size: 10px; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 9px; border-radius: 6px; }
-    .project-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 8px; }
-    .project-desc { font-size: 12px; color: #9ca3af; margin-bottom: 20px; }
-    .btn-primary { background: #2563eb; color: #fff; }
+    .project-card-top { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .project-category { font-size: 11px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2); padding: 4px 10px; border-radius: 6px; }
+    .badge-certified  { font-size: 10px; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 9px; border-radius: 6px; }
+    .project-title    { font-size: 15px; font-weight: 700; color: #1e3a6e; margin-bottom: 8px; }
+    .project-desc     { font-size: 12px; color: #4a6fa5; margin-bottom: 20px; line-height: 1.6; }
+
+    .btn { display: inline-block; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 20px; }
+
+    @media (max-width: 900px) { .project-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .project-grid { grid-template-columns: 1fr; } }
 </style>
 
 <div class="page-header">
@@ -55,24 +93,24 @@
 
         <div class="filter-tabs">
             <button type="button" onclick="resetFilters()" class="tab {{#isAll}}active{{/isAll}}">전체</button>
-            <button type="button" onclick="addFilter('category', 'WEB')" class="tab {{#isWeb}}active{{/isWeb}}">웹개발</button>
-            <button type="button" onclick="addFilter('category', 'APP')" class="tab {{#isApp}}active{{/isApp}}">앱개발</button>
+            <button type="button" onclick="addFilter('category', 'WEB')"  class="tab {{#isWeb}}active{{/isWeb}}">웹개발</button>
+            <button type="button" onclick="addFilter('category', 'APP')"  class="tab {{#isApp}}active{{/isApp}}">앱개발</button>
             <button type="button" onclick="addFilter('category', 'UI_UX')" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</button>
-            <button type="button" onclick="addFilter('category', 'DATA')" class="tab {{#isData}}active{{/isData}}">데이터</button>
+            <button type="button" onclick="addFilter('category', 'DATA')"  class="tab {{#isData}}active{{/isData}}">데이터</button>
             <button type="button" onclick="addFilter('category', 'VIDEO')" class="tab {{#isVideo}}active{{/isVideo}}">영상편집</button>
-            <button type="button" onclick="addFilter('category', 'ETC')" class="tab {{#isEtc}}active{{/isEtc}}">기타</button>
-            <button type="button" onclick="addFilter('statusFilter', 'CLOSED')" class="tab {{#isClosedFilter}}active{{/isClosedFilter}}">🔒 낙찰 완료 건</button>
-            <button type="button" onclick="addFilter('bidFilter', 'CERTIFIED_ONLY')" class="tab {{#isCertifiedOnly}}active{{/isCertifiedOnly}}">⭐ 인증 전문가만</button>
+            <button type="button" onclick="addFilter('category', 'ETC')"   class="tab {{#isEtc}}active{{/isEtc}}">기타</button>
+            <button type="button" onclick="addFilter('statusFilter', 'CLOSED')"       class="tab {{#isClosedFilter}}active{{/isClosedFilter}}">🔒 낙찰 완료 건</button>
+            <button type="button" onclick="addFilter('bidFilter', 'CERTIFIED_ONLY')"  class="tab {{#isCertifiedOnly}}active{{/isCertifiedOnly}}">⭐ 인증 전문가만</button>
         </div>
 
         <div class="project-grid">
             {{#projects}}
             <article class="project-card">
                 <a href="/projects/{{id}}" class="project-card-link">
-                   <div class="project-card-top">
-                       <span class="project-category">{{categoryName}}</span>
-                       {{#isCertifiedOnly}} <span class="badge-certified">⭐ 인증 전문가만</span> {{/isCertifiedOnly}}
-                   </div>
+                    <div class="project-card-top">
+                        <span class="project-category">{{categoryName}}</span>
+                        {{#isCertifiedOnly}}<span class="badge-certified">⭐ 인증 전문가만</span>{{/isCertifiedOnly}}
+                    </div>
                     <h3 class="project-title">{{title}}</h3>
                     <p class="project-desc">{{description}}</p>
                 </a>
@@ -85,17 +123,11 @@
 <script>
     function addFilter(key, value) {
         const url = new URL(window.location.href);
-        if (url.searchParams.get(key) === value) {
-            url.searchParams.delete(key);
-        } else {
-            url.searchParams.set(key, value);
-        }
+        if (url.searchParams.get(key) === value) { url.searchParams.delete(key); }
+        else { url.searchParams.set(key, value); }
         window.location.href = url.toString();
     }
-
-    function resetFilters() {
-        window.location.href = "/projects";
-    }
+    function resetFilters() { window.location.href = "/projects"; }
 </script>
 
 {{> layout/footer}}

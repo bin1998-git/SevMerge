@@ -31,7 +31,7 @@ public class main {
     @GetMapping("/")
     public String introPage(HttpSession session) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-        if (loginMember != null) return "redirect:/exmain";
+        if (loginMember != null) return "redirect:/main";
         return "intro";
     }
 

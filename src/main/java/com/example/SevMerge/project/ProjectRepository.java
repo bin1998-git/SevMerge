@@ -145,7 +145,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     @Query(value = """
             SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
             FROM project_tb 
-            WHERE project_type = :projectType 
+            WHERE LOWER(category) = LOWER(TRIM(:projectType)) 
               AND created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
             GROUP BY DATE_FORMAT(created_at, '%m-%d') 
             ORDER BY date_str ASC
@@ -154,5 +154,20 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
             @Param("startDate") java.time.LocalDate startDate,
             @Param("endDate") java.time.LocalDate endDate,
             @Param("projectType") String projectType
+    );
+
+    // 상태 일자별 등록수 조회
+    @Query(value = """
+            SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 
+            FROM project_tb 
+            WHERE project_status = :status 
+              AND created_at BETWEEN :startDate AND :endDate + INTERVAL 1 DAY 
+            GROUP BY DATE_FORMAT(created_at, '%m-%d') 
+            ORDER BY date_str ASC
+            """, nativeQuery = true)
+    List<Object[]> findProjectCountByStatusAndPeriod(
+            @Param("status") String status,
+            @Param("startDate") java.time.LocalDate startDate,
+            @Param("endDate") java.time.LocalDate endDate
     );
 }

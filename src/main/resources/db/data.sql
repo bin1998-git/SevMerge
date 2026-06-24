@@ -447,48 +447,66 @@ VALUES
 ('chart_m29@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저29', '010-0001-0029', 'EXPERT', 'ACTIVE', false, NOW(), 0),
 ('chart_m30@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저30', '010-0001-0030', 'CLIENT', 'ACTIVE', false, NOW(), 0);
 
--- -- ── 프로젝트 더미 (전체 추세용, member_id=1) / 일부 DONE은 완료 추세에도 잡힘 ──
--- INSERT INTO project_tb (
---     member_id, title, category, description, budget_min, budget_max,
---     deadline, bid_filter, project_status, view_count, is_deleted, is_private, created_at
--- )
--- VALUES
--- -- 6일 전 데이터 (다양한 시작 상태)
--- (1, '[차트] 홈피 구축 건', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 12, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
--- (1, '[차트] 앱 리뉴얼 기획', 'APP', '차트용 더미', 2000000, 5000000, NOW(), 'ALL', 'CLOSED', 5, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
--- (1, '[차트] 임시 보관 프로젝트 A', 'WEB', '차트용 더미', 500000, 1000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
---
--- -- 5일 전 데이터 (진행 중 및 취소 상태 추가)
--- (1, '[차트] 쇼핑몰 웹 개발', 'WEB', '차트용 더미', 1500000, 4000000, NOW(), 'ALL', 'IN_PROGRESS', 25, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
--- (1, '[차트] 매칭 앱 프로토타입', 'APP', '차트용 더미', 3000000, 6000000, NOW(), 'ALL', 'OPEN', 18, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
--- (1, '[차트] 중단된 서버 이전', 'WEB', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'CANCELLED', 2, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
---
--- -- 4일 전 데이터 (완료 단계 상태 추가)
--- (1, '[차트] 반응형 퍼블리싱', 'WEB', '차트용 더미', 800000, 1500000, NOW(), 'ALL', 'COMPLETED', 14, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
--- (1, '[차트] 배달 커스텀 앱', 'APP', '차트용 더미', 5000000, 9000000, NOW(), 'ALL', 'DONE', 30, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
--- (1, '[차트] 관리자 기능 개선', 'WEB', '차트용 더미', 1200000, 2500000, NOW(), 'ALL', 'IN_PROGRESS', 9, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
---
--- -- 3일 전 데이터 (여러 상태 분산)
--- (1, '[차트] 블로그 테마 제작', 'WEB', '차트용 더미', 300000, 700000, NOW(), 'ALL', 'OPEN', 4, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트] 위치기반 서비스 앱', 'APP', '차트용 더미', 4000000, 8000000, NOW(), 'ALL', 'IN_PROGRESS', 42, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트] 랜딩페이지 3종', 'WEB', '차트용 더미', 1000000, 1800000, NOW(), 'ALL', 'DONE', 15, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
--- (1, '[차트] 보안 취약점 점검', 'WEB', '차트용 더미', 2000000, 4000000, NOW(), 'ALL', 'CLOSED', 8, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
---
--- -- 2일 전 데이터
--- (1, '[차트] 소개 웹사이트', 'WEB', '차트용 더미', 500000, 1200000, NOW(), 'ALL', 'OPEN', 11, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
--- (1, '[차트] 하이브리드 앱 외주', 'APP', '차트용 더미', 3500000, 7000000, NOW(), 'ALL', 'COMPLETED', 22, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
--- (1, '[차트] 마케팅 툴 연동 API', 'WEB', '차트용 더미', 1500000, 3000000, NOW(), 'ALL', 'CANCELLED', 3, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
---
--- -- 1일 전 데이터
--- (1, '[차트] 커뮤니티 사이트', 'WEB', '차트용 더미', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 19, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트] AI 데이터 정제 웹', 'WEB', '차트용 더미', 3000000, 6000000, NOW(), 'ALL', 'IN_PROGRESS', 16, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트] 위젯 UI 디자인 앱', 'APP', '차트용 더미', 1200000, 2000000, NOW(), 'ALL', 'DONE', 28, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
--- (1, '[차트] 작성 중인 기획안', 'APP', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
---
--- -- 오늘 데이터 (방금 등록되거나 마감된 상태)
--- (1, '[차트] 실시간 채팅 웹', 'WEB', '차트용 더미', 2000000, 4500000, NOW(), 'ALL', 'OPEN', 3, false, false, NOW()),
--- (1, '[차트] 피트니스 로그 앱', 'APP', '차트용 더미', 4500000, 8500000, NOW(), 'ALL', 'IN_PROGRESS', 5, false, false, NOW()),
--- (1, '[차트] 급한 버그 수정 건', 'WEB', '차트용 더미', 300000, 600000, NOW(), 'ALL', 'DONE', 14, false, false, NOW());
+-- 프로젝트 더미 (전체 추세용, member_id=1) / 일부 DONE은 완료 추세에도 잡힘 --
+INSERT INTO project_tb (
+    member_id, title, category, description, budget_min, budget_max,
+    deadline, bid_filter, project_status, view_count, is_deleted, is_private, created_at)
+VALUES
+
+-- 6일 전 데이터 (WEB, APP, UI_UX 배치)
+(1, '[차트] 기업 홈페이지 구축 건', 'WEB', '차트용 더미', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 12, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(1, '[차트] 배달 서비스 앱 기획', 'APP', '차트용 더미', 2000000, 5000000, NOW(), 'ALL', 'CLOSED', 5, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(1, '[차트] 랜딩페이지 UI/UX 디자인', 'UI_UX', '차트용 더미', 500000, 1000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+
+-- 5일 전 데이터 (DATA, VIDEO, ETC 배치)
+(1, '[차트] AI 학습용 데이터 정제', 'DATA', '차트용 더미', 1500000, 4000000, NOW(), 'ALL', 'IN_PROGRESS', 25, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(1, '[차트] 홍보 영상 편집 외주', 'VIDEO', '차트용 더미', 3000000, 6000000, NOW(), 'ALL', 'OPEN', 18, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(1, '[차트] 사내 문서 하드웨어 정리', 'ETC', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'CANCELLED', 2, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+
+-- 4일 전 데이터 (WEB, APP, DATA 상태 다양화)
+(1, '[차트] 반응형 쇼핑몰 퍼블리싱', 'WEB', '차트용 더미', 800000, 1500000, NOW(), 'ALL', 'COMPLETED', 14, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+(1, '[차트] 커스텀 매칭 앱 개발', 'APP', '차트용 더미', 5000000, 9000000, NOW(), 'ALL', 'DONE', 30, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+(1, '[차트] 매장 통계 데이터 분석', 'DATA', '차트용 더미', 1200000, 2500000, NOW(), 'ALL', 'IN_PROGRESS', 9, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+
+-- 3일 전 데이터 (UI_UX, VIDEO, ETC 배치)
+(1, '[차트] 모바일 어플 UI 개편', 'UI_UX', '차트용 더미', 300000, 700000, NOW(), 'ALL', 'OPEN', 4, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(1, '[차트] 유튜브 인트로 영상 제작', 'VIDEO', '차트용 더미', 4000000, 8000000, NOW(), 'ALL', 'IN_PROGRESS', 42, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(1, '[차트] 번역 및 타이핑 대행 업무', 'ETC', '차트용 더미', 1000000, 1800000, NOW(), 'ALL', 'DONE', 15, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(1, '[차트] 기업 리포트 검수 요청', 'ETC', '차트용 더미', 2000000, 4000000, NOW(), 'ALL', 'CLOSED', 8, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+
+-- 2일 전 데이터 (WEB, APP, DATA 재배치)
+(1, '[차트] 회사 소개 웹사이트', 'WEB', '차트용 더미', 500000, 1200000, NOW(), 'ALL', 'OPEN', 11, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(1, '[차트] 하이브리드 앱 패키징', 'APP', '차트용 더미', 3500000, 7000000, NOW(), 'ALL', 'COMPLETED', 22, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(1, '[차트] 크롤링 데이터 수집 및 정렬', 'DATA', '차트용 더미', 1500000, 3000000, NOW(), 'ALL', 'CANCELLED', 3, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+
+-- 1일 전 데이터 (UI_UX, VIDEO, WEB, APP 고루 배치)
+(1, '[차트] 대시보드 화면 디자인', 'UI_UX', '차트용 더미', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 19, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(1, '[차트] 행사 현장 스케치 영상', 'VIDEO', '차트용 더미', 3000000, 6000000, NOW(), 'ALL', 'IN_PROGRESS', 16, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(1, '[차트] 블로그 커스텀 테마 제작', 'WEB', '차트용 더미', 1200000, 2000000, NOW(), 'ALL', 'DONE', 28, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(1, '[차트] 태블릿 전용 앱 프로토타입', 'APP', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+
+-- 오늘 데이터 (WEB, APP, UI_UX, DATA, VIDEO, ETC 총출동)
+(1, '[차트] 실시간 채팅 웹 애플리케이션', 'WEB', '차트용 더미', 2000000, 4500000, NOW(), 'ALL', 'OPEN', 3, false, false, NOW()),
+(1, '[차트] 운동 기록 피트니스 앱', 'APP', '차트용 더미', 4500000, 8500000, NOW(), 'ALL', 'IN_PROGRESS', 5, false, false, NOW()),
+(1, '[차트] 반응형 어드민 UI 디자인', 'UI_UX', '차트용 더미', 300000, 600000, NOW(), 'ALL', 'DONE', 14, false, false, NOW()),
+(1, '[차트] 텍스트 마이닝 데이터 정제 건', 'DATA', '차트용 더미', 1000000, 2000000, NOW(), 'ALL', 'OPEN', 2, false, false, NOW()),
+(1, '[차트] 제품 홍보 3D 모션그래픽', 'VIDEO', '차트용 더미', 5000000, 8000000, NOW(), 'ALL', 'IN_PROGRESS', 1, false, false, NOW()),
+(1, '[차트] 단순 사무 보조 지원 프로젝트', 'ETC', '차트용 더미', 200000, 500000, NOW(), 'ALL', 'OPEN', 7, false, false, NOW());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- 북마크 데이터
 INSERT INTO book_mark_tb (expert_id, member_id) VALUES (2, 1);
@@ -507,47 +525,6 @@ INSERT INTO partner_ship_tb
 (company_name, manager_name, email, partner_file_url, content, status, created_at, deleted_at)
 VALUES
     ('글로벌네트웍스', '이영희', 'younghee@globalnet.co.kr', '/files/partnership/company_profile.docx', '전문가 풀(Pool) 공유 및 마케팅 협업 문의입니다.', 'APPROVED', NOW(), NULL);
-
--- -- 6일 전 데이터
--- INSERT INTO project_table_name VALUES
---     (1, '[차트] 기업형 홈페이지 구축', 'WEB', '차트용 더미 데이터', 1000000, 3000000, NOW(), 'ALL', 'OPEN', 12, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
---     (1, '[차트] 핀테크 앱 리뉴얼 기획', 'APP', '차트용 더미 데이터', 2000000, 5000000, NOW(), 'ALL', 'CLOSED', 5, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
---     (1, '[차트] 커머스 플랫폼 UI/UX 설계', 'UI_UX', '차트용 더미 데이터', 1500000, 3500000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 6 DAY)),
---
--- -- 5일 전 데이터
---     (1, '[차트] AI 학습용 데이터 정제', 'DATA', '차트용 더미 데이터', 3000000, 6000000, NOW(), 'ALL', 'IN_PROGRESS', 25, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
---     (1, '[차트] 홍보 영상 3D 모션그래픽', 'VIDEO', '차트용 더미 데이터', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 18, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
---     (1, '[차트] 사내 문서 번역 및 정리', 'ETC', '차트용 더미 데이터', 500000, 1000000, NOW(), 'ALL', 'CANCELLED', 2, false, false, DATE_SUB(NOW(), INTERVAL 5 DAY)),
---
--- -- 4일 전 데이터
---     (1, '[차트] 반응형 웹 퍼블리싱', 'WEB', '차트용 더미 데이터', 800000, 1500000, NOW(), 'ALL', 'COMPLETED', 14, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
---     (1, '[차트] 중개 플랫폼 배달 앱 개발', 'APP', '차트용 더미 데이터', 5000000, 9000000, NOW(), 'ALL', 'DONE', 30, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
---     (1, '[차트] 브랜드 웹사이트 디자인 개선', 'UI_UX', '차트용 더미 데이터', 1200000, 2500000, NOW(), 'ALL', 'IN_PROGRESS', 9, false, false, DATE_SUB(NOW(), INTERVAL 4 DAY)),
---
--- -- 3일 전 데이터
---     (1, '[차트] 추천 시스템 데이터 로그 분석', 'DATA', '차트용 더미 데이터', 4000000, 8000000, NOW(), 'ALL', 'OPEN', 4, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
---     (1, '[차트] 유튜브 채널 브랜딩 영상', 'VIDEO', '차트용 더미 데이터', 1000000, 2000000, NOW(), 'ALL', 'IN_PROGRESS', 15, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
---     (1, '[차트] 공공사업 제안서 대행 작성', 'ETC', '차트용 더미 데이터', 1500000, 3000000, NOW(), 'ALL', 'DONE', 8, false, false, DATE_SUB(NOW(), INTERVAL 3 DAY)),
---
--- -- 2일 전 데이터
---     (1, '[차트] 스타트업 소개 랜딩페이지', 'WEB', '차트용 더미 데이터', 500000, 1200000, NOW(), 'ALL', 'OPEN', 11, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
---     (1, '[차트] 물류 관리 하이브리드 앱', 'APP', '차트용 더미 데이터', 3500000, 7000000, NOW(), 'ALL', 'COMPLETED', 22, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
---     (1, '[차트] 모바일 게임 UI 리스킨', 'UI_UX', '차트용 더미 데이터', 2000000, 4000000, NOW(), 'ALL', 'CANCELLED', 3, false, false, DATE_SUB(NOW(), INTERVAL 2 DAY)),
---
--- -- 1일 전 데이터
---     (1, '[차트] 고객 구매 행동 데이터 시각화', 'DATA', '차트용 더미 데이터', 2500000, 5000000, NOW(), 'ALL', 'OPEN', 19, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
---     (1, '[차트] 기업 행사 현장 스케치 영상', 'VIDEO', '차트용 더미 데이터', 1800000, 3500000, NOW(), 'ALL', 'IN_PROGRESS', 16, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
---     (1, '[차트] 사무실 이전 케이블 정리 외주', 'ETC', '차트용 더미 데이터', 300000, 600000, NOW(), 'ALL', 'DONE', 28, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
---     (1, '[차트] 미분류 임시 보관 기획안', 'ETC', '차트용 더미 데이터', 500000, 1000000, NOW(), 'ALL', 'DRAFT', 0, false, false, DATE_SUB(NOW(), INTERVAL 1 DAY)),
---
--- -- 오늘 데이터
---     (1, '[차트] 웹 소켓 기반 실시간 채팅 웹', 'WEB', '차트용 더미 데이터', 2000000, 4500000, NOW(), 'ALL', 'OPEN', 3, false, false, NOW()),
---     (1, '[차트] 피트니스 헬스 로그 기록 앱', 'APP', '차트용 더미 데이터', 4500000, 8500000, NOW(), 'ALL', 'IN_PROGRESS', 5, false, false, NOW()),
---     (1, '[차트] 관리자 통계 대시보드 UI 디자인', 'UI_UX', '차트용 더미 데이터', 1000000, 2200000, NOW(), 'ALL', 'DONE', 14, false, false, NOW());
-
-
-
-
 
 -- 3. 세 번째 제휴 문의
 INSERT INTO partner_ship_tb

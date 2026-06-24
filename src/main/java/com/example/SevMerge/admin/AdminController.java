@@ -43,12 +43,14 @@ public class AdminController {
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
     private final PartnerShipService partnerShipService;
+
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
                                 @RequestParam(value = "startDate", required = false) String startDate,
                                 @RequestParam(value = "endDate", required = false) String endDate,
                                 @RequestParam(value = "roleFilter", defaultValue = "ALL") String roleFilter,
-                                @RequestParam(value = "projectType", required = false) String projectType) {
+                                @RequestParam(value = "projectType", required = false) String projectType,
+                                @RequestParam(value = "statusFilter", defaultValue = "ALL") String statusFilter) {
 
         long newMemberCount = memberService.getNewMemberCountThisMonth();
 
@@ -67,7 +69,7 @@ public class AdminController {
         model.addAttribute("completedCount", projectService.getDoneProjectsCount());
         model.addAttribute("newCompletedCount", projectService.getMonthDoneProjectsCount());
 
-        // 승인 대기 전문가 조회하는 코드
+        // 승인 대기 조회하는 코드
         model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
 
         String defaultStartDate = (startDate != null && !startDate.isEmpty()) ?
@@ -77,11 +79,16 @@ public class AdminController {
 
         String memberChartName = "ALL".equalsIgnoreCase(roleFilter) ? "총 회원수" : ("CLIENT".equalsIgnoreCase(roleFilter) ? "일반 회원수" : "전문가 회원수");
 
+        String statusChartName = "IN_PROGRESS".equalsIgnoreCase(statusFilter) ? "진행중 프로젝트 수" :
+                ("COMPLETED".equalsIgnoreCase(statusFilter) ? "완료 프로젝트수" : "취소 프로젝트수");
+
         model.addAttribute("startDate", defaultStartDate);
         model.addAttribute("endDate", defaultEndDate);
         model.addAttribute("roleFilter", roleFilter);
         model.addAttribute("memberChartName", memberChartName);
         model.addAttribute("projectType", projectType);
+        model.addAttribute("statusFilter", statusFilter);
+        model.addAttribute("statusChartName", statusChartName);
 
         LocalDate parsedStartDate = LocalDate.parse(defaultStartDate);
         LocalDate parsedEndDate = LocalDate.parse(defaultEndDate);
@@ -93,50 +100,50 @@ public class AdminController {
                 .mapToObj(i -> parsedStartDate.plusDays(i).format(formatter))
                 .toList();
 
-
         List<Integer> memberData = new ArrayList<>();
         List<Integer> projectData = new ArrayList<>();
         List<Integer> completeData = new ArrayList<>();
-
-        Supplier<List<Integer>> zeroDataSupplier = () -> chartLabels.stream().map(i -> 0).toList();
+        List<Integer> emptyZeroList = chartLabels.stream().map(i -> 0).toList();
 
         if (projectType != null && !projectType.isEmpty()) {
             model.addAttribute("isStatusAll", false);
             model.addAttribute("selectedProjectType", projectType);
-
+            model.addAttribute("isStatusFilterActive", false);
             projectData = projectService.getProjectCountByPeriodAndType(parsedStartDate, parsedEndDate, projectType);
-            memberData = zeroDataSupplier.get();
-            completeData = zeroDataSupplier.get();
+            memberData = emptyZeroList;
+            completeData = emptyZeroList;
         } else if (!"ALL".equalsIgnoreCase(roleFilter)) {
             model.addAttribute("isStatusAll", false);
             model.addAttribute("selectedProjectType", null);
-
+            model.addAttribute("isStatusFilterActive", false);
             memberData = memberService.getMemberTrendByRoleAndPeriod(roleFilter, parsedStartDate, parsedEndDate);
-            projectData = zeroDataSupplier.get();
-            completeData = zeroDataSupplier.get();
+            projectData = emptyZeroList;
+            completeData = emptyZeroList;
+        } else if (!"ALL".equalsIgnoreCase(statusFilter)) {
+            model.addAttribute("isStatusAll", false);
+            model.addAttribute("selectedProjectType", null);
+            model.addAttribute("isStatusFilterActive", true); // 완료 프로젝트 단독 활성화 플래그 온
+            completeData = projectService.getProjectTrendByStatusAndPeriod(statusFilter, parsedStartDate, parsedEndDate);
+            memberData = emptyZeroList;
+            projectData = emptyZeroList;
         } else {
             model.addAttribute("isStatusAll", true);
             model.addAttribute("selectedProjectType", null);
-
+            model.addAttribute("isStatusFilterActive", false);
             memberData = memberService.getMemberTrendByPeriod(parsedStartDate, parsedEndDate);
             projectData = projectService.getProjectTrendByPeriod(parsedStartDate, parsedEndDate);
             completeData = projectService.getCompletedTrendByPeriod(parsedStartDate, parsedEndDate);
-
-
-
         }
+
         model.addAttribute("chartLabels", chartLabels != null ? chartLabels : new ArrayList<>());
-        model.addAttribute("memberData", memberData);
-        model.addAttribute("projectData", projectData);
-        model.addAttribute("completedData", completeData);
-
-
-        model.addAttribute("memberData", memberData != null ? memberData : new ArrayList<>());
-        model.addAttribute("projectData", projectData != null ? projectData : new ArrayList<>());
-        model.addAttribute("completedData", completeData != null ? completeData : new ArrayList<>());
-        model.addAttribute("recentPartnerships",partnerShipService.list());
+        model.addAttribute("memberData", memberData != null ? memberData : emptyZeroList);
+        model.addAttribute("projectData", projectData != null ? projectData : emptyZeroList);
+        model.addAttribute("completedData", completeData != null ? completeData : emptyZeroList);
+        model.addAttribute("recentPartnerships", partnerShipService.list());
         return "admin/admin-main";
     }
+
+
 
     // 관리자 공지사항 관리
     @GetMapping("/admin/notices")

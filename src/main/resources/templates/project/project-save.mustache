@@ -1,27 +1,61 @@
 {{> layout/header}}
 
 <style>
-    .save-section { padding: 52px 28px 80px; }
-    .save-inner { max-width: 760px; margin: 0 auto; }
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; }
-    .save-form { display: flex; flex-direction: column; gap: 22px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .save-section { padding: 52px 28px 80px; position: relative; z-index: 1; }
+    .save-inner   { max-width: 760px; margin: 0 auto; }
+    .save-header  { margin-bottom: 32px; }
+    .save-title   { font-size: 24px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .save-desc    { font-size: 14px; color: #4a6fa5; }
+
+    .save-form {
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 18px; padding: 36px;
+        box-shadow: 0 4px 24px rgba(37,99,235,.08);
+        display: flex; flex-direction: column; gap: 22px;
+    }
     .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
     .form-label .required { color: #ef4444; margin-left: 2px; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-select { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; appearance: none; cursor: pointer; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 240px; line-height: 1.7; transition: border-color .15s; }
-    .form-checkbox-wrap { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #f8f9fc; border-radius: 10px; border: 1.5px solid #e2e5ef; cursor: pointer; }
+    .form-input, .form-select, .form-textarea {
+        padding: 13px 16px;
+        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 10px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.95); }
+    .form-select { appearance: none; cursor: pointer; }
+    .form-textarea { resize: vertical; min-height: 240px; line-height: 1.7; }
+    .form-checkbox-wrap {
+        display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.45);
+        border-radius: 10px; border: 1.5px solid rgba(255,255,255,.8); cursor: pointer;
+        color: #2d4a7a; font-size: 14px;
+    }
+
     .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary { background: #2563eb; color: #fff; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
-    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+    .btn { display: inline-block; padding: 10px 22px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
+    .btn-primary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        box-shadow: 0 4px 12px rgba(37,99,235,.25);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    .btn-outline {
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.9); }
+    .btn-draft {
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(37,99,235,.3); color: #2563eb; border-radius: 20px;
+    }
+    .btn-draft:hover { background: rgba(255,255,255,.9); }
+    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 25px; }
 </style>
 
 <section class="save-section">
@@ -90,7 +124,7 @@
 
             <div class="form-btns">
                 <a href="/projects" class="btn btn-outline">취소</a>
-                <button type="button" class="btn btn-outline" onclick="saveDraft()" style="color: #2563eb;">임시저장</button>
+                <button type="button" class="btn btn-draft" onclick="saveDraft()">임시저장</button>
                 <button type="submit" class="btn btn-primary btn-lg">프로젝트 등록</button>
             </div>
         </form>
@@ -100,14 +134,14 @@
 <script>
     function getFormData() {
         return {
-            title: document.querySelector("#title").value,
-            category: document.querySelector("#category").value,
+            title:       document.querySelector("#title").value,
+            category:    document.querySelector("#category").value,
             description: document.querySelector("#description").value,
-            budgetMin: document.querySelector("#budgetMin").value,
-            budgetMax: document.querySelector("#budgetMax").value,
-            deadline: document.querySelector("#deadline").value,
-            bidFilter: document.querySelector("#bidFilter").value,
-            isPrivate: document.querySelector("#isPrivate").checked
+            budgetMin:   document.querySelector("#budgetMin").value,
+            budgetMax:   document.querySelector("#budgetMax").value,
+            deadline:    document.querySelector("#deadline").value,
+            bidFilter:   document.querySelector("#bidFilter").value,
+            isPrivate:   document.querySelector("#isPrivate").checked
         };
     }
 
@@ -117,14 +151,14 @@
             .then(data => {
                 if (data) {
                     if (confirm("임시저장된 내용이 있습니다. 불러오시겠습니까?")) {
-                        document.querySelector("#title").value = data.title || "";
-                        document.querySelector("#category").value = data.category || "";
+                        document.querySelector("#title").value       = data.title || "";
+                        document.querySelector("#category").value    = data.category || "";
                         document.querySelector("#description").value = data.description || "";
-                        document.querySelector("#budgetMin").value = data.budgetMin || "";
-                        document.querySelector("#budgetMax").value = data.budgetMax || "";
-                        document.querySelector("#bidFilter").value = data.bidFilter || "ALL";
+                        document.querySelector("#budgetMin").value   = data.budgetMin || "";
+                        document.querySelector("#budgetMax").value   = data.budgetMax || "";
+                        document.querySelector("#bidFilter").value   = data.bidFilter || "ALL";
                         document.querySelector("#isPrivate").checked = !!data.isPrivate;
-                        if(data.deadline) document.querySelector("#deadline").value = data.deadline.substring(0, 10);
+                        if (data.deadline) document.querySelector("#deadline").value = data.deadline.substring(0, 10);
                     }
                 }
             });

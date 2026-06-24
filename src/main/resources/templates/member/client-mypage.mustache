@@ -135,6 +135,9 @@
                 <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v18h2v-2h16v2h2V4h-2V2zm0 16H4V4h16v14zM6 7h12v2H6zm0 4h12v2H6zm0 4h8v2H6z"/></svg></span>내 게시글</a>
                 <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg></span>리뷰</a>
                 <a href="/my-pages?tab=bookmarks" class="cm-link {{#isBookmarks}}active{{/isBookmarks}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg></span>북마크</a>
+                <a href="/my-pages?tab=wishlist" class="cm-link {{#isWishlist}}active{{/isWishlist}}">
+                    <span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21H10v-2H8v-2H6v-2H4v-2H2V9h2V7h2V5h4V3h4v2h4v2h2v2h2v4h-2v2h-2v2h-2v2h-2v2z"/></svg></span>찜한 전문가
+                </a>
 
                 <div class="cm-group">포인트 / 결제</div>
                 <a href="/charge/form" class="cm-link"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3zM1 7h2v10H1zm2 10h18v2H3zM21 7h2v10h-2zM11 9h2v2h-2zm-2 2h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm4 0h2v2h-2zM5 11h2v2H5z"/></svg></span>포인트 충전</a>
@@ -562,77 +565,77 @@
 
 <script>
     function previewImage(input) {
-    if (!input.files || !input.files[0]) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById("imgPreview");
-        preview.style.backgroundImage = `url('${e.target.result}')`;
-        preview.style.backgroundSize = "cover";
-        preview.style.backgroundPosition = "center";
-        preview.textContent = "";  // 👤 이모지 제거
-    };
-    reader.readAsDataURL(input.files[0]);
-}
-
-function updateMyInfo() {
-    const nameVal = document.getElementById("updateName").value.trim();
-    const currentPwEl = document.getElementById("updateCurrentPassword");
-    const pwEl = document.getElementById("updatePassword");
-    const pwConfirmEl = document.getElementById("updatePasswordConfirm");
-    const currentPasswordVal = currentPwEl ? currentPwEl.value : "";
-    const passwordVal = pwEl ? pwEl.value : "";
-    const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
-    const phoneVal = document.getElementById("updatePhone").value.trim();
-    const originalPhone = "{{member.phone}}";
-
-    if (!nameVal) { alert("이름을 입력해 주세요."); return; }
-
-    if (passwordVal) {
-        if (!currentPasswordVal) {
-            alert("현재 비밀번호를 입력해 주세요.");
-            return;
-        }
-        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-        if (!pwRegex.test(passwordVal)) {
-            alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
-            return;
-        }
-        if (passwordVal !== confirmVal) {
-            alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-            return;
-        }
-        if (passwordVal === currentPasswordVal) {
-            alert("기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
-            return;
-        }
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById("imgPreview");
+            preview.style.backgroundImage = `url('${e.target.result}')`;
+            preview.style.backgroundSize = "cover";
+            preview.style.backgroundPosition = "center";
+            preview.textContent = "";  // 👤 이모지 제거
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 
-    if (phoneVal !== originalPhone && !phoneVerified) {
-        alert("변경한 휴대폰 번호는 인증이 필요합니다.");
-        return;
+    function updateMyInfo() {
+        const nameVal = document.getElementById("updateName").value.trim();
+        const currentPwEl = document.getElementById("updateCurrentPassword");
+        const pwEl = document.getElementById("updatePassword");
+        const pwConfirmEl = document.getElementById("updatePasswordConfirm");
+        const currentPasswordVal = currentPwEl ? currentPwEl.value : "";
+        const passwordVal = pwEl ? pwEl.value : "";
+        const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
+        const phoneVal = document.getElementById("updatePhone").value.trim();
+        const originalPhone = "{{member.phone}}";
+
+        if (!nameVal) { alert("이름을 입력해 주세요."); return; }
+
+        if (passwordVal) {
+            if (!currentPasswordVal) {
+                alert("현재 비밀번호를 입력해 주세요.");
+                return;
+            }
+            const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+            if (!pwRegex.test(passwordVal)) {
+                alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+                return;
+            }
+            if (passwordVal !== confirmVal) {
+                alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                return;
+            }
+            if (passwordVal === currentPasswordVal) {
+                alert("기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
+                return;
+            }
+        }
+
+        if (phoneVal !== originalPhone && !phoneVerified) {
+            alert("변경한 휴대폰 번호는 인증이 필요합니다.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("data", new Blob(
+                [JSON.stringify({ name: nameVal, phone: phoneVal, currentPassword: currentPasswordVal, newPassword: passwordVal })],
+                { type: "application/json" }
+        ));
+
+        const imageFile = document.getElementById("profileImageFile").files[0];
+        if (imageFile) {
+            formData.append("profileImageFile", imageFile);
+        }
+
+        fetch('/my-pages', {
+            method: 'PUT',
+            body: formData
+        })
+                .then(response => {
+                    if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
+                    else { response.text().then(t => alert("수정 실패: " + t)); }
+                })
+                .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
     }
-
-    const formData = new FormData();
-    formData.append("data", new Blob(
-    [JSON.stringify({ name: nameVal, phone: phoneVal, currentPassword: currentPasswordVal, newPassword: passwordVal })],
-    { type: "application/json" }
-    ));
-
-    const imageFile = document.getElementById("profileImageFile").files[0];
-    if (imageFile) {
-        formData.append("profileImageFile", imageFile);
-    }
-
-    fetch('/my-pages', {
-        method: 'PUT',
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
-        else { response.text().then(t => alert("수정 실패: " + t)); }
-    })
-    .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
-}
 
     // ===== 비밀번호 확인 =====
     const pwInput = document.getElementById("updatePassword");
@@ -695,16 +698,16 @@ function updateMyInfo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phone })
         })
-        .then(res => {
-            if (res.ok) {
-                document.getElementById("phoneCodeBox").style.display = "flex";
-                document.getElementById("phoneCodeBox").style.flexDirection = "column";
-                alert("인증번호가 발송되었습니다.");
-            } else {
-                alert("인증번호 발송에 실패했습니다.");
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+                .then(res => {
+                    if (res.ok) {
+                        document.getElementById("phoneCodeBox").style.display = "flex";
+                        document.getElementById("phoneCodeBox").style.flexDirection = "column";
+                        alert("인증번호가 발송되었습니다.");
+                    } else {
+                        alert("인증번호 발송에 실패했습니다.");
+                    }
+                })
+                .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
     }
 
     function verifyPhoneCode() {
@@ -718,120 +721,120 @@ function updateMyInfo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phone, code: code })
         })
-        .then(res => res.json().then(data => ({ ok: res.ok, data })))
-        .then(({ ok, data }) => {
-            if (ok) {
-                phoneVerified = true;
-                msg.textContent = "✓ 인증되었습니다.";
-                msg.style.color = "#22c55e";
-            } else {
-                phoneVerified = false;
-                msg.textContent = "✗ " + data.message;
-                msg.style.color = "#ef4444";
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok) {
+                        phoneVerified = true;
+                        msg.textContent = "✓ 인증되었습니다.";
+                        msg.style.color = "#22c55e";
+                    } else {
+                        phoneVerified = false;
+                        msg.textContent = "✗ " + data.message;
+                        msg.style.color = "#ef4444";
+                    }
+                })
+                .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
     }
 
     function requestRefund(paymentId) {
-    if (!confirm("정말 환불 신청하시겠습니까?\n진행 중인 프로젝트는 취소되고 잔액으로 환불됩니다.")) return;
-    fetch(`/payment/${paymentId}/refund`, { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert("환불이 완료되었습니다.");
-                window.location.href = "/my-pages?tab=payments";
-            } else {
-                alert("환불 실패: " + (data.message || "알 수 없는 오류"));
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
-}
+        if (!confirm("정말 환불 신청하시겠습니까?\n진행 중인 프로젝트는 취소되고 잔액으로 환불됩니다.")) return;
+        fetch(`/payment/${paymentId}/refund`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("환불이 완료되었습니다.");
+                        window.location.href = "/my-pages?tab=payments";
+                    } else {
+                        alert("환불 실패: " + (data.message || "알 수 없는 오류"));
+                    }
+                })
+                .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+    }
 
     let currentPasswordVerified = false;
 
-function openPwVerifyModal() {
-    if (currentPasswordVerified) return; // 이미 확인됐으면 모달 안 띄움
-    document.getElementById("pwVerifyInput").value = "";
-    document.getElementById("pwVerifyModalMsg").textContent = "";
-    document.getElementById("pwVerifyModalBg").classList.add("open");
-    setTimeout(() => document.getElementById("pwVerifyInput").focus(), 100);
-}
-
-function closePwVerifyModal() {
-    document.getElementById("pwVerifyModalBg").classList.remove("open");
-}
-
-function confirmCurrentPassword() {
-    const currentPw = document.getElementById("pwVerifyInput").value;
-    const msg = document.getElementById("pwVerifyModalMsg");
-
-    if (!currentPw) {
-        msg.textContent = "현재 비밀번호를 입력해 주세요.";
-        msg.style.color = "#ef4444";
-        return;
+    function openPwVerifyModal() {
+        if (currentPasswordVerified) return; // 이미 확인됐으면 모달 안 띄움
+        document.getElementById("pwVerifyInput").value = "";
+        document.getElementById("pwVerifyModalMsg").textContent = "";
+        document.getElementById("pwVerifyModalBg").classList.add("open");
+        setTimeout(() => document.getElementById("pwVerifyInput").focus(), 100);
     }
 
-    fetch('/api/member/verify-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword: currentPw })
-    })
-    .then(res => res.json().then(data => ({ ok: res.ok, data })))
-    .then(({ ok, data }) => {
-        if (ok) {
-            currentPasswordVerified = true;
-            document.getElementById("updateCurrentPassword").value = currentPw;
-            const pwInput = document.getElementById("updatePassword");
-            pwInput.readOnly = false;   // disabled = false → readOnly = false 로 변경
-            pwInput.placeholder = "새 비밀번호를 입력하세요";
-            pwInput.style.cursor = "text";
-            closePwVerifyModal();
-            pwInput.focus();
-        } else {
-            msg.textContent = data.message;
-            msg.style.color = "#ef4444";
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        msg.textContent = "통신 오류가 발생했습니다.";
-        msg.style.color = "#ef4444";
-    });
-}
+    function closePwVerifyModal() {
+        document.getElementById("pwVerifyModalBg").classList.remove("open");
+    }
 
-// 배경 클릭 시 닫기
-document.getElementById("pwVerifyModalBg").addEventListener("click", function(e) {
-    if (e.target === this) closePwVerifyModal();
-});
+    function confirmCurrentPassword() {
+        const currentPw = document.getElementById("pwVerifyInput").value;
+        const msg = document.getElementById("pwVerifyModalMsg");
+
+        if (!currentPw) {
+            msg.textContent = "현재 비밀번호를 입력해 주세요.";
+            msg.style.color = "#ef4444";
+            return;
+        }
+
+        fetch('/api/member/verify-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword: currentPw })
+        })
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok) {
+                        currentPasswordVerified = true;
+                        document.getElementById("updateCurrentPassword").value = currentPw;
+                        const pwInput = document.getElementById("updatePassword");
+                        pwInput.readOnly = false;   // disabled = false → readOnly = false 로 변경
+                        pwInput.placeholder = "새 비밀번호를 입력하세요";
+                        pwInput.style.cursor = "text";
+                        closePwVerifyModal();
+                        pwInput.focus();
+                    } else {
+                        msg.textContent = data.message;
+                        msg.style.color = "#ef4444";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    msg.textContent = "통신 오류가 발생했습니다.";
+                    msg.style.color = "#ef4444";
+                });
+    }
+
+    // 배경 클릭 시 닫기
+    document.getElementById("pwVerifyModalBg").addEventListener("click", function(e) {
+        if (e.target === this) closePwVerifyModal();
+    });
 
     async function cancelWish(expertId, btn) {
-    if (!confirm('찜을 취소하시겠습니까?')) return;
-    const res = await fetch('/experts/wish/' + expertId, { method: 'POST' });
-    if (res.ok) {
-        btn.closest('.cm-item').remove();
-    } else {
-        alert('처리 중 오류가 발생했습니다.');
-    }
-}
-    function withdrawMember(event) {
-    event.preventDefault();
-    if (!confirm("정말 탈퇴하시겠습니까?\n탈퇴 후 복구가 불가능합니다.")) return;
-
-    fetch("/my-pages/withdraw", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" }
-    })
-    .then(res => {
+        if (!confirm('찜을 취소하시겠습니까?')) return;
+        const res = await fetch('/experts/wish/' + expertId, { method: 'POST' });
         if (res.ok) {
-            alert("탈퇴가 완료되었습니다.");
-            window.location.href = "/";
+            btn.closest('.cm-item').remove();
         } else {
-            res.text().then(t => alert("탈퇴 처리 실패: " + t));
+            alert('처리 중 오류가 발생했습니다.');
         }
-    })
-    .catch(() => alert("서버 오류가 발생했습니다."));
-}
+    }
+    function withdrawMember(event) {
+        event.preventDefault();
+        if (!confirm("정말 탈퇴하시겠습니까?\n탈퇴 후 복구가 불가능합니다.")) return;
+
+        fetch("/my-pages/withdraw", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        })
+                .then(res => {
+                    if (res.ok) {
+                        alert("탈퇴가 완료되었습니다.");
+                        window.location.href = "/";
+                    } else {
+                        res.text().then(t => alert("탈퇴 처리 실패: " + t));
+                    }
+                })
+                .catch(() => alert("서버 오류가 발생했습니다."));
+    }
 
     // 아바타 첫 글자 처리
     const sideAvatarEl = document.getElementById('sideAvatar');

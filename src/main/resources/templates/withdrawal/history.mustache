@@ -1,152 +1,60 @@
 {{> layout/header}}
 
 <style>
-    /* ── 본문 ── */
-    .page-section { padding: 40px 28px 80px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
     .page-inner   { max-width: 1200px; margin: 0 auto; }
     .page-head    { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .page-title   { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; }
-    .page-count   { font-size: 13px; color: #9ca3af; font-weight: 500; }
+    .page-title   { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; }
+    .page-count   { font-size: 13px; color: #4a6fa5; font-weight: 500; }
 
-    /* ── 잔액 요약 ── */
     .balance-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-    .summary-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 20px 24px; }
-    .summary-label { font-size: 12px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
-    .summary-value { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; }
+    .summary-card {
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 14px; padding: 20px 24px;
+        box-shadow: 0 4px 16px rgba(37,99,235,.07);
+    }
+    .summary-label { font-size: 12px; font-weight: 600; color: #4a6fa5; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
+    .summary-value { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; }
     .summary-value.blue { color: #2563eb; }
     .summary-value.red  { color: #dc2626; }
 
-    /* ── 테이블 ── */
-    .wd-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; }
-    .wd-table-head { display: grid; grid-template-columns: 80px 1fr 130px 130px 110px 110px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
-    .wd-row { display: grid; grid-template-columns: 80px 1fr 130px 130px 110px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .wd-table {
+        width: 100%;
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 18px; overflow: hidden;
+        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    }
+    .wd-table-head { display: grid; grid-template-columns: 80px 1fr 130px 130px 110px 110px; gap: 12px; padding: 13px 24px; background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(37,99,235,.08); font-size: 12px; font-weight: 700; color: #4a6fa5; letter-spacing: .3px; }
+    .wd-row { display: grid; grid-template-columns: 80px 1fr 130px 130px 110px 110px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid rgba(37,99,235,.06); align-items: center; transition: background .12s; }
     .wd-row:last-child { border-bottom: none; }
-    .wd-row:hover { background: #f8f9ff; }
-    .cell { font-size: 13px; color: #4b5563; }
-    .cell-id     { font-weight: 700; color: #1c1e26; }
-    .cell-amount { font-weight: 700; color: #dc2626; }
+    .wd-row:hover { background: rgba(255,255,255,.5); }
+    .cell { font-size: 13px; color: #4a6fa5; }
+    .cell-id      { font-weight: 700; color: #1e3a6e; }
+    .cell-amount  { font-weight: 700; color: #dc2626; }
     .cell-account { font-size: 12px; }
 
-    /* ── 상태 뱃지 ── */
     .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-    .badge-pending   { background: #fef3c7; color: #92400e; }
-    .badge-completed { background: #d1fae5; color: #065f46; }
-    .badge-rejected  { background: #fef2f2; color: #dc2626; }
+    .badge-pending   { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-completed { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-rejected  { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
-    /* ── 빈 상태 ── */
     .empty-state { text-align: center; padding: 80px 0; }
     .empty-icon  { font-size: 36px; margin-bottom: 14px; }
-    .empty-msg   { font-size: 14px; color: #c4c9d9; margin-bottom: 18px; }
+    .empty-msg   { font-size: 14px; color: #93aecf; margin-bottom: 18px; }
 
-    /* ── 상단 버튼 ── */
-    .btn-new-wd { padding: 9px 20px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-block; }
-    .btn-new-wd:hover { background: #1d4ed8; }
-    /* ── FOOTER (exmain 스타일) ── */
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-sky:       #6BA0FF;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
+    .btn-new-wd {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; border: none; border-radius: 20px; font-size: 13px; font-weight: 700;
+        text-decoration: none; display: inline-block;
+        box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
     }
-    .footer {
-        background: var(--brand-ink) !important;
-        border-top: 1px solid rgba(255,255,255,.06) !important;
-        padding: 40px 32px 28px !important;
-    }
-    .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .footer-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-    .footer-brand-logo {
-        font-size: 20px;
-        font-weight: 800;
-        color: rgba(255,255,255,.85);
-        letter-spacing: .05em;
-    }
-    .footer-brand-logo span { color: var(--brand-sky); }
-    .footer-actions { display: flex; gap: 8px; }
-    .footer-actions .btn-outline {
-        background: transparent;
-        border: 1.5px solid rgba(255,255,255,.18);
-        color: rgba(255,255,255,.55);
-        font-size: 13px;
-        padding: 8px 16px;
-        border-radius: 7px;
-        transition: border-color .15s, color .15s;
-    }
-    .footer-actions .btn-outline:hover {
-        border-color: var(--brand-sky);
-        color: var(--brand-sky);
-    }
-    .footer-nav {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-    }
-    .footer-nav a {
-        font-size: 13px;
-        color: rgba(255,255,255,.45);
-        transition: color .15s;
-    }
-    .footer-nav a:hover { color: rgba(255,255,255,.8); }
-    .footer-nav-sep {
-        display: inline-block;
-        width: 1px;
-        height: 12px;
-        background: rgba(255,255,255,.15);
-        vertical-align: middle;
-    }
-    .footer-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255,255,255,.07);
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .footer-policy-links {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .footer-policy-links a {
-        font-size: 12px;
-        color: rgba(255,255,255,.32);
-        transition: color .15s;
-    }
-    .footer-policy-links a:hover { color: rgba(255,255,255,.6); }
-    .footer-policy-strong {
-        font-weight: 700;
-        color: rgba(255,255,255,.5) !important;
-    }
-    .footer-hours-inline {
-        font-size: 12px;
-        color: rgba(255,255,255,.22);
-    }
-    .footer-copy {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--brand-muted) !important;
-        letter-spacing: .02em;
-    }
+    .btn-new-wd:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
 </style>
 
 <section class="page-section">
@@ -157,7 +65,6 @@
             <a href="/withdrawal/form" class="btn-new-wd">+ 출금 신청</a>
         </div>
 
-        <!-- 요약 카드 -->
         <div class="balance-summary">
             <div class="summary-card">
                 <div class="summary-label">현재 잔액</div>
@@ -173,7 +80,6 @@
             </div>
         </div>
 
-        <!-- 출금 내역 테이블 -->
         <div class="wd-table">
             <div class="wd-table-head">
                 <span>번호</span>

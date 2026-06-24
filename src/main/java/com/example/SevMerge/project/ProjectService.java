@@ -442,4 +442,28 @@ public class ProjectService {
         }
         return trendData;
     }
+
+    // 상태별 + 선택기간 동안 일자별 프로젝트 등록조회
+    public List<Integer> getProjectTrendByStatusAndPeriod(String statusFilter, LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawData = projectRepository.findProjectCountByStatusAndPeriod(statusFilter, startDate, endDate);
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        List<Integer> trendData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
 }

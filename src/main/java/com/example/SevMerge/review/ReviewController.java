@@ -43,7 +43,7 @@ public class ReviewController {
         double avg = reviewService.avgRating(sessionUser.getId());
         model.addAttribute("avgStar", String.format("%.1f", avg));
 
-        return "review/my-reviews";
+        return "review/review-list";
     }
 
     // 리뷰작성 화면

@@ -1,156 +1,67 @@
 {{> layout/header}}
 
 <style>
-    .page-header { background: #fff; border-bottom: 1px solid #eaecf4; padding: 40px 28px 28px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-header {
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6);
+        padding: 36px 28px 28px; position: relative; z-index: 1;
+    }
     .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
-    .page-desc  { font-size: 14px; color: #9ca3af; }
+    .page-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 6px; }
+    .page-desc  { font-size: 14px; color: #4a6fa5; }
 
-    .balance-bar { background: #eff6ff; border-bottom: 1px solid #bfdbfe; padding: 16px 28px; }
+    .balance-bar {
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.55);
+        border-bottom: 1px solid rgba(255,255,255,.6);
+        padding: 16px 28px; position: relative; z-index: 1;
+    }
     .balance-bar-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-    .balance-bar-left  { font-size: 14px; color: #1d4ed8; font-weight: 600; }
-    .balance-bar-left strong { font-size: 20px; font-weight: 900; margin-left: 8px; }
+    .balance-bar-left  { font-size: 14px; color: #1e3a6e; font-weight: 600; }
+    .balance-bar-left strong { font-size: 20px; font-weight: 900; margin-left: 8px; color: #2563eb; }
     .balance-bar-right { display: flex; gap: 8px; align-items: center; }
-    .balance-bar-right a { font-size: 13px; font-weight: 700; text-decoration: none; padding: 7px 16px; border-radius: 8px; }
-    .btn-charge-bar { color: #2563eb; border: 1.5px solid #2563eb; background: #fff; }
-    .btn-charge-bar:hover { background: #eff6ff; }
-    .btn-withdraw-bar { color: #fff; background: #2563eb; border: 1.5px solid #2563eb; }
-    .btn-withdraw-bar:hover { background: #1d4ed8; border-color: #1d4ed8; }
-    .btn-history-bar { color: #6b7280; border: 1.5px solid #d1d5db; background: #fff; }
-    .btn-history-bar:hover { border-color: #9ca3af; color: #374151; }
+    .balance-bar-right a { font-size: 13px; font-weight: 700; text-decoration: none; padding: 7px 16px; border-radius: 20px; }
+    .btn-charge-bar  { color: #2563eb; border: 1.5px solid rgba(37,99,235,.3); backdrop-filter: blur(8px); background: rgba(255,255,255,.6); }
+    .btn-charge-bar:hover { background: rgba(255,255,255,.9); }
+    .btn-withdraw-bar { color: #fff; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+    .btn-withdraw-bar:hover { box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    .btn-history-bar  { color: #4a6fa5; border: 1.5px solid rgba(255,255,255,.8); backdrop-filter: blur(8px); background: rgba(255,255,255,.5); }
+    .btn-history-bar:hover { background: rgba(255,255,255,.8); }
 
-    .list-section  { padding: 36px 28px 80px; }
+    .list-section  { padding: 32px 28px 80px; position: relative; z-index: 1; }
     .list-inner    { max-width: 1140px; margin: 0 auto; }
-    .section-title { font-size: 18px; font-weight: 900; color: #1c1e26; margin-bottom: 20px; }
-    .list-count    { font-size: 14px; color: #9ca3af; font-weight: 500; margin-bottom: 16px; }
-    .list-count strong { color: #1c1e26; font-weight: 700; }
+    .section-title { font-size: 18px; font-weight: 900; color: #1e3a6e; margin-bottom: 20px; }
+    .list-count    { font-size: 14px; color: #4a6fa5; font-weight: 500; margin-bottom: 16px; }
+    .list-count strong { color: #1e3a6e; font-weight: 700; }
 
-    .pay-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
-    .pay-table-head { display: grid; grid-template-columns: 70px 110px 130px 120px 120px 110px 110px; gap: 10px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
-    .pay-table-row  { display: grid; grid-template-columns: 70px 110px 130px 120px 120px 110px 110px; gap: 10px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .pay-table {
+        width: 100%;
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 18px; overflow: hidden; margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    }
+    .pay-table-head { display: grid; grid-template-columns: 70px 110px 130px 120px 120px 110px 110px; gap: 10px; padding: 13px 24px; background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(37,99,235,.08); font-size: 12px; font-weight: 700; color: #4a6fa5; letter-spacing: .3px; }
+    .pay-table-row  { display: grid; grid-template-columns: 70px 110px 130px 120px 120px 110px 110px; gap: 10px; padding: 18px 24px; border-bottom: 1px solid rgba(37,99,235,.06); align-items: center; transition: background .12s; }
     .pay-table-row:last-child { border-bottom: none; }
-    .pay-table-row:hover { background: #f8f9ff; }
-    .cell        { font-size: 13px; color: #4b5563; }
-    .cell-id     { font-weight: 700; color: #1c1e26; }
-    .cell-amount { font-weight: 700; color: #1c1e26; }
+    .pay-table-row:hover { background: rgba(255,255,255,.5); }
+    .cell        { font-size: 13px; color: #4a6fa5; }
+    .cell-id     { font-weight: 700; color: #1e3a6e; }
+    .cell-amount { font-weight: 700; color: #1e3a6e; }
 
-    .status-paid     { font-size: 11px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-paid     { font-size: 11px; background: rgba(37,99,235,.1); color: #2563eb; border: 1px solid rgba(37,99,235,.2); padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .status-settled  { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .status-refunded { font-size: 11px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
 
-    .settle-btn  { padding: 6px 14px; background: #059669; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .refund-btn  { padding: 6px 14px; background: #dc2626; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .settle-btn { padding: 6px 14px; background: #059669; color: #fff; border: none; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .refund-btn { padding: 6px 14px; background: #dc2626; color: #fff; border: none; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
     .settle-btn:hover { background: #047857; }
     .refund-btn:hover { background: #b91c1c; }
 
     .empty-state { text-align: center; padding: 60px 0; }
-    .empty-msg   { font-size: 15px; color: #c4c9d9; }
-    /* ── FOOTER (exmain 스타일) ── */
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-sky:       #6BA0FF;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
-    }
-    .footer {
-        background: var(--brand-ink) !important;
-        border-top: 1px solid rgba(255,255,255,.06) !important;
-        padding: 40px 32px 28px !important;
-    }
-    .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .footer-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-    .footer-brand-logo {
-        font-size: 20px;
-        font-weight: 800;
-        color: rgba(255,255,255,.85);
-        letter-spacing: .05em;
-    }
-    .footer-brand-logo span { color: var(--brand-sky); }
-    .footer-actions { display: flex; gap: 8px; }
-    .footer-actions .btn-outline {
-        background: transparent;
-        border: 1.5px solid rgba(255,255,255,.18);
-        color: rgba(255,255,255,.55);
-        font-size: 13px;
-        padding: 8px 16px;
-        border-radius: 7px;
-        transition: border-color .15s, color .15s;
-    }
-    .footer-actions .btn-outline:hover {
-        border-color: var(--brand-sky);
-        color: var(--brand-sky);
-    }
-    .footer-nav {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-    }
-    .footer-nav a {
-        font-size: 13px;
-        color: rgba(255,255,255,.45);
-        transition: color .15s;
-    }
-    .footer-nav a:hover { color: rgba(255,255,255,.8); }
-    .footer-nav-sep {
-        display: inline-block;
-        width: 1px;
-        height: 12px;
-        background: rgba(255,255,255,.15);
-        vertical-align: middle;
-    }
-    .footer-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255,255,255,.07);
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .footer-policy-links {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .footer-policy-links a {
-        font-size: 12px;
-        color: rgba(255,255,255,.32);
-        transition: color .15s;
-    }
-    .footer-policy-links a:hover { color: rgba(255,255,255,.6); }
-    .footer-policy-strong {
-        font-weight: 700;
-        color: rgba(255,255,255,.5) !important;
-    }
-    .footer-hours-inline {
-        font-size: 12px;
-        color: rgba(255,255,255,.22);
-    }
-    .footer-copy {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--brand-muted) !important;
-        letter-spacing: .02em;
-    }
+    .empty-msg   { font-size: 15px; color: #93aecf; }
 </style>
 
 <div class="page-header">
@@ -166,7 +77,6 @@
     </div>
 </div>
 
-<!-- 잔액 바 -->
 <div class="balance-bar">
     <div class="balance-bar-inner">
         <div class="balance-bar-left">

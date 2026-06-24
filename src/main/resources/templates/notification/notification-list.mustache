@@ -1,230 +1,96 @@
 {{> layout/header}}
 
 <style>
-    .noti-section {
-        padding: 40px 28px 80px;
-    }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .noti-inner {
-        max-width: 860px;
-        margin: 0 auto;
-    }
+    .noti-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
+    .noti-inner   { max-width: 860px; margin: 0 auto; }
 
-    .noti-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 22px;
-    }
-
-    .noti-title {
-        font-size: 26px;
-        font-weight: 900;
-        color: #1c1e26;
-        letter-spacing: -0.5px;
-    }
-
-    .btn-read-all {
-        padding: 10px 18px;
-        background: #fff;
-        border: 1.5px solid #e2e5ef;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        color: #4b5563;
-        cursor: pointer;
-        transition: all .15s;
-    }
-
-    .btn-read-all:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-    }
+    .noti-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .noti-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; }
 
     .noti-head-actions { display: flex; gap: 8px; }
+    .btn-read-all {
+        padding: 10px 18px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 20px;
+        font-size: 13px; font-weight: 700; color: #2d4a7a; cursor: pointer; transition: all .15s;
+    }
+    .btn-read-all:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+
     .btn-delete-all {
         padding: 10px 18px;
-        background: #fff;
-        border: 1.5px solid #fecaca;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        color: #ef4444;
-        cursor: pointer;
-        transition: all .15s;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(254,202,202,.8); border-radius: 20px;
+        font-size: 13px; font-weight: 700; color: #ef4444; cursor: pointer; transition: all .15s;
     }
-    .btn-delete-all:hover { background: #fef2f2; border-color: #ef4444; }
+    .btn-delete-all:hover { background: rgba(254,242,242,.85); border-color: #ef4444; }
 
-    .noti-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+    .noti-list { display: flex; flex-direction: column; gap: 10px; }
 
     .noti-card {
-        background: #fff;
-        border: 1.5px solid #e2e8ff;
-        border-radius: 14px;
-        overflow: hidden;
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 14px; overflow: hidden;
+        box-shadow: 0 2px 12px rgba(37,99,235,.06);
         transition: border-color .15s, box-shadow .15s;
     }
+    .noti-card:hover { border-color: rgba(37,99,235,.25); box-shadow: 0 6px 20px rgba(37,99,235,.1); }
 
-    .noti-card:hover {
-        border-color: #bfdbfe;
-        box-shadow: 0 6px 20px rgba(37, 99, 235, .06);
-    }
-
-    /* 읽은 알림은 연하게 */
     .noti-card.read {
-        border-color: #eef0f6;
-        background: #fafbfe;
+        background: rgba(255,255,255,.35); border-color: rgba(255,255,255,.6);
     }
-
     .noti-card.read .noti-card-title,
-    .noti-card.read .noti-card-preview {
-        color: #9ca3af;
-    }
+    .noti-card.read .noti-card-preview { color: #93aecf; }
 
     .noti-card-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 18px 22px;
-        cursor: pointer;
+        display: flex; align-items: center; gap: 12px;
+        padding: 18px 22px; cursor: pointer;
     }
 
-    .noti-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #2563eb;
-        flex-shrink: 0;
-    }
+    .noti-dot { width: 8px; height: 8px; border-radius: 50%; background: #2563eb; flex-shrink: 0; }
+    .noti-card.read .noti-dot { background: transparent; }
 
-    .noti-card.read .noti-dot {
-        background: transparent;
-    }
+    .noti-card-main { flex: 1; min-width: 0; }
+    .noti-card-title { font-size: 14px; font-weight: 700; color: #1e3a6e; margin-bottom: 3px; }
+    .noti-card-preview { font-size: 13px; color: #4a6fa5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .noti-card-date   { font-size: 12px; color: #93aecf; font-weight: 500; flex-shrink: 0; white-space: nowrap; }
 
-    .noti-card-main {
-        flex: 1;
-        min-width: 0;
-    }
+    .noti-chevron { width: 16px; height: 16px; flex-shrink: 0; color: #93aecf; transition: transform .2s; }
+    .noti-card.open .noti-chevron { transform: rotate(180deg); }
 
-    .noti-card-title {
-        font-size: 14px;
-        font-weight: 700;
-        color: #1c1e26;
-        margin-bottom: 3px;
-    }
-
-    /* 길어지면 ... 처리 */
-    .noti-card-preview {
-        font-size: 13px;
-        color: #6b7280;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .noti-card-date {
-        font-size: 12px;
-        color: #c4c9d9;
-        font-weight: 500;
-        flex-shrink: 0;
-        white-space: nowrap;
-    }
-
-    .noti-chevron {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-        color: #c4c9d9;
-        transition: transform .2s;
-    }
-
-    .noti-card.open .noti-chevron {
-        transform: rotate(180deg);
-    }
-
-    /* 펼침 영역 */
-    .noti-card-body {
-        display: none;
-        padding: 0 22px 20px 42px;
-    }
-
-    .noti-card.open .noti-card-body {
-        display: block;
-    }
-
-    .noti-card-content {
-        font-size: 14px;
-        color: #374151;
-        line-height: 1.8;
-        padding: 14px 0 16px;
-        border-top: 1px dashed #e8ecf8;
-        white-space: pre-line;
-    }
+    .noti-card-body { display: none; padding: 0 22px 20px 42px; }
+    .noti-card.open .noti-card-body { display: block; }
+    .noti-card-content { font-size: 14px; color: #2d4a7a; line-height: 1.8; padding: 14px 0 16px; border-top: 1px dashed rgba(37,99,235,.15); white-space: pre-line; }
 
     .btn-goto {
-        display: inline-block;
-        padding: 9px 18px;
-        background: #2563eb;
-        color: #fff;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background .15s;
+        display: inline-block; padding: 9px 18px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; border-radius: 20px; font-size: 13px; font-weight: 700;
+        text-decoration: none; box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
     }
+    .btn-goto:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
 
-    .btn-goto:hover {
-        background: #1d4ed8;
-    }
-
-    .noti-card-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-    }
+    .noti-card-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
     .btn-delete {
         padding: 9px 18px;
-        background: #fff;
-        border: 1.5px solid #fecaca;
-        color: #ef4444;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all .15s;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(254,202,202,.8); color: #ef4444;
+        border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
     }
-
-    .btn-delete:hover { background: #fef2f2; border-color: #ef4444; }
+    .btn-delete:hover { background: rgba(254,242,242,.85); border-color: #ef4444; }
 
     .noti-delete {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 6px;
-        border-radius: 6px;
-        color: #c4c9d9;
-        flex-shrink: 0;
-        display: inline-flex;
-        transition: background .15s, color .15s;
+        background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px;
+        color: #93aecf; flex-shrink: 0; display: inline-flex; transition: background .15s, color .15s;
     }
-    .noti-delete:hover { background: #fef2f2; color: #ef4444; }
-
+    .noti-delete:hover { background: rgba(254,242,242,.85); color: #ef4444; }
     .noti-delete svg { width: 15px; height: 15px; }
 
-    .noti-empty {
-        text-align: center;
-        padding: 80px 0;
-    }
-
-    .noti-empty-msg {
-        font-size: 15px;
-        color: #c4c9d9;
-    }
+    .noti-empty { text-align: center; padding: 80px 0; }
+    .noti-empty-msg { font-size: 15px; color: #93aecf; }
 </style>
 
 <section class="noti-section">
@@ -287,32 +153,22 @@
     function toggleNoti(card) {
         const opening = !card.classList.contains('open');
         card.classList.toggle('open');
-
-        // 펼칠 때 아직 안 읽은 알림이면 읽음 처리 + 연하게
         if (opening && !card.classList.contains('read')) {
             const id = card.dataset.id;
             fetch('/notifications/' + id + '/read', {method: 'POST'})
-                    .then(() => {
-                        card.classList.add('read');
-                        refreshBellDot();
-                    })
-                    .catch(() => {
-                    });
+                .then(() => { card.classList.add('read'); refreshBellDot(); })
+                .catch(() => {});
         }
     }
 
     function deleteNoti(event, btn) {
-        event.stopPropagation();  // 카드가 펼쳐지지 않도록 이벤트 전파 차단
+        event.stopPropagation();
         const card = btn.closest('.noti-card');
         const id = card.dataset.id;
         fetch('/notifications/' + id + '/delete', { method: 'POST' })
-                .then(res => res.json())
-                .then(body => {
-                    if (body.success)
-                    card.remove();
-                    refreshBellDot();
-                })
-                .catch(() => {});
+            .then(res => res.json())
+            .then(body => { if (body.success) { card.remove(); refreshBellDot(); } })
+            .catch(() => {});
     }
 
     function refreshBellDot() {
@@ -322,7 +178,6 @@
             if (dot) dot.remove();
         }
     }
-
 </script>
 
 {{> layout/footer}}
