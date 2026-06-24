@@ -33,6 +33,16 @@
     .profile-stars span { color: #4a6fa5; font-size: 13px; font-weight: 500; }
     .chat-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0; background: none; border: none; color: #2563eb; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; text-decoration: none; transition: color .15s; }
     .chat-btn:hover { color: #1d4ed8; text-decoration: underline; }
+    .profile-stars span { color: #9ca3af; font-size: 13px; font-weight: 500; }
+
+    .chat-action-wrap { display: flex; gap: 10px; margin-top: 14px; }
+    .chat-action-card { flex: 1; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 14px; text-decoration: none; color: inherit; transition: border-color .15s, background .15s; cursor: pointer; }
+    .chat-action-card:hover { border-color: #2563eb; background: #eff6ff; }
+    .chat-action-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .msg-icon { background: transparent; color: #2563eb; }
+    .live-icon { background: transparent; color: #16a34a; }
+    .chat-action-title { font-size: 13px; font-weight: 800; color: #1c1e26; margin-bottom: 2px; }
+    .chat-action-desc { font-size: 11px; color: #9ca3af; }
 
     .profile-stats { display: flex; gap: 0; border-top: 1px solid rgba(37,99,235,.08); padding-top: 20px; }
     .profile-stat { flex: 1; display: flex; align-items: center; gap: 12px; padding: 0 24px; border-right: 1px solid rgba(37,99,235,.08); }
@@ -123,6 +133,58 @@
                 <div class="profile-career">{{expertProfile.career}}</div>
                 <div class="profile-stars">★ <span>{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
                 {{^isOwner}}
+                <div class="chat-action-wrap">
+                    <a href="/messages/send?receiverId={{expertProfile.memberId}}" class="chat-action-card">
+                        <div class="chat-action-icon msg-icon">
+                            <svg viewBox="0 0 16 16" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="1" y="3" width="14" height="1" fill="currentColor"/>
+                                <rect x="1" y="3" width="1" height="9" fill="currentColor"/>
+                                <rect x="14" y="3" width="1" height="9" fill="currentColor"/>
+                                <rect x="1" y="11" width="14" height="1" fill="currentColor"/>
+                                <rect x="2" y="4" width="1" height="1" fill="currentColor"/>
+                                <rect x="3" y="5" width="1" height="1" fill="currentColor"/>
+                                <rect x="4" y="6" width="1" height="1" fill="currentColor"/>
+                                <rect x="5" y="7" width="1" height="1" fill="currentColor"/>
+                                <rect x="6" y="8" width="1" height="1" fill="currentColor"/>
+                                <rect x="7" y="9" width="1" height="1" fill="currentColor"/>
+                                <rect x="8" y="9" width="1" height="1" fill="currentColor"/>
+                                <rect x="9" y="8" width="1" height="1" fill="currentColor"/>
+                                <rect x="10" y="7" width="1" height="1" fill="currentColor"/>
+                                <rect x="11" y="6" width="1" height="1" fill="currentColor"/>
+                                <rect x="12" y="5" width="1" height="1" fill="currentColor"/>
+                                <rect x="13" y="4" width="1" height="1" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="chat-action-title">1:1 문의</div>
+                            <div class="chat-action-desc">메시지로 문의하기</div>
+                        </div>
+                    </a>
+                    <a href="/chat/start/expert/{{expertProfile.memberId}}" class="chat-action-card">
+                        <div class="chat-action-icon live-icon">
+                            <svg viewBox="0 0 16 16" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="1" width="10" height="1" fill="currentColor"/>
+                                <rect x="2" y="2" width="1" height="1" fill="currentColor"/>
+                                <rect x="13" y="2" width="1" height="1" fill="currentColor"/>
+                                <rect x="1" y="3" width="1" height="7" fill="currentColor"/>
+                                <rect x="14" y="3" width="1" height="7" fill="currentColor"/>
+                                <rect x="2" y="10" width="1" height="1" fill="currentColor"/>
+                                <rect x="13" y="10" width="1" height="1" fill="currentColor"/>
+                                <rect x="3" y="11" width="10" height="1" fill="currentColor"/>
+                                <rect x="3" y="12" width="1" height="1" fill="currentColor"/>
+                                <rect x="3" y="13" width="1" height="1" fill="currentColor"/>
+                                <rect x="2" y="14" width="1" height="1" fill="currentColor"/>
+                                <rect x="5" y="5" width="2" height="2" fill="currentColor"/>
+                                <rect x="8" y="5" width="2" height="2" fill="currentColor"/>
+                                <rect x="11" y="5" width="2" height="2" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="chat-action-title">실시간 채팅</div>
+                            <div class="chat-action-desc">지금 바로 대화하기</div>
+                        </div>
+                    </a>
+                </div>
                     <a href="/messages/send?receiverId={{expertProfile.memberId}}" class="chat-btn">문의하기 →</a>
                     <a href="/chat/start/expert/{{expertProfile.memberId}}" class="chat-btn">실시간 채팅 →</a>
                 {{/isOwner}}
