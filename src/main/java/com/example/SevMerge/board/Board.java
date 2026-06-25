@@ -53,6 +53,10 @@ public class Board {
     @Column(length = 200)
     private String attachmentName;
 
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'WAITING'")
+    private BoardAnswerStatus answerStatus = BoardAnswerStatus.WAITING;
+
     @Builder
     public Board(BoardInquiryScope inquiryScope, BoardType boardType, String title, String content,
                  Integer viewCount, Timestamp createdAt, Member member, Boolean isActive,
@@ -67,6 +71,15 @@ public class Board {
         this.inquiryScope = inquiryScope;
         this.attachmentUrl = attachmentUrl;
         this.attachmentName = attachmentName;
+        this.answerStatus = BoardAnswerStatus.WAITING;
+    }
+
+    public void markAsAnswered() {
+        this.answerStatus = BoardAnswerStatus.ANSWERED;
+    }
+
+    public void markAsWaiting() {
+        this.answerStatus = BoardAnswerStatus.WAITING;
     }
 
     public void update(BoardRequest.UpdateBoardDTO dto) {

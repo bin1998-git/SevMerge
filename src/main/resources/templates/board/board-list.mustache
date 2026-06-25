@@ -1,267 +1,357 @@
 {{> layout/header}}
-
 <style>
     body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .page-header {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6);
-        padding: 36px 28px 0; position: relative; z-index: 1;
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
     }
-    .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc { font-size: 14px; color: #4a6fa5; font-weight: 400; margin-bottom: 28px; }
 
-    .board-tabs { display: flex; gap: 0; }
-    .board-tab { padding: 12px 24px; font-size: 14px; font-weight: 700; color: #4a6fa5; border-bottom: 3px solid transparent; cursor: pointer; transition: all .15s; display: inline-block; text-decoration: none; }
+    /* 메인 글래스 카드 */
+    .board-card {
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* 헤더 */
+    .board-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08);
+        flex-shrink: 0;
+    }
+    .board-title { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 4px; }
+    .board-desc { font-size: 13px; color: #4a6fa5; }
+    .btn-write {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit; text-decoration: none;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s; flex-shrink: 0;
+    }
+    .btn-write:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+
+    /* 탭 */
+    .board-tabs {
+        display: flex; gap: 0; padding: 0 32px;
+        border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .board-tab {
+        padding: 14px 22px; font-size: 14px; font-weight: 700; color: #4a6fa5;
+        border-bottom: 2.5px solid transparent; cursor: pointer; transition: all .15s;
+        text-decoration: none; white-space: nowrap;
+    }
     .board-tab:hover { color: #1e3a6e; }
     .board-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
 
-    .board-section { padding: 28px 28px 80px; position: relative; z-index: 1; }
-    .board-inner { max-width: 1140px; margin: 0 auto; }
-
-    .board-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .board-count { font-size: 14px; color: #4a6fa5; font-weight: 500; }
-    .board-count strong { color: #1e3a6e; font-weight: 700; }
-
-    .board-search { display: flex; gap: 8px; margin-bottom: 16px; }
+    /* 검색/필터 바 */
+    .board-toolbar {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 32px;
+        border-bottom: 1px solid rgba(37,99,235,.06); flex-shrink: 0;
+    }
+    .board-type-select {
+        padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        font-family: inherit; outline: none; cursor: pointer; transition: all .15s;
+        appearance: none; min-width: 80px;
+    }
+    .board-type-select:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.9); }
+    .search-wrap {
+        flex: 1; position: relative; display: flex; align-items: center;
+    }
+    .search-icon {
+        position: absolute; left: 14px; color: #93aecf; pointer-events: none;
+    }
     .board-search-input {
-        flex: 1; padding: 11px 16px;
-        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
-        border: 1.5px solid rgba(255,255,255,.8); border-radius: 10px;
+        width: 100%; padding: 10px 16px 10px 40px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px;
         font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
     }
     .board-search-input::placeholder { color: #93aecf; }
     .board-search-input:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.9); }
-    .board-search-btn {
-        padding: 11px 22px; background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700;
-        cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
+    .filter-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap;
     }
-    .board-search-btn:hover { transform: translateY(-1px); }
+    .filter-btn:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); color: #2563eb; }
 
-    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 20px; }
-    .btn { display: inline-block; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
-    .btn-outline { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; }
-    .btn-outline:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
-
-    .board-table {
-        width: 100%;
-        backdrop-filter: blur(16px); background: rgba(255,255,255,.55);
-        border: 1.5px solid rgba(255,255,255,.8); border-radius: 18px; overflow: hidden; margin-bottom: 24px;
-        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    /* 테이블 헤더 */
+    .table-head {
+        display: grid; padding: 12px 32px;
+        background: rgba(255,255,255,.3);
+        border-bottom: 1px solid rgba(37,99,235,.06);
+        font-size: 12px; font-weight: 700; color: #4a6fa5; letter-spacing: .2px;
+        flex-shrink: 0;
     }
-    .board-table-head { display: grid; padding: 12px 24px; background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(37,99,235,.08); font-size: 12px; font-weight: 700; color: #4a6fa5; letter-spacing: .3px; }
-    .board-table-row { display: grid; padding: 15px 24px; border-bottom: 1px solid rgba(37,99,235,.06); align-items: center; transition: background .12s; cursor: pointer; text-decoration: none; color: inherit; }
-    .board-table-row:last-child { border-bottom: none; }
-    .board-table-row:hover { background: rgba(255,255,255,.5); }
-    .col-free { grid-template-columns: 60px 1fr 100px 100px 60px; gap: 12px; }
-    .col-inquiry { grid-template-columns: 60px 1fr 100px 100px 80px; gap: 12px; }
+    .col-free    { grid-template-columns: 40px 60px 1fr 120px 150px 80px 80px; gap: 16px; align-items: center; }
+    .col-notice  { grid-template-columns: 40px 60px 1fr 120px 150px 80px 80px; gap: 16px; align-items: center; }
+    .col-inquiry { grid-template-columns: 60px 1fr 100px 120px 150px 80px; gap: 16px; align-items: center; }
+
+    /* 테이블 바디 */
+    .table-body { flex: 1; overflow-y: auto; }
+    .table-row {
+        display: grid; padding: 14px 32px;
+        border-bottom: 1px solid rgba(37,99,235,.05);
+        align-items: center; transition: background .12s;
+        text-decoration: none; color: inherit; cursor: pointer;
+    }
+    .table-row:last-child { border-bottom: none; }
+    .table-row:hover { background: rgba(255,255,255,.4); }
+    .table-row.pinned { background: rgba(37,99,235,.03); }
+
+    /* 체크박스 */
+    .row-check { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
+
+    /* 셀 */
     .cell-num { font-size: 13px; color: #93aecf; font-weight: 500; text-align: center; }
-    .cell-title { font-size: 14px; font-weight: 600; color: #1e3a6e; display: flex; align-items: center; gap: 8px; }
-    .cell-title .new-badge { font-size: 10px; background: rgba(37,99,235,.1); color: #2563eb; border: 1px solid rgba(37,99,235,.2); padding: 1px 7px; border-radius: 5px; font-weight: 700; flex-shrink: 0; }
-    .cell-title .notice-badge { font-size: 10px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 1px 7px; border-radius: 5px; font-weight: 700; flex-shrink: 0; }
+    .cell-num.pin { color: #2563eb; }
+    .cell-title { font-size: 14px; font-weight: 600; color: #1e3a6e; display: flex; align-items: center; gap: 7px; overflow: hidden; }
+    .cell-title-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .cell-author { font-size: 13px; color: #4a6fa5; font-weight: 500; }
     .cell-date { font-size: 12px; color: #93aecf; }
-    .cell-view { font-size: 12px; color: #93aecf; text-align: center; }
-    .cell-status { text-align: center; }
-    .status-wait { font-size: 11px; background: rgba(156,163,175,.12); color: #4a6fa5; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
-    .status-done { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
-    .board-table-row.pinned { background: rgba(37,99,235,.04); }
-    .board-table-row.pinned .cell-num { color: #2563eb; font-weight: 700; }
-    .empty-state { text-align: center; padding: 60px 0; }
-    .empty-msg { font-size: 15px; color: #93aecf; }
+    .cell-view { font-size: 13px; color: #4a6fa5; text-align: center; font-weight: 500; }
+    .cell-like { font-size: 13px; color: #ef4444; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .cell-status { display: flex; justify-content: center; }
 
-    /* 페이지네이션 */
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 24px; }
-    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
-    .page-btn { padding: 9px 15px; border-radius: 8px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
-    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
+    /* 배지 */
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
+    .badge-notice  { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-free    { background: rgba(37,99,235,.1); color: #2563eb; border: 1px solid rgba(37,99,235,.2); }
+    .badge-new     { background: rgba(239,68,68,.1); color: #ef4444; border: 1px solid rgba(239,68,68,.2); }
+    .badge-inquiry-normal  { background: rgba(37,99,235,.08); color: #2563eb; }
+    .badge-inquiry-payment { background: rgba(16,185,129,.08); color: #059669; }
+    .badge-inquiry-security{ background: rgba(139,92,246,.08); color: #7c3aed; }
+    .badge-wait { background: rgba(156,163,175,.12); color: #4a6fa5; }
+    .badge-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+
+    /* 아이콘 배지 (이미지, 첨부) */
+    .icon-badge {
+        width: 18px; height: 18px; border-radius: 5px;
+        background: rgba(37,99,235,.1); display: inline-flex;
+        align-items: center; justify-content: center; flex-shrink: 0; color: #2563eb;
+    }
+
+    /* 빈 상태 */
+    .empty-state { text-align: center; padding: 60px 0; font-size: 14px; color: #93aecf; }
+
+    /* 푸터: 총 건수 + 페이지네이션 */
+    .board-footer {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 32px 20px;
+        border-top: 1px solid rgba(37,99,235,.06); flex-shrink: 0;
+    }
+    .board-total { font-size: 13px; color: #4a6fa5; font-weight: 500; }
+    .board-total strong { color: #1e3a6e; font-weight: 700; }
+    .paging { display: flex; align-items: center; gap: 4px; }
+    .page-btn {
+        width: 34px; height: 34px; border-radius: 10px; font-size: 13px; font-weight: 600;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+        transition: all .15s; cursor: pointer;
+    }
+    .page-btn:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .page-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 10px rgba(37,99,235,.25); }
+    .page-arrow { color: #93aecf; }
+    .page-arrow:hover { color: #2563eb; }
+
+    @media (max-width: 960px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .board-header, .board-tabs, .board-toolbar, .table-head, .table-row, .board-footer { padding-left: 18px; padding-right: 18px; }
+        .col-free, .col-notice, .col-inquiry { grid-template-columns: 50px 1fr 100px 80px 70px; gap: 10px; }
+        .cell-date, .cell-view, .cell-like, .row-check { display: none; }
+    }
 </style>
 
-<!-- 페이지 헤더 + 탭 -->
-<div class="page-header">
-    <div class="page-header-inner">
-        <h1 class="page-title">게시판</h1>
-        <p class="page-desc">자유롭게 소통하고 궁금한 점을 문의하세요.</p>
+<section class="page-wrap">
+    <div class="board-card">
+
+        <!-- 헤더 -->
+        <div class="board-header">
+            <div>
+                <h1 class="board-title">게시판</h1>
+                <p class="board-desc">등록된 게시글 목록을 확인하고 관리할 수 있습니다.</p>
+            </div>
+            {{#isFree}}
+                <a href="/boards/save?boardType=FREE" class="btn-write">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2v-6Z"/></svg>
+                    게시글 작성
+                </a>
+            {{/isFree}}
+            {{#isInquiry}}
+                <a href="/boards/save?boardType=INQUIRY" class="btn-write">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2v-6Z"/></svg>
+                    문의하기
+                </a>
+            {{/isInquiry}}
+            {{#isAdmin}}{{#isNotice}}
+                <a href="/admin/notices/write" class="btn-write">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2v-6Z"/></svg>
+                    공지 작성
+                </a>
+            {{/isNotice}}{{/isAdmin}}
+        </div>
+
+        <!-- 탭 -->
         <div class="board-tabs">
-            <a href="/boards?boardType=FREE" class="board-tab {{#isFree}}active{{/isFree}}">자유게시판</a>
-            <a href="/boards?boardType=NOTICE" class="board-tab {{#isNotice}}active{{/isNotice}}">공지사항</a>
+            <a href="/boards?boardType=FREE"    class="board-tab {{#isFree}}active{{/isFree}}">자유게시판</a>
+            <a href="/boards?boardType=NOTICE"  class="board-tab {{#isNotice}}active{{/isNotice}}">공지사항</a>
             <a href="/boards?boardType=INQUIRY" class="board-tab {{#isInquiry}}active{{/isInquiry}}">1:1 문의</a>
         </div>
+
+        <!-- 검색/필터 -->
+        <form action="/boards" method="GET">
+            <input type="hidden" name="boardType" value="{{boardType}}"/>
+            <div class="board-toolbar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#93aecf" stroke-width="2" style="flex-shrink:0;"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div class="search-wrap">
+                    <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/></svg>
+                    <input type="text" name="keyword" class="board-search-input" placeholder="제목 또는 내용을 검색하세요." value="{{keyword}}"/>
+                </div>
+                <button type="submit" class="filter-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    상세 필터
+                </button>
+            </div>
+        </form>
+
+        <!-- 자유게시판 -->
+        {{#isFree}}
+            <div class="table-head col-free">
+                <div></div>
+                <div style="text-align:center;">-</div>
+                <div>제목</div>
+                <div>작성자</div>
+                <div>작성일</div>
+                <div style="text-align:center;">조회수</div>
+                <div style="text-align:center;">상태</div>
+            </div>
+            <div class="table-body">
+                {{#boards}}
+                    <a href="/boards/{{id}}" class="table-row col-free">
+                        <input type="checkbox" class="row-check" onclick="event.stopPropagation()"/>
+                        <span class="cell-num">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M17 3H7v2h1v7l-2 3v1h4v5h2v-5h4v-1l-2-3V5h1V3zm-5 15h-1v-4h2v4h-1z"/></svg>
+            </span>
+                        <span class="cell-title">
+                <span class="cell-title-text">{{title}}</span>
+                            {{#hasAttachment}}<span class="icon-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 015 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 006 0V5c0-2.76-2.24-5-5-5S5 2.24 5 5v12.5c0 3.87 3.13 7 7 7s7-3.13 7-7V6h-2.5z"/></svg></span>{{/hasAttachment}}
+            </span>
+                        <span class="cell-author">{{memberName}}</span>
+                        <span class="cell-date">{{createdAt}}</span>
+                        <span class="cell-view">{{viewCount}}</span>
+                        <span class="cell-status"><span class="badge badge-free">일반</span></span>
+                    </a>
+                {{/boards}}
+                {{^boards}}
+                    <div class="empty-state">등록된 게시글이 없습니다.</div>
+                {{/boards}}
+            </div>
+        {{/isFree}}
+
+        <!-- 공지사항 -->
+        {{#isNotice}}
+            <div class="table-head col-notice">
+                <div></div>
+                <div style="text-align:center;">-</div>
+                <div>제목</div>
+                <div>작성자</div>
+                <div>작성일</div>
+                <div style="text-align:center;">조회수</div>
+                <div style="text-align:center;">상태</div>
+            </div>
+            <div class="table-body">
+                {{#boards}}
+                    <a href="/boards/{{id}}" class="table-row col-notice pinned">
+                        <input type="checkbox" class="row-check" onclick="event.stopPropagation()"/>
+                        <span class="cell-num">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#b45309"><path d="M18 11v2h2v-2h-2zm-1 7.61c.96.49 2.13.13 2.61-.83l1-1.95-1.79-.92-1 1.95c-.48.97-.13 2.14.18 1.75zM16 7h-2.31C12.9 6.42 12 5.3 12 4a2 2 0 00-4 0c0 1.3-.9 2.42-1.69 3H4v13h2v-2h8v2h2V7h-2zm-4.5.5a.5.5 0 110-1 .5.5 0 010 1zM6 18V9h8v9H6zm3.83-5.12L8.41 14.3 7 12.88l-1.41 1.42L7 15.71l2.83-2.83 2.83 2.83 1.41-1.42-2.24-2.41z"/></svg>
+            </span>
+                        <span class="cell-title">
+                <span class="badge badge-notice">공지</span>
+                <span class="cell-title-text">{{title}}</span>
+            </span>
+                        <span class="cell-author">{{memberName}}</span>
+                        <span class="cell-date">{{createdAt}}</span>
+                        <span class="cell-view">{{viewCount}}</span>
+                        <span class="cell-status"><span class="badge badge-notice">공지</span></span>
+                    </a>
+                {{/boards}}
+                {{^boards}}
+                    <div class="empty-state">등록된 공지사항이 없습니다.</div>
+                {{/boards}}
+            </div>
+        {{/isNotice}}
+
+        <!-- 1:1 문의 -->
+        {{#isInquiry}}
+            <div class="table-head col-inquiry" style="grid-template-columns: 60px 1fr 100px 120px 150px 80px; gap:16px;">
+                <div style="text-align:center;">-</div>
+                <div>제목</div>
+                <div>유형</div>
+                <div>작성자</div>
+                <div>작성일</div>
+                <div style="text-align:center;">조회수</div>
+                <div style="text-align:center;">상태</div>
+            </div>
+            <div class="table-body">
+                {{#boards}}
+                    <a href="/boards/{{id}}" class="table-row col-inquiry" style="grid-template-columns: 60px 60px 1fr 100px 120px 150px 80px; gap:16px;">
+                        {{#answered}}<span class="cell-status"><span class="badge badge-done">답변완료</span></span>{{/answered}}
+                        {{^answered}}<span class="cell-status"><span class="badge badge-wait">대기</span></span>{{/answered}}
+                        <span class="cell-num">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+            </span>
+                        <span class="cell-title"><span class="cell-title-text">{{title}}</span></span>
+                        <span class="cell-author">
+                            {{#inquiryScope}}
+                                <span class="badge badge-inquiry-{{inquiryScope}}">{{inquiryScopeLabel}}</span>
+                            {{/inquiryScope}}
+                        </span>
+                        <span class="cell-author">{{memberName}}</span>
+                        <span class="cell-date">{{createdAt}}</span>
+                        <span class="cell-view">{{viewCount}}</span>
+                    </a>
+                {{/boards}}
+                {{^boards}}
+                    <div class="empty-state">등록된 문의가 없습니다.</div>
+                {{/boards}}
+            </div>
+        {{/isInquiry}}
+
+        <!-- 푸터: 건수 + 페이지네이션 -->
+        <div class="board-footer">
+            <span class="board-total">전체 <strong>{{boardCount}}</strong>건</span>
+            <div class="paging">
+                {{#prevPage}}
+                    <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn page-arrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </a>
+                {{/prevPage}}
+                {{#pageList}}
+                    <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{num}}" class="page-btn {{#isCurrent}}active{{/isCurrent}}">{{num}}</a>
+                {{/pageList}}
+                {{#nextPage}}
+                    <a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn page-arrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </a>
+                {{/nextPage}}
+            </div>
+        </div>
+
     </div>
-</div>
-
-
-<!-- ===================================================
-     자유게시판 (type=FREE)
-     컨트롤러 : isFree = true, boards = 게시글 리스트
-=================================================== -->
-{{#isFree}}
-    <section class="board-section">
-        <div class="board-inner">
-
-            <div class="board-action">
-                <span class="board-count">총 <strong>{{boardCount}}</strong>의 게시글</span>
-                <a href="/boards/save?boardType=FREE" class="btn btn-primary btn-sm">글쓰기</a>
-            </div>
-
-            <form action="/boards" method="GET">
-                <input type="hidden" name="boardType" value="{{#isFree}}FREE{{/isFree}}{{#isNotice}}NOTICE{{/isNotice}}{{#isInquiry}}INQUIRY{{/isInquiry}}" />
-                <div class="board-search">
-                    <input type="text" name="keyword" class="board-search-input" placeholder="검색어를 입력하세요..." value="{{keyword}}" />
-                    <button type="submit" class="board-search-btn">검색</button>
-                </div>
-            </form>
-
-            {{#boards}}
-                <div class="board-table">
-                    <a href="/boards/{{id}}" class="board-table-row pinned col-free">
-                        <span class="cell-num">📌</span>
-                        <span class="cell-title">{{title}}</span>
-                        <span class="cell-author">{{memberName}}</span>
-                        <span class="cell-date">{{createdAt}}</span>
-                        <span class="cell-view">{{viewCount}}</span>
-                    </a>
-                </div>
-            {{/boards}}
-
-            {{! 게시글 없을 때 }}
-            {{^boards}}
-                <div class="empty-state">
-                    <p class="empty-msg">등록된 게시글이 없습니다.</p>
-                </div>
-            {{/boards}}
-
-        </div>
-
-        <div class="pagination">
-            {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
-            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-            {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
-        </div>
-
-        </div>
-    </section>
-{{/isFree}}
-
-<!-- ===================================================
-     공지사항 (type=NOTICE)
-     컨트롤러 : isNotice = true, boards = 공지 리스트
-=================================================== -->
-{{#isNotice}}
-    <section class="board-section">
-        <div class="board-inner">
-
-            <div class="board-action">
-                <span class="board-count">총 <strong>{{boardCount}}</strong>의 공지</span>
-            </div>
-
-            <form action="/boards" method="get" class="board-search">
-                <input type="hidden" name="boardType" value="{{boardType}}"/>
-                <input type="text" name="keyword" class="board-search-input" placeholder="검색어를 입력하세요..." value="{{keyword}}"/>
-                <button type="submit" class="board-search-btn">검색</button>
-            </form>
-
-
-            <div class="board-table">
-                {{#boards}}
-                    <a href="/boards/{{id}}" class="board-table-row pinned col-free">
-                        <span class="cell-num">📌</span>
-                        <span class="cell-title">{{title}}</span>
-                        <span class="cell-author">{{memberName}}</span>
-                        <span class="cell-date">{{createdAt}}</span>
-                        <span class="cell-view">{{viewCount}}</span>
-                    </a>
-                {{/boards}}
-            </div>
-
-
-            {{^boards}}
-                <div class="empty-state">
-                    <p class="empty-msg">등록된 공지사항이 없습니다.</p>
-                </div>
-            {{/boards}}
-
-        </div>
-
-        <div class="pagination">
-            {{#prevPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
-            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-            {{#nextPage}}<a href="/boards?boardType={{boardType}}&keyword={{keyword}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
-        </div>
-    </section>
-{{/isNotice}}
-
-<!-- ===================================================
-     1:1 문의 (type=INQUIRY)
-     컨트롤러 : isInquiry = true → /boards/inquiry-form 으로 redirect
-=================================================== -->
-{{#isInquiry}}
-    <section class="board-section">
-        <div class="board-inner">
-
-            <div class="board-action">
-                <span class="board-count">총 <strong>{{boardCount}}</strong>의 문의</span>
-                <a href="/boards/save?boardType=INQUIRY" class="btn btn-primary btn-sm">문의하기</a>
-            </div>
-
-            <!-- 문의 종류 탭 -->
-            <div class="inquiry-tabs">
-                <button class="inquiry-tab active" onclick="filterInquiry('ALL', this)">전체</button>
-                <button class="inquiry-tab" onclick="filterInquiry('NORMAL', this)">일반문의</button>
-                <button class="inquiry-tab" onclick="filterInquiry('PAYMENT', this)">결제문의</button>
-                <button class="inquiry-tab" onclick="filterInquiry('SECURITY', this)">계정관련</button>
-            </div>
-
-            <div class="board-table" id="inquiryList">
-                {{#boards}}
-                    <a href="/boards/{{id}}"
-                       class="board-table-row col-free inquiry-row"
-                       data-scope="{{inquiryScope}}">
-                        <span class="cell-num" style="color: gray">({{inquiryScopeLabel}})</span>
-                        <span class="cell-title">{{title}}</span>
-                        <span class="cell-author">{{memberName}}</span>
-                        <span class="cell-author">{{inquiryScopeLabel}}</span>
-                        <span class="cell-date">{{createdAt}}</span>
-                    </a>
-                {{/boards}}
-            </div>
-
-            {{^boards}}
-                <div class="empty-state">
-                    <p class="empty-msg">등록된 문의가 없습니다.</p>
-                </div>
-            {{/boards}}
-
-        </div>
-    </section>
-
-    <style>
-        .inquiry-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-        .inquiry-tab {
-            padding: 8px 20px; font-size: 13px; font-weight: 700;
-            border: 1.5px solid #e2e5ef; border-radius: 20px;
-            background: #fff; color: #9ca3af; cursor: pointer;
-            transition: all .15s; font-family: inherit;
-        }
-        .inquiry-tab:hover { border-color: #2563eb; color: #2563eb; }
-        .inquiry-tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
-    </style>
-
-    <script>
-        function filterInquiry(scope, btn) {
-            document.querySelectorAll('.inquiry-tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
-
-            document.querySelectorAll('.inquiry-row').forEach(row => {
-                row.style.display = (scope === 'ALL' || row.dataset.scope === scope)
-                        ? '' : 'none';
-            });
-        }
-    </script>
-{{/isInquiry}}
+</section>
 
 {{> layout/footer}}

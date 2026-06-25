@@ -1,126 +1,164 @@
 {{> layout/header}}
-
 <style>
-    body {
-        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
-        background-attachment: fixed;
-        color: #1e293b;
-        line-height: 1.6;
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
     }
 
-    /* ══ 배경 글로우 ══ */
-    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
-    .bg-glow-1 {
-        width: 600px; height: 600px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%);
-        top: -150px; left: -150px;
+    .editor-card {
+        width: 100%; max-width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        overflow: hidden; display: flex; flex-direction: column;
     }
-    .bg-glow-2 {
-        width: 500px; height: 500px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%);
-        bottom: 10%; right: -100px;
+    .editor-body { flex: 1; }
+
+    .editor-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 24px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08);
     }
-    .bg-glow-3 {
-        width: 400px; height: 400px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,200,224,.08) 0%, transparent 70%);
-        top: 40%; left: 30%;
+    .editor-header-left { display: flex; align-items: center; gap: 14px; }
+    .editor-back {
+        width: 36px; height: 36px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        display: flex; align-items: center; justify-content: center;
+        color: #4a6fa5; text-decoration: none; transition: all .15s; flex-shrink: 0;
     }
+    .editor-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .editor-title { font-size: 20px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; }
+    .editor-desc { font-size: 13px; color: #4a6fa5; margin-top: 2px; }
 
-    .save-section { padding: 52px 28px 80px; position: relative; z-index: 1; }
-    .save-inner { max-width: 680px; margin: 0 auto; }
-
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; }
-
-    .preview-box {
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        background: rgba(239,246,255,.55);
+    .target-chip {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 16px; border-radius: 20px;
+        backdrop-filter: blur(8px); background: rgba(239,246,255,.7);
         border: 1.5px solid rgba(191,219,254,.5);
-        border-radius: 18px; padding: 20px 22px; margin-bottom: 32px;
-        display: flex; gap: 14px; align-items: center;
-        box-shadow: 0 4px 16px rgba(37,99,235,.06);
+        font-size: 13px; color: #1e3a6e; font-weight: 700;
     }
-    .preview-avatar {
-        width: 48px; height: 48px; border-radius: 14px;
-        background: rgba(239,246,255,.8); border: 1px solid rgba(191,219,254,.6);
-        backdrop-filter: blur(4px);
-        display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
-    }
-    .preview-info .label { font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-    .preview-info .name { font-size: 15px; font-weight: 800; color: #1c1e26; margin-bottom: 2px; }
 
-    /* 폼 카드 */
-    .form-card {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.6);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 24px; padding: 32px;
-        box-shadow: 0 8px 32px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.9);
+    .form-row {
+        display: grid; grid-template-columns: 160px 1fr;
+        align-items: flex-start; gap: 0;
+        padding: 20px 32px;
+        border-bottom: 1px solid rgba(37,99,235,.06);
+        transition: background .15s;
     }
-    .save-form { display: flex; flex-direction: column; gap: 24px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-row:last-child { border-bottom: none; }
+    .form-row:focus-within { background: rgba(37,99,235,.02); }
 
-    .star-wrap { display: flex; gap: 8px; }
-    .star-btn { font-size: 32px; color: #e2e5ef; cursor: pointer; background: none; border: none; padding: 0; transition: color .1s; line-height: 1; }
-    .star-btn:hover,
+    .form-row-label {
+        display: flex; align-items: center; gap: 10px;
+        padding-top: 14px; flex-shrink: 0;
+    }
+    .form-row-icon {
+        width: 28px; height: 28px; border-radius: 8px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(37,99,235,.12);
+        display: flex; align-items: center; justify-content: center;
+        color: #2563eb; flex-shrink: 0; transition: all .15s;
+    }
+    .form-row:focus-within .form-row-icon { background: rgba(37,99,235,.1); border-color: rgba(37,99,235,.3); }
+    .form-label-text { font-size: 14px; font-weight: 700; color: #1e3a6e; display: flex; align-items: center; gap: 4px; }
+    .form-required { color: #ef4444; font-size: 13px; }
+
+    .star-wrap { display: flex; gap: 6px; padding-top: 8px; }
+    .star-btn {
+        font-size: 36px; color: #e2e5ef; cursor: pointer;
+        background: none; border: none; padding: 0;
+        transition: color .1s, transform .1s; line-height: 1;
+    }
+    .star-btn:hover { transform: scale(1.15); }
     .star-btn.active { color: #f59e0b; }
-    .star-hint { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+    .star-hint { font-size: 12px; color: #93aecf; margin-top: 8px; font-weight: 500; }
 
     .form-textarea {
-        padding: 13px 16px;
-        background: rgba(255,255,255,.7);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 12px; font-size: 14px; font-family: inherit; color: #1c1e26;
-        outline: none; resize: vertical; min-height: 200px; line-height: 1.7;
-        backdrop-filter: blur(4px);
-        transition: border-color .15s, background .15s;
+        width: 100%; padding: 14px 18px;
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(37,99,235,.1);
+        border-radius: 14px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .18s;
+        resize: vertical; min-height: 280px; line-height: 1.8; box-sizing: border-box;
     }
-    .form-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.9); }
+    .form-textarea::placeholder { color: #93aecf; }
+    .form-textarea:focus {
+        border-color: #2563eb; background: rgba(255,255,255,.88);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
 
-    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
-    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary { background: #2563eb; color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,.3); }
-    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-    .btn-outline {
-        backdrop-filter: blur(8px);
-        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #4b5563;
+    .editor-footer {
+        display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+        padding: 20px 32px 26px;
+        border-top: 1px solid rgba(37,99,235,.08);
     }
-    .btn-outline:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
-    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+    .btn-cancel {
+        padding: 12px 28px; border-radius: 20px; font-size: 14px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a;
+        text-decoration: none; display: inline-flex; align-items: center;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-submit {
+        padding: 12px 36px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 16px rgba(37,99,235,.3); transition: all .15s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,.4); }
+
+    @media (max-width: 640px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .editor-header, .form-row, .editor-footer { padding-left: 20px; padding-right: 20px; }
+        .form-row { grid-template-columns: 1fr; gap: 8px; }
+        .form-row-label { padding-top: 0; }
+        .target-chip { display: none; }
+    }
 </style>
 
-<!-- 배경 글로우 -->
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-2"></div>
-<div class="bg-glow bg-glow-3"></div>
+<section class="page-wrap">
+    <div class="editor-card">
 
-<section class="save-section">
-    <div class="save-inner">
-
-        <div class="save-header">
-            <h1 class="save-title">리뷰 수정</h1>
-            <p class="save-desc">작성한 리뷰를 수정합니다.</p>
-        </div>
-
-        <div class="preview-box">
-            <div class="preview-avatar">👨‍💻</div>
-            <div class="preview-info">
-                <div class="label">리뷰 대상</div>
-                <div class="name">{{review.targeterName}}</div>
+        <!-- 헤더 -->
+        <div class="editor-header">
+            <div class="editor-header-left">
+                <a href="/reviews/{{review.id}}" class="editor-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </a>
+                <div>
+                    <div class="editor-title">리뷰 수정</div>
+                    <div class="editor-desc">작성한 리뷰를 수정합니다.</div>
+                </div>
+            </div>
+            <div>
+                <div style="font-size:11px;color:#93aecf;margin-bottom:3px;text-align:right;">리뷰 대상</div>
+                <div class="target-chip">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                    {{review.targeterName}}
+                </div>
             </div>
         </div>
 
-        <div class="form-card">
-            <div class="save-form">
+        <!-- 폼 바디 -->
+        <div class="editor-body">
+            <input type="hidden" id="ratingInput" value="{{review.countStar}}" />
 
-                <input type="hidden" id="ratingInput" value="{{review.countStar}}" />
-
-                <!-- 별점 -->
-                <div class="form-group">
-                    <label class="form-label">별점 <span class="required">*</span></label>
+            <!-- 별점 -->
+            <div class="form-row">
+                <div class="form-row-label">
+                    <div class="form-row-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </div>
+                    <span class="form-label-text">별점 <span class="form-required">*</span></span>
+                </div>
+                <div>
                     <div class="star-wrap">
                         <button type="button" class="star-btn" onclick="setRating(1)">★</button>
                         <button type="button" class="star-btn" onclick="setRating(2)">★</button>
@@ -128,30 +166,39 @@
                         <button type="button" class="star-btn" onclick="setRating(4)">★</button>
                         <button type="button" class="star-btn" onclick="setRating(5)">★</button>
                     </div>
-                    <span class="star-hint" id="starHint">현재 {{review.countStar}}점</span>
+                    <div class="star-hint" id="starHint">현재 {{review.countStar}}점</div>
                 </div>
-
-                <!-- 리뷰 내용 -->
-                <div class="form-group">
-                    <label class="form-label">리뷰 내용 <span class="required">*</span></label>
-                    <textarea id="reviewContent" class="form-textarea">{{review.content}}</textarea>
-                </div>
-
-                <div class="form-btns">
-                    <a href="/reviews/{{review.id}}" class="btn btn-outline">취소</a>
-                    <button type="button" onclick="updateReview({{review.id}})" class="btn btn-primary btn-lg">수정완료</button>
-                </div>
-
             </div>
+
+            <!-- 리뷰 내용 -->
+            <div class="form-row">
+                <div class="form-row-label">
+                    <div class="form-row-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+                    </div>
+                    <span class="form-label-text">리뷰 내용 <span class="form-required">*</span></span>
+                </div>
+                <textarea id="reviewContent" class="form-textarea">{{review.content}}</textarea>
+            </div>
+
         </div>
+
+        <!-- 푸터 -->
+        <div class="editor-footer">
+            <a href="/reviews/{{review.id}}" class="btn-cancel">취소</a>
+            <button type="button" onclick="updateReview({{review.id}})" class="btn-submit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                수정 완료
+            </button>
+        </div>
+
     </div>
 </section>
 
 <script>
     const hints = ['', '별로예요', '조금 아쉬워요', '괜찮아요', '좋아요', '최고예요!'];
-
-    // 초기 별점 세팅
     const initialRating = {{review.countStar}};
+
     document.querySelectorAll('.star-btn').forEach((btn, i) => {
         btn.classList.toggle('active', i < initialRating);
     });
@@ -167,7 +214,6 @@
     async function updateReview(reviewId) {
         const content = document.getElementById('reviewContent').value;
         const rating = document.getElementById('ratingInput').value;
-
         const res = await fetch('/reviews/' + reviewId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

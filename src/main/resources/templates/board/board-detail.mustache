@@ -1,292 +1,350 @@
 {{> layout/header}}
-
 <style>
     body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .detail-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
-    .detail-inner { max-width: 860px; margin: 0 auto; }
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
+    }
 
-    /* 브레드크럼 */
-    .detail-nav { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4a6fa5; margin-bottom: 20px; }
-    .detail-nav a { color: #4a6fa5; text-decoration: none; transition: color .15s; }
-    .detail-nav a:hover { color: #2563eb; }
-    .detail-nav span { color: #93aecf; }
-
-    /* 게시글 카드 */
     .detail-card {
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 24px; padding: 36px 40px; margin-bottom: 16px;
-        box-shadow: 0 8px 32px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.9);
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
     }
 
-    /* 게시글 헤더 */
+    /* 헤더 */
     .detail-header {
-        display: flex; justify-content: space-between; align-items: flex-start;
-        padding-bottom: 22px; border-bottom: 1px solid rgba(37,99,235,.08); margin-bottom: 26px;
+        padding: 28px 36px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08);
+        flex-shrink: 0;
     }
-    .detail-header-left { flex: 1; }
-    .detail-category {
-        font-size: 11px; font-weight: 700; color: #2563eb;
-        background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.15);
-        padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px;
+    .detail-header-top {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+        margin-bottom: 14px;
     }
-    .detail-title { font-size: 24px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; line-height: 1.35; margin-bottom: 14px; }
-    .detail-meta { display: flex; align-items: center; gap: 14px; font-size: 13px; color: #4a6fa5; font-weight: 500; }
-    .detail-meta .author { color: #1e3a6e; font-weight: 700; }
-    .detail-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #93aecf; }
+    .detail-title-wrap { flex: 1; }
+    .detail-title {
+        font-size: 22px; font-weight: 900; color: #1e3a6e;
+        letter-spacing: -.5px; line-height: 1.35; margin-bottom: 8px;
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .detail-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; }
+    .badge-notice { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-free   { background: rgba(37,99,235,.1); color: #2563eb; border: 1px solid rgba(37,99,235,.2); }
+    .badge-new    { background: rgba(239,68,68,.1); color: #ef4444; border: 1px solid rgba(239,68,68,.2); }
 
-    /* 수정/삭제 버튼 */
-    .detail-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; padding-top: 4px; }
-    .btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-sm { padding: 7px 14px; font-size: 12px; }
-    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
-    .btn-primary:hover { transform: translateY(-1px); }
-    .btn-outline { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; }
-    .btn-outline:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
-    .btn-danger { background: rgba(255,243,243,.85); color: #ef4444; border: 1.5px solid #fecaca; }
-    .btn-danger:hover { background: #fff0f0; border-color: #ef4444; }
-    .btn-danger-solid { background: #ef4444; color: #fff; border: none; box-shadow: 0 4px 12px rgba(239,68,68,.25); }
-    .btn-danger-solid:hover { background: #dc2626; transform: translateY(-1px); }
+    .detail-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-back {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        text-decoration: none; transition: all .15s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-edit {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        text-decoration: none; transition: all .15s;
+    }
+    .btn-edit:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .btn-delete {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        background: rgba(255,243,243,.8); border: 1.5px solid #fecaca; color: #ef4444;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-delete:hover { background: #fff0f0; border-color: #ef4444; }
+
+    .detail-meta {
+        display: flex; align-items: center; gap: 16px;
+        font-size: 13px; color: #4a6fa5;
+    }
+    .detail-meta .author { font-weight: 700; color: #1e3a6e; display: flex; align-items: center; gap: 6px; }
+    .author-avatar {
+        width: 24px; height: 24px; border-radius: 50%;
+        background: rgba(37,99,235,.1); border: 1.5px solid rgba(37,99,235,.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 10px; font-weight: 900; color: #2563eb; flex-shrink: 0;
+    }
+    .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #93aecf; }
 
     /* 본문 */
-    .detail-content { font-size: 15px; color: #2d4a7a; line-height: 1.9; min-height: 160px; padding: 8px 0 24px; white-space: pre-wrap; }
+    .detail-body { flex: 1; padding: 28px 36px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+    .detail-content { font-size: 15px; color: #2d4a7a; line-height: 1.9; white-space: pre-wrap; min-height: 120px; }
 
     /* 첨부파일 */
-    .attachment-box {
+    .attachment-section {}
+    .attachment-title { font-size: 13px; font-weight: 800; color: #1e3a6e; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .attachment-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+    .attachment-item {
         display: flex; align-items: center; gap: 10px;
-        padding: 12px 16px; margin-top: 8px;
-        backdrop-filter: blur(8px); background: rgba(239,246,255,.7);
-        border: 1px solid rgba(37,99,235,.2); border-radius: 12px;
+        padding: 12px 16px; min-width: 200px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 14px;
+        transition: all .15s; text-decoration: none; color: inherit;
     }
-    .attachment-icon { color: #2563eb; flex-shrink: 0; }
-    .attachment-link { font-size: 13px; font-weight: 600; color: #2563eb; text-decoration: none; word-break: break-all; }
-    .attachment-link:hover { text-decoration: underline; }
-    .attachment-size { font-size: 11px; color: #93aecf; flex-shrink: 0; }
+    .attachment-item:hover { border-color: rgba(37,99,235,.3); background: rgba(255,255,255,.9); }
+    .attachment-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .attachment-icon.pdf { background: rgba(239,68,68,.1); color: #ef4444; }
+    .attachment-icon.img { background: rgba(37,99,235,.1); color: #2563eb; }
+    .attachment-icon.file { background: rgba(100,116,139,.1); color: #4a6fa5; }
+    .attachment-name { font-size: 13px; font-weight: 600; color: #1e3a6e; word-break: break-all; }
+    .attachment-size { font-size: 11px; color: #93aecf; margin-top: 2px; }
+    .attachment-download { margin-left: auto; color: #93aecf; flex-shrink: 0; transition: color .15s; }
+    .attachment-item:hover .attachment-download { color: #2563eb; }
 
-    /* 하단 */
-    .detail-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid rgba(37,99,235,.08); margin-top: 8px; }
+    /* 구분선 */
+    .divider { height: 1px; background: rgba(37,99,235,.07); }
 
     /* 댓글 섹션 */
-    .comment-section {
-        backdrop-filter: blur(16px); background: rgba(255,255,255,.55);
-        border: 1.5px solid rgba(255,255,255,.8); border-radius: 24px; padding: 32px 40px;
-        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    .comment-section { display: flex; flex-direction: column; gap: 16px; }
+    .comment-section-title { font-size: 14px; font-weight: 800; color: #1e3a6e; display: flex; align-items: center; gap: 8px; }
+    .comment-count-badge {
+        font-size: 11px; font-weight: 700; color: #2563eb;
+        background: rgba(37,99,235,.1); padding: 2px 9px; border-radius: 20px;
     }
-    .comment-title { font-size: 16px; font-weight: 900; color: #1e3a6e; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-    .comment-count { font-size: 13px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); padding: 2px 10px; border-radius: 20px; }
 
-    .comment-form { background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.8); border-radius: 14px; padding: 16px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
-    .comment-textarea { width: 100%; padding: 12px 14px; background: rgba(255,255,255,.8); border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; resize: none; height: 90px; line-height: 1.7; transition: all .15s; box-sizing: border-box; }
-    .comment-textarea::placeholder { color: #93aecf; }
-    .comment-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
-    .comment-form-footer { display: flex; justify-content: flex-end; }
-
-    .comment-list { display: flex; flex-direction: column; }
-    .comment-item { padding: 18px 0; border-bottom: 1px solid rgba(37,99,235,.06); }
+    .comment-list { display: flex; flex-direction: column; gap: 2px; }
+    .comment-item { padding: 14px 0; border-bottom: 1px solid rgba(37,99,235,.05); }
     .comment-item:last-child { border-bottom: none; }
-    .comment-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
-    .comment-author-wrap { display: flex; align-items: center; gap: 10px; }
-    .comment-avatar { width: 34px; height: 34px; border-radius: 10px; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.15); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #2563eb; flex-shrink: 0; }
-    .comment-author { font-size: 13px; font-weight: 700; color: #1e3a6e; }
-    .comment-date { font-size: 11px; color: #93aecf; margin-top: 2px; }
-    .comment-actions { display: flex; gap: 6px; align-items: center; }
-    .comment-btn { font-size: 12px; color: #4a6fa5; font-weight: 600; background: none; border: none; cursor: pointer; font-family: inherit; padding: 4px 8px; border-radius: 8px; transition: all .15s; }
+    .comment-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .comment-author-wrap { display: flex; align-items: center; gap: 8px; }
+    .comment-avatar {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: rgba(37,99,235,.1); border: 1.5px solid rgba(37,99,235,.15);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 900; color: #2563eb; flex-shrink: 0;
+    }
+    .comment-author-name { font-size: 13px; font-weight: 700; color: #1e3a6e; }
+    .comment-date { font-size: 11px; color: #93aecf; margin-left: 6px; }
+    .comment-actions { display: flex; gap: 4px; }
+    .comment-btn {
+        font-size: 12px; color: #93aecf; font-weight: 600;
+        background: none; border: none; cursor: pointer; font-family: inherit;
+        padding: 4px 8px; border-radius: 8px; transition: all .15s;
+    }
     .comment-btn:hover { background: rgba(37,99,235,.08); color: #2563eb; }
     .comment-btn.delete:hover { background: rgba(239,68,68,.08); color: #ef4444; }
-    .comment-content { font-size: 14px; color: #2d4a7a; line-height: 1.75; padding-left: 44px; }
-
-    /* 댓글 수정 인풋 */
+    .comment-content { font-size: 14px; color: #2d4a7a; line-height: 1.7; padding-left: 38px; }
+    .comment-edit-wrap { padding-left: 38px; margin-top: 8px; display: none; }
     .comment-edit-input {
-        flex: 1; padding: 8px 12px; border: 1.5px solid rgba(37,99,235,.3);
-        border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e;
-        background: rgba(255,255,255,.9); outline: none;
+        width: 100%; padding: 9px 14px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.2);
+        border-radius: 10px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; margin-bottom: 6px;
     }
-    .comment-edit-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
-    .btn-success { background: #10b981; color: #fff; border: none; padding: 7px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
-    .btn-success:hover { background: #059669; }
-    .btn-gray { background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #4a6fa5; padding: 7px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .comment-edit-input:focus { border-color: #2563eb; }
+    .comment-edit-btns { display: flex; gap: 6px; justify-content: flex-end; }
+    .btn-sm {
+        padding: 7px 14px; border-radius: 12px; font-size: 12px; font-weight: 700;
+        cursor: pointer; font-family: inherit; border: none; transition: all .15s;
+    }
+    .btn-confirm { background: #10b981; color: #fff; }
+    .btn-confirm:hover { background: #059669; }
+    .btn-gray { background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #4a6fa5; }
     .btn-gray:hover { background: rgba(255,255,255,.9); }
 
-    .comment-empty { text-align: center; padding: 32px 0; font-size: 14px; color: #93aecf; }
+    .comment-empty { text-align: center; padding: 28px 0; font-size: 14px; color: #93aecf; }
+
+    /* 댓글 작성 */
+    .comment-form-wrap {
+        display: flex; gap: 10px; align-items: center;
+        padding: 16px 36px 24px;
+        border-top: 1px solid rgba(37,99,235,.07);
+        flex-shrink: 0;
+    }
+    .comment-textarea {
+        flex: 1; padding: 14px 18px; height: 52px;
+        background: rgba(255,255,255,.65); border: 1.5px solid rgba(37,99,235,.12);
+        border-radius: 16px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; resize: none; line-height: 1.6;
+        transition: all .15s;
+    }
+    .comment-textarea::placeholder { color: #93aecf; }
+    .comment-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.9); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .comment-submit {
+        padding: 14px 24px; border-radius: 16px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit; white-space: nowrap;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+    }
+    .comment-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
     /* 신고 모달 */
     .modal-bg { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(13,27,46,.5); backdrop-filter: blur(4px); justify-content: center; align-items: center; }
     .modal-bg.open { display: flex; }
-    .modal-card { backdrop-filter: blur(20px); background: rgba(255,255,255,.92); border: 1.5px solid rgba(255,255,255,.9); border-radius: 20px; padding: 32px; max-width: 480px; width: 90%; box-shadow: 0 20px 60px rgba(37,99,235,.15); }
+    .modal-card { backdrop-filter: blur(20px); background: rgba(255,255,255,.92); border: 1.5px solid rgba(255,255,255,.9); border-radius: 20px; padding: 32px; max-width: 460px; width: 90%; box-shadow: 0 20px 60px rgba(37,99,235,.15); }
     .modal-title { font-size: 18px; font-weight: 900; color: #1e3a6e; margin-bottom: 6px; }
     .modal-desc { font-size: 13px; color: #4a6fa5; margin-bottom: 20px; }
     .modal-label { font-size: 13px; font-weight: 700; color: #2d4a7a; margin-bottom: 6px; display: block; }
-    .modal-select, .modal-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; background: rgba(255,255,255,.8); border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; margin-bottom: 16px; }
-    .modal-select:focus, .modal-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); }
-    .modal-textarea { height: 110px; resize: none; }
+    .modal-select, .modal-textarea-s {
+        width: 100%; box-sizing: border-box; padding: 12px 14px;
+        background: rgba(255,255,255,.8); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e;
+        outline: none; margin-bottom: 14px;
+    }
+    .modal-textarea-s { height: 100px; resize: none; }
     .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
     .modal-cancel { padding: 10px 20px; background: rgba(243,244,248,.8); color: #4a6fa5; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-    .modal-cancel:hover { background: rgba(243,244,248,1); }
-    .modal-submit { padding: 10px 20px; background: #ef4444; color: #fff; border: none; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(239,68,68,.25); }
-    .modal-submit:hover { background: #dc2626; }
+    .modal-submit { padding: 10px 20px; background: #ef4444; color: #fff; border: none; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
-    @media (max-width: 640px) { .detail-card, .comment-section { padding: 24px 20px; } .detail-header { flex-direction: column; gap: 14px; } .detail-title { font-size: 20px; } }
+    @media (max-width: 640px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .detail-header { padding: 20px 18px 16px; }
+        .detail-body { padding: 20px 18px; }
+        .comment-form-wrap { padding: 12px 18px 16px; }
+        .detail-header-top { flex-direction: column; gap: 12px; }
+    }
 </style>
 
-<section class="detail-section">
-    <div class="detail-inner">
+<section class="page-wrap">
+    <div class="detail-card">
 
-        <!-- 브레드크럼 -->
-        <div class="detail-nav">
-            <a href="/boards?boardType={{board.boardType}}">게시판</a>
-            <span>›</span>
-            <span>{{board.title}}</span>
-        </div>
-
-        <div class="detail-card">
-
-            <!-- 헤더 -->
-            <div class="detail-header">
-                <div class="detail-header-left">
-                    <span class="detail-category">{{board.boardType}}</span>
-                    <h1 class="detail-title">{{board.title}}</h1>
-                    <div class="detail-meta">
-                        <span class="author">{{board.memberName}}</span>
-                        <div class="detail-meta-dot"></div>
-                        <span>{{board.createdAt}}</span>
-                        <div class="detail-meta-dot"></div>
-                        <span>조회 {{board.viewCount}}</span>
+        <!-- 헤더 -->
+        <div class="detail-header">
+            <div class="detail-header-top">
+                <div class="detail-title-wrap">
+                    <div class="detail-title">
+                        {{board.title}}
+                    </div>
+                    <div class="detail-badges">
+                        {{#isNotice}}<span class="badge badge-notice">공지</span>{{/isNotice}}
+                        {{^isNotice}}<span class="badge badge-free">자유</span>{{/isNotice}}
                     </div>
                 </div>
-
-                <div class="detail-actions">
+                <div class="detail-header-actions">
                     {{^isNotice}}
                         {{#isOwner}}
-                            <a href="/boards/{{board.id}}/edit" class="btn btn-outline btn-sm">수정</a>
+                            <a href="/boards/{{board.id}}/edit" class="btn-edit">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.42a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                수정
+                            </a>
+                            <button type="button" onclick="deleteBoard({{board.id}})" class="btn-delete">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                삭제
+                            </button>
                         {{/isOwner}}
                     {{/isNotice}}
-                    {{#isNotice}}
-                        {{#isAdmin}}
-                            <a href="/admin/notices/{{board.id}}/update" class="btn btn-primary btn-sm">수정</a>
-                        {{/isAdmin}}
-                    {{/isNotice}}
-
-                    {{#isOwner}}
-                        {{^isAdmin}}
-                            <button type="button" onclick="deleteBoard({{board.id}})" class="btn btn-sm btn-danger">삭제</button>
-                        {{/isAdmin}}
-                    {{/isOwner}}
-
-                    {{#isAdmin}}
-                        {{#isNotice}}
-                            <form action="/admin/notices/{{board.id}}/delete" method="POST" onsubmit="return confirm('이 공지사항을 삭제하시겠습니까?');" style="margin:0;">
-                                <button type="submit" class="btn btn-sm btn-danger">삭제</button>
-                            </form>
-                        {{/isNotice}}
-                        {{^isNotice}}
-                            <form action="/admin/boards/{{board.id}}/delete" method="POST" onsubmit="return confirm('관리자 권한으로 삭제하시겠습니까?');" style="margin:0;">
-                                <button type="submit" class="btn btn-sm btn-danger">관리자 삭제</button>
-                            </form>
-                        {{/isNotice}}
-                    {{/isAdmin}}
+                    {{#isNotice}}{{#isAdmin}}
+                        <a href="/admin/notices/{{board.id}}/update" class="btn-edit">수정</a>
+                        <form action="/admin/notices/{{board.id}}/delete" method="POST" style="margin:0;" onsubmit="return confirm('삭제하시겠습니까?');">
+                            <button type="submit" class="btn-delete">삭제</button>
+                        </form>
+                    {{/isAdmin}}{{/isNotice}}
+                    {{#isAdmin}}{{^isNotice}}
+                        <form action="/admin/boards/{{board.id}}/delete" method="POST" style="margin:0;" onsubmit="return confirm('관리자 권한으로 삭제하시겠습니까?');">
+                            <button type="submit" class="btn-delete">관리자 삭제</button>
+                        </form>
+                    {{/isNotice}}{{/isAdmin}}
+                    <a href="/boards?boardType={{board.boardType}}" class="btn-back">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    목록으로
+                    </a>
                 </div>
             </div>
+            <div class="detail-meta">
+            <span class="author">
+                <span class="author-avatar" id="authorAvatar">{{board.memberName}}</span>
+                {{board.memberName}}
+            </span>
+                <span class="meta-dot"></span>
+                <span>{{board.createdAt}}</span>
+                <span class="meta-dot"></span>
+                <span>조회 {{board.viewCount}}</span>
+            </div>
+        </div>
 
-            <!-- 본문 -->
+        <!-- 본문 -->
+        <div class="detail-body">
+
+            <!-- 내용 -->
             <div class="detail-content">{{board.content}}</div>
 
             <!-- 첨부파일 -->
             {{#board.hasAttachment}}
-                <div class="attachment-box">
-                <span class="attachment-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
-                </span>
-                    <a href="{{board.attachmentUrl}}" target="_blank" class="attachment-link">{{board.attachmentName}}</a>
-                    <span class="attachment-size">첨부파일 다운로드</span>
+                <div class="attachment-section">
+                    <div class="attachment-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 015 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 006 0V5c0-2.76-2.24-5-5-5S5 2.24 5 5v12.5c0 3.87 3.13 7 7 7s7-3.13 7-7V6h-2.5z"/></svg>
+                        첨부파일
+                    </div>
+                    <div class="attachment-grid">
+                        <a href="{{board.attachmentUrl}}" target="_blank" class="attachment-item">
+                            <div class="attachment-icon file">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+                            </div>
+                            <div>
+                                <div class="attachment-name">{{board.attachmentName}}</div>
+                                <div class="attachment-size">첨부파일</div>
+                            </div>
+                            <span class="attachment-download">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                        </a>
+                    </div>
                 </div>
             {{/board.hasAttachment}}
 
-            <!-- 하단 -->
-            <div class="detail-footer">
-                <a href="/boards?boardType={{board.boardType}}" class="btn btn-outline">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                목록으로
-                </a>
-            </div>
+            <div class="divider"></div>
 
-            <!-- 댓글 섹션 -->
-            <div class="comment-section" style="margin-top: 24px;">
-                <div class="comment-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 18h2v2H4v2H2V4h2v14Zm16 0H6v-2h14v2Zm2-2h-2V4h2v12Zm-12-2H6v-2h4v2Zm4-4H6V8h8v2Zm6-6H4V2h16v2Z"/></svg>
+            <!-- 댓글 -->
+            <div class="comment-section">
+                <div class="comment-section-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 18h2v2H4v2H2V4h2v14Zm16 0H6v-2h14v2Zm2-2h-2V4h2v12Zm-12-2H6v-2h4v2Zm4-4H6V8h8v2Zm6-6H4V2h16v2Z"/></svg>
                     댓글
-                    <span class="comment-count">{{comments.size}}</span>
+                    <span class="comment-count-badge">{{comments.size}}</span>
                 </div>
 
-                <!-- 댓글 작성 폼 -->
-                <form class="comment-form" action="/boards/{{board.id}}/comments/save" method="POST">
-                    <textarea class="comment-textarea" name="content" placeholder="댓글을 입력하세요..."></textarea>
-                    <div class="comment-form-footer">
-                        <button type="submit" class="btn btn-primary btn-sm">등록</button>
-                    </div>
-                </form>
-
-                <!-- 댓글 목록 -->
                 <div class="comment-list">
                     {{#comments}}
                         <div class="comment-item">
                             <div class="comment-header">
                                 <div class="comment-author-wrap">
                                     <div class="comment-avatar">{{memberName}}</div>
-                                    <div>
-                                        <div class="comment-author">{{memberName}}</div>
-                                        <div class="comment-date">{{createdAt}}</div>
-                                    </div>
+                                    <span class="comment-author-name">{{memberName}}</span>
+                                    <span class="comment-date">{{createdAt}}</span>
                                 </div>
-
                                 <div class="comment-actions">
-                                    {{#isAdmin}}
-                                        {{#isOwner}}
-                                            <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
-                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;">
-                                                <input type="hidden" name="boardId" value="{{boardId}}">
-                                                <button type="submit" class="comment-btn delete">삭제</button>
-                                            </form>
-                                        {{/isOwner}}
-                                        {{^isOwner}}
-                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;">
-                                                <input type="hidden" name="boardId" value="{{boardId}}">
-                                                <button type="submit" class="comment-btn delete">관리자 삭제</button>
-                                            </form>
-                                        {{/isOwner}}
-                                    {{/isAdmin}}
-
-                                    {{^isAdmin}}
-                                        {{#isOwner}}
-                                            <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
-                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;">
-                                                <input type="hidden" name="boardId" value="{{boardId}}">
-                                                <button type="submit" class="comment-btn delete">삭제</button>
-                                            </form>
-                                        {{/isOwner}}
-                                        {{^isOwner}}
-                                            {{^isCommentAdmin}}
-                                                <button type="button" class="comment-btn" onclick="openReportModal({{id}}, {{boardId}})" style="color:#ef4444;">신고</button>
-                                            {{/isCommentAdmin}}
-                                        {{/isOwner}}
-                                    {{/isAdmin}}
+                                    {{#isOwner}}
+                                        <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
+                                        <form action="/comments/{{id}}/delete" method="POST" style="display:inline;margin:0;">
+                                            <input type="hidden" name="boardId" value="{{boardId}}">
+                                            <button type="submit" class="comment-btn delete">삭제</button>
+                                        </form>
+                                    {{/isOwner}}
+                                    {{^isOwner}}{{^isAdmin}}{{^isCommentAdmin}}
+                                        <button type="button" class="comment-btn" onclick="openReportModal({{id}}, {{boardId}})" style="color:#ef4444;">신고</button>
+                                    {{/isCommentAdmin}}{{/isAdmin}}{{/isOwner}}
+                                    {{#isAdmin}}{{^isOwner}}
+                                        <form action="/comments/{{id}}/delete" method="POST" style="display:inline;margin:0;">
+                                            <input type="hidden" name="boardId" value="{{boardId}}">
+                                            <button type="submit" class="comment-btn delete">관리자 삭제</button>
+                                        </form>
+                                    {{/isOwner}}{{/isAdmin}}
                                 </div>
                             </div>
-
-                            <div class="comment-content">
-                                <div id="comment-text-{{id}}">{{comment}}</div>
-                                <div id="comment-edit-form-{{id}}" style="display:none; margin-top:10px;">
-                                    <form action="/comments/{{id}}/update" method="POST" style="display:flex; gap:8px; align-items:center; width:100%;">
-                                        <input type="hidden" name="boardId" value="{{boardId}}">
-                                        <input type="text" name="comment" value="{{comment}}" required class="comment-edit-input"/>
-                                        <button type="submit" class="btn-success">수정완료</button>
-                                        <button type="button" onclick="toggleEdit('{{id}}')" class="btn-gray">취소</button>
-                                    </form>
-                                </div>
+                            <div class="comment-content" id="comment-text-{{id}}">{{comment}}</div>
+                            <div class="comment-edit-wrap" id="comment-edit-form-{{id}}">
+                                <form action="/comments/{{id}}/update" method="POST">
+                                    <input type="hidden" name="boardId" value="{{boardId}}">
+                                    <input type="text" name="comment" value="{{comment}}" required class="comment-edit-input"/>
+                                    <div class="comment-edit-btns">
+                                        <button type="button" onclick="toggleEdit('{{id}}')" class="btn-sm btn-gray">취소</button>
+                                        <button type="submit" class="btn-sm btn-confirm">수정완료</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     {{/comments}}
-
                     {{^comments}}
                         <div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</div>
                     {{/comments}}
@@ -294,6 +352,13 @@
             </div>
 
         </div>
+
+        <!-- 댓글 작성 -->
+        <form class="comment-form-wrap" action="/boards/{{board.id}}/comments/save" method="POST">
+            <textarea class="comment-textarea" name="content" placeholder="댓글을 입력하세요..."></textarea>
+            <button type="submit" class="comment-submit">댓글 등록</button>
+        </form>
+
     </div>
 </section>
 
@@ -307,14 +372,14 @@
             <label class="modal-label">신고 분류</label>
             <select name="reason" required class="modal-select">
                 <option value="" disabled selected>신고 사유를 선택하세요</option>
-                <option value="스팸 광고 / 홍보성 도배">스팸 광고 / 홍보성 도배</option>
-                <option value="욕설 / 비속어 및 혐오 표현">욕설 / 비속어 및 혐오 표현</option>
-                <option value="타인 비방 및 명예훼손">타인 비방 및 명예훼손</option>
-                <option value="음란성 혹은 부적절한 내용">음란성 혹은 부적절한 내용</option>
-                <option value="기타 사유">기타 사유</option>
+                <option>스팸 광고 / 홍보성 도배</option>
+                <option>욕설 / 비속어 및 혐오 표현</option>
+                <option>타인 비방 및 명예훼손</option>
+                <option>음란성 혹은 부적절한 내용</option>
+                <option>기타 사유</option>
             </select>
             <label class="modal-label">상세 내용</label>
-            <textarea name="contentDetail" placeholder="신고 사유에 대한 구체적인 내용을 입력해 주세요. (최대 300자)" maxlength="300" required class="modal-textarea"></textarea>
+            <textarea name="contentDetail" placeholder="신고 사유에 대한 구체적인 내용을 입력해 주세요." maxlength="300" required class="modal-textarea-s"></textarea>
             <div class="modal-btns">
                 <button type="button" onclick="closeReportModal()" class="modal-cancel">취소</button>
                 <button type="submit" class="modal-submit">신고 보내기</button>
@@ -324,20 +389,18 @@
 </div>
 
 <script>
-    function toggleEdit(commentId) {
-        const text = document.getElementById('comment-text-' + commentId);
-        const form = document.getElementById('comment-edit-form-' + commentId);
-        const isHidden = form.style.display === 'none';
-        form.style.display = isHidden ? 'block' : 'none';
-        text.style.display = isHidden ? 'none' : 'block';
+    function toggleEdit(id) {
+        const text = document.getElementById('comment-text-' + id);
+        const form = document.getElementById('comment-edit-form-' + id);
+        const show = form.style.display !== 'block';
+        form.style.display = show ? 'block' : 'none';
+        text.style.display = show ? 'none' : 'block';
     }
 
     async function deleteBoard(boardId) {
         if (!confirm('정말 삭제하시겠습니까?')) return;
-        try {
-            const res = await fetch('/boards/' + boardId, { method: 'DELETE' });
-            if (res.ok) location.href = '/boards';
-        } catch(e) { alert(e.message); }
+        const res = await fetch('/boards/' + boardId, { method: 'DELETE' });
+        if (res.ok) location.href = '/boards';
     }
 
     function openReportModal(commentId, boardId) {
@@ -345,12 +408,10 @@
         document.getElementById('modalBoardId').value = boardId;
         document.getElementById('reportModal').classList.add('open');
     }
-
     function closeReportModal() {
         document.getElementById('reportModal').classList.remove('open');
         document.getElementById('reportForm').reset();
     }
-
     window.addEventListener('click', e => {
         if (e.target === document.getElementById('reportModal')) closeReportModal();
     });
@@ -360,6 +421,8 @@
         const t = el.textContent.trim();
         el.textContent = t ? t.charAt(0) : '?';
     });
+    const aa = document.getElementById('authorAvatar');
+    if (aa) { const t = aa.textContent.trim(); aa.textContent = t ? t.charAt(0) : '?'; }
 </script>
 
 {{> layout/footer}}

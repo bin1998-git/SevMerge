@@ -49,8 +49,8 @@ public class ReviewController {
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < totalPages ? page + 1 : null);
 
-        double avg = reviewService.avgRating(sessionUser.getId());
-        model.addAttribute("avgStar", String.format("%.1f", avg));
+        Double avgRaw = reviewService.avgRating(sessionUser.getId());
+        model.addAttribute("avgStar", avgRaw != null ? String.format("%.1f", avgRaw) : "0.0");
 
         return "review/review-list";
     }
