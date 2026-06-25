@@ -12,6 +12,7 @@ import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
 import com.example.SevMerge.partnership.PartnerShipService;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.revenue.PlatformRevenueService;
 import com.example.SevMerge.withdrawal.WithdrawalService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class AdminController {
     private final PartnerShipService partnerShipService;
     private final WithdrawalService withdrawalService;
     private final AdvertisementService advertisementService;
+    private final PlatformRevenueService platformRevenueService;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
@@ -357,9 +359,25 @@ public class AdminController {
     // 광고 거절
     @ResponseBody
     @PatchMapping("/api/admin/advertisements/{adId}/reject")
-    public ResponseEntity<?> rejectAd(@PathVariable Long adId) {
-        advertisementService.rejectAd(adId);
+    public ResponseEntity<?> rejectAd(@PathVariable Long adId,
+                                      @RequestBody Map<String, String> body) {
+        String reason = body.getOrDefault("reason", "");
+        advertisementService.rejectAd(adId,reason);
         return ResponseEntity.ok().build();
+    }
+
+    // 수익 현황 페이지
+    @GetMapping("/admin/revenue")
+    public String revenuePage(Model model) {
+        model.addAttribute("totalRevenue",
+                String.format("%,d", platformRevenueService.getTotalRevenue()));
+        model.addAttribute("adRevenue",
+                String.format("%,d", platformRevenueService.getRevenueByType(
+                        com.example.SevMerge.revenue.PlatformRevenueType.AD)));
+        model.addAttribute("thisMonthRevenue",
+                String.format("%,d", platformRevenueService.getThisMonthRevenue()));
+        model.addAttribute("revenues", platformRevenueService.getAllRevenues());
+        return "admin/admin-revenue";
     }
 
     @GetMapping("/admin/experts/grade")

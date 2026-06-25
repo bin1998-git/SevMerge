@@ -7,6 +7,9 @@ import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.expertprofile.ExpertProfileRepository;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.notification.NotificationService;
+import com.example.SevMerge.revenue.PlatformRevenueService;
+import com.example.SevMerge.revenue.PlatformRevenueType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,8 @@ public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
     private final MemberRepository memberRepository;
     private final ExpertProfileRepository expertProfileRepository;
+    private final PlatformRevenueService platformRevenueService;
+    private final NotificationService notificationService;
 
     // 구매
     @Transactional
@@ -123,12 +128,25 @@ public class AdvertisementService {
             throw new BadRequestException("대기 중인 광고만 승인할 수 있습니다.");
         }
         ad.approve();
+
+        // 전문가 이름 조회
+        Member expert = memberRepository.findById(ad.getExpertId())
+                .orElseThrow(() -> new NotFoundException("전문가 정보를 찾을 수 없습니다."));
+
+        // 수익 적재
+        platformRevenueService.record(
+                PlatformRevenueType.AD,
+                ad.getPrice(),
+                ad.getId(),
+                ad.getExpertId(),
+                ad.getPlacement().getLabel() + " 광고 수익 - expertId=" + expert.getName()
+        );
         log.info("[Advertisement] 승인 완료 - adId={}", adId);
     }
 
     // 광고 거절
     @Transactional
-    public void rejectAd(Long adId) {
+    public void rejectAd(Long adId, String reason) {
         Advertisement ad = advertisementRepository.findById(adId)
                 .orElseThrow(() -> new NotFoundException("광고를 찾을 수 없습니다."));
         if (ad.getStatus() != AdvertisementStatus.PENDING) {
@@ -138,11 +156,17 @@ public class AdvertisementService {
         // 포인트 환불
         Member expert = memberRepository.findById(ad.getExpertId())
                 .orElseThrow(() -> new NotFoundException("전문가 정보를 찾을 수 없습니다."));
-        expert.addBalance(ad.getPrice());  // 환불
+        expert.addBalance(ad.getPrice());
         log.info("[Advertisement] 포인트 환불 - expertId={}, amount={}", ad.getExpertId(), ad.getPrice());
 
-        ad.reject();
+        // 수익 취소 (승인 후 거절 케이스 대비)
+        platformRevenueService.cancel(adId, PlatformRevenueType.AD);
+
+        ad.reject(reason);
         log.info("[Advertisement] 거절 완료 - adId={}", adId);
+
+        // 알림 발송
+        notificationService.notifyAdRejected(expert, ad.getPlacement().getLabel(), reason);
     }
 
     public List<AdvertisementResponse> getProcessedAds() {

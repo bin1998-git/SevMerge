@@ -21,6 +21,7 @@ public class AdvertisementResponse {
     private String customMessage;
     private String bannerImage;
     private String avgRating;
+    private String rejectReason;
 
     public AdvertisementResponse(Advertisement ad, String expertName, String speciality, String profileImage) {
         this.id = ad.getId();
@@ -36,6 +37,7 @@ public class AdvertisementResponse {
         this.status = ad.getStatus().name();
         this.customMessage = ad.getCustomMessage();
         this.bannerImage = ad.getBannerImage();
+        this.rejectReason = ad.getRejectReason();
     }
 
     public void setAvgRating(String avgRating) {
@@ -56,5 +58,9 @@ public class AdvertisementResponse {
 
     public boolean isHasProfileImage() {
         return profileImage != null && !profileImage.isBlank();
+    }
+
+    public boolean isHasRejectReason() {
+        return rejectReason != null && !rejectReason.isBlank();
     }
 }
