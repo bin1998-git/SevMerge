@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 
 public class ProjectResponseDTO {
@@ -69,6 +70,10 @@ public class ProjectResponseDTO {
             this.isDraft = "DRAFT".equals(this.projectStatus);
         }
 
+        public String getCreatedAtFormatted() {
+            if (this.createdAt == null) return "";
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this.createdAt);
+        }
     }
 
     // 상세 조회 응답 DTO

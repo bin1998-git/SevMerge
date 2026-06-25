@@ -8,9 +8,11 @@ import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberResponse;
 import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
 import com.example.SevMerge.partnership.PartnerShipService;
+import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.withdrawal.WithdrawalService;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -154,6 +157,12 @@ public class AdminController {
         model.addAttribute("projectData", projectData != null ? projectData : emptyZeroList);
         model.addAttribute("completedData", completeData != null ? completeData : emptyZeroList);
         model.addAttribute("recentPartnerships", partnerShipService.list());
+
+        List<MemberResponse> recentMembers = memberService.getRecentMembers();
+        model.addAttribute("recentMembers", recentMembers);
+
+        List<ProjectResponseDTO.ListDTO> recentProjects = projectService.getRecentProjects();
+        model.addAttribute("recentProjects", recentProjects);
         return "admin/admin-main";
     }
 
@@ -169,7 +178,8 @@ public class AdminController {
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("boards", s < total ? all.subList(s, e) : new ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
 
@@ -237,7 +247,8 @@ public class AdminController {
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("experts", s < total ? all.subList(s, e) : new ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("currentStatus", status != null ? status : "");
@@ -282,7 +293,8 @@ public class AdminController {
         int ps = 15, total = filtered.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("blacklistLogs", s < total ? filtered.subList(s, e) : new ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("keyword", keyword != null ? keyword : "");
@@ -316,14 +328,15 @@ public class AdminController {
         model.addAttribute("withdrawals", s < total ? all.subList(s, e) : new ArrayList<>());
         model.addAttribute("totalCount", total);
         model.addAttribute("pendingCount", pendingCount);
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("currentStatus", status != null ? status : "");
-        model.addAttribute("isWithdrawAll",       status == null);
-        model.addAttribute("isWithdrawPending",   "PENDING".equals(status));
+        model.addAttribute("isWithdrawAll", status == null);
+        model.addAttribute("isWithdrawPending", "PENDING".equals(status));
         model.addAttribute("isWithdrawCompleted", "COMPLETED".equals(status));
-        model.addAttribute("isWithdrawRejected",  "REJECTED".equals(status));
+        model.addAttribute("isWithdrawRejected", "REJECTED".equals(status));
         return "admin/admin-withdraw";
     }
 

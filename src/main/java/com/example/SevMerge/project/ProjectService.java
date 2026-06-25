@@ -251,6 +251,15 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    // 최근 프로젝트 5개 조회
+    public List<ProjectResponseDTO.ListDTO> getRecentProjects() {
+        List<Project> projects = projectRepository.findTop5ByIsDeletedFalseOrIsDeletedIsNullOrderByCreatedAtDesc();
+
+        return projects.stream()
+                .map(ProjectResponseDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
     // 관리자 전용 삭제기능
     @Transactional
     public void deleteProjectByAdmin(Long id) {

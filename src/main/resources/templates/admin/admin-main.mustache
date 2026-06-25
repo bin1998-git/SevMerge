@@ -535,7 +535,7 @@
             <div class="admin-table-row col-project">
                 <span class="cell-id">{{id}}</span>
                 <span class="cell-name">{{title}}</span>
-                <span>{{member.name}}</span>
+                <span>{{memberName}}</span>
                 <span class="cell-date">{{createdAt}}</span>
                 <span><span class="status-active">모집중</span></span>
             </div>
@@ -637,7 +637,7 @@
     }
 
     function showAllCharts() {
-        // 1. 열려있는 모든 왼쪽 서브메뉴를 닫아 시각적 초기화
+
         closeMemberMenu();
         closeProjectMenu();
         closeCompletedMenu();

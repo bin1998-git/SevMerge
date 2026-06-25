@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -398,6 +399,15 @@ public class MemberService {
     @Transactional(readOnly = true)
     public long getNewMemberCountThisMonth() {
         return memberRepository.countNewMembersThisMonth();
+    }
+
+    // 최근 가입한 신규 회원 수 조회
+    public List<MemberResponse> getRecentMembers() {
+        List<Member> members = memberRepository.findTop5ByIsDeletedFalseOrIsDeletedIsNullOrderByCreatedAtDesc();
+
+        return members.stream()
+                .map(MemberResponse::from)
+                .collect(Collectors.toList());
     }
 
     // 역할별 카테고리 조회
