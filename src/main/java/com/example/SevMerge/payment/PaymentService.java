@@ -37,7 +37,7 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class PaymentService {
 
-    private static final double PLATFORM_FEE_RATE = 0.10;
+    private static final double PLATFORM_FEE_RATE = 0.03;
 
     private final PaymentRepository paymentRepository;
 
@@ -133,12 +133,23 @@ public class PaymentService {
             throw new BadRequestException(e.getMessage());
         }
 
-        // 전문가 잔액 증가
+        // 전문가 잔액 증가 (97%)
         em.createQuery(
                 "UPDATE Member m SET m.balance = m.balance + :amount WHERE m.id = :id")
                 .setParameter("amount", payment.getNetAmount())
                 .setParameter("id", payment.getExpertId())
                 .executeUpdate();
+
+        // 관리자 수수료 지급 (3%) — ADMIN 역할 계정 전체에 동일 금액 지급
+        int adminUpdated = em.createQuery(
+                "UPDATE Member m SET m.balance = m.balance + :fee WHERE m.role = :role")
+                .setParameter("fee", payment.getPlatformFee())
+                .setParameter("role", com.example.SevMerge.member.Role.ADMIN)
+                .executeUpdate();
+        if (adminUpdated == 0) {
+            log.warn("[Escrow] 관리자 계정 없음 — 수수료 {}원 미지급 (paymentId={})",
+                    payment.getPlatformFee(), paymentId);
+        }
 
         // 프로젝트 상태 → DONE
         em.createNativeQuery(

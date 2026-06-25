@@ -51,8 +51,8 @@ public class PaymentController {
         model.addAttribute("expertId",         expertId);
         model.addAttribute("amount",           amount);
         model.addAttribute("balance",          balance);
-        model.addAttribute("platformFee",      (int)(amount * 0.10));
-        model.addAttribute("netAmount",        amount - (int)(amount * 0.10));
+        model.addAttribute("platformFee",      (int)(amount * 0.03));
+        model.addAttribute("netAmount",        amount - (int)(amount * 0.03));
         model.addAttribute("balanceSufficient",   balance >= amount);
         model.addAttribute("balanceInsufficient", balance < amount);
         model.addAttribute("shortage",            Math.max(0, amount - balance));
