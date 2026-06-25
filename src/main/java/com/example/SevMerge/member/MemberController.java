@@ -420,7 +420,11 @@ public class MemberController {
     public ResponseEntity<?> withdrawMyAccount(HttpSession session) {
         Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
-        memberService.withdrawMember(loginMember.getId());
+        try {
+            memberService.withdrawMember(loginMember.getId());
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         session.invalidate();
         return ResponseEntity.ok().body("탈퇴 완료");
     }

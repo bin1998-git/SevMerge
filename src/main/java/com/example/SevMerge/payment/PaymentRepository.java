@@ -21,4 +21,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     // 두 회원 간 완료된 거래 여부 확인 (리뷰 작성 검증용)
     boolean existsByClientIdAndExpertIdAndStatus(Long clientId, Long expertId, PaymentStatus status);
+
+    // 미정산 결제 존재 여부 (탈퇴 제한용)
+    boolean existsByClientIdAndStatus(Long clientId, PaymentStatus status);
 }

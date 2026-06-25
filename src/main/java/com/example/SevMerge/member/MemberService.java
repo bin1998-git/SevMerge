@@ -1,11 +1,15 @@
 package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidRepository;
+import com.example.SevMerge.board.BoardRepository;
 import com.example.SevMerge.core.exception.AdminException;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.expertprofile.*;
+import com.example.SevMerge.payment.PaymentRepository;
+import com.example.SevMerge.payment.PaymentStatus;
+import com.example.SevMerge.project.ProjectRepository;
 import com.example.SevMerge.notification.NotificationService;
 import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
@@ -52,6 +56,9 @@ public class MemberService {
     private final HttpSession session;
     private final ExpertReviewLogRepository expertReviewLogRepository;
     private final BidRepository bidRepository;
+    private final ProjectRepository projectRepository;
+    private final BoardRepository boardRepository;
+    private final PaymentRepository paymentRepository;
 
     //문자 발송
     private final SolApiService solApiService;
@@ -236,11 +243,29 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        //엔티티 메서드를 호출해 상태만 true 변경.
-
         if (member.isAdmin()) {
             throw new AdminException("관리자 계정은 삭제가 불가능합니다.");
         }
+
+        // 의뢰인 탈퇴 제한: 진행중/완료대기 프로젝트가 있으면 탈퇴 불가
+        if (member.isClient()) {
+            boolean hasActiveProject = !projectRepository.findBlockingProjectsByMemberId(memberId).isEmpty();
+            if (hasActiveProject) {
+                throw new BadRequestException("진행 중인 의뢰가 있어 탈퇴할 수 없습니다. 작업 완료 후 정산까지 완료된 뒤 탈퇴해 주세요.");
+            }
+
+            // 미정산 결제(에스크로 보관 중)가 있으면 탈퇴 불가
+            boolean hasUnSettled = paymentRepository.existsByClientIdAndStatus(memberId, PaymentStatus.PAID);
+            if (hasUnSettled) {
+                throw new BadRequestException("정산이 완료되지 않은 의뢰가 있어 탈퇴할 수 없습니다. 정산 완료 후 탈퇴해 주세요.");
+            }
+
+            // 프로젝트 및 게시글 소프트 삭제
+            projectRepository.softDeleteAllByMemberId(memberId);
+            boardRepository.softDeleteAllByMemberId(memberId);
+            log.info("의뢰인 탈퇴 - 프로젝트/게시글 소프트 삭제 완료 - memberId={}", memberId);
+        }
+
         member.withdraw();
         log.info("회원 탈퇴 완료 (Dirty Checking으로 DB 반영) - memberId={}", memberId);
     }

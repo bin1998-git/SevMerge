@@ -63,4 +63,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
                 UPDATE Board b SET b.viewCount = b.viewCount + 1 WHERE b.id = :boardId
             """)
     void increaseViewCount(@Param("boardId") Long boardId);
+
+    // 탈퇴 시 의뢰인 게시글 전체 소프트 삭제
+    @Modifying
+    @Query("UPDATE Board b SET b.isActive = false WHERE b.member.id = :memberId AND b.isActive = true")
+    void softDeleteAllByMemberId(@Param("memberId") Long memberId);
 }
