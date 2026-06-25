@@ -1,133 +1,185 @@
 {{> layout/header}}
-
 <style>
     body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    /* 페이지 헤더 - 글래스 */
-    .page-header {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.65); border-bottom: 1px solid rgba(255,255,255,.7);
-        padding: 36px 28px 24px; position: relative; z-index: 1;
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
     }
-    .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc { font-size: 14px; color: #4a6fa5; }
 
-    .list-section { padding: 28px 28px 80px; position: relative; z-index: 1; }
-    .list-inner { max-width: 1140px; margin: 0 auto; }
+    /* 메인 글래스 카드 */
+    .list-card {
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
+    }
 
-    /* 검색 */
-    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    /* 헤더 */
+    .list-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 28px 32px 20px; border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .list-title { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 4px; }
+    .list-desc { font-size: 13px; color: #4a6fa5; }
+
+    /* 툴바 */
+    .list-toolbar {
+        display: flex; align-items: center; gap: 10px;
+        padding: 14px 32px; border-bottom: 1px solid rgba(37,99,235,.06); flex-shrink: 0; flex-wrap: wrap;
+    }
+    .search-wrap { flex: 1; min-width: 200px; position: relative; }
+    .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #93aecf; pointer-events: none; }
     .search-input {
-        flex: 1; padding: 12px 16px;
-        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
+        width: 100%; padding: 10px 14px 10px 38px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
         border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px;
-        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s; box-sizing: border-box;
     }
     .search-input::placeholder { color: #93aecf; }
     .search-input:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.9); }
     .search-btn {
-        padding: 12px 24px; background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
-        cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
+        padding: 10px 20px; border-radius: 12px; border: none;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 10px rgba(37,99,235,.25); transition: all .15s; white-space: nowrap;
     }
-    .search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    .search-btn:hover { transform: translateY(-1px); }
 
     /* 필터 탭 */
-    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .filter-row {
+        display: flex; gap: 6px; flex-wrap: wrap;
+        padding: 12px 32px; border-bottom: 1px solid rgba(37,99,235,.06); flex-shrink: 0;
+    }
     .tab {
-        padding: 7px 18px; border-radius: 20px;
+        padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
         backdrop-filter: blur(8px); background: rgba(255,255,255,.55);
-        border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600;
-        color: #2d4a7a; text-decoration: none; transition: all .15s;
+        border: 1.5px solid rgba(255,255,255,.8); color: #4a6fa5;
+        text-decoration: none; transition: all .15s;
     }
     .tab:hover { border-color: rgba(37,99,235,.3); color: #2563eb; background: rgba(255,255,255,.85); }
-    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 10px rgba(37,99,235,.25); }
+
+    /* 카드 개수 */
+    .list-meta {
+        padding: 10px 32px; font-size: 13px; color: #4a6fa5; font-weight: 500;
+        border-bottom: 1px solid rgba(37,99,235,.05); flex-shrink: 0;
+    }
+    .list-meta strong { color: #1e3a6e; font-weight: 700; }
 
     /* 전문가 카드 그리드 */
-    .expert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 36px; }
+    .expert-grid {
+        flex: 1; padding: 20px 32px;
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+        overflow-y: auto; align-content: start;
+    }
 
     .expert-card {
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 20px; padding: 22px;
-        text-decoration: none; color: inherit; display: block;
+        backdrop-filter: blur(12px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 18px; padding: 20px;
+        text-decoration: none; color: inherit; display: flex; flex-direction: column;
         transition: all .2s; position: relative;
-        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+        box-shadow: 0 4px 16px rgba(37,99,235,.06);
     }
-    .expert-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(37,99,235,.12); border-color: rgba(37,99,235,.3); background: rgba(255,255,255,.75); }
+    .expert-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(37,99,235,.12); border-color: rgba(37,99,235,.25); background: rgba(255,255,255,.82); }
 
+    /* 아바타 */
     .expert-avatar-wrap { position: relative; flex-shrink: 0; }
     .expert-avatar {
-        width: 52px; height: 52px; border-radius: 50%;
+        width: 48px; height: 48px; border-radius: 50%;
         background: linear-gradient(135deg, #2563eb, #3b82f6);
         border: 2px solid rgba(255,255,255,.9);
         display: flex; align-items: center; justify-content: center;
-        font-size: 20px; font-weight: 900; color: #fff;
-        box-shadow: 0 4px 12px rgba(37,99,235,.2);
+        font-size: 18px; font-weight: 900; color: #fff;
+        box-shadow: 0 4px 10px rgba(37,99,235,.2);
     }
-    .expert-badge-icon { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; object-fit: contain; }
+    .expert-badge-icon { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; object-fit: contain; }
 
-    .expert-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .expert-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .expert-info { flex: 1; min-width: 0; }
-    .expert-name { font-size: 14px; font-weight: 800; color: #1e3a6e; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+    .expert-name { font-size: 13px; font-weight: 800; color: #1e3a6e; display: flex; align-items: center; gap: 5px; margin-bottom: 2px; flex-wrap: wrap; }
+    .grade-img { height: 22px; object-fit: contain; }
     .expert-career { font-size: 11px; color: #4a6fa5; font-weight: 500; }
 
     .expert-rating { text-align: right; flex-shrink: 0; }
-    .expert-rating-num { font-size: 20px; font-weight: 900; color: #f59e0b; line-height: 1; }
+    .expert-rating-num { font-size: 17px; font-weight: 900; color: #f59e0b; line-height: 1; }
     .expert-rating-sub { font-size: 10px; color: #93aecf; margin-top: 2px; }
 
-    .expert-introduce { font-size: 12px; color: #4a6fa5; line-height: 1.7; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .expert-introduce { font-size: 12px; color: #4a6fa5; line-height: 1.65; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
 
-    .expert-skills { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
-    .skill-tag { padding: 3px 9px; background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.15); border-radius: 20px; font-size: 10px; font-weight: 600; color: #2563eb; }
+    .expert-skills { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+    .skill-tag { padding: 3px 8px; background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.14); border-radius: 20px; font-size: 10px; font-weight: 600; color: #2563eb; }
 
-    .expert-bottom { border-top: 1px solid rgba(37,99,235,.08); padding-top: 10px; font-size: 11px; color: #4a6fa5; }
-    .expert-stat { font-weight: 600; }
-
-    .empty-state { text-align: center; padding: 80px 0; font-size: 15px; color: #93aecf; }
-
-    /* 페이지네이션 */
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 24px; }
-    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
-    .page-btn { padding: 9px 15px; border-radius: 8px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
-    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
+    .expert-bottom { border-top: 1px solid rgba(37,99,235,.08); padding-top: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .expert-stat { font-size: 11px; color: #4a6fa5; font-weight: 600; }
 
     /* 북마크 */
     .bookmark-btn {
-        position: absolute; top: 14px; right: 14px;
-        width: 32px; height: 32px; border-radius: 50%;
+        width: 28px; height: 28px; border-radius: 50%;
         backdrop-filter: blur(8px); background: rgba(255,255,255,.7);
         border: 1.5px solid rgba(255,255,255,.9);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; z-index: 10; transition: all .2s;
+        cursor: pointer; transition: all .2s; flex-shrink: 0;
     }
     .bookmark-btn:hover { transform: scale(1.1); border-color: rgba(37,99,235,.3); }
-    .bookmark-btn svg { width: 14px; height: 14px; fill: none; stroke: #93aecf; stroke-width: 2; transition: all .2s; }
+    .bookmark-btn svg { width: 13px; height: 13px; fill: none; stroke: #93aecf; stroke-width: 2; transition: all .2s; }
     .bookmark-btn.active { border-color: rgba(37,99,235,.4); background: rgba(37,99,235,.1); }
     .bookmark-btn.active svg { fill: #2563eb; stroke: #2563eb; }
 
-    @media (max-width: 960px) { .expert-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 560px) { .expert-grid { grid-template-columns: 1fr; } .list-section { padding: 20px 16px 60px; } }
+    /* 빈 상태 */
+    .empty-state {
+        grid-column: 1/-1; text-align: center; padding: 80px 0; font-size: 14px; color: #93aecf;
+    }
+
+    /* 푸터 */
+    .list-footer {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 32px 20px; border-top: 1px solid rgba(37,99,235,.06); flex-shrink: 0;
+    }
+    .paging { display: flex; align-items: center; gap: 4px; }
+    .page-btn {
+        padding: 7px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        text-decoration: none; transition: all .15s;
+    }
+    .page-btn:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .page-info { font-size: 13px; color: #4a6fa5; font-weight: 600; padding: 0 6px; }
+
+    @media (max-width: 1200px) { .expert-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 860px) { .expert-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .list-header, .list-toolbar, .filter-row, .list-meta, .expert-grid, .list-footer { padding-left: 16px; padding-right: 16px; }
+        .expert-grid { grid-template-columns: 1fr; }
+    }
 </style>
 
-<div class="page-header">
-    <div class="page-header-inner">
-        <h1 class="page-title">전문가 찾기</h1>
-        <p class="page-desc">검증된 IT 전문가들을 만나보세요.</p>
-    </div>
-</div>
+<section class="page-wrap">
+    <div class="list-card">
 
-<section class="list-section">
-    <div class="list-inner">
+        <!-- 헤더 -->
+        <div class="list-header">
+            <div>
+                <h1 class="list-title">전문가 찾기</h1>
+                <p class="list-desc">검증된 IT 전문가들을 만나보세요.</p>
+            </div>
+        </div>
 
-        <div class="search-bar">
-            <input type="text" id="searchInput" class="search-input"
-                   placeholder="이름, 직종, 기술 스택으로 검색..."
-                   value="{{keyword}}" />
+        <!-- 검색 툴바 -->
+        <div class="list-toolbar">
+            <div class="search-wrap">
+                <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/></svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="이름, 직종, 기술 스택으로 검색..." value="{{keyword}}"/>
+            </div>
             <button class="search-btn" onclick="doSearch()">검색</button>
         </div>
 
+        <!-- 필터 탭 -->
         <div class="filter-row">
             <a href="/experts" class="tab {{#isAll}}active{{/isAll}}">전체</a>
             <a href="/experts?career=Java" class="tab {{#isFullstack}}active{{/isFullstack}}">풀스택</a>
@@ -135,9 +187,9 @@
             <a href="/experts?career=React" class="tab {{#isFrontend}}active{{/isFrontend}}">프론트엔드</a>
             <a href="/experts?career=Flutter" class="tab {{#isApp}}active{{/isApp}}">앱개발</a>
             <a href="/experts?career=Figma" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</a>
-
         </div>
 
+        <!-- 카드 그리드 -->
         <div class="expert-grid">
             {{#expertProfiles}}
                 <a href="/experts/{{memberId}}" class="expert-card">
@@ -151,9 +203,9 @@
                         <div class="expert-info">
                             <div class="expert-name">
                                 {{memberName}}
-                                {{#normal}}<img src="/normal.png" style="width:101px; height:74px; object-fit:contain;"/>{{/normal}}
-                                {{#skilled}}<img src="/skilled.png" style="width:101px; height:74px; object-fit:contain;"/>{{/skilled}}
-                                {{#master}}<img src="/master.png" style="width:101px; height:74px; object-fit:contain;"/>{{/master}}
+                                {{#normal}}<img src="/normal.png" class="grade-img" alt="일반"/>{{/normal}}
+                                {{#skilled}}<img src="/skilled.png" class="grade-img" alt="숙련"/>{{/skilled}}
+                                {{#master}}<img src="/master.png" class="grade-img" alt="마스터"/>{{/master}}
                             </div>
                             <div class="expert-career">{{career}}</div>
                         </div>
@@ -162,69 +214,66 @@
                             <div class="expert-rating-sub">★ ({{totalReviews}}개)</div>
                         </div>
                     </div>
+
                     <div class="expert-introduce">{{intro}}</div>
+
                     <div class="expert-skills">
                         {{#speciality}}
                             <span class="skill-tag">{{speciality}}</span>
                         {{/speciality}}
                     </div>
+
                     <div class="expert-bottom">
                         <span class="expert-stat">완료 {{doneProject}}건</span>
                         <button class="bookmark-btn {{#bookmarked}}active{{/bookmarked}}" onclick="toggleBookmark(event, {{id}}, this)">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
                             </svg>
                         </button>
                     </div>
                 </a>
             {{/expertProfiles}}
+
+            {{^expertProfiles}}
+                <div class="empty-state">검색 결과가 없습니다.</div>
+            {{/expertProfiles}}
         </div>
 
-        {{^expertProfiles}}
-            <div class="empty-state">검색 결과가 없습니다.</div>
-        {{/expertProfiles}}
-
-        <div class="pagination">
-            {{#prevPage}}<a href="/experts?page={{prevPage}}&career={{currentCareer}}&keyword={{keyword}}" class="page-btn">이전</a>{{/prevPage}}
-            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-            {{#nextPage}}<a href="/experts?page={{nextPage}}&career={{currentCareer}}&keyword={{keyword}}" class="page-btn">다음</a>{{/nextPage}}
+        <!-- 푸터 페이지네이션 -->
+        <div class="list-footer">
+            <span style="font-size:13px; color:#4a6fa5; font-weight:500;">전체 전문가</span>
+            <div class="paging">
+                {{#prevPage}}<a href="/experts?page={{prevPage}}&career={{currentCareer}}&keyword={{keyword}}" class="page-btn">← 이전</a>{{/prevPage}}
+                <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                {{#nextPage}}<a href="/experts?page={{nextPage}}&career={{currentCareer}}&keyword={{keyword}}" class="page-btn">다음 →</a>{{/nextPage}}
+            </div>
         </div>
 
     </div>
 </section>
+
 <script>
+    function doSearch() {
+        const kw = document.getElementById('searchInput').value.trim();
+        location.href = '/experts?keyword=' + encodeURIComponent(kw);
+    }
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') doSearch();
+    });
+
     function toggleBookmark(event, expertId, btn) {
         event.preventDefault();
         event.stopPropagation();
-
-        fetch(`/bookmarks/toggle/${expertId}`, {
-            method: 'POST',
-            credentials: 'include'
-        })
-                .then(res => {
-                    if (!res.ok) {
-                        alert('에러 발생! HTTP 상태 코드: ' + res.status);
-                        throw new Error('bookmark toggle failed');
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    // 💡 서버에서 온 북마크 유무(true/false)에 따라 active 클래스 토글!
-                    if (data.bookmarked) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                })
-                .catch(err => console.error(err));
+        fetch('/bookmarks/toggle/' + expertId, { method: 'POST', credentials: 'include' })
+            .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+            .then(data => { data.bookmarked ? btn.classList.add('active') : btn.classList.remove('active'); })
+            .catch(err => console.error(err));
     }
-</script>
 
-
-<script>
     document.querySelectorAll('.ep-avatar').forEach(el => {
         const t = el.textContent.trim();
         el.textContent = t ? t.charAt(0) : '?';
     });
 </script>
+
 {{> layout/footer}}

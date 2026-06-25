@@ -467,7 +467,7 @@
 
 <!-- 통계 -->
 <div class="admin-content-bottom"
-     style="width: 100%; max-width: none !important; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; margin: -280px 0 0 0 !important; padding: 0 40px 40px 40px !important; align-items: stretch; justify-content: flex-start; background: transparent !important; position: relative; ">
+     style="width: 100%; max-width: none !important; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; margin: -280px 0 0 0 !important; padding: 0 40px 40px 40px !important; align-items: stretch; justify-content: flex-start; background: transparent !important; position: relative; z-index: 2;">
 
     <!-- 📊 1. 사각 통계 카드 그리드 -->
     <div class="stats-grid"
@@ -490,7 +490,9 @@
         <div class="stat-card" style="background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
             <div class="stat-card-label">승인 대기 전문가</div>
             <div class="stat-card-val">{{pendingExpertCount}}</div>
-            <div class="stat-card-sub"><a href="/admin/experts" style="color:#2563eb; font-weight:700; text-decoration: none;">승인하러 가기 →</a></div>
+            <div class="stat-card-sub">
+                <a href="/admin/experts" style="color:#2563eb; font-weight:700; text-decoration: none;">승인하러 가기 →</a>
+            </div>
         </div>
         <div class="stat-card" style="background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px; padding: 24px; box-sizing: border-box; width: 100%;">
             <div class="stat-card-label">광고 총 수익</div>
@@ -565,7 +567,6 @@
         {{/recentPartnerships}}
     </div>
 </div>
-</main>
 <script>
     function toggleMemberMenu() {
         const memberMenu = document.getElementById('memberSubMenu');
@@ -653,7 +654,6 @@
         window.location.href = targetUrl;
     }
 </script>
-</div>
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {

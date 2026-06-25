@@ -1,52 +1,78 @@
 {{> layout/header}}
-
 <style>
     body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .page-header {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6);
-        padding: 36px 28px 28px; position: relative; z-index: 1;
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
     }
-    .page-header-inner { max-width: 1140px; margin: 0 auto; }
-    .page-title { font-size: 26px; font-weight: 900; color: #1e3a6e; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .page-desc  { font-size: 14px; color: #4a6fa5; font-weight: 400; }
 
-    .list-section { padding: 36px 28px 80px; position: relative; z-index: 1; }
-    .list-inner   { max-width: 1140px; margin: 0 auto; }
-
-    .list-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .list-count  { font-size: 14px; color: #4a6fa5; font-weight: 500; }
-    .list-count strong { color: #1e3a6e; font-weight: 700; }
-
-    .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .search-input {
-        flex: 1; padding: 12px 16px;
-        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
-        border: 1.5px solid rgba(255,255,255,.8); border-radius: 9px;
-        font-size: 14px; color: #1e3a6e; outline: none; transition: all .15s;
+    .board-card {
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
     }
-    .search-input::placeholder { color: #93aecf; }
-    .search-input:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.95); }
-    .search-btn {
-        padding: 12px 24px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer;
-        box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
-    }
-    .search-btn:hover { transform: translateY(-1px); }
 
-    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .tab {
-        padding: 8px 18px; border-radius: 20px;
-        backdrop-filter: blur(8px); background: rgba(255,255,255,.55);
-        border: 1.5px solid rgba(255,255,255,.8);
-        font-size: 13px; font-weight: 600; color: #2d4a7a; cursor: pointer; transition: all .15s;
+    .board-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
     }
-    .tab:hover { background: rgba(255,255,255,.85); border-color: rgba(37,99,235,.3); color: #2563eb; }
-    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+    .board-title { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 4px; }
+    .board-desc  { font-size: 13px; color: #4a6fa5; }
+    .btn-write {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit; text-decoration: none;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s; flex-shrink: 0;
+    }
+    .btn-write:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
-    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
+    .board-tabs {
+        display: flex; padding: 0 32px;
+        border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0; flex-wrap: wrap;
+    }
+    .board-tab {
+        padding: 14px 20px; font-size: 14px; font-weight: 700; color: #4a6fa5;
+        border: none; border-bottom: 2.5px solid transparent;
+        background: none; cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .board-tab:hover { color: #1e3a6e; }
+    .board-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+    .board-toolbar {
+        display: flex; align-items: center; gap: 10px; padding: 16px 32px;
+        border-bottom: 1px solid rgba(37,99,235,.06); flex-shrink: 0;
+    }
+    .search-wrap { flex: 1; position: relative; display: flex; align-items: center; }
+    .search-icon { position: absolute; left: 14px; color: #93aecf; pointer-events: none; }
+    .board-search-input {
+        width: 100%; padding: 10px 16px 10px 40px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .board-search-input::placeholder { color: #93aecf; }
+    .board-search-input:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.9); }
+    .filter-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap;
+    }
+    .filter-btn:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); color: #2563eb; }
+    .filter-btn.active { background: rgba(37,99,235,.08); border-color: rgba(37,99,235,.3); color: #2563eb; }
+
+    .project-body { flex: 1; padding: 24px 32px; }
+    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
     .project-card {
         backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
         background: rgba(255,255,255,.6);
@@ -54,78 +80,120 @@
         box-shadow: 0 4px 16px rgba(37,99,235,.06); transition: all .15s;
     }
     .project-card:hover { transform: translateY(-3px); border-color: rgba(37,99,235,.25); box-shadow: 0 8px 24px rgba(37,99,235,.1); }
-    .project-card-link { display: block; padding: 24px; text-decoration: none; color: inherit; }
-    .project-card-top { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .project-card-link { display: block; padding: 22px; text-decoration: none; color: inherit; }
+    .project-card-top { display: flex; gap: 7px; margin-bottom: 11px; flex-wrap: wrap; align-items: center; }
     .project-category { font-size: 11px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2); padding: 4px 10px; border-radius: 6px; }
-    .badge-certified  { font-size: 10px; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 9px; border-radius: 6px; }
-    .project-title    { font-size: 15px; font-weight: 700; color: #1e3a6e; margin-bottom: 8px; }
-    .project-desc     { font-size: 12px; color: #4a6fa5; margin-bottom: 20px; line-height: 1.6; }
+    .project-title { font-size: 15px; font-weight: 700; color: #1e3a6e; margin-bottom: 8px; line-height: 1.4; }
+    .project-desc  { font-size: 12px; color: #4a6fa5; line-height: 1.6; }
 
-    .btn { display: inline-block; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
-    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 20px; }
+    .empty-state { text-align: center; padding: 80px 0; font-size: 14px; color: #93aecf; }
 
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 36px; padding-bottom: 20px; }
-    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
-    .page-btn { padding: 9px 15px; border-radius: 8px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
-    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
-    @media (max-width: 900px) { .project-grid { grid-template-columns: repeat(2, 1fr); } }
+    .board-footer {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 32px 20px;
+        border-top: 1px solid rgba(37,99,235,.06); flex-shrink: 0;
+    }
+    .board-total { font-size: 13px; color: #4a6fa5; font-weight: 500; }
+    .board-total strong { color: #1e3a6e; font-weight: 700; }
+    .paging { display: flex; align-items: center; gap: 4px; }
+    .page-btn {
+        min-width: 34px; height: 34px; padding: 0 10px; border-radius: 10px; font-size: 13px; font-weight: 600;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
+        text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+        transition: all .15s;
+    }
+    .page-btn:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .page-arrow { color: #93aecf; }
+    .page-info { font-size: 13px; color: #4a6fa5; font-weight: 600; padding: 0 8px; }
+
+    @media (max-width: 960px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .board-header, .board-tabs, .board-toolbar, .project-body, .board-footer { padding-left: 18px; padding-right: 18px; }
+        .project-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 600px) { .project-grid { grid-template-columns: 1fr; } }
 </style>
 
-<div class="page-header">
-    <div class="page-header-inner">
-        <h1 class="page-title">프로젝트 목록</h1>
-        <p class="page-desc">등록된 프로젝트를 확인하고 제안서를 보내보세요.</p>
-    </div>
-</div>
+<section class="page-wrap">
+    <div class="board-card">
 
-<section class="list-section">
-    <div class="list-inner">
-        <div class="list-action">
-            <span class="list-count">총 <strong>{{totalCount}}</strong>개의 프로젝트</span>
-            <a href="/projects/save-form" class="btn btn-primary btn-sm">프로젝트 등록</a>
+        <!-- 헤더 -->
+        <div class="board-header">
+            <div>
+                <h1 class="board-title">프로젝트 목록</h1>
+                <p class="board-desc">등록된 프로젝트를 확인하고 제안서를 보내보세요.</p>
+            </div>
+            <a href="/projects/save-form" class="btn-write">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2v-6Z"/></svg>
+                프로젝트 등록
+            </a>
         </div>
 
+        <!-- 카테고리 탭 -->
+        <div class="board-tabs">
+            <button type="button" onclick="resetFilters()" class="board-tab {{#isAll}}active{{/isAll}}">전체</button>
+            <button type="button" onclick="addFilter('category', 'WEB')"   class="board-tab {{#isWeb}}active{{/isWeb}}">웹개발</button>
+            <button type="button" onclick="addFilter('category', 'APP')"   class="board-tab {{#isApp}}active{{/isApp}}">앱개발</button>
+            <button type="button" onclick="addFilter('category', 'UI_UX')" class="board-tab {{#isUiux}}active{{/isUiux}}">UI/UX</button>
+            <button type="button" onclick="addFilter('category', 'DATA')"  class="board-tab {{#isData}}active{{/isData}}">데이터</button>
+            <button type="button" onclick="addFilter('category', 'VIDEO')" class="board-tab {{#isVideo}}active{{/isVideo}}">영상편집</button>
+            <button type="button" onclick="addFilter('category', 'ETC')"   class="board-tab {{#isEtc}}active{{/isEtc}}">기타</button>
+        </div>
+
+        <!-- 검색 + 낙찰완료 필터 -->
         <form action="/projects" method="GET">
-            <div class="search-bar">
-                <input type="text" name="keyword" class="search-input" placeholder="프로젝트 키워드로 검색..." value="{{keyword}}" />
-                <button type="submit" class="search-btn">검색</button>
+            <div class="board-toolbar">
+                <div class="search-wrap">
+                    <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/></svg>
+                    <input type="text" name="keyword" class="board-search-input" placeholder="프로젝트 키워드로 검색..." value="{{keyword}}" />
+                </div>
+                <button type="submit" class="filter-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    검색
+                </button>
+                <button type="button" onclick="addFilter('statusFilter', 'CLOSED')" class="filter-btn {{#isClosedFilter}}active{{/isClosedFilter}}">
+                    🔒 낙찰 완료 건
+                </button>
             </div>
         </form>
 
-        <div class="filter-tabs">
-            <button type="button" onclick="resetFilters()" class="tab {{#isAll}}active{{/isAll}}">전체</button>
-            <button type="button" onclick="addFilter('category', 'WEB')"  class="tab {{#isWeb}}active{{/isWeb}}">웹개발</button>
-            <button type="button" onclick="addFilter('category', 'APP')"  class="tab {{#isApp}}active{{/isApp}}">앱개발</button>
-            <button type="button" onclick="addFilter('category', 'UI_UX')" class="tab {{#isUiux}}active{{/isUiux}}">UI/UX</button>
-            <button type="button" onclick="addFilter('category', 'DATA')"  class="tab {{#isData}}active{{/isData}}">데이터</button>
-            <button type="button" onclick="addFilter('category', 'VIDEO')" class="tab {{#isVideo}}active{{/isVideo}}">영상편집</button>
-            <button type="button" onclick="addFilter('category', 'ETC')"   class="tab {{#isEtc}}active{{/isEtc}}">기타</button>
-            <button type="button" onclick="addFilter('statusFilter', 'CLOSED')"       class="tab {{#isClosedFilter}}active{{/isClosedFilter}}">🔒 낙찰 완료 건</button>
-            <button type="button" onclick="addFilter('bidFilter', 'CERTIFIED_ONLY')"  class="tab {{#isCertifiedOnly}}active{{/isCertifiedOnly}}">⭐ 인증 전문가만</button>
-        </div>
-
-        <div class="project-grid">
-            {{#projects}}
-            <article class="project-card">
-                <a href="/projects/{{id}}" class="project-card-link">
-                    <div class="project-card-top">
-                        <span class="project-category">{{categoryName}}</span>
-                        {{#isCertifiedOnly}}<span class="badge-certified">⭐ 인증 전문가만</span>{{/isCertifiedOnly}}
-                    </div>
-                    <h3 class="project-title">{{title}}</h3>
-                    <p class="project-desc">{{description}}</p>
-                </a>
-            </article>
+        <!-- 프로젝트 그리드 -->
+        <div class="project-body">
+            <div class="project-grid">
+                {{#projects}}
+                    <article class="project-card">
+                        <a href="/projects/{{id}}" class="project-card-link">
+                            <div class="project-card-top">
+                                <span class="project-category">{{categoryName}}</span>
+                            </div>
+                            <h3 class="project-title">{{title}}</h3>
+                            <p class="project-desc">{{description}}</p>
+                        </a>
+                    </article>
+                {{/projects}}
+            </div>
+            {{^projects}}
+                <div class="empty-state">등록된 프로젝트가 없습니다.</div>
             {{/projects}}
         </div>
 
-        <div class="pagination">
-            {{^isFirst}}<a href="?page={{prevPage}}&size=6" class="page-btn">이전</a>{{/isFirst}}
-            <span class="page-info">{{displayPage}} / {{totalPages}}</span>
-            {{^isLast}}<a href="?page={{nextPage}}&size=6" class="page-btn">다음</a>{{/isLast}}
+        <!-- 푸터 -->
+        <div class="board-footer">
+            <span class="board-total">총 <strong>{{totalCount}}</strong>개의 프로젝트</span>
+            <div class="paging">
+                {{^isFirst}}
+                    <a href="?page={{prevPage}}&size=6" class="page-btn page-arrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </a>
+                {{/isFirst}}
+                <span class="page-info">{{displayPage}} / {{totalPages}}</span>
+                {{^isLast}}
+                    <a href="?page={{nextPage}}&size=6" class="page-btn page-arrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </a>
+                {{/isLast}}
+            </div>
         </div>
 
     </div>

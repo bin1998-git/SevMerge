@@ -1,419 +1,162 @@
 {{>layout/header}}
-
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
-
 <style>
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
-    }
-
-    .sf-wrap { font-family: 'Space Grotesk', sans-serif; }
-
-    /* ── Hero ── */
-    .sf-hero {
-        background: var(--brand-white);
-        border-bottom: 1px solid var(--brand-line);
-        padding: 48px 28px 36px;
-        text-align: center;
-    }
-
-    .sf-eyebrow {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .2em;
-        text-transform: uppercase;
-        color: var(--brand-muted);
-        margin-bottom: 12px;
-    }
-
-    .sf-hero-icon {
-        width: 56px;
-        height: 56px;
-        margin: 0 auto 16px;
-        border-radius: 16px;
-        background: #dde8ff;
-        color: var(--brand-blue);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .sf-hero-icon svg { width: 28px; height: 28px; }
-
-    .sf-hero h1 {
-        font-size: 30px;
-        font-weight: 700;
-        color: var(--brand-ink);
-        letter-spacing: -.02em;
-        margin-bottom: 8px;
-        line-height: 1.2;
-    }
-
-    .sf-hero p {
-        font-size: 14px;
-        color: var(--brand-muted);
-        font-weight: 500;
-    }
-
-    /* ── Content ── */
-    .sf-content-bg {
-        background: var(--brand-mist);
-    }
-
-    .sf-content {
-        max-width: 980px;
-        margin: 0 auto;
-        padding: 36px 28px 80px;
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 24px;
-        align-items: start;
-    }
-
-    /* ── Form Card ── */
-    .sf-card {
-        background: var(--brand-white);
-        border: 1px solid var(--brand-line);
-        border-radius: 16px;
-        padding: 32px;
-    }
-
-    .sf-card-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--brand-ink);
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .sf-card-title::before {
-        content: "";
-        display: block;
-        width: 4px;
-        height: 16px;
-        background: var(--brand-blue);
-        border-radius: 2px;
-        flex-shrink: 0;
-    }
-
-    .sf-group { margin-bottom: 20px; }
-
-    .sf-label-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 7px;
-    }
-
-    .sf-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--brand-slate);
-    }
-
-    .sf-required {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--brand-blue);
-        letter-spacing: .05em;
-    }
-
-    .sf-input,
-    .sf-textarea {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 11px 14px;
-        border: 1.5px solid var(--brand-line);
-        border-radius: 8px;
-        font-size: 13.5px;
-        color: var(--brand-ink);
-        font-family: 'Space Grotesk', sans-serif;
-        background: var(--brand-white);
-        transition: border-color 0.15s, box-shadow 0.15s;
-    }
-
-    .sf-input:focus,
-    .sf-textarea:focus {
-        outline: none;
-        border-color: var(--brand-blue);
-        box-shadow: 0 0 0 3px #dde8ff;
-    }
-
-    .sf-textarea {
-        resize: vertical;
-        line-height: 1.7;
-    }
-
-    .sf-divider {
-        border: none;
-        border-top: 1px solid var(--brand-line);
-        margin: 24px 0;
-    }
-
-    .sf-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .sf-btn-primary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        flex: 1;
-        padding: 12px 22px;
-        border-radius: 8px;
-        background: var(--brand-blue);
-        color: #fff;
-        font-size: 13.5px;
-        font-weight: 700;
-        font-family: 'Space Grotesk', sans-serif;
-        border: none;
-        cursor: pointer;
-        transition: background 0.15s;
-    }
-
-    .sf-btn-primary:hover { background: var(--brand-blue-deep); }
-
-    .sf-btn-secondary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 12px 22px;
-        border-radius: 8px;
-        background: var(--brand-white);
-        color: var(--brand-slate);
-        font-size: 13.5px;
-        font-weight: 700;
-        font-family: 'Space Grotesk', sans-serif;
-        border: 1.5px solid var(--brand-line);
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.15s;
-    }
-
-    .sf-btn-secondary:hover {
-        background: var(--brand-mist);
-        border-color: var(--brand-muted);
-    }
-
-    /* ── Sidebar ── */
-    .sf-sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .sf-side-card {
-        background: var(--brand-white);
-        border: 1px solid var(--brand-line);
-        border-radius: 14px;
-        padding: 20px;
-    }
-
-    .sf-side-title {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: var(--brand-blue);
-        margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .sf-side-title svg {
-        width: 13px;
-        height: 13px;
-    }
-
-    .sf-tip-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .sf-tip-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        font-size: 12.5px;
-        color: var(--brand-slate);
-        line-height: 1.55;
-    }
-
-    .sf-tip-list li .tip-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--brand-blue);
-        flex-shrink: 0;
-        margin-top: 6px;
-    }
-
-    .sf-notice-card {
-        background: #dde8ff;
-        border: 1px solid #b8ccff;
-        border-radius: 14px;
-        padding: 18px 20px;
-    }
-
-    .sf-notice-title {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: var(--brand-blue);
-        margin-bottom: 10px;
-    }
-
-    .sf-notice-body {
-        font-size: 12.5px;
-        color: var(--brand-slate);
-        line-height: 1.6;
-    }
-
-    .sf-notice-body strong {
-        color: var(--brand-ink);
-        font-weight: 700;
-    }
-
-    @media (max-width: 768px) {
-        .sf-content { grid-template-columns: 1fr; }
-        .sf-sidebar { display: none; }
-    }
-
     body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
-    .sf-hero { backdrop-filter: blur(20px); background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6); }
-    .sf-content-bg { background: rgba(176,200,232,.25); backdrop-filter: blur(8px); }
-    .sf-card { backdrop-filter: blur(16px); background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85); box-shadow: 0 8px 32px rgba(37,99,235,.08); }
-    .sf-input, .sf-textarea { background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); color: #1e3a6e; }
-    .sf-input:focus, .sf-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
-    .sf-side-card { backdrop-filter: blur(12px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); }
-    .sf-notice-card { background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2); }
-    .sf-btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 4px 14px rgba(37,99,235,.3); border-radius: 20px; }
-    .sf-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-    .sf-btn-secondary { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; border-radius: 20px; }
-    .sf-btn-secondary:hover { background: rgba(255,255,255,.9); }
+
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
+    }
+    .faq-card {
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52); border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
+    }
+    .faq-card form { flex: 1; display: flex; flex-direction: column; }
+
+    /* 헤더 */
+    .faq-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 26px 36px 20px; border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .faq-header-left { display: flex; align-items: center; gap: 14px; }
+    .btn-back {
+        width: 36px; height: 36px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        display: flex; align-items: center; justify-content: center;
+        color: #4a6fa5; text-decoration: none; transition: all .15s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .faq-title { font-size: 20px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; }
+    .faq-desc { font-size: 13px; color: #4a6fa5; margin-top: 2px; }
+
+    /* 폼 바디: board-save와 동일한 2컬럼 행 배치 */
+    .faq-body { flex: 1; }
+    .form-row {
+        display: grid; grid-template-columns: 160px 1fr;
+        align-items: flex-start; padding: 20px 36px;
+        border-bottom: 1px solid rgba(37,99,235,.06); transition: background .15s;
+    }
+    .form-row:focus-within { background: rgba(37,99,235,.02); }
+    .form-row-label { display: flex; align-items: center; gap: 10px; padding-top: 13px; flex-shrink: 0; }
+    .form-label-text { font-size: 14px; font-weight: 700; color: #1e3a6e; display: flex; align-items: center; gap: 4px; }
+    .form-required { color: #ef4444; font-size: 13px; }
+
+    .form-input {
+        width: 100%; padding: 12px 16px; background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .18s; box-sizing: border-box;
+    }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.9); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-textarea { resize: vertical; min-height: 280px; line-height: 1.8; }
+
+    /* 사이드 팁 (오른쪽에 인라인으로) */
+    .form-row-with-tip { display: grid; grid-template-columns: 160px 1fr 220px; align-items: flex-start; padding: 20px 36px; border-bottom: 1px solid rgba(37,99,235,.06); gap: 20px; }
+    .form-tip-card {
+        backdrop-filter: blur(8px); background: rgba(239,246,255,.6);
+        border: 1px solid rgba(37,99,235,.15); border-radius: 14px; padding: 14px 16px;
+        font-size: 12px; color: #4a6fa5; line-height: 1.6; align-self: flex-start; margin-top: 4px;
+    }
+    .form-tip-title { font-size: 11px; font-weight: 700; color: #2563eb; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+    .tip-item { display: flex; gap: 6px; margin-bottom: 5px; }
+    .tip-dot { width: 4px; height: 4px; border-radius: 50%; background: #2563eb; flex-shrink: 0; margin-top: 6px; }
+
+    /* 푸터 */
+    .faq-footer {
+        display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+        padding: 18px 36px 24px; border-top: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .btn-cancel {
+        padding: 11px 24px; border-radius: 20px; font-size: 14px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a;
+        text-decoration: none; cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-submit {
+        padding: 11px 28px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+
+    @media (max-width: 960px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .faq-header, .form-row, .form-row-with-tip, .faq-footer { padding-left: 18px; padding-right: 18px; }
+        .form-row, .form-row-with-tip { grid-template-columns: 1fr; gap: 8px; }
+        .form-row-label { padding-top: 0; }
+        .form-tip-card { display: none; }
+    }
 </style>
 
-<div class="sf-wrap">
+<section class="page-wrap">
+    <div class="faq-card">
 
-    <section class="sf-hero">
-        <div class="sf-eyebrow">FAQ Management</div>
-        <div class="sf-hero-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <!-- 헤더 -->
+        <div class="faq-header">
+            <div class="faq-header-left">
+                <a href="/policys/faq" class="btn-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </a>
+                <div>
+                    <div class="faq-title">FAQ 등록</div>
+                    <div class="faq-desc">자주 묻는 질문과 답변을 새로 추가합니다.</div>
+                </div>
+            </div>
         </div>
-        <h1>FAQ 등록</h1>
-        <p>자주 묻는 질문과 답변을 새로 추가합니다.</p>
-    </section>
 
-    <div class="sf-content-bg">
-        <div class="sf-content">
+        <!-- 폼 -->
+        <form action="/faqs/save" method="post">
+            <div class="faq-body">
 
-            <!-- 폼 -->
-            <div class="sf-card">
-                <h2 class="sf-card-title">새 FAQ 작성</h2>
-                <form action="/faqs/save" method="post">
-                    <div class="sf-group">
-                        <div class="sf-label-row">
-                            <span class="sf-label">질문</span>
-                            <span class="sf-required">REQUIRED</span>
-                        </div>
-                        <input class="sf-input" type="text" name="question"
-                               placeholder="사용자가 자주 묻는 질문을 입력하세요" required>
+                <!-- 질문 -->
+                <div class="form-row-with-tip">
+                    <div class="form-row-label">
+                        <span class="form-label-text">질문 <span class="form-required">*</span></span>
                     </div>
-                    <div class="sf-group">
-                        <div class="sf-label-row">
-                            <span class="sf-label">답변</span>
-                            <span class="sf-required">REQUIRED</span>
-                        </div>
-                        <textarea class="sf-textarea" name="answer" rows="8"
-                                  placeholder="질문에 대한 상세한 답변을 입력하세요" required></textarea>
+                    <input type="text" name="question" class="form-input" placeholder="사용자가 자주 묻는 질문을 입력하세요" required/>
+                    <div class="form-tip-card">
+                        <div class="form-tip-title">질문 작성 팁</div>
+                        <div class="tip-item"><span class="tip-dot"></span>사용자 관점으로 간결하게</div>
+                        <div class="tip-item"><span class="tip-dot"></span>구체적인 상황 중심으로</div>
                     </div>
-                    <hr class="sf-divider">
-                    <div class="sf-actions">
-                        <a href="/policys/faq" class="sf-btn-secondary">
-                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-                                <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            취소
-                        </a>
-                        <button type="submit" class="sf-btn-primary">
-                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-                                <path d="M4 10L8.5 14.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            등록하기
-                        </button>
+                </div>
+
+                <!-- 답변 -->
+                <div class="form-row-with-tip">
+                    <div class="form-row-label" style="padding-top:13px;">
+                        <span class="form-label-text">답변 <span class="form-required">*</span></span>
                     </div>
-                </form>
+                    <textarea name="answer" class="form-input form-textarea" placeholder="질문에 대한 상세한 답변을 입력하세요" required></textarea>
+                    <div class="form-tip-card" style="margin-top:4px;">
+                        <div class="form-tip-title">답변 작성 팁</div>
+                        <div class="tip-item"><span class="tip-dot"></span>핵심을 먼저, 부연은 뒤에</div>
+                        <div class="tip-item"><span class="tip-dot"></span>전문 용어는 쉽게 풀어서</div>
+                        <div class="tip-item"><span class="tip-dot"></span>줄바꿈으로 가독성 향상</div>
+                        <div class="tip-item"><span class="tip-dot"></span>등록 즉시 공개됩니다</div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- 사이드바 -->
-            <aside class="sf-sidebar">
-                <div class="sf-side-card">
-                    <div class="sf-side-title">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
-                            <path d="M10 9v5M10 6.5v.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                        </svg>
-                        작성 가이드
-                    </div>
-                    <ul class="sf-tip-list">
-                        <li><span class="tip-dot"></span>질문은 사용자 관점으로 간결하게 작성하세요.</li>
-                        <li><span class="tip-dot"></span>답변은 핵심 내용을 먼저 작성하고 부연 설명을 뒤에 추가하세요.</li>
-                        <li><span class="tip-dot"></span>전문 용어 사용 시 괄호 안에 설명을 덧붙이세요.</li>
-                        <li><span class="tip-dot"></span>줄바꿈을 활용해 답변의 가독성을 높이세요.</li>
-                    </ul>
-                </div>
+            <!-- 푸터 -->
+            <div class="faq-footer">
+                <a href="/policys/faq" class="btn-cancel">취소</a>
+                <button type="submit" class="btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    등록하기
+                </button>
+            </div>
+        </form>
 
-                <div class="sf-notice-card">
-                    <div class="sf-notice-title">등록 후 안내</div>
-                    <div class="sf-notice-body">
-                        등록된 FAQ는 <strong>즉시 공개</strong>됩니다.<br>
-                        내용 수정이 필요하면 FAQ 목록에서 수정 버튼을 이용하세요.
-                    </div>
-                </div>
-
-                <div class="sf-side-card">
-                    <div class="sf-side-title">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 5h14M3 10h9M3 15h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                        </svg>
-                        카테고리 예시
-                    </div>
-                    <ul class="sf-tip-list">
-                        <li><span class="tip-dot"></span>결제 / 환불 관련</li>
-                        <li><span class="tip-dot"></span>계정 및 프로필 관리</li>
-                        <li><span class="tip-dot"></span>프로젝트 진행 방법</li>
-                        <li><span class="tip-dot"></span>수수료 및 정산 안내</li>
-                    </ul>
-                </div>
-            </aside>
-
-        </div>
     </div>
-
-</div><!-- /sf-wrap -->
+</section>
 
 {{>layout/footer}}

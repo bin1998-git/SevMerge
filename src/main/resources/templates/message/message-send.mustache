@@ -1,485 +1,374 @@
 {{> layout/header}}
-
 <style>
-    body {
-        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
-        background-attachment: fixed;
-        color: #1e293b;
-        line-height: 1.6;
-    }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    /* ══ 배경 글로우 ══ */
-    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
-    .bg-glow-1 {
-        width: 600px; height: 600px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%);
-        top: -150px; left: -150px;
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
     }
-    .bg-glow-2 {
-        width: 500px; height: 500px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%);
-        bottom: 10%; right: -100px;
-    }
-    .bg-glow-3 {
-        width: 400px; height: 400px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,200,224,.08) 0%, transparent 70%);
-        top: 40%; left: 30%;
-    }
-
-    .send-section { padding: 48px 28px 80px; position: relative; z-index: 1; }
-    .send-inner { max-width: 680px; margin: 0 auto; }
-
-    /* ── 뒤로가기 ── */
-    .back-link {
-        display: inline-flex; align-items: center; gap: 6px;
-        font-size: 13px; color: #9ca3af; text-decoration: none;
-        margin-bottom: 20px; font-weight: 500; transition: color .15s;
-    }
-    .back-link:hover { color: #2563eb; }
-
-    /* ── 메인 카드 ── */
     .send-card {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.6);
-        border-radius: 22px;
-        border: 1.5px solid rgba(255,255,255,.85);
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.9);
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
     }
+    .send-card form { flex: 1; display: flex; flex-direction: column; }
+
+    /* 헤더 */
     .send-header {
-        padding: 28px 32px 20px;
-        border-bottom: 1px solid rgba(255,255,255,.6);
-        background: rgba(176,200,232,.15);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 26px 36px 20px; border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
     }
-    .send-title { font-size: 20px; font-weight: 800; color: #1c1e26; }
-    .send-desc { font-size: 13px; color: #9ca3af; margin-top: 4px; }
-    .send-body { padding: 28px 32px; }
+    .send-header-left { display: flex; align-items: center; gap: 14px; }
+    .btn-back {
+        width: 36px; height: 36px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        display: flex; align-items: center; justify-content: center;
+        color: #4a6fa5; text-decoration: none; transition: all .15s; flex-shrink: 0;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .send-title { font-size: 20px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; }
+    .send-desc { font-size: 13px; color: #4a6fa5; margin-top: 2px; }
 
-    /* ── 폼 ── */
-    .form-group { margin-bottom: 20px; }
-    .form-label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 7px; }
-    .form-label .required { color: #ef4444; margin-left: 2px; }
+    /* 폼 바디 */
+    .send-body { flex: 1; }
+    .form-row {
+        display: grid; grid-template-columns: 160px 1fr;
+        align-items: flex-start; padding: 18px 36px;
+        border-bottom: 1px solid rgba(37,99,235,.06); transition: background .15s;
+    }
+    .form-row:focus-within { background: rgba(37,99,235,.02); }
+    .form-row-label {
+        display: flex; align-items: center; gap: 10px; padding-top: 13px; flex-shrink: 0;
+    }
+    .form-label-text { font-size: 14px; font-weight: 700; color: #1e3a6e; display: flex; align-items: center; gap: 4px; }
+    .form-required { color: #ef4444; font-size: 13px; }
+
     .form-input {
-        width: 100%; padding: 11px 14px;
-        backdrop-filter: blur(4px);
-        background: rgba(255,255,255,.7);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26;
-        outline: none; box-sizing: border-box;
-        transition: border-color .15s, background .15s;
+        width: 100%; padding: 12px 16px; background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .18s; box-sizing: border-box;
     }
-    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.95); }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-textarea { resize: vertical; min-height: 140px; }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.9); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-textarea { resize: vertical; min-height: 260px; line-height: 1.8; }
 
-    /* ── 받는 사람 커스텀 드롭다운 ── */
+    /* 받는 사람 커스텀 드롭다운 */
     .contact-select-wrap { position: relative; }
     .contact-trigger {
-        width: 100%; padding: 11px 14px;
-        backdrop-filter: blur(4px);
-        background: rgba(255,255,255,.7);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 9px; font-size: 14px; font-family: inherit; color: #9ca3af;
+        width: 100%; padding: 12px 16px; background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #93aecf;
         cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-        box-sizing: border-box; transition: border-color .15s, background .15s; user-select: none;
+        box-sizing: border-box; transition: all .15s; user-select: none;
     }
-    .contact-trigger.has-value { color: #1c1e26; }
+    .contact-trigger.has-value { color: #1e3a6e; }
     .contact-trigger:hover, .contact-trigger.open { border-color: #2563eb; background: rgba(255,255,255,.9); }
-    .contact-arrow { font-size: 11px; color: #9ca3af; transition: transform .15s; flex-shrink: 0; margin-left: 8px; }
+    .contact-arrow { font-size: 11px; color: #93aecf; transition: transform .15s; }
     .contact-trigger.open .contact-arrow { transform: rotate(180deg); }
-
     .contact-dropdown {
         position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        background: rgba(255,255,255,.85);
-        border: 1.5px solid rgba(255,255,255,.9);
-        border-radius: 12px;
+        backdrop-filter: blur(20px); background: rgba(255,255,255,.9);
+        border: 1.5px solid rgba(255,255,255,.9); border-radius: 16px;
         box-shadow: 0 8px 32px rgba(37,99,235,.12);
-        z-index: 100; overflow: hidden; display: none;
-        max-height: 280px; overflow-y: auto;
+        z-index: 100; overflow: hidden; display: none; max-height: 280px; overflow-y: auto;
     }
     .contact-dropdown.open { display: block; }
-    .contact-item {
-        padding: 12px 16px; cursor: pointer;
-        border-bottom: 1px solid rgba(255,255,255,.6);
-        transition: background .1s;
-    }
+    .contact-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(37,99,235,.06); transition: background .1s; }
     .contact-item:last-child { border-bottom: none; }
-    .contact-item:hover { background: rgba(239,246,255,.6); }
-    .contact-item-name { font-size: 14px; font-weight: 600; color: #1c1e26; display: flex; align-items: center; gap: 8px; }
-    .contact-item-project { font-size: 12px; color: #9ca3af; margin-top: 3px; }
-    .badge-selected {
-        font-size: 10px;
-        backdrop-filter: blur(4px);
-        background: rgba(254,243,199,.8); color: #d97706;
-        border: 1px solid rgba(253,230,138,.6);
-        padding: 2px 7px; border-radius: 5px; font-weight: 700;
-    }
-    .contact-empty { padding: 24px 16px; text-align: center; font-size: 13px; color: #c4c9d9; }
+    .contact-item:hover { background: rgba(239,246,255,.7); }
+    .contact-item-name { font-size: 14px; font-weight: 700; color: #1e3a6e; display: flex; align-items: center; gap: 8px; }
+    .contact-item-project { font-size: 12px; color: #4a6fa5; margin-top: 3px; }
+    .badge-selected { font-size: 10px; background: rgba(254,243,199,.9); color: #d97706; border: 1px solid rgba(253,230,138,.7); padding: 2px 7px; border-radius: 5px; font-weight: 700; }
+    .contact-empty { padding: 28px 16px; text-align: center; font-size: 13px; color: #93aecf; }
 
-    /* ── 액션 버튼 영역 ── */
-    .send-actions {
-        padding: 20px 32px;
-        border-top: 1px solid rgba(255,255,255,.6);
-        display: flex; gap: 10px; justify-content: flex-end;
-    }
-    .btn { display: inline-flex; align-items: center; justify-content: center; font-family: inherit; cursor: pointer; text-decoration: none; transition: all .15s; }
-    .btn-sm { padding: 10px 22px; font-size: 13px; border-radius: 8px; }
-    .btn-cancel {
-        backdrop-filter: blur(8px);
-        background: rgba(255,255,255,.6); color: #6b7280;
-        border: 1.5px solid rgba(255,255,255,.8); font-weight: 700;
-    }
-    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: #93c5fd; color: #2563eb; }
-    .btn-primary {
-        background: #2563eb; color: #fff; border: none; font-weight: 700;
-        box-shadow: 0 4px 12px rgba(37,99,235,.3);
-    }
-    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-
-    /* ── 파일 드롭존 ── */
+    /* 파일 드롭존 */
     .file-dropzone {
-        backdrop-filter: blur(8px);
-        border: 2px dashed rgba(147,197,253,.6);
-        border-radius: 12px; padding: 28px 16px; text-align: center;
-        cursor: pointer;
-        background: rgba(250,251,255,.5);
-        transition: border-color .15s, background .15s;
+        border: 2px dashed rgba(37,99,235,.2); border-radius: 14px; padding: 24px 16px;
+        text-align: center; cursor: pointer; background: rgba(255,255,255,.4); transition: all .2s;
     }
-    .file-dropzone:hover { border-color: #2563eb; background: rgba(239,246,255,.5); }
-    .file-dropzone.dragover { border-color: #2563eb; background: rgba(238,243,255,.7); }
-    .file-dropzone-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
-    .file-dropzone-icon { font-size: 26px; }
-    .file-dropzone-text { font-size: 13px; color: #6b7280; }
-    .file-dropzone.dragover .file-dropzone-text { color: #2563eb; font-weight: 700; }
+    .file-dropzone:hover { border-color: #2563eb; background: rgba(239,246,255,.6); }
+    .file-dropzone.dragover { border-color: #2563eb; background: rgba(239,246,255,.8); transform: scale(1.01); }
+    .file-dropzone-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+    .file-dropzone-text { font-size: 13px; color: #4a6fa5; }
     .file-add-btn {
         pointer-events: auto; margin-top: 4px; padding: 7px 16px;
         font-size: 13px; font-weight: 700; color: #2563eb;
-        backdrop-filter: blur(4px);
-        background: rgba(255,255,255,.8);
-        border: 1.5px solid rgba(199,210,254,.7);
-        border-radius: 7px; cursor: pointer; font-family: inherit;
-        transition: all .15s;
+        backdrop-filter: blur(4px); background: rgba(255,255,255,.8);
+        border: 1.5px solid rgba(37,99,235,.2); border-radius: 20px;
+        cursor: pointer; font-family: inherit; transition: all .15s;
     }
-    .file-add-btn:hover { background: rgba(238,243,255,.9); border-color: #2563eb; }
-    .file-hint { font-size: 12px; color: #9ca3af; margin: 8px 2px 0; }
-
-    /* ── 파일 리스트 ── */
-    .file-list { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; }
+    .file-add-btn:hover { background: rgba(239,246,255,.9); }
+    .file-hint { font-size: 11px; color: #93aecf; margin-top: 6px; }
+    .file-list { list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 6px; }
     .file-item {
-        display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-        backdrop-filter: blur(8px);
-        background: rgba(255,255,255,.65);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 9px;
-        transition: background .15s;
+        display: flex; align-items: center; gap: 10px; padding: 8px 14px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 10px;
     }
-    .file-item:hover { background: rgba(255,255,255,.85); }
-    .file-thumb { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: rgba(243,244,248,.8); }
-    .file-thumb-icon {
-        width: 36px; height: 36px; border-radius: 6px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 18px; background: rgba(243,244,248,.8); flex-shrink: 0;
-    }
+    .file-thumb { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .file-thumb-icon { width: 32px; height: 32px; border-radius: 6px; background: rgba(239,246,255,.8); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; color: #2563eb; }
     .file-meta { flex: 1; min-width: 0; }
-    .file-name { font-size: 13px; font-weight: 600; color: #1c1e26; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .file-size { font-size: 11px; color: #9ca3af; margin-top: 2px; }
-    .file-remove {
-        flex-shrink: 0; width: 24px; height: 24px; border: none;
-        background: rgba(243,244,248,.8); color: #6b7280;
-        border-radius: 6px; cursor: pointer; font-size: 14px; line-height: 1;
-        display: flex; align-items: center; justify-content: center;
-        transition: all .15s;
-    }
-    .file-remove:hover { background: rgba(254,226,226,.8); color: #ef4444; }
-</style>
+    .file-name { font-size: 13px; font-weight: 600; color: #1e3a6e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-size { font-size: 11px; color: #93aecf; margin-top: 2px; }
+    .file-remove { flex-shrink: 0; background: none; border: none; color: #93aecf; cursor: pointer; font-size: 16px; transition: color .15s; padding: 2px; }
+    .file-remove:hover { color: #ef4444; }
 
-<!-- 배경 글로우 -->
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-2"></div>
-<div class="bg-glow bg-glow-3"></div>
+    /* 푸터 버튼 */
+    .send-footer {
+        display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+        padding: 18px 36px 24px; border-top: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .btn-cancel {
+        padding: 11px 24px; border-radius: 20px; font-size: 14px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a;
+        text-decoration: none; cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-submit {
+        padding: 11px 28px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+
+    @media (max-width: 640px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .send-header, .form-row, .send-footer { padding-left: 18px; padding-right: 18px; }
+        .form-row { grid-template-columns: 1fr; gap: 8px; }
+        .form-row-label { padding-top: 0; }
+    }
+</style>
 
 <div id="contacts-data" style="display:none;">
     {{#contacts}}
-    <div class="contact-entry"
-         data-receiver-id="{{receiverId}}"
-         data-receiver-name="{{receiverName}}"
-         data-project-id="{{projectId}}"
-         data-project-title="{{projectTitle}}"
-         data-selected="{{selected}}"></div>
+        <div class="contact-entry"
+             data-receiver-id="{{receiverId}}"
+             data-receiver-name="{{receiverName}}"
+             data-project-id="{{projectId}}"
+             data-project-title="{{projectTitle}}"
+             data-selected="{{selected}}"></div>
     {{/contacts}}
 </div>
 
-<section class="send-section">
-    <div class="send-inner">
+<section class="page-wrap">
+    <div class="send-card">
 
-        <a href="javascript:history.back()" class="back-link">← 뒤로 가기</a>
-
-        <div class="send-card">
-            <div class="send-header">
-                <p class="send-title">쪽지 보내기</p>
-                <p class="send-desc">입찰이 완료된 프로젝트의 상대방에게 쪽지를 보낼 수 있습니다.</p>
+        <!-- 헤더 -->
+        <div class="send-header">
+            <div class="send-header-left">
+                <a href="javascript:history.back()" class="btn-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </a>
+                <div>
+                    <div class="send-title">쪽지 보내기</div>
+                    <div class="send-desc">입찰이 완료된 프로젝트의 상대방에게 쪽지를 보낼 수 있습니다.</div>
+                </div>
             </div>
+        </div>
+
+        <!-- 폼 -->
+        <form action="/messages/send" method="POST" id="send-form" enctype="multipart/form-data">
+            <input type="hidden" name="receiverId" id="receiverId"/>
+            <input type="hidden" name="projectId" id="projectId"/>
 
             <div class="send-body">
-                <form action="/messages/send" method="POST" id="send-form" enctype="multipart/form-data">
-                    <input type="hidden" name="receiverId" id="receiverId" />
-                    <input type="hidden" name="projectId" id="projectId" />
 
-                    <div class="form-group">
-                        <label class="form-label">받는 사람 <span class="required">*</span></label>
-                        <div class="contact-select-wrap">
-                            <div class="contact-trigger" id="contact-trigger">
-                                <span id="contact-trigger-text">받는 사람을 선택하세요</span>
-                                <span class="contact-arrow">▼</span>
-                            </div>
-                            <div class="contact-dropdown" id="contact-dropdown"></div>
+                <!-- 받는 사람 -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <span class="form-label-text">받는 사람 <span class="form-required">*</span></span>
+                    </div>
+                    <div class="contact-select-wrap">
+                        <div class="contact-trigger" id="contact-trigger">
+                            <span id="contact-trigger-text">받는 사람을 선택하세요</span>
+                            <span class="contact-arrow">▼</span>
                         </div>
+                        <div class="contact-dropdown" id="contact-dropdown"></div>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">제목 <span class="required">*</span></label>
-                        <input type="text" name="title" class="form-input" placeholder="쪽지 제목을 입력하세요." maxlength="100" required />
+                <!-- 제목 -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <span class="form-label-text">제목 <span class="form-required">*</span></span>
                     </div>
+                    <input type="text" name="title" class="form-input" placeholder="쪽지 제목을 입력하세요." maxlength="100" required/>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">내용 <span class="required">*</span></label>
-                        <textarea name="content" class="form-input form-textarea" placeholder="쪽지 내용을 입력하세요." required></textarea>
+                <!-- 내용 -->
+                <div class="form-row">
+                    <div class="form-row-label" style="padding-top:13px;">
+                        <span class="form-label-text">내용 <span class="form-required">*</span></span>
                     </div>
+                    <textarea name="content" class="form-input form-textarea" placeholder="쪽지 내용을 입력하세요." required></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">파일 첨부</label>
+                <!-- 파일 첨부 -->
+                <div class="form-row">
+                    <div class="form-row-label" style="padding-top:13px;">
+                        <span class="form-label-text">파일 첨부</span>
+                    </div>
+                    <div>
                         <div class="file-dropzone" id="file-dropzone">
                             <div class="file-dropzone-inner">
-                                <span class="file-dropzone-icon">📎</span>
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#93aecf" stroke-width="1.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4-4m0 0L8 12m4-4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <span class="file-dropzone-text" id="file-dropzone-text">파일을 이곳에 끌어다 놓으세요</span>
                                 <button type="button" class="file-add-btn" id="file-add-btn">+ 파일 추가</button>
                             </div>
                         </div>
                         <p class="file-hint">최대 5개 · 전체 용량 20MB 이하</p>
-                        <input type="file" name="files" id="file-input" multiple hidden />
+                        <input type="file" name="files" id="file-input" multiple hidden/>
                         <ul class="file-list" id="file-list"></ul>
                     </div>
+                </div>
 
-                    <div class="send-actions">
-                        <a href="javascript:history.back()" class="btn btn-cancel btn-sm">취소</a>
-                        <button type="submit" class="btn btn-primary btn-sm">쪽지 보내기</button>
-                    </div>
-                </form>
             </div>
-        </div>
+
+            <!-- 푸터 버튼 -->
+            <div class="send-footer">
+                <a href="javascript:history.back()" class="btn-cancel">취소</a>
+                <button type="submit" class="btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4v2h16V4ZM4 6H2v14h2V6Zm18 0h-2v14h2V6Zm-4 12H6v2h12v-2Zm-8-6h8v2H10v-2Zm0-4h8v2H10V8Z"/></svg>
+                    쪽지 보내기
+                </button>
+            </div>
+        </form>
 
     </div>
 </section>
 
 <script>
-(function () {
-    const contacts = Array.from(document.querySelectorAll('#contacts-data .contact-entry')).map(el => ({
-        receiverId: el.dataset.receiverId,
-        receiverName: el.dataset.receiverName,
-        projectId: el.dataset.projectId,
-        projectTitle: el.dataset.projectTitle,
-        selected: el.dataset.selected === 'true'
-    }));
+    (function () {
+        const contacts = Array.from(document.querySelectorAll('#contacts-data .contact-entry')).map(el => ({
+            receiverId: el.dataset.receiverId,
+            receiverName: el.dataset.receiverName,
+            projectId: el.dataset.projectId,
+            projectTitle: el.dataset.projectTitle,
+            selected: el.dataset.selected === 'true'
+        }));
+        const trigger = document.getElementById('contact-trigger');
+        const dropdown = document.getElementById('contact-dropdown');
+        const triggerText = document.getElementById('contact-trigger-text');
+        const receiverIdInput = document.getElementById('receiverId');
+        const projectIdInput = document.getElementById('projectId');
 
-    const trigger = document.getElementById('contact-trigger');
-    const dropdown = document.getElementById('contact-dropdown');
-    const triggerText = document.getElementById('contact-trigger-text');
-    const receiverIdInput = document.getElementById('receiverId');
-    const projectIdInput = document.getElementById('projectId');
+        if (contacts.length === 0) {
+            dropdown.innerHTML = '<div class="contact-empty">연락 가능한 상대가 없습니다.<br>먼저 프로젝트 입찰을 진행해보세요.</div>';
+        } else {
+            dropdown.innerHTML = contacts.map((c, i) =>
+                `<div class="contact-item" data-index="${i}">
+                    <div class="contact-item-name">${c.receiverName}${c.selected ? ' <span class="badge-selected">낙찰</span>' : ''}</div>
+                    <div class="contact-item-project">📁 ${c.projectTitle}</div>
+                </div>`
+            ).join('');
+        }
 
-    if (contacts.length === 0) {
-        dropdown.innerHTML = '<div class="contact-empty">연락 가능한 상대가 없습니다.<br>먼저 프로젝트 입찰을 진행해보세요.</div>';
-    } else {
-        dropdown.innerHTML = contacts.map((c, i) =>
-            '<div class="contact-item" data-index="' + i + '">' +
-                '<div class="contact-item-name">' +
-                    c.receiverName +
-                    (c.selected ? ' <span class="badge-selected">낙찰</span>' : '') +
-                '</div>' +
-                '<div class="contact-item-project">📁 ' + c.projectTitle + '</div>' +
-            '</div>'
-        ).join('');
-    }
-
-    function selectContact(c) {
-        receiverIdInput.value = c.receiverId;
-        projectIdInput.value = c.projectId;
-        triggerText.textContent = c.receiverName + ' · ' + c.projectTitle;
-        trigger.classList.add('has-value');
-        closeDropdown();
-    }
-
-    function closeDropdown() {
-        trigger.classList.remove('open');
-        dropdown.classList.remove('open');
-    }
-
-    dropdown.querySelectorAll('.contact-item').forEach(function (item) {
-        item.addEventListener('click', function () {
-            selectContact(contacts[+item.dataset.index]);
-        });
-    });
-
-    trigger.addEventListener('click', function () {
-        trigger.classList.toggle('open');
-        dropdown.classList.toggle('open');
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+        function selectContact(c) {
+            receiverIdInput.value = c.receiverId;
+            projectIdInput.value = c.projectId;
+            triggerText.textContent = c.receiverName + ' · ' + c.projectTitle;
+            trigger.classList.add('has-value');
             closeDropdown();
         }
-    });
-
-    var params = new URLSearchParams(window.location.search);
-    var preReceiverId = params.get('receiverId') || '';
-    var preProjectId = params.get('projectId') || '';
-    if (preReceiverId) {
-        var match = contacts.find(function (c) {
-            return c.receiverId === preReceiverId && (!preProjectId || c.projectId === preProjectId);
-        });
-        if (match) selectContact(match);
-    }
-
-    document.getElementById('send-form').addEventListener('submit', function (e) {
-        if (!receiverIdInput.value) {
-            e.preventDefault();
-            alert('받는 사람을 선택해주세요.');
+        function closeDropdown() {
+            trigger.classList.remove('open');
+            dropdown.classList.remove('open');
         }
-    });
-})();
+
+        dropdown.querySelectorAll('.contact-item').forEach(item => {
+            item.addEventListener('click', () => selectContact(contacts[+item.dataset.index]));
+        });
+        trigger.addEventListener('click', () => {
+            trigger.classList.toggle('open');
+            dropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', e => {
+            if (!trigger.contains(e.target) && !dropdown.contains(e.target)) closeDropdown();
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const preReceiverId = params.get('receiverId') || '';
+        const preProjectId = params.get('projectId') || '';
+        if (preReceiverId) {
+            const match = contacts.find(c => c.receiverId === preReceiverId && (!preProjectId || c.projectId === preProjectId));
+            if (match) selectContact(match);
+        }
+
+        document.getElementById('send-form').addEventListener('submit', e => {
+            if (!receiverIdInput.value) { e.preventDefault(); alert('받는 사람을 선택해주세요.'); }
+        });
+    })();
 </script>
 
 <script>
-(function () {
-    var MAX_FILES = 5;
-    var MAX_TOTAL = 20 * 1024 * 1024;
+    (function () {
+        const MAX_FILES = 5, MAX_TOTAL = 20 * 1024 * 1024;
+        const dropzone = document.getElementById('file-dropzone');
+        const dropText = document.getElementById('file-dropzone-text');
+        const addBtn = document.getElementById('file-add-btn');
+        const input = document.getElementById('file-input');
+        const listEl = document.getElementById('file-list');
+        const defaultText = dropText.textContent;
+        let files = [];
 
-    var dropzone = document.getElementById('file-dropzone');
-    var dropText = document.getElementById('file-dropzone-text');
-    var addBtn = document.getElementById('file-add-btn');
-    var input = document.getElementById('file-input');
-    var listEl = document.getElementById('file-list');
-    var defaultText = dropText.textContent;
+        function fmt(b) { return b < 1024 ? b+'B' : b < 1048576 ? (b/1024).toFixed(1)+'KB' : (b/1048576).toFixed(1)+'MB'; }
+        function total() { return files.reduce((s,f) => s+f.size, 0); }
+        function sync() { const dt = new DataTransfer(); files.forEach(f => dt.items.add(f)); input.files = dt.files; }
 
-    var files = [];
-
-    function formatSize(bytes) {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / 1024 / 1024).toFixed(1) + ' MB';
-    }
-
-    function totalSize() {
-        return files.reduce(function (sum, f) { return sum + f.size; }, 0);
-    }
-
-    function syncInput() {
-        var dt = new DataTransfer();
-        files.forEach(function (f) { dt.items.add(f); });
-        input.files = dt.files;
-    }
-
-    function addFiles(incoming) {
-        var added = false;
-        for (var i = 0; i < incoming.length; i++) {
-            var f = incoming[i];
-            if (files.length >= MAX_FILES) {
-                alert('파일은 최대 ' + MAX_FILES + '개까지 첨부할 수 있습니다.');
-                break;
+        function add(incoming) {
+            let added = false;
+            for (let f of incoming) {
+                if (files.length >= MAX_FILES) { alert('최대 '+MAX_FILES+'개까지 첨부 가능합니다.'); break; }
+                if (files.some(x => x.name===f.name && x.size===f.size)) continue;
+                if (total()+f.size > MAX_TOTAL) { alert('전체 용량은 20MB를 초과할 수 없습니다.'); continue; }
+                files.push(f); added = true;
             }
-            var dup = files.some(function (x) { return x.name === f.name && x.size === f.size; });
-            if (dup) { continue; }
-            if (totalSize() + f.size > MAX_TOTAL) {
-                alert('전체 첨부 용량은 20MB를 초과할 수 없습니다.');
-                continue;
-            }
-            files.push(f);
-            added = true;
+            if (added) { sync(); render(); }
         }
-        if (added) { syncInput(); render(); }
-    }
 
-    function removeFile(index) {
-        files.splice(index, 1);
-        syncInput();
-        render();
-    }
-
-    function render() {
-        listEl.innerHTML = '';
-        files.forEach(function (f, i) {
-            var li = document.createElement('li');
-            li.className = 'file-item';
-
-            if (f.type.indexOf('image/') === 0) {
-                var img = document.createElement('img');
-                img.className = 'file-thumb';
-                img.src = URL.createObjectURL(f);
-                img.onload = function () { URL.revokeObjectURL(img.src); };
-                li.appendChild(img);
-            } else {
-                var icon = document.createElement('div');
-                icon.className = 'file-thumb-icon';
-                icon.textContent = '📄';
-                li.appendChild(icon);
-            }
-
-            var meta = document.createElement('div');
-            meta.className = 'file-meta';
-            var name = document.createElement('div');
-            name.className = 'file-name';
-            name.textContent = f.name;
-            var size = document.createElement('div');
-            size.className = 'file-size';
-            size.textContent = formatSize(f.size);
-            meta.appendChild(name);
-            meta.appendChild(size);
-            li.appendChild(meta);
-
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'file-remove';
-            btn.textContent = '✕';
-            btn.addEventListener('click', function () { removeFile(i); });
-            li.appendChild(btn);
-
-            listEl.appendChild(li);
-        });
-    }
-
-    addBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        input.click();
-    });
-    dropzone.addEventListener('click', function () { input.click(); });
-
-    input.addEventListener('change', function () {
-        if (input.files && input.files.length) {
-            addFiles(Array.prototype.slice.call(input.files));
+        function render() {
+            listEl.innerHTML = '';
+            files.forEach((f, i) => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                if (f.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.className = 'file-thumb'; img.src = URL.createObjectURL(f);
+                    img.onload = () => URL.revokeObjectURL(img.src);
+                    li.appendChild(img);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'file-thumb-icon';
+                    icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>';
+                    li.appendChild(icon);
+                }
+                const meta = document.createElement('div'); meta.className = 'file-meta';
+                const name = document.createElement('div'); name.className = 'file-name'; name.textContent = f.name;
+                const size = document.createElement('div'); size.className = 'file-size'; size.textContent = fmt(f.size);
+                meta.appendChild(name); meta.appendChild(size); li.appendChild(meta);
+                const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'file-remove'; btn.textContent = '✕';
+                btn.addEventListener('click', () => { files.splice(i,1); sync(); render(); });
+                li.appendChild(btn);
+                listEl.appendChild(li);
+            });
         }
-    });
 
-    dropzone.addEventListener('dragover', function (e) {
-        e.preventDefault();
-        dropzone.classList.add('dragover');
-        dropText.textContent = '파일을 여기에 놓으세요';
-    });
-    dropzone.addEventListener('dragleave', function (e) {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        dropText.textContent = defaultText;
-    });
-    dropzone.addEventListener('drop', function (e) {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        dropText.textContent = defaultText;
-        if (e.dataTransfer && e.dataTransfer.files) {
-            addFiles(e.dataTransfer.files);
-        }
-    });
-})();
+        addBtn.addEventListener('click', e => { e.stopPropagation(); input.click(); });
+        dropzone.addEventListener('click', () => input.click());
+        input.addEventListener('change', () => { if (input.files?.length) add([...input.files]); });
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); dropText.textContent = '파일을 여기에 놓으세요'; });
+        dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('dragover'); dropText.textContent = defaultText; });
+        dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); dropText.textContent = defaultText; if (e.dataTransfer?.files) add([...e.dataTransfer.files]); });
+    })();
 </script>
 
 {{> layout/footer}}

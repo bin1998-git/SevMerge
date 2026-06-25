@@ -1,175 +1,158 @@
 {{> layout/header}}
-
 <style>
-    :root { --blue: #2563eb; --blue-dark: #1d4ed8; --navy: #172554; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    body::before { content:''; position:fixed; inset:0; background-image: linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px); background-size:40px 40px; opacity:.35; pointer-events:none; z-index:0; }
 
-    .auth-section {
-        min-height: calc(100vh - 64px);
-        background:
-            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
-            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
-            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        position: relative; overflow: hidden;
-        display: flex; align-items: flex-start; justify-content: center;
-        padding: 52px 28px 80px;
-    }
-    .auth-section::before {
-        content: ''; position: absolute; inset: 0;
-        background-image:
-            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
-        background-size: 40px 40px; opacity: .35; pointer-events: none;
-    }
+    .page-wrap { min-height:calc(100vh - 64px); display:flex; align-items:stretch; position:relative; z-index:1; }
 
-    .auth-inner {
-        width: 100%; max-width: 640px;
-        position: relative; z-index: 2;
+    /* 왼쪽 히어로 패널 */
+    .hero-panel {
+        width:380px; flex-shrink:0;
+        backdrop-filter:blur(20px); background:rgba(255,255,255,.55);
+        border-right:1.5px solid rgba(255,255,255,.8);
+        display:flex; flex-direction:column; justify-content:center;
+        padding:52px 44px; position:sticky; top:64px; height:calc(100vh - 64px);
     }
+    .page-logo { font-size:22px; font-weight:900; color:#1e3a8a; letter-spacing:-1px; margin-bottom:24px; }
+    .page-logo .hl { color:#2563eb; }
+    .hero-icon-wrap {
+        width:72px; height:72px; border-radius:22px;
+        display:flex; align-items:center; justify-content:center; margin-bottom:22px;
+    }
+    .hero-title { font-size:28px; font-weight:900; color:#172554; letter-spacing:-1px; line-height:1.2; margin-bottom:12px; }
+    .hero-desc { font-size:14px; color:#4a6fa5; line-height:1.8; }
 
-    .auth-header { text-align: center; margin-bottom: 28px; }
-    .page-logo { font-size: 24px; font-weight: 900; color: #1e3a8a; margin-bottom: 10px; letter-spacing: -1px; }
-    .page-logo .hl { color: var(--blue); }
-    .auth-title { font-size: 24px; font-weight: 900; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 6px; }
-    .auth-desc { font-size: 14px; color: #4a6fa5; }
+    /* 오른쪽 콘텐츠 */
+    .content-panel { flex:1; display:flex; align-items:center; justify-content:center; padding:52px 52px; }
+    .content-inner { width:100%; max-width:520px; display:flex; flex-direction:column; gap:16px; }
 
     /* 글래스 카드 */
-    .auth-form {
-        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-        background: rgba(255,255,255,.58);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 28px; padding: 48px 52px;
-        display: flex; flex-direction: column; gap: 18px;
-        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
-        position: relative;
+    .glass-card {
+        backdrop-filter:blur(20px); background:rgba(255,255,255,.58);
+        border:1.5px solid rgba(255,255,255,.85); border-radius:24px; padding:32px;
+        box-shadow:0 16px 48px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position:relative;
     }
-    .auth-form::before {
-        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
-    }
+    .glass-card::before { content:''; position:absolute; left:10%; right:10%; top:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent); }
+    .card-label { font-size:11px; font-weight:700; color:#2563eb; letter-spacing:.8px; text-transform:uppercase; margin-bottom:12px; }
 
-    /* 거절 사유 */
-    .reason-box {
-        background: rgba(254,226,226,.5); border: 1px solid rgba(252,165,165,.6);
-        border-radius: 14px; padding: 18px 20px;
-    }
-    .reason-label { font-size: 11px; font-weight: 700; color: #ef4444; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 8px; }
-    .reason-text { font-size: 14px; color: #1e3a6e; line-height: 1.6; }
+    /* 단계 표시 */
+    .step-list { display:flex; flex-direction:column; gap:12px; }
+    .step-item { display:flex; align-items:center; gap:12px; font-size:13px; font-weight:600; color:#2d4a7a; }
+    .step-item.done { color:#059669; }
+    .step-item.pending { color:#93aecf; }
+    .step-dot { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step-dot.done { background:rgba(16,185,129,.1); color:#059669; }
+    .step-dot.active { background:rgba(37,99,235,.1); color:#2563eb; }
+    .step-dot.pending { background:rgba(156,163,175,.1); color:#93aecf; }
 
-    /* 폼 요소 */
-    .form-group { display: flex; flex-direction: column; gap: 7px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
-    .form-label .required { color: #ef4444; margin-left: 2px; }
-    .form-label .opt { color: #93aecf; font-weight: 500; margin-left: 4px; }
+    /* 사유 박스 */
+    .reason-box { background:rgba(254,226,226,.5); border:1px solid rgba(252,165,165,.6); border-radius:14px; padding:18px 20px; }
+    .reason-label { font-size:11px; font-weight:700; color:#ef4444; letter-spacing:.5px; text-transform:uppercase; margin-bottom:8px; }
+    .reason-text { font-size:14px; color:#1e3a6e; line-height:1.6; }
+
+    /* 버튼 */
+    .btn-primary {
+        display:block; width:100%; padding:14px;
+        background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff;
+        border:none; border-radius:20px; font-size:14px; font-weight:800;
+        cursor:pointer; font-family:inherit; text-decoration:none; text-align:center;
+        box-shadow:0 4px 14px rgba(37,99,235,.3); transition:all .15s;
+    }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(37,99,235,.4); }
+    .btn-outline {
+        display:block; width:100%; padding:13px;
+        backdrop-filter:blur(8px); background:rgba(255,255,255,.6); color:#2d4a7a;
+        border:1.5px solid rgba(255,255,255,.8); border-radius:20px;
+        font-size:14px; font-weight:700; text-decoration:none; text-align:center; transition:all .15s;
+    }
+    .btn-outline:hover { background:rgba(255,255,255,.9); border-color:rgba(37,99,235,.3); }
+
+    /* 하단 링크 */
+    .bottom-links { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; }
+    .bottom-links a { font-size:12px; color:#4a6fa5; text-decoration:none; transition:color .15s; }
+    .bottom-links a:hover { color:#2563eb; }
+
+    /* 폼 (재신청) */
+    .form-group { display:flex; flex-direction:column; gap:7px; }
+    .form-label { font-size:13px; font-weight:700; color:#2d4a7a; }
+    .form-label .required { color:#ef4444; margin-left:2px; }
+    .form-label .opt { color:#93aecf; font-weight:500; margin-left:4px; }
     .form-input, .form-textarea {
-        padding: 13px 16px;
-        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
-        border-radius: 12px; font-size: 14px; font-family: inherit;
-        color: #1e3a6e; outline: none; transition: all .15s;
+        padding:12px 16px; background:rgba(255,255,255,.7); border:1.5px solid rgba(37,99,235,.15);
+        border-radius:12px; font-size:14px; font-family:inherit; color:#1e3a6e; outline:none; transition:all .15s;
     }
-    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
-    .form-input:focus, .form-textarea:focus {
-        border-color: var(--blue); background: rgba(255,255,255,.95);
-        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
-    }
-    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
-    .form-hint { font-size: 12px; color: #4a6fa5; }
+    .form-input::placeholder, .form-textarea::placeholder { color:#93aecf; }
+    .form-input:focus, .form-textarea:focus { border-color:#2563eb; background:rgba(255,255,255,.95); box-shadow:0 0 0 3px rgba(37,99,235,.08); }
+    .form-textarea { resize:vertical; min-height:80px; line-height:1.6; }
+    .form-hint { font-size:12px; color:#4a6fa5; }
+    .skill-input-wrap { display:flex; gap:8px; }
+    .skill-input-wrap .form-input { flex:1; }
+    .skill-add-btn { padding:0 16px; background:#1e3a6e; color:#fff; border:none; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .15s; }
+    .skill-add-btn:hover { background:#2563eb; }
+    .skill-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:8px; }
+    .skill-tag { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(37,99,235,.1); color:#2563eb; border:1px solid rgba(37,99,235,.2); border-radius:20px; font-size:12px; font-weight:600; }
+    .skill-tag button { background:none; border:none; color:#93c5fd; cursor:pointer; font-size:13px; line-height:1; padding:0; }
+    .skill-tag button:hover { color:#ef4444; }
 
-    /* 기술 스택 */
-    .skill-input-wrap { display: flex; gap: 8px; }
-    .skill-input-wrap .form-input { flex: 1; }
-    .skill-add-btn {
-        padding: 0 18px; background: #1e3a6e; color: #fff;
-        border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
-        cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
-    }
-    .skill-add-btn:hover { background: var(--blue); }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .skill-tag {
-        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
-        background: rgba(37,99,235,.1); color: var(--blue);
-        border: 1px solid rgba(37,99,235,.2); border-radius: 20px;
-        font-size: 12px; font-weight: 600;
-    }
-    .skill-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
-    .skill-tag button:hover { color: #ef4444; }
-
-    /* 제출 버튼 */
-    .reapply-submit-btn {
-        padding: 15px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
-        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
-        cursor: pointer; font-family: inherit;
-        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
-    }
-    .reapply-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
-
-    @media (max-width: 720px) {
-        .auth-form { padding: 32px 24px; }
-    }
-    @media (max-width: 480px) {
-        .auth-section { padding: 32px 16px 60px; }
-    }
+    @media (max-width:900px) { .hero-panel { display:none; } .content-panel { padding:32px 20px; } }
 </style>
-
-<section class="auth-section">
-    <div class="auth-inner">
-        <div class="auth-header">
-            <div class="page-logo">I<span class="hl">code</span>U</div>
-            <h1 class="auth-title">전문가 재신청</h1>
-            <p class="auth-desc">거절 사유를 보완해 다시 신청해 주세요.</p>
+<div class="page-wrap">
+    <div class="hero-panel">
+        <div class="page-logo">I<span class="hl">code</span>U</div>
+        <div class="hero-icon-wrap" style="background:rgba(37,99,235,.1);">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#2563eb"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.42a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
         </div>
-
-        <form class="auth-form" action="/expert-reapply" method="POST" id="reapplyForm">
-
-            {{#reason}}
-                <div class="reason-box">
-                    <div class="reason-label">이전 거절 사유</div>
-                    <div class="reason-text">{{reason}}</div>
-                </div>
-            {{/reason}}
-
-            <div class="form-group">
-                <label class="form-label">한 줄 소개 <span class="required">*</span></label>
-                <input type="text" name="intro" class="form-input" value="{{profile.intro}}" placeholder="예) 5년차 React 개발자입니다"/>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">경력 <span class="required">*</span></label>
-                <textarea name="career" class="form-textarea">{{profile.career}}</textarea>
-                <span class="form-hint">주요 경력을 자유롭게 작성해 주세요.</span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">GitHub 주소 <span class="opt">(선택)</span></label>
-                <input type="text" name="githubUrl" class="form-input" value="test" placeholder="https://github.com/username"/>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">기술 스택 <span class="required">*</span></label>
-                <div class="skill-input-wrap">
-                    <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter"/>
-                    <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
-                </div>
-                <div id="skillTags" class="skill-tags"></div>
-                <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요.</span>
-                <input type="hidden" name="speciality" id="specialityHidden" value="{{profile.speciality}}"/>
-            </div>
-
-            <button type="submit" class="reapply-submit-btn">다시 신청하기</button>
-        </form>
+        <h1 class="hero-title">전문가<br>재신청</h1>
+        <p class="hero-desc">거절 사유를 보완해 다시 신청해 주세요.<br>더 꼼꼼히 검토해 드릴게요.</p>
     </div>
-</section>
-
+    <div class="content-panel" style="align-items:flex-start; padding-top:40px; padding-bottom:40px;">
+        <div class="content-inner">
+            <form action="/expert-reapply" method="POST" id="reapplyForm" style="display:flex; flex-direction:column; gap:14px;">
+                {{#reason}}
+                    <div class="reason-box">
+                        <div class="reason-label">이전 거절 사유</div>
+                        <div class="reason-text">{{reason}}</div>
+                    </div>
+                {{/reason}}
+                <div class="glass-card" style="display:flex; flex-direction:column; gap:14px;">
+                    <div class="form-group">
+                        <label class="form-label">한 줄 소개 <span class="required">*</span></label>
+                        <input type="text" name="intro" class="form-input" value="{{profile.intro}}" placeholder="예) 5년차 React 개발자입니다"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">경력 <span class="required">*</span></label>
+                        <textarea name="career" class="form-textarea">{{profile.career}}</textarea>
+                        <span class="form-hint">주요 경력을 자유롭게 작성해 주세요.</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GitHub 주소 <span class="opt">(선택)</span></label>
+                        <input type="text" name="githubUrl" class="form-input" value="{{profile.githubUrl}}" placeholder="https://github.com/username"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">기술 스택 <span class="required">*</span></label>
+                        <div class="skill-input-wrap">
+                            <input type="text" id="skillInput" class="form-input" placeholder="예) React 입력 후 Enter"/>
+                            <button type="button" id="skillAddBtn" class="skill-add-btn">추가</button>
+                        </div>
+                        <div id="skillTags" class="skill-tags"></div>
+                        <span class="form-hint">기술을 입력하고 Enter 또는 추가를 누르세요.</span>
+                        <input type="hidden" name="speciality" id="specialityHidden" value="{{profile.speciality}}"/>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">다시 신청하기</button>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
     const skillInput = document.getElementById("skillInput");
     const skillAddBtn = document.getElementById("skillAddBtn");
     const skillTags = document.getElementById("skillTags");
     const specialityHidden = document.getElementById("specialityHidden");
-
     let skills = [];
     const initial = specialityHidden.value.trim();
     if (initial) skills = initial.split(",").map(s => s.trim()).filter(s => s);
-
     function renderSkills() {
         skillTags.innerHTML = "";
         skills.forEach((skill, idx) => {
@@ -182,27 +165,16 @@
     }
     function addSkill() {
         const val = skillInput.value.trim();
-        if (!val) return;
-        if (skills.includes(val)) { skillInput.value = ""; return; }
+        if (!val || skills.includes(val)) { skillInput.value = ""; return; }
         skills.push(val); skillInput.value = ""; renderSkills();
     }
     skillAddBtn.addEventListener("click", addSkill);
-    skillInput.addEventListener("keydown", function(e) {
-        if (e.key === "Enter") { e.preventDefault(); addSkill(); }
-    });
-    skillTags.addEventListener("click", function(e) {
-        if (e.target.tagName === "BUTTON") {
-            skills.splice(parseInt(e.target.dataset.idx), 1); renderSkills();
-        }
-    });
+    skillInput.addEventListener("keydown", function(e) { if (e.key==="Enter") { e.preventDefault(); addSkill(); } });
+    skillTags.addEventListener("click", function(e) { if (e.target.tagName==="BUTTON") { skills.splice(parseInt(e.target.dataset.idx),1); renderSkills(); } });
     renderSkills();
-
     document.getElementById("reapplyForm").addEventListener("submit", function(e) {
-        if (!e.target.intro.value.trim() || !e.target.career.value.trim()) {
-            e.preventDefault(); alert("한 줄 소개와 경력을 입력해 주세요."); return;
-        }
-        if (skills.length === 0) { e.preventDefault(); alert("기술 스택을 최소 1개 이상 입력해 주세요."); }
+        if (!e.target.intro.value.trim() || !e.target.career.value.trim()) { e.preventDefault(); alert("한 줄 소개와 경력을 입력해 주세요."); return; }
+        if (skills.length===0) { e.preventDefault(); alert("기술 스택을 최소 1개 이상 입력해 주세요."); }
     });
 </script>
-
 {{> layout/footer}}

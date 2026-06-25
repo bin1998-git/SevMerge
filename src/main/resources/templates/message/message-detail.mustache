@@ -1,211 +1,182 @@
 {{> layout/header}}
-
 <style>
-    body {
-        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
-        background-attachment: fixed;
-        color: #1e293b;
-        line-height: 1.6;
-    }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    /* ══ 배경 글로우 ══ */
-    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
-    .bg-glow-1 {
-        width: 600px; height: 600px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%);
-        top: -150px; left: -150px;
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
     }
-    .bg-glow-2 {
-        width: 500px; height: 500px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%);
-        bottom: 10%; right: -100px;
-    }
-    .bg-glow-3 {
-        width: 400px; height: 400px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,200,224,.08) 0%, transparent 70%);
-        top: 40%; left: 30%;
-    }
-
-    .detail-section { padding: 48px 28px 80px; position: relative; z-index: 1; }
-    .detail-inner { max-width: 780px; margin: 0 auto; }
-
-    /* ── 뒤로가기 ── */
-    .back-link {
-        display: inline-flex; align-items: center; gap: 6px;
-        font-size: 13px; color: #9ca3af; text-decoration: none;
-        margin-bottom: 20px; font-weight: 500; transition: color .15s;
-    }
-    .back-link:hover { color: #2563eb; }
-
-    /* ── 상세 카드 ── */
     .detail-card {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.6);
-        border-radius: 22px;
-        border: 1.5px solid rgba(255,255,255,.85);
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.9);
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
     }
+
+    /* 헤더 */
     .detail-header {
-        padding: 28px 32px 20px;
-        border-bottom: 1px solid rgba(255,255,255,.6);
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 28px 36px 22px; border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
     }
-    .detail-title { font-size: 20px; font-weight: 800; color: #1c1e26; margin-bottom: 14px; }
-    .detail-meta { display: flex; gap: 24px; flex-wrap: wrap; }
-    .detail-meta-item { font-size: 13px; color: #9ca3af; }
-    .detail-meta-item strong { color: #4b5563; font-weight: 600; }
-
-    .detail-project {
+    .detail-header-left { flex: 1; }
+    .detail-title { font-size: 20px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 14px; }
+    .detail-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #4a6fa5; }
+    .detail-meta .meta-val { font-weight: 700; color: #1e3a6e; }
+    .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #93aecf; }
+    .detail-project-link {
         display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
-        backdrop-filter: blur(8px);
-        background: rgba(240,244,255,.7); color: #2563eb;
-        border: 1px solid rgba(191,219,254,.5);
-        border-radius: 8px; padding: 6px 14px;
-        font-size: 13px; font-weight: 600; text-decoration: none;
-        transition: background .15s;
+        padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(239,246,255,.8);
+        border: 1px solid rgba(37,99,235,.2); color: #2563eb; text-decoration: none; transition: all .15s;
     }
-    .detail-project:hover { background: rgba(219,234,254,.85); }
+    .detail-project-link:hover { background: rgba(219,234,254,.9); }
 
-    .detail-body { padding: 28px 32px; min-height: 160px; }
-    .detail-content { font-size: 15px; color: #374151; line-height: 1.8; white-space: pre-wrap; }
+    .detail-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; padding-top: 4px; }
+    .btn-back {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a; text-decoration: none; transition: all .15s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-delete {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        background: rgba(255,243,243,.8); border: 1.5px solid #fecaca; color: #ef4444;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-delete:hover { background: #fff0f0; border-color: #ef4444; }
 
-    .detail-file {
-        display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
-        backdrop-filter: blur(8px);
-        background: rgba(240,244,255,.7); color: #2563eb;
-        border: 1px solid rgba(191,219,254,.5);
-        border-radius: 8px; padding: 8px 14px;
-        font-size: 13px; font-weight: 600; text-decoration: none;
-        transition: background .15s;
+    /* 본문 */
+    .detail-body { flex: 1; padding: 32px 36px; }
+    .detail-content { font-size: 15px; color: #2d4a7a; line-height: 1.9; white-space: pre-wrap; min-height: 120px; }
+    .attachment-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .attachment-item {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 16px; border-radius: 20px;
+        backdrop-filter: blur(8px); background: rgba(239,246,255,.8);
+        border: 1px solid rgba(37,99,235,.2); color: #2563eb;
+        font-size: 12px; font-weight: 700; text-decoration: none; transition: all .15s;
     }
-    .detail-file:hover { background: rgba(219,234,254,.85); }
+    .attachment-item:hover { background: rgba(219,234,254,.9); transform: translateY(-1px); }
 
-    .detail-actions {
-        padding: 20px 32px;
-        border-top: 1px solid rgba(255,255,255,.6);
-        display: flex; gap: 10px; justify-content: flex-end;
-    }
-    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-sm { padding: 8px 18px; font-size: 13px; border-radius: 8px; }
-    .btn-danger {
-        backdrop-filter: blur(8px);
-        background: rgba(255,242,242,.7); color: #ef4444;
-        border: 1.5px solid rgba(252,165,165,.6); font-weight: 700; cursor: pointer;
-    }
-    .btn-danger:hover { background: rgba(254,242,242,.95); }
-    .btn-primary {
-        background: #2563eb; color: #fff;
-        box-shadow: 0 4px 12px rgba(37,99,235,.3);
-    }
-    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    /* 구분선 */
+    .divider { height: 1px; background: rgba(37,99,235,.07); margin: 0 36px; flex-shrink: 0; }
 
-    /* ── 답장 카드 ── */
-    .reply-card {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.6);
-        border-radius: 22px;
-        border: 1.5px solid rgba(255,255,255,.85);
-        margin-top: 20px; overflow: hidden;
-        box-shadow: 0 8px 32px rgba(37,99,235,.08), inset 0 1px 0 rgba(255,255,255,.9);
-    }
-    .reply-header {
-        padding: 18px 32px;
-        border-bottom: 1px solid rgba(255,255,255,.6);
-        background: rgba(176,200,232,.15);
-    }
-    .reply-title { font-size: 15px; font-weight: 700; color: #1c1e26; }
-    .reply-body { padding: 20px 32px; }
-
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    /* 답장 폼 */
+    .reply-section { padding: 24px 36px; flex-shrink: 0; }
+    .reply-title { font-size: 15px; font-weight: 800; color: #1e3a6e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
     .form-input {
-        width: 100%; padding: 11px 14px;
-        backdrop-filter: blur(4px);
-        background: rgba(255,255,255,.7);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26;
-        outline: none; box-sizing: border-box; transition: border-color .15s, background .15s;
+        padding: 12px 16px; background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(37,99,235,.12); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
     }
-    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.95); }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-textarea { resize: vertical; min-height: 100px; }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.9); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-textarea { resize: vertical; min-height: 100px; line-height: 1.7; }
+    .reply-btns { display: flex; justify-content: flex-end; margin-top: 4px; }
+    .btn-submit {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 11px 24px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
-    .reply-actions {
-        padding: 16px 32px;
-        border-top: 1px solid rgba(255,255,255,.6);
-        display: flex; justify-content: flex-end;
+    @media (max-width: 640px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .detail-header { padding: 20px 18px 16px; flex-direction: column; gap: 12px; }
+        .detail-body { padding: 20px 18px; }
+        .divider { margin: 0 18px; }
+        .reply-section { padding: 18px 18px; }
     }
 </style>
 
-<!-- 배경 글로우 -->
-<div class="bg-glow bg-glow-1"></div>
-<div class="bg-glow bg-glow-2"></div>
-<div class="bg-glow bg-glow-3"></div>
+<section class="page-wrap">
+    <div class="detail-card">
 
-<section class="detail-section">
-    <div class="detail-inner">
-
-        <a href="/messages?box=received" class="back-link">← 받은 쪽지함으로</a>
-
-        <div class="detail-card">
-            <div class="detail-header">
-                <p class="detail-title">{{message.title}}</p>
+        <!-- 헤더 -->
+        <div class="detail-header">
+            <div class="detail-header-left">
+                <div class="detail-title">{{message.title}}</div>
                 <div class="detail-meta">
-                    <span class="detail-meta-item">보낸 사람 <strong>{{message.senderName}}</strong></span>
-                    <span class="detail-meta-item">받는 사람 <strong>{{message.receiverName}}</strong></span>
-                    <span class="detail-meta-item">날짜 <strong>{{message.createdAt}}</strong></span>
+                    <span>보낸 사람 <span class="meta-val">{{message.senderName}}</span></span>
+                    <div class="meta-dot"></div>
+                    <span>받는 사람 <span class="meta-val">{{message.receiverName}}</span></span>
+                    <div class="meta-dot"></div>
+                    <span>{{message.createdAt}}</span>
                 </div>
                 {{#projectTitle}}
-                <a href="/projects/{{message.projectId}}" class="detail-project">
-                    📁 관련 프로젝트: {{message.projectTitle}}
-                </a>
+                    <a href="/projects/{{message.projectId}}" class="detail-project-link">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20V9h-4v2h-2V9H9v2H7V9H3v11h18ZM15 4H9V2h6v2Zm8 18H1V7h6V4h2v3h6V4h2v3h6v15Z"/></svg>
+                        관련 프로젝트: {{message.projectTitle}}
+                    </a>
                 {{/projectTitle}}
             </div>
-
-            <div class="detail-body">
-                <p class="detail-content">{{message.content}}</p>
-
-                {{#message.files}}
-                    <a href="/messages/files/{{id}}/download" class="detail-file">
-                        📎 {{originalFilename}}
-                    </a>
-                {{/message.files}}
-            </div>
-
             <div class="detail-actions">
-                <form action="/messages/{{message.id}}/delete" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('쪽지를 삭제하시겠습니까?')">삭제</button>
+                <form action="/messages/{{message.id}}/delete" method="POST" style="margin:0;" onsubmit="return confirm('쪽지를 삭제하시겠습니까?');">
+                    <button type="submit" class="btn-delete">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        삭제
+                    </button>
                 </form>
+                <a href="/messages?box=received" class="btn-back">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    목록으로
+                </a>
             </div>
         </div>
 
+        <!-- 본문 -->
+        <div class="detail-body">
+            <div class="detail-content">{{message.content}}</div>
+            {{#message.files}}
+                <div class="attachment-list">
+                    <a href="/messages/files/{{id}}/download" class="attachment-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 015 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 006 0V5c0-2.76-2.24-5-5-5S5 2.24 5 5v12.5c0 3.87 3.13 7 7 7s7-3.13 7-7V6h-2.5z"/></svg>
+                        {{originalFilename}}
+                    </a>
+                </div>
+            {{/message.files}}
+        </div>
+
+        <div class="divider"></div>
+
         <!-- 답장 폼 -->
-        <div class="reply-card">
-            <div class="reply-header">
-                <p class="reply-title">답장 보내기</p>
+        <div class="reply-section">
+            <div class="reply-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4v2h16V4ZM4 6H2v14h2V6Zm18 0h-2v14h2V6Zm-4 12H6v2h12v-2Zm-8-6h8v2H10v-2Zm0-4h8v2H10V8Z"/></svg>
+                답장 보내기
             </div>
-            <div class="reply-body">
-                <form action="/messages/send" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="receiverId" value="{{message.senderId}}" />
-                    <input type="hidden" name="projectId" value="{{message.projectId}}" />
-                    <div class="form-group">
-                        <label class="form-label">제목</label>
-                        <input type="text" name="title" class="form-input" value="RE: {{message.title}}" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">내용</label>
-                        <textarea name="content" class="form-input form-textarea" placeholder="답장 내용을 입력하세요."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">파일 첨부</label>
-                        <input type="file" name="files" class="form-input" multiple />
-                    </div>
-                    <div class="reply-actions">
-                        <button type="submit" class="btn btn-primary btn-sm">답장 보내기</button>
-                    </div>
-                </form>
-            </div>
+            <form action="/messages/send" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="receiverId" value="{{message.senderId}}"/>
+                <input type="hidden" name="projectId" value="{{message.projectId}}"/>
+                <div class="form-group">
+                    <label class="form-label">제목</label>
+                    <input type="text" name="title" class="form-input" value="RE: {{message.title}}"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">내용</label>
+                    <textarea name="content" class="form-input form-textarea" placeholder="답장 내용을 입력하세요."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">파일 첨부</label>
+                    <input type="file" name="files" class="form-input" multiple/>
+                </div>
+                <div class="reply-btns">
+                    <button type="submit" class="btn-submit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4v2h16V4ZM4 6H2v14h2V6Zm18 0h-2v14h2V6Zm-4 12H6v2h12v-2Zm-8-6h8v2H10v-2Zm0-4h8v2H10V8Z"/></svg>
+                        답장 보내기
+                    </button>
+                </div>
+            </form>
         </div>
 
     </div>
