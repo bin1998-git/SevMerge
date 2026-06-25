@@ -190,9 +190,9 @@
             </div>
 
             <div class="pagination">
-                {{#hasPrev}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{prevPage}}" class="page-btn">← 이전</a>{{/hasPrev}}
+                {{#hasPrev}}<a href="/portfolios?expertId={{expertProfile.memberId}}&page={{prevPage}}" class="page-btn">← 이전</a>{{/hasPrev}}
                 <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-                {{#hasNext}}<a href="/portfolios?expertId={{expertProfile.id}}&page={{nextPage}}" class="page-btn">다음 →</a>{{/hasNext}}
+                {{#hasNext}}<a href="/portfolios?expertId={{expertProfile.memberId}}&page={{nextPage}}" class="page-btn">다음 →</a>{{/hasNext}}
             </div>
 
         </div>

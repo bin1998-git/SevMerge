@@ -42,7 +42,7 @@ public class PortfolioService {
         Member expertEntity = memberRepository.findById(expertId).orElseThrow(
                 () -> new NotFoundException("전문가를 찾을 수 없습니다.")
         );
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page - 1, 6, Sort.by("createdAt").descending());
         // 전문가 아이디로 찾아 해당 전문가 포트 폴리오
         Page<Portfolio> portfolioPage = portfolioRepository.findByExpertIdIsActive(expertEntity.getId(), pageable);
 
