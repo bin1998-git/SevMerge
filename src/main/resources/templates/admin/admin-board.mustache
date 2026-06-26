@@ -146,7 +146,6 @@
         overflow: hidden;
     }
 
-    /* 상단 헤더와 하단 로우의 전체 틀 FlexBox 설정 */
     .admin-table-head, .admin-table-row {
         display: flex;
         align-items: center;
@@ -169,7 +168,6 @@
         font-size: 13px;
     }
 
-    /* 1. 상단 헤더와 하단 데이터 줄 전체 틀 */
     .admin-table-head, .admin-table-row {
         display: flex !important;
         align-items: center !important;
@@ -192,10 +190,6 @@
         background: transparent !important;
     }
 
-
-    /* 2. 상하단 태그 종류 상관없이 순서대로 정중앙 배치 */
-
-    /* [1번째 칸] No (번호) - 무조건 60px 고정 후 정중앙 */
     .admin-table-head > *:nth-child(1),
     .cell-id {
         width: 60px !important;
@@ -203,7 +197,6 @@
         text-align: center !important;
     }
 
-    /* [2번째 칸] 제목 - 남은 여백 다 차지하고 무조건 정중앙 + 말줄임 */
     .admin-table-head > *:nth-child(2),
     .cell-title {
         flex: 1 !important;
@@ -214,7 +207,6 @@
         text-overflow: ellipsis !important;
     }
 
-    /* [3번째 칸] 날짜 - 무조건 150px 고정 후 정중앙 */
     .admin-table-head > *:nth-child(3),
     .cell-date {
         width: 150px !important;

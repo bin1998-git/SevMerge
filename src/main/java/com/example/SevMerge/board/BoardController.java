@@ -216,10 +216,16 @@ public class BoardController {
 
     @GetMapping("/admin/inquiry")
     public String adminInquiryList(@RequestParam(defaultValue = "1") int page,
+                                   @RequestParam(value = "keyword", required = false) String keyword,
                                    Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
-        java.util.List<BoardResponse.ListDTO> all = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser);
+        List<BoardResponse.ListDTO> all = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser);
+        if (keyword != null && !keyword.isEmpty()) {
+            all = all.stream()
+                    .filter(board -> (board.getTitle() != null && board.getTitle().contains(keyword)) ||
+                            (board.getContent() != null && board.getContent().contains(keyword))).toList();
+        }
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("boards", s < total ? all.subList(s, e) : new java.util.ArrayList<>());
