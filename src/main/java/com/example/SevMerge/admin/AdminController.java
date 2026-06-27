@@ -3,6 +3,7 @@ package com.example.SevMerge.admin;
 import com.example.SevMerge.Report.BlackList;
 import com.example.SevMerge.Report.BlacklistRepository;
 import com.example.SevMerge.Report.ReportService;
+import com.example.SevMerge.adbid.AdBidService;
 import com.example.SevMerge.advertisement.AdvertisementService;
 import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
@@ -46,6 +47,7 @@ public class AdminController {
     private final WithdrawalService withdrawalService;
     private final AdvertisementService advertisementService;
     private final PlatformRevenueService platformRevenueService;
+    private final AdBidService adBidService;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
@@ -358,6 +360,14 @@ public class AdminController {
         model.addAttribute("pendingAds", advertisementService.getPendingAds());
         model.addAttribute("pendingCount", advertisementService.getPendingAds().size());
         model.addAttribute("processedAds", advertisementService.getProcessedAds());
+
+        // 경매 배너
+        List<com.example.SevMerge.adbid.AdBid> pendingBanners = adBidService.getPendingReviewBids();
+        List<com.example.SevMerge.adbid.AdBid> processedBanners = adBidService.getProcessedReviewBids();
+        model.addAttribute("pendingBanners", pendingBanners);
+        model.addAttribute("hasPendingBanners", !pendingBanners.isEmpty());
+        model.addAttribute("processedBanners", processedBanners);
+        model.addAttribute("hasProcessedBanners", !processedBanners.isEmpty());
         return "admin/admin-advertisement";
     }
 
