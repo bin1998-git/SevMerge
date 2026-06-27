@@ -605,36 +605,6 @@
 
 <div class="main-wrap">
 
-    <!-- ══ 경매 광고 배너 ══ -->
-    {{#hasAuctionAds}}
-        <section class="ex-section">
-            <div class="ex-section-head">
-                <div class="ex-section-head-left">
-                    <span class="ex-eyebrow" style="background:#fef3c7;color:#92400e;">⚡ AUCTION</span>
-                    <h2 class="ex-section-title">경매 낙찰 광고</h2>
-                </div>
-            </div>
-            <div class="ad-grid">
-                {{#auctionAds}}
-                    <a class="ad-card" href="/experts/{{winnerExpertId}}"
-                       style="border-color:#f59e0b;">
-                        <div class="ad-thumb">
-                            <div class="ad-thumb-img"
-                                 style="background-image:url('/images/default.png');"></div>
-                            <span class="ad-badge" style="background:#f59e0b;color:#fff;">⚡ AUCTION</span>
-                        </div>
-                        <div class="ad-body">
-                            <p class="ad-msg">경매 낙찰 광고입니다.</p>
-                            <div class="ad-footer">
-                                <span class="ad-expert-name">낙찰가: {{winningPrice}}P</span>
-                                <span class="ad-cta">프로필 보기 →</span>
-                            </div>
-                        </div>
-                    </a>
-                {{/auctionAds}}
-            </div>
-        </section>
-    {{/hasAuctionAds}}
     <!-- ══ 프리미엄 광고 전문가 ══ -->
     <section class="ex-section">
         <div class="ex-section-head">
