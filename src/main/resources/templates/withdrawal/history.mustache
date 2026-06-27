@@ -55,6 +55,13 @@
         box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
     }
     .btn-new-wd:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    @media (max-width: 768px) {
+        .page-inner { padding: 0 12px; }
+        .balance-summary { grid-template-columns: 1fr; }
+        .wd-table-head { display: none; }
+        .wd-table-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+        .wd-table-row > *:nth-child(n+5) { display: none; }
+    }
 </style>
 
 <section class="page-section">

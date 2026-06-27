@@ -100,6 +100,22 @@
     .ar-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
     .ar-modal-cancel { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; background: rgba(243,244,248,.8); color: #4b5563; border: none; cursor: pointer; font-family: inherit; }
     .ar-modal-confirm { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; color: #fff; }
+    @media (max-width: 900px) {
+        .cm-body { grid-template-columns: 200px 1fr; }
+        .cm-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+        .cm-wrap { padding: 16px 12px 60px; }
+        .cm-body { grid-template-columns: 1fr; }
+        .cm-sidebar { display: flex; flex-direction: row; overflow-x: auto; gap: 0; border-radius: 14px; padding: 8px; }
+        .cm-link { padding: 8px 12px; font-size: 12px; border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .cm-link.active { border-left: none; border-bottom-color: #2563eb; }
+        .cm-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .cm-banner { padding: 18px 20px; min-height: auto; flex-direction: column; gap: 12px; }
+        .cm-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .cm-item-right { margin-left: 0; text-align: left; }
+        .cm-form { max-width: 100%; }
+    }
 </style>
 
 <div class="cm-wrap">
@@ -125,7 +141,6 @@
                     <div class="cm-avatar" id="sideAvatar">{{member.name}}</div>
                 {{/member.profileImage}}
                 <div class="cm-name">{{member.name}}</div>
-                <img src="/client.png" style="width:114px; height:48px; object-fit:contain;"/>
             </div>
             <nav class="cm-menu">
                 <div class="cm-group">내 활동</div>
@@ -158,16 +173,16 @@
             <!-- 통계 -->
             <div class="cm-stats">
                 <a href="/my-pages?tab=projects" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H4v-2h16v2ZM4 20H2V4h2v16Zm18 0h-2V4h2v16Zm-11-4H9v-2h2v2Zm-2-2H7v-2h2v2Zm4 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm3-6H4V2h16v2Z"/></svg></div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">등록 프로젝트</div></div>
+                    <div class="cm-stat-icon ic-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H4v-2h16v2ZM4 20H2V4h2v16Zm18 0h-2V4h2v16Zm-11-4H9v-2h2v2Zm-2-2H7v-2h2v2Zm4 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm3-6H4V2h16v2Z"/></svg></div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">내 프로젝트</div></div>
                 </a>
-                <a href="/my-pages?tab=projects" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg></div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료 프로젝트</div></div>
+                <a href="/my-pages?tab=bids" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2h16v2H4zm0 18h16v2H4zm16-2H4v-2h16v2zm0-12H4V4h16v2zM2 6h2v12H2zm18 0h2v12h-2zM8 10h8v4H8z"/></svg></div><div><div class="cm-stat-val">{{proposalCount}}</div><div class="cm-stat-lbl">제안서 관리</div></div>
                 </a>
-                <a href="/my-pages?tab=messages" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v14h2v2h4v2h2v-2h2v2h2v-2h6v-2h2V4h-2V2zm0 14H4V4h16v12z"/><path d="M6 7h12v2H6zm0 4h8v2H6z"/></svg></div><div><div class="cm-stat-val">{{messageCount}}</div><div class="cm-stat-lbl">새 메시지</div></div>
+                <a href="/my-pages?tab=projects&filter=inprogress" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 11h-2V7h2Zm0 4h-2v-2h2Z"/></svg></div><div><div class="cm-stat-val">{{inProgressCount}}</div><div class="cm-stat-lbl">진행중인 프로젝트</div></div>
                 </a>
-                <a href="/my-pages?tab=chargeHistory" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3zM1 7h2v10H1zm2 10h18v2H3zM21 7h2v10h-2zM11 9h2v2h-2zm-2 2h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm4 0h2v2h-2zM5 11h2v2H5z"/></svg></div><div><div class="cm-stat-val">{{member.displayBalance}}</div><div class="cm-stat-lbl">보유 포인트</div></div>
+                <a href="/my-pages?tab=projects&filter=done" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg></div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료된 프로젝트</div></div>
                 </a>
             </div>
             <!-- 콘텐츠 -->
@@ -239,8 +254,8 @@
                 {{! ===== 내 프로젝트 ===== }}
                 {{#isProjects}}
                     <div class="cm-content-head">
-                        <div class="cm-content-title">내 프로젝트</div>
-                        <div class="cm-content-sub">내가 등록한 프로젝트를 관리해요.</div>
+                        <div class="cm-content-title">{{projectsTitle}}</div>
+                        <div class="cm-content-sub">{{projectsDesc}}</div>
                     </div>
                     {{#projects}}
                         <div class="cm-item">
@@ -248,47 +263,35 @@
                                 <span class="cm-item-cat">{{categoryName}}</span>
                                 {{#isOpen}}<a href="/bids?projectId={{id}}" style="text-decoration:none;color:inherit;"><div class="cm-item-title">{{title}}</div></a>{{/isOpen}}
                                 {{^isOpen}}<a href="/projects/{{id}}" style="text-decoration:none;color:inherit;"><div class="cm-item-title">{{title}}</div></a>{{/isOpen}}
-                                <div class="cm-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
+                                <div class="cm-item-meta">등록일 {{createdAt}} · 제안 {{bidCount}}건</div>
                             </div>
                             <div class="cm-item-right">
                                 <div class="cm-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
-                                <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}</span>
+                                <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{#isClosed}}진행중{{/isClosed}}{{#isCompleted}}검토대기{{/isCompleted}}{{^isOpen}}{{^isClosed}}{{^isCompleted}}마감{{/isCompleted}}{{/isClosed}}{{/isOpen}}</span>
+                                {{#isClosed}}
+                                    {{#cancelPending}}
+                                        <span class="cm-item-status" style="margin-top:6px; display:block; text-align:center; background:rgba(245,158,11,.12); color:#d97706; border:1px solid rgba(245,158,11,.3);">취소 승인 대기중</span>
+                                    {{/cancelPending}}
+                                    {{^cancelPending}}
+                                        <button type="button" onclick="requestProjectCancel({{id}})" class="cm-btn" style="margin-top:8px; display:block; background:#fff; border:1.5px solid rgba(239,68,68,.4); color:#ef4444;">취소</button>
+                                    {{/cancelPending}}
+                                {{/isClosed}}
                                 {{#isCompleted}}
                                     <form action="/projects/{{id}}/done" method="POST">
                                         <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">결제 승인</button>
                                     </form>
                                 {{/isCompleted}}
                                 {{#isDone}}
-                                    {{^hasReview}}
-                                        {{^reviewSkipped}}
-                                            <a href="/reviews/save?targetId={{selectedExpertId}}&projectId={{id}}"
-                                            class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
-                                            리뷰 작성
-                                            </a>
-                                            <form action="/projects/{{id}}/skip-review" method="POST">
-                                                <button type="submit"
-                                                        onclick="return confirm('리뷰를 건너뛰시겠습니까? 확인 후에는 다시 작성할 수 없습니다.')"
-                                                        style="font-size:11px; color:#9ca3af; background:none; border:none; cursor:pointer; margin-top:4px; width:100%; text-align:center;">
-                                                    건너뛰기
-                                                </button>
-                                            </form>
-                                        {{/reviewSkipped}}
-                                        {{#reviewSkipped}}
-                                            <span style="font-size:12px; color:#9ca3af; display:block; margin-top:8px;">리뷰 건너뜀</span>
-                                        {{/reviewSkipped}}
-                                    {{/hasReview}}
-                                    {{#hasReview}}
-                                        <span style="font-size:12px; color:#059669; display:block; margin-top:8px;">✓ 리뷰 완료</span>
-                                    {{/hasReview}}
+                                    <span class="cm-item-status" style="margin-top:6px; display:block; text-align:center; color:#059669;">정산완료</span>
                                 {{/isDone}}
                             </div>
                         </div>
                     {{/projects}}
                     {{^projects}}<div class="cm-empty">등록한 프로젝트가 없습니다.</div>{{/projects}}
                     <div class="pagination">
-                        {{#prevPage}}<a href="/my-pages?tab=projects&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        {{#prevPage}}<a href="/my-pages?tab=projects&filter={{projectFilter}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
                         <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-                        {{#nextPage}}<a href="/my-pages?tab=projects&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                        {{#nextPage}}<a href="/my-pages?tab=projects&filter={{projectFilter}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
                     </div>
                 {{/isProjects}}
 
@@ -585,6 +588,9 @@
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     <input type="file" id="profileImageFile" accept="image/*" style="display:none;" onchange="previewImage(this)"/>
                                     <button type="button" class="cm-btn cm-btn-primary" style="margin-top:0;" onclick="document.getElementById('profileImageFile').click()">이미지 변경</button>
+                                    {{#member.profileImage}}
+                                    <button type="button" class="cm-btn" style="margin-top:0;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:#dc2626;" onclick="deleteProfileImage()">이미지 삭제</button>
+                                    {{/member.profileImage}}
                                     <span style="font-size:11px;color:#9ca3af;">JPG, PNG, GIF (5MB 이하)</span>
                                 </div>
                             </div>
@@ -661,6 +667,22 @@
 
 
 <script>
+    function requestProjectCancel(projectId) {
+        const reason = prompt('프로젝트 취소 사유를 입력해주세요.\n(전문가가 확인 후 승인하면 환불되고 프로젝트가 삭제됩니다.)');
+        if (reason === null) return;
+        if (!reason.trim()) { alert('취소 사유를 입력해주세요.'); return; }
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/projects/' + projectId + '/cancel-request';
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'reason';
+        input.value = reason.trim();
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
     function previewImage(input) {
         if (!input.files || !input.files[0]) return;
         const reader = new FileReader();
@@ -732,6 +754,16 @@
                     else { response.text().then(t => alert("수정 실패: " + t)); }
                 })
                 .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
+    }
+
+    function deleteProfileImage() {
+        if (!confirm('프로필 이미지를 삭제하시겠습니까?')) return;
+        fetch('/my-pages/profile-image', { method: 'DELETE' })
+            .then(res => {
+                if (res.ok) { alert('이미지가 삭제되었습니다.'); location.reload(); }
+                else { alert('삭제 실패'); }
+            })
+            .catch(() => alert('통신 오류'));
     }
 
     // ===== 비밀번호 확인 =====

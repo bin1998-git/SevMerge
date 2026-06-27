@@ -95,7 +95,7 @@
             </div>
 
             <div class="form-btns">
-                <a href="/my-page?tab=bids" class="btn btn-outline">취소</a>
+                <a href="/my-pages?tab=bids" class="btn btn-outline">취소</a>
                 <button type="button" class="btn btn-primary btn-lg" onclick="updateBid()">수정완료</button>
             </div>
         </form>
@@ -108,8 +108,8 @@ function updateBid() {
     const data = {
         coverLetter:   document.querySelector("#coverLetter").value,
         approach:      document.querySelector("#approach").value,
-        estimatedDays: document.querySelector("#estimatedDays").value,
-        proposedPrice: document.querySelector("#proposedPrice").value
+        estimatedDays: parseInt(document.querySelector("#estimatedDays").value, 10),
+        proposedPrice: parseInt(document.querySelector("#proposedPrice").value, 10)
     };
     if (!data.coverLetter.trim() || !data.approach.trim() || !data.estimatedDays || !data.proposedPrice) {
         alert("⚠️ 모든 입력 항목을 올바르게 입력해 주세요.");

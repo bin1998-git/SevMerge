@@ -3,12 +3,12 @@ package com.example.SevMerge.board;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
+import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,26 +29,12 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    // application.properties 에 file.upload-dir=/uploads/board 설정 필요
-    @Value("${file.upload-dir:uploads/board}")
-    private String uploadDir;
-
     // ── 파일 저장 유틸 ──────────────────────────────────────────────
     private String saveFile(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
         try {
-            // 절대경로로 변환 (Tomcat 임시 디렉토리 기준 문제 방지)
-            File dir = new File(uploadDir).getAbsoluteFile();
-            if (!dir.exists()) dir.mkdirs();
-            String ext = "";
-            String orig = file.getOriginalFilename();
-            if (orig != null && orig.contains(".")) {
-                ext = orig.substring(orig.lastIndexOf("."));
-            }
-            String savedName = UUID.randomUUID() + ext;
-            File dest = new File(dir, savedName).getAbsoluteFile();
-            file.transferTo(dest);
-            return "/uploads/board/" + savedName;
+            String savedName = FileUtil.saveFile(file, FileUtil.IMAGES_DIR);
+            return "/images/" + savedName;
         } catch (IOException e) {
             log.error("파일 저장 실패", e);
             throw new BadRequestException("파일 저장에 실패했습니다.");
@@ -69,12 +53,14 @@ public class BoardService {
                 .map(BoardResponse.ListDTO::new).toList();
     }
 
-    public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member) {
+    public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member, String keyword) {
         memberRepository.findById(member.getId())
                 .orElseThrow(() -> new NotFoundException("멤버를 찾을 수 없습니다."));
         if (member.getRole().equals(Role.ADMIN)) {
-            return boardRepository.findAllByBoardTypeIsActive(boardType).stream()
-                    .map(BoardResponse.ListDTO::new).toList();
+            List<Board> boards = (keyword == null || keyword.trim().isEmpty())
+                    ? boardRepository.findAllByBoardTypeIsActive(boardType)
+                    : boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword);
+            return boards.stream().map(BoardResponse.ListDTO::new).toList();
         }
         return boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType, member.getId()).stream()
                 .map(BoardResponse.ListDTO::new).toList();

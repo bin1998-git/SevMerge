@@ -94,6 +94,20 @@
         box-shadow: 0 4px 16px rgba(37,99,235,.07);
     }
     .detail-desc-title { font-size: 16px; font-weight: 900; color: #1e3a6e; margin: 0 0 20px 0; padding-bottom: 12px; border-bottom: 1px solid rgba(37,99,235,.08); }
+    @media (max-width: 900px) {
+        .detail-body { grid-template-columns: 1fr; gap: 24px; }
+        .detail-inner { padding: 0 16px; }
+    }
+    @media (max-width: 640px) {
+        .detail-section { padding: 24px 0 60px; }
+        .detail-inner { padding: 0 12px; }
+        .detail-title { font-size: 20px; }
+        .detail-meta { flex-wrap: wrap; gap: 8px; }
+        .detail-footer { flex-direction: column; gap: 12px; align-items: flex-start; }
+        .detail-actions { flex-wrap: wrap; }
+        .bid-card { flex-direction: column; gap: 16px; }
+        .detail-desc-card { padding: 20px 16px; }
+    }
 </style>
 
 <section class="detail-section">
@@ -222,6 +236,40 @@
                 </div>
                 {{/isOwner}}
 
+                {{#isOwner}}
+                <div class="detail-desc-card" style="margin-bottom:20px;">
+                    <h3 class="detail-desc-title">📦 전문가 작업물</h3>
+                    {{#deliverables}}
+                    <div style="border:1px solid rgba(37,99,235,.12); border-radius:12px; padding:16px; margin-top:12px; background:rgba(255,255,255,.5);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <div style="font-weight:800; color:#1e3a6e;">{{round}}차 작업물 {{#isFinal}}<span style="background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:4px;">최종본</span>{{/isFinal}}</div>
+                            <div>
+                                {{#isSubmitted}}<span style="color:#d97706;font-weight:700;font-size:13px;">확인 대기</span>{{/isSubmitted}}
+                                {{#isRevisionRequested}}<span style="color:#dc2626;font-weight:700;font-size:13px;">보완 요청됨</span>{{/isRevisionRequested}}
+                                {{#isApproved}}<span style="color:#16a34a;font-weight:700;font-size:13px;">승인 완료</span>{{/isApproved}}
+                            </div>
+                        </div>
+                        {{#note}}<div style="margin-top:8px; color:#374151; font-size:14px; line-height:1.6;">{{note}}</div>{{/note}}
+                        {{#fileUrl}}<div style="margin-top:8px;"><a href="/images/{{fileUrl}}" target="_blank" style="color:#2563eb; font-weight:600;">📎 {{fileName}} 다운로드</a></div>{{/fileUrl}}
+                        {{#feedback}}<div style="margin-top:8px; background:#fef2f2; border:1px solid rgba(239,68,68,.2); border-radius:8px; padding:8px 10px; font-size:13px; color:#b91c1c;">보완 요청: {{feedback}}</div>{{/feedback}}
+                        <div style="color:#9ca3af; font-size:12px; margin-top:8px;">{{createdAt}}</div>
+                        {{^isApproved}}
+                        <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                            <form action="/deliverables/{{id}}/approve" method="post" style="margin:0;" onsubmit="return confirm('{{#isFinal}}최종 승인하면 에스크로 대금이 전문가에게 정산됩니다. 진행할까요?{{/isFinal}}{{^isFinal}}이 작업물을 승인하시겠습니까?{{/isFinal}}');">
+                                <input type="hidden" name="projectId" value="{{project.id}}"/>
+                                <button type="submit" class="btn btn-primary" style="font-size:13px; padding:8px 16px;">{{#isFinal}}최종 승인 (정산){{/isFinal}}{{^isFinal}}승인{{/isFinal}}</button>
+                            </form>
+                            <button type="button" onclick="requestDeliverableRevision({{id}}, {{project.id}})" class="btn btn-outline" style="font-size:13px; padding:8px 16px;">보완 요청</button>
+                        </div>
+                        {{/isApproved}}
+                    </div>
+                    {{/deliverables}}
+                    {{^deliverables}}
+                    <div style="color:#9ca3af; margin-top:12px; font-size:14px;">아직 제출된 작업물이 없습니다.</div>
+                    {{/deliverables}}
+                </div>
+                {{/isOwner}}
+
                 <div class="detail-desc-card">
                     <h3 class="detail-desc-title">📋 프로젝트 상세 요구사항</h3>
                     <div class="detail-description">{{project.description}}</div>
@@ -266,7 +314,12 @@
                         <span class="info-value">{{#project.isCertifiedOnly}}필수 요구{{/project.isCertifiedOnly}}{{^project.isCertifiedOnly}}제한 없음{{/project.isCertifiedOnly}}</span>
                     </div>
                     {{^isOwner}}
+                    {{#project.isOpen}}
                     <a href="/bids/save-form?projectId={{project.id}}" class="bid-btn">제안서 보내기</a>
+                    {{/project.isOpen}}
+                    {{^project.isOpen}}
+                    <button class="bid-btn" disabled style="opacity:.5;cursor:not-allowed;background:#9ca3af;">입찰 마감</button>
+                    {{/project.isOpen}}
                     <a href="/chat/start/project/{{project.id}}?withMemberId={{project.memberId}}" class="bid-btn" style="background:rgba(255,255,255,.6);color:#2563eb;border:1.5px solid rgba(37,99,235,.3);box-shadow:none;margin-top:10px;">💬 의뢰인에게 문의</a>
                     {{/isOwner}}
                 </div>
@@ -289,6 +342,20 @@
 </section>
 
 <script>
+    function requestDeliverableRevision(deliverableId, projectId) {
+        const reason = prompt('보완이 필요한 내용을 작성해주세요. (전문가에게 전달됩니다)');
+        if (reason === null) return;
+        if (!reason.trim()) { alert('보완 요청 사유를 입력해주세요.'); return; }
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/deliverables/' + deliverableId + '/revision';
+        form.innerHTML = '<input type="hidden" name="reason"><input type="hidden" name="projectId">';
+        form.querySelector('[name=reason]').value = reason.trim();
+        form.querySelector('[name=projectId]').value = projectId;
+        document.body.appendChild(form);
+        form.submit();
+    }
+
     function deleteProject(id) {
         if (!confirm('정말 삭제하시겠습니까?')) return;
         fetch('/projects/' + id, { method: 'DELETE' }).then(res => { if (res.ok) window.location.href = '/projects'; });

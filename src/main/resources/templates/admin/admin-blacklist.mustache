@@ -388,6 +388,47 @@
             </div>
         </div>
 
+        <div class="admin-table-wrap" style="width:100% !important; box-sizing:border-box !important; margin-bottom:28px !important;">
+            <div style="padding:16px 18px 6px; font-weight:800; color:#1c1e26; font-size:15px;">
+                🚩 신고된 댓글
+                <span style="font-weight:600; color:#6b7280; font-size:13px;">· 신고 접수 즉시 표시 (총 {{reportedCommentCount}}건)</span>
+            </div>
+            <div class="admin-table-head" style="display:flex !important; flex-direction:row !important; width:100% !important; font-weight:bold !important; background:rgba(255,255,255,.4) !important; padding:12px 0 !important; border-bottom:1px solid rgba(255,255,255,.6) !important; box-sizing:border-box !important;">
+                <div style="width:8% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">No</div>
+                <div style="width:40% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">댓글 내용</div>
+                <div style="width:15% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">작성자</div>
+                <div style="width:12% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">신고 수</div>
+                <div style="width:15% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">상태</div>
+                <div style="width:10% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">확인</div>
+            </div>
+            {{#reportedComments}}
+                <div class="admin-table-row" style="display:flex !important; flex-direction:row !important; width:100% !important; align-items:center !important; padding:14px 0 !important; border-bottom:1px solid rgba(255,255,255,.5) !important; box-sizing:border-box !important;">
+                    <div style="width:8% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">{{commentId}}</div>
+                    <div style="width:40% !important; text-align:left !important; padding:0 14px !important; word-break:break-all !important; box-sizing:border-box !important; color:#374151;">
+                        {{#commentDeleted}}<span style="color:#9ca3af;">(삭제된 댓글) </span>{{/commentDeleted}}{{commentContent}}
+                        <div style="color:#9ca3af; font-size:12px; margin-top:4px;">사유: {{reasons}}{{#latestReportedAt}} · 최근 {{latestReportedAt}}{{/latestReportedAt}}</div>
+                    </div>
+                    <div style="width:15% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">{{commentWriterName}}</div>
+                    <div style="width:12% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important; font-weight:bold !important; color:#e74c3c !important;">{{reportCount}}회</div>
+                    <div style="width:15% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">
+                        {{#reReported}}<span style="background:#fee2e2; color:#dc2626; font-weight:800; font-size:12px; padding:5px 11px; border-radius:999px;">🔴 재신고 {{reportCount}}회</span>{{/reReported}}
+                        {{^reReported}}<span style="background:#fef9c3; color:#a16207; font-weight:700; font-size:12px; padding:5px 11px; border-radius:999px;">신규 신고</span>{{/reReported}}
+                    </div>
+                    <div style="width:10% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">
+                        {{#boardId}}<a href="/boards/{{boardId}}" target="_blank" style="background:#2563eb; color:#fff; text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.85rem; font-weight:700;">보기</a>{{/boardId}}
+                        {{^boardId}}<span style="color:#9ca3af; font-size:0.85rem;">-</span>{{/boardId}}
+                    </div>
+                </div>
+            {{/reportedComments}}
+            {{^reportedComments}}
+                <div style="display:flex !important; justify-content:center !important; align-items:center !important; height:120px !important; color:#888 !important; font-size:0.95rem !important; width:100% !important;">
+                    접수된 신고 댓글이 없습니다.
+                </div>
+            {{/reportedComments}}
+        </div>
+
+        <div style="font-weight:800; color:#1c1e26; font-size:15px; margin:8px 2px 14px;">⛔ 차단 회원</div>
+
         <form action="/admin/blacklists" method="get" class="search-bar">
             <input type="text" class="search-input" name="keyword" placeholder="회원명 또는 사유 검색..." value="{{keyword}}"/>
             <button type="submit" class="search-btn">검색</button>

@@ -96,6 +96,13 @@
     .bookmark-btn.active svg { fill: #2563eb; stroke: #2563eb; }
     .wish-btn.active { border-color: rgba(229,62,62,.4); background: rgba(229,62,62,.1); }
     #wishIcon { display: inline-flex; align-items: center; justify-content: center; }
+    @media (max-width: 640px) {
+        .detail-inner { padding: 0 12px; }
+        .profile-top-row { flex-direction: column; align-items: flex-start; gap: 14px; }
+        .profile-stats { flex-direction: column; gap: 0; }
+        .profile-stat { padding: 14px 0; border-right: none; border-bottom: 1px solid rgba(37,99,235,.08); }
+        .chat-action-wrap { flex-direction: column; }
+    }
 </style>
 
 <section class="detail-section">
@@ -160,7 +167,7 @@
                     </div>
                 </div>
                 <div class="profile-career">{{expertProfile.career}}</div>
-                <div class="profile-stars"><svg viewBox="0 0 24 24" width="15" height="15" fill="#f59e0b" style="vertical-align:middle;margin-right:3px;margin-bottom:2px"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg><span>{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
+                <div class="profile-stars"><span id="avgStarDisplay" data-rating="{{avgRating}}" data-count="{{reviews.size}}">{{avgRating}} ({{reviews.size}}개 리뷰)</span></div>
                 {{^isOwner}}
                 <div class="chat-action-wrap">
                     <a href="/messages/send?receiverId={{expertProfile.memberId}}" class="chat-action-card">
@@ -342,5 +349,25 @@
         const t = pAvatar.textContent.trim();
         pAvatar.textContent = t ? t.charAt(0) : '?';
     }
+</script>
+<script>
+    (function() {
+        const el = document.getElementById('avgStarDisplay');
+        if (!el) return;
+        const rating = parseFloat(el.dataset.rating) || 0;
+        const count = el.dataset.count || '0';
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (rating >= i) {
+                stars += '<span style="color:#f59e0b;font-size:1.1em">★</span>';
+            } else if (rating >= i - 0.5) {
+                stars += '<span style="position:relative;display:inline-block;font-size:1.1em;color:#d1d5db">' +
+                    '<span style="position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#f59e0b">★</span>★</span>';
+            } else {
+                stars += '<span style="color:#d1d5db;font-size:1.1em">★</span>';
+            }
+        }
+        el.innerHTML = stars + ' <span style="color:#374151;font-size:0.9em">' + rating.toFixed(1) + ' (' + count + '개 리뷰)</span>';
+    })();
 </script>
 {{> layout/footer}}

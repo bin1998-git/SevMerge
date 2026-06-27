@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -24,6 +25,7 @@ public class BidController {
 
     private final BidService bidService;
     private final ProjectService projectService;
+    private final com.example.SevMerge.cancelrequest.CancelRequestService cancelRequestService;
 
     // 1. 제안서 작성 폼
     @GetMapping("/bids/save-form")
@@ -119,6 +121,9 @@ public class BidController {
         model.addAttribute("hasNext", page < orderPage.getTotalPages() - 1);
         model.addAttribute("prevPage", page - 1);
         model.addAttribute("nextPage", page + 1);
+        if (sessionUser != null) {
+            model.addAttribute("cancelRequests", cancelRequestService.getPendingForExpert(sessionUser.getId()));
+        }
         return "bid/my-orders";
     }
 
@@ -206,6 +211,40 @@ public class BidController {
             bidService.completeBid(id, sessionUser);
             return ResponseEntity.ok().build();
         } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 12. 작업 상태 변경 (전문가)
+    @PatchMapping("/bids/{id}/work-status")
+    @ResponseBody
+    public ResponseEntity<?> updateWorkStatus(@PathVariable Long id,
+                                               @RequestParam String status,
+                                               HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return ResponseEntity.status(401).build();
+        try {
+            WorkStatus ws = WorkStatus.valueOf(status);
+            bidService.updateWorkStatus(id, ws, sessionUser);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "잘못된 상태값입니다"));
+        }
+    }
+
+    // 13. 작업물 파일 제출 (전문가)
+    @PostMapping("/bids/{id}/submit-work")
+    @ResponseBody
+    public ResponseEntity<?> submitWork(@PathVariable Long id,
+                                         @RequestParam(required = false) MultipartFile file,
+                                         @RequestParam(required = false) String note,
+                                         HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return ResponseEntity.status(401).build();
+        try {
+            bidService.submitWork(id, file, note, sessionUser);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }

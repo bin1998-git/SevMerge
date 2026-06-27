@@ -186,13 +186,13 @@
                         <div class="expert-avatar" id="expertAvatar">{{sessionUser.name}}</div>
                         <div class="expert-name">{{sessionUser.name}}</div>
                         <div class="grade-badge-wrap">
-                            {{#expertProfile.normal}}<div class="grade-badge"><img src="/normal.png" class="grade-badge-img" alt="일반 전문가"/></div>{{/expertProfile.normal}}
-                            {{#expertProfile.skilled}}<div class="grade-badge"><img src="/skilled.png" class="grade-badge-img" alt="숙련 전문가"/></div>{{/expertProfile.skilled}}
-                            {{#expertProfile.master}}<div class="grade-badge"><img src="/master.png" class="grade-badge-img" alt="마스터 전문가"/></div>{{/expertProfile.master}}
+                            {{#expertProfile.normal}}<div class="grade-badge"><img src="/normal.svg" class="grade-badge-img" alt="일반 전문가"/></div>{{/expertProfile.normal}}
+                            {{#expertProfile.skilled}}<div class="grade-badge"><img src="/skilled.svg" class="grade-badge-img" alt="숙련 전문가"/></div>{{/expertProfile.skilled}}
+                            {{#expertProfile.master}}<div class="grade-badge"><img src="/master.svg" class="grade-badge-img" alt="마스터 전문가"/></div>{{/expertProfile.master}}
                         </div>
                         <div class="expert-stats">
                             <div class="expert-stat"><span class="expert-stat-val">{{reviews.size}}</span><span class="expert-stat-lbl">받은 리뷰</span></div>
-                            <div class="expert-stat"><span class="expert-stat-val">{{avgRating}}</span><span class="expert-stat-lbl">평균 평점</span></div>
+                            <div class="expert-stat"><span class="expert-stat-val" id="dashAvgRating" data-rating="{{avgRating}}">{{avgRating}}</span><span class="expert-stat-lbl">평균 평점</span></div>
                             <div class="expert-stat"><span class="expert-stat-val">{{wishCount}}</span><span class="expert-stat-lbl">받은 찜</span></div>
                         </div>
                     </div>
@@ -219,7 +219,9 @@
                 <div class="dash-card">
                     <div class="dash-card-header"><span class="dash-card-title">기술스택 &amp; 약력</span></div>
                     <div class="dash-card-body">
-                        <div class="quick-links">
+                        {{#expertProfile.career}}<div style="font-size:12px;color:#4a6fa5;margin-bottom:8px;padding:8px 12px;background:rgba(37,99,235,.05);border-radius:8px;">📌 {{expertProfile.career}}</div>{{/expertProfile.career}}
+                        {{#expertProfile.skillList}}<span style="display:inline-block;font-size:11px;background:rgba(37,99,235,.08);color:#2563eb;border-radius:5px;padding:2px 8px;margin:2px;">{{.}}</span>{{/expertProfile.skillList}}
+                        <div class="quick-links" style="margin-top:10px;">
                             <a href="/experts/my/info-edit" class="quick-link">
                                 <span class="quick-link-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 22H4v-4h2v4Zm14 0h-2v-4h2v4ZM8 18H6v-2h2v2Zm10 0h-2v-2h2v2Zm-2-2H8v-2h8v2Zm-1-4H9v-2h6v2Zm-6-2H7V4h2v6Zm8 0h-2V4h2v6Zm-2-6H9V2h6v2Z"/></svg></span>
                                 개인정보 수정
@@ -363,6 +365,62 @@
 <script>
     const el = document.getElementById('expertAvatar');
     if (el) { const t = el.textContent.trim(); el.textContent = t ? t.charAt(0) : '?'; }
+
+    function confirmWithdraw() {
+        if (confirm('정말로 회원탈퇴를 진행하시겠습니까?\n탈퇴 후 계정과 모든 데이터가 삭제되며 복구할 수 없습니다.')) {
+            fetch('/my-pages/withdraw', {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'}
+            }).then(res => {
+                if (res.ok) {
+                    alert('회원탈퇴가 완료되었습니다.');
+                    window.location.href = '/';
+                } else {
+                    return res.text().then(msg => {
+                        alert(msg || '탈퇴 처리 중 오류가 발생했습니다.');
+                    });
+                }
+            }).catch(() => alert('탈퇴 처리 중 오류가 발생했습니다.'));
+        }
+    }
 </script>
+<script>
+    (function() {
+        const el = document.getElementById('dashAvgRating');
+        if (!el) return;
+        const rating = parseFloat(el.dataset.rating) || 0;
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (rating >= i) {
+                stars += '<span style="color:#f59e0b">★</span>';
+            } else if (rating >= i - 0.5) {
+                stars += '<span style="position:relative;display:inline-block;color:#d1d5db">' +
+                    '<span style="position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#f59e0b">★</span>★</span>';
+            } else {
+                stars += '<span style="color:#d1d5db">★</span>';
+            }
+        }
+        el.innerHTML = stars + '<br><small style="color:#6b7280">' + rating.toFixed(1) + '</small>';
+    })();
+</script>
+
+<style>
+    .withdraw-section { margin: 32px auto; max-width: 900px; padding: 0 20px; }
+    .withdraw-box { background: #fff; border: 1px solid #fee2e2; border-radius: 12px; padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .withdraw-info h3 { font-size: 14px; font-weight: 600; color: #dc2626; margin: 0 0 4px; }
+    .withdraw-info p { font-size: 13px; color: #6b7280; margin: 0; }
+    .withdraw-btn { background: #fff; border: 1px solid #dc2626; color: #dc2626; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .withdraw-btn:hover { background: #fef2f2; }
+</style>
+
+<section class="withdraw-section">
+    <div class="withdraw-box">
+        <div class="withdraw-info">
+            <h3>회원 탈퇴</h3>
+            <p>진행 중인 의뢰가 있을 경우 탈퇴가 제한됩니다. 모든 의뢰 완료 후 탈퇴하실 수 있습니다.</p>
+        </div>
+        <button class="withdraw-btn" onclick="confirmWithdraw()">회원탈퇴</button>
+    </div>
+</section>
 
 {{> layout/footer}}

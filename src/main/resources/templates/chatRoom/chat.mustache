@@ -287,11 +287,18 @@
     /* 입력 바 */
     .chat-input-bar {
         display: flex;
-        gap: 10px;
-        padding: 16px 20px;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 20px;
         border-top: 1px solid #f3f4f8;
         background: #fff;
         flex-shrink: 0;
+    }
+
+    .chat-input-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
     }
 
     .chat-input {
@@ -327,10 +334,38 @@
         cursor: pointer;
         font-family: inherit;
         transition: background .15s;
+        height: 44px;
     }
 
-    .chat-send:hover {
-        background: #1d4ed8;
+    .chat-send:hover { background: #1d4ed8; }
+
+    .btn-img-upload {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: #f8f9fc;
+        border: 1.5px solid #e2e5ef;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all .15s; flex-shrink: 0;
+    }
+    .btn-img-upload:hover { border-color: #2563eb; background: #eff6ff; }
+
+    .img-preview-bar {
+        display: flex; align-items: center; gap: 8px;
+        padding: 6px 4px;
+        display: none;
+    }
+    .img-preview-bar.show { display: flex; }
+    .img-preview-thumb { width: 52px; height: 52px; object-fit: cover; border-radius: 8px; border: 1.5px solid #e2e5ef; }
+    .img-preview-name { font-size: 12px; color: #4a6fa5; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .img-preview-remove { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; line-height: 1; padding: 2px; }
+
+    /* 채팅 이미지 버블 */
+    .msg-image { max-width: 220px; border-radius: 12px; cursor: pointer; display: block; border: 1px solid rgba(0,0,0,.06); }
+    .mine .msg-image { border-color: rgba(255,255,255,.3); }
+    @media (max-width: 768px) {
+        .chat-wrap { grid-template-columns: 1fr; }
+        .chat-sidebar { display: none; }
+        .msg-row { max-width: 85%; }
     }
 </style>
 
@@ -403,8 +438,23 @@
         </div>
         <div class="chat-body" id="chatBody"></div>
         <div class="chat-input-bar">
-            <input id="msgInput" class="chat-input" type="text" placeholder="메시지를 입력하세요" autocomplete="off"/>
-            <button id="sendBtn" class="chat-send">전송</button>
+            <div class="img-preview-bar" id="imgPreviewBar">
+                <img id="imgPreviewThumb" class="img-preview-thumb" src="" alt="" />
+                <span id="imgPreviewName" class="img-preview-name"></span>
+                <button class="img-preview-remove" onclick="clearImagePreview()" title="취소">×</button>
+            </div>
+            <div class="chat-input-row">
+                <button class="btn-img-upload" onclick="document.getElementById('imgFileInput').click()" title="이미지 첨부">
+                    <svg viewBox="0 0 20 20" width="20" height="20" fill="#4a6fa5">
+                        <rect x="1" y="4" width="18" height="12" rx="2" ry="2" fill="none" stroke="#4a6fa5" stroke-width="1.5"/>
+                        <circle cx="7" cy="9" r="2" fill="#4a6fa5"/>
+                        <polyline points="1,16 6,10 10,14 13,11 19,16" fill="none" stroke="#4a6fa5" stroke-width="1.3"/>
+                    </svg>
+                </button>
+                <input type="file" id="imgFileInput" accept="image/*" style="display:none;" onchange="onImageSelected(this)" />
+                <input id="msgInput" class="chat-input" type="text" placeholder="메시지를 입력하세요" autocomplete="off"/>
+                <button id="sendBtn" class="chat-send">전송</button>
+            </div>
         </div>
     </section>
 
@@ -414,7 +464,7 @@
 <div id="historyData" style="display:none;">
     {{#messages}}
         <div class="hist" data-id="{{id}}" data-sender-id="{{senderId}}" data-sender-name="{{senderName}}"
-             data-text="{{text}}" data-date="{{date}}" data-time="{{time}}"></div>
+             data-text="{{text}}" data-image-url="{{imageUrl}}" data-date="{{date}}" data-time="{{time}}"></div>
     {{/messages}}
 </div>
 
@@ -432,6 +482,7 @@
         const myId = "{{loginUserId}}";
         const body = document.getElementById("chatBody");
         const input = document.getElementById("msgInput");
+        let pendingImageUrl = null;
 
         // 사이드바에서 현재 방 활성 표시
         document.querySelectorAll(".chat-room-item").forEach(function (el) {
@@ -487,7 +538,18 @@
             line.className = "msg-line";
             const bubble = document.createElement("div");
             bubble.className = "msg-bubble";
-            bubble.textContent = m.text || "";
+            if (m.imageUrl) {
+                const img = document.createElement("img");
+                img.src = m.imageUrl;
+                img.className = "msg-image";
+                img.onclick = function() { window.open(m.imageUrl, '_blank'); };
+                bubble.appendChild(img);
+            }
+            if (m.text) {
+                const textNode = document.createTextNode(m.text);
+                if (m.imageUrl) { bubble.appendChild(document.createElement("br")); }
+                bubble.appendChild(textNode);
+            }
             line.appendChild(bubble);
             if (m.time) {
                 const time = document.createElement("span");
@@ -514,6 +576,7 @@
                 senderId: el.dataset.senderId,
                 senderName: el.dataset.senderName,
                 text: el.dataset.text,
+                imageUrl: el.dataset.imageUrl || null,
                 date: el.dataset.date,
                 time: el.dataset.time
             });
@@ -577,18 +640,49 @@
 
         function send() {
             const text = input.value.trim();
-            if (!text) return;
+            if (!text && !pendingImageUrl) return;
             stompClient.publish({
                 destination: "/pub/chat/message",
-                body: JSON.stringify({chatRoomId: Number(roomId), text: text})
+                body: JSON.stringify({chatRoomId: Number(roomId), text: text, imageUrl: pendingImageUrl})
             });
             input.value = "";
+            clearImagePreview();
         }
 
         document.getElementById("sendBtn").addEventListener("click", send);
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") send();
         });
+
+        window.onImageSelected = function(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const bar = document.getElementById("imgPreviewBar");
+            const thumb = document.getElementById("imgPreviewThumb");
+            const nameEl = document.getElementById("imgPreviewName");
+            const reader = new FileReader();
+            reader.onload = e => { thumb.src = e.target.result; };
+            reader.readAsDataURL(file);
+            nameEl.textContent = file.name;
+            bar.classList.add("show");
+
+            // 실제 서버 업로드
+            const fd = new FormData();
+            fd.append("file", file);
+            fetch("/chat/upload", { method: "POST", body: fd })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.imageUrl) { pendingImageUrl = d.imageUrl; }
+                    else { alert(d.message || "업로드에 실패했습니다"); clearImagePreview(); }
+                });
+        };
+
+        window.clearImagePreview = function() {
+            pendingImageUrl = null;
+            document.getElementById("imgPreviewBar").classList.remove("show");
+            document.getElementById("imgFileInput").value = "";
+            document.getElementById("imgPreviewThumb").src = "";
+        };
     })();
 </script>
 <script>

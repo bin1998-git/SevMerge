@@ -33,6 +33,7 @@ public class ProjectController {
     private final BidRepository bidRepository;
     private final PaymentService paymentService;
     private final ReviewService reviewService;
+    private final com.example.SevMerge.deliverable.DeliverableService deliverableService;
 
     // 프로젝트 등록 폼
     @GetMapping("/projects/save-form")
@@ -110,7 +111,6 @@ public class ProjectController {
     @GetMapping("/projects/{id}")
     public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
         log.info("프로젝트 상세조회 요청 - projectId: {}", id);
-        projectService.increase(id);
 
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         ProjectResponseDTO.DetailDTO project = projectService.findProjectById(id);
@@ -124,6 +124,8 @@ public class ProjectController {
         // 로그인한 사용자가 프로젝트 작성자인지 확인
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(project.getMemberId());
         model.addAttribute("isOwner", isOwner);
+
+        model.addAttribute("deliverables", deliverableService.getByProject(id));
 
         // 총 제안서 개수는 의뢰인이거나, 비공개 프로젝트가 아닐 때만 정확하게 전달합니다.
         int bidCount = (bids != null) ? bids.size() : 0;

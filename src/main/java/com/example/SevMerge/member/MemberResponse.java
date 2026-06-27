@@ -139,6 +139,15 @@ public class MemberResponse {
         return "/images/" + profileImage;
     }
 
+    public String getRoleName() {
+        if (role == null) return "";
+        return switch (role) {
+            case ADMIN -> "관리자";
+            case EXPERT -> "전문가";
+            case CLIENT -> "일반";
+        };
+    }
+
     // 포맷팅용
     public String getDisplayBalance() {
         return balance == null ? "0" : String.format("%,d", balance);

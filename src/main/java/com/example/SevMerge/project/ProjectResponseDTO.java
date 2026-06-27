@@ -40,6 +40,7 @@ public class ProjectResponseDTO {
         private boolean isProjectClosed;
         private boolean isCancelled;
         private boolean isDraft;
+        private boolean cancelPending;
 
         public ListDTO(Project project) {
             this.id = project.getId();
@@ -59,7 +60,7 @@ public class ProjectResponseDTO {
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
             this.createdAt = project.getCreatedAt();
-            long diff = project.getDeadline().getTime() - System.currentTimeMillis();
+            long diff = project.getDeadline() != null ? project.getDeadline().getTime() - System.currentTimeMillis() : 0;
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
             this.isUrgent = this.dDay <= 3;
             this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
@@ -93,6 +94,7 @@ public class ProjectResponseDTO {
         private Integer dDay;
         private boolean isCertifiedOnly;
         private Timestamp createdAt;
+        private boolean isOpen;
 
         public DetailDTO(Project project) {
             this.id = project.getId();
@@ -105,14 +107,15 @@ public class ProjectResponseDTO {
             this.budgetMax = project.getBudgetMax();
             this.deadline = project.getDeadline();
             this.privateProject = project.isPrivate();
-            this.deadlineDate = project.getDeadline().toString().substring(0, 10);
+            this.deadlineDate = project.getDeadline() != null ? project.getDeadline().toString().substring(0, 10) : "";
             this.bidFilter = project.getBidFilter().name();
             this.projectStatus = project.getProjectStatus().name();
             this.viewCount = project.getViewCount();
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
+            this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
             this.createdAt = project.getCreatedAt();
-            long diff = project.getDeadline().getTime() - System.currentTimeMillis();
+            long diff = project.getDeadline() != null ? project.getDeadline().getTime() - System.currentTimeMillis() : 0;
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
         }
     }

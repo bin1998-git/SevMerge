@@ -23,6 +23,11 @@
     .chat-placeholder-icon { font-size: 48px; }
     .chat-placeholder-title { font-size: 17px; font-weight: 800; color: #9ca3af; }
     .chat-placeholder-sub { font-size: 13px; color: #c4c9d9; }
+    @media (max-width: 768px) {
+        .chat-wrap { grid-template-columns: 1fr; }
+        .chat-placeholder { display: none; }
+        .chat-sidebar { border-right: none; }
+    }
 </style>
 
 <div class="chat-wrap">

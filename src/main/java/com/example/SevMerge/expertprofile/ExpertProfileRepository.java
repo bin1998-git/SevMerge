@@ -11,6 +11,7 @@ public interface ExpertProfileRepository extends JpaRepository<ExpertProfile, Lo
     @Query("""
     SELECT e FROM ExpertProfile e
     WHERE e.member.role = 'EXPERT'
+    AND e.member.status = 'ACTIVE'
 """)
     List<ExpertProfile> findByExpert();
         // member_id로 전문가 프로필 조회

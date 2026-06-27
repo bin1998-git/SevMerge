@@ -41,7 +41,7 @@ public class BoardController {
 
         if (boardType.equalsIgnoreCase("INQUIRY")) {
             if (sessionUser == null) return "login-form";
-            List<BoardResponse.ListDTO> list = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser);
+            List<BoardResponse.ListDTO> list = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser, null);
             model.addAttribute("boards",      list);
             model.addAttribute("boardCount",  list.size());
             model.addAttribute("totalPages",  1);
@@ -127,11 +127,14 @@ public class BoardController {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
 
-        model.addAttribute("board",     board);
-        model.addAttribute("isAdmin",   sessionUser != null && sessionUser.getRole() == Role.ADMIN);
-        model.addAttribute("isFree",    board.getBoardType().equalsIgnoreCase("FREE"));
-        model.addAttribute("isNotice",  board.getBoardType().equalsIgnoreCase("NOTICE"));
-        model.addAttribute("isInquiry", board.getBoardType().equalsIgnoreCase("INQUIRY"));
+        model.addAttribute("board",      board);
+        model.addAttribute("isAdmin",    sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+        model.addAttribute("isFree",     board.getBoardType().equalsIgnoreCase("FREE"));
+        model.addAttribute("isNotice",   board.getBoardType().equalsIgnoreCase("NOTICE"));
+        model.addAttribute("isInquiry",  board.getBoardType().equalsIgnoreCase("INQUIRY"));
+        model.addAttribute("isNormal",   board.getInquiryScope() != null && board.getInquiryScope().name().equals("NORMAL"));
+        model.addAttribute("isPayment",  board.getInquiryScope() != null && board.getInquiryScope().name().equals("PAYMENT"));
+        model.addAttribute("isSecurity", board.getInquiryScope() != null && board.getInquiryScope().name().equals("SECURITY"));
         return "board/board-update";
     }
 
@@ -183,8 +186,13 @@ public class BoardController {
     public String deleteBoardByAdmin(@PathVariable Long boardId, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/admin/boards";
+        BoardResponse.DetailDTO board = boardService.detailBoard(boardId);
+        String boardType = board.getBoardType();
         boardService.deleteBoardByAdmin(boardId);
-        return "redirect:/admin/boards";
+        if ("INQUIRY".equalsIgnoreCase(boardType)) {
+            return "redirect:/admin/inquiry";
+        }
+        return "redirect:/admin/boards?boardType=" + boardType;
     }
 
     @GetMapping("/admin/notices/write")
@@ -216,16 +224,18 @@ public class BoardController {
 
     @GetMapping("/admin/inquiry")
     public String adminInquiryList(@RequestParam(defaultValue = "1") int page,
+                                   @RequestParam(required = false) String keyword,
                                    Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
-        java.util.List<BoardResponse.ListDTO> all = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser);
+        java.util.List<BoardResponse.ListDTO> all = boardService.findAllInquiry(BoardType.INQUIRY, sessionUser, keyword);
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("boards", s < total ? all.subList(s, e) : new java.util.ArrayList<>());
         model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
+        model.addAttribute("keyword", keyword != null ? keyword : "");
         return "admin/admin-inquiry";
     }
 }

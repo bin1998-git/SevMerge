@@ -3,6 +3,8 @@ package com.example.SevMerge.payment;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.ForbiddenException;
 import com.example.SevMerge.core.exception.NotFoundException;
+import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.Role;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * PaymentService — 에스크로 관리
@@ -40,6 +45,8 @@ public class PaymentService {
     private static final double PLATFORM_FEE_RATE = 0.03;
 
     private final PaymentRepository paymentRepository;
+    private final EscrowSettlementRequestRepository escrowRequestRepository;
+    private final MemberRepository memberRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -227,6 +234,160 @@ public class PaymentService {
                 .orElseThrow(() -> new NotFoundException("결제 정보를 찾을 수 없습니다."));
     }
 
+    // ── 전문가 정산 요청 ──
+
+    /**
+     * 전문가 → 관리자 정산 요청
+     * 프로젝트가 COMPLETED 상태이고 Payment가 PAID일 때만 가능
+     */
+    @Transactional
+    public void requestSettlement(Long paymentId, Long expertId, String message) {
+        Payment payment = findById(paymentId);
+
+        if (!Objects.equals(payment.getExpertId(), expertId)) {
+            throw new ForbiddenException("정산 요청 권한이 없습니다.");
+        }
+        if (payment.getStatus() != PaymentStatus.PAID) {
+            throw new BadRequestException("에스크로 보관 중인 결제에만 정산 요청이 가능합니다.");
+        }
+        if (escrowRequestRepository.existsByPaymentIdAndStatus(paymentId, EscrowRequestStatus.PENDING)) {
+            throw new BadRequestException("이미 정산 요청 중입니다. 관리자 처리를 기다려주세요.");
+        }
+
+        String projectStatus = (String) em
+                .createNativeQuery("SELECT project_status FROM project_tb WHERE id = :pid")
+                .setParameter("pid", payment.getProjectId())
+                .getSingleResult();
+
+        if (!"COMPLETED".equals(projectStatus)) {
+            throw new BadRequestException("작업 완료(COMPLETED) 상태의 프로젝트에만 정산 요청이 가능합니다.");
+        }
+
+        EscrowSettlementRequest request = EscrowSettlementRequest.builder()
+                .paymentId(paymentId)
+                .expertId(expertId)
+                .projectId(payment.getProjectId())
+                .message(message)
+                .build();
+        escrowRequestRepository.save(request);
+
+        log.info("[Escrow] 정산요청 — paymentId={}, expertId={}", paymentId, expertId);
+    }
+
+    // ── 관리자 에스크로 승인 정산 ──
+
+    /**
+     * 관리자 → 에스크로 강제 정산 승인
+     * EscrowSettlementRequest를 APPROVED로 변경하고 settle() 실행
+     */
+    @Transactional
+    public void adminApproveSettlement(Long requestId) {
+        EscrowSettlementRequest req = escrowRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("정산 요청을 찾을 수 없습니다."));
+
+        if (req.getStatus() != EscrowRequestStatus.PENDING) {
+            throw new BadRequestException("이미 처리된 요청입니다.");
+        }
+
+        Payment payment = findById(req.getPaymentId());
+
+        try {
+            payment.settle();
+        } catch (IllegalStateException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+
+        // 전문가 97% 지급
+        em.createQuery("UPDATE Member m SET m.balance = m.balance + :amount WHERE m.id = :id")
+                .setParameter("amount", payment.getNetAmount())
+                .setParameter("id", payment.getExpertId())
+                .executeUpdate();
+
+        // 관리자 3% 수수료
+        int adminUpdated = em.createQuery(
+                "UPDATE Member m SET m.balance = m.balance + :fee WHERE m.role = :role")
+                .setParameter("fee", payment.getPlatformFee())
+                .setParameter("role", Role.ADMIN)
+                .executeUpdate();
+        if (adminUpdated == 0) {
+            log.warn("[Escrow] 관리자 계정 없음 — 수수료 {}원 미지급", payment.getPlatformFee());
+        }
+
+        // 프로젝트 → DONE
+        em.createNativeQuery("UPDATE project_tb SET project_status = 'DONE' WHERE id = :pid")
+                .setParameter("pid", payment.getProjectId())
+                .executeUpdate();
+
+        req.approve();
+
+        log.info("[Escrow] 관리자 정산승인 — requestId={}, paymentId={}, netAmount={}",
+                requestId, req.getPaymentId(), payment.getNetAmount());
+    }
+
+    @Transactional
+    public void adminRejectSettlement(Long requestId) {
+        EscrowSettlementRequest req = escrowRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("정산 요청을 찾을 수 없습니다."));
+
+        if (req.getStatus() != EscrowRequestStatus.PENDING) {
+            throw new BadRequestException("이미 처리된 요청입니다.");
+        }
+
+        req.reject();
+        log.info("[Escrow] 정산요청 반려 — requestId={}", requestId);
+    }
+
+    // ── 관리자 에스크로 목록 조회 ──
+
+    public List<AdminEscrowDTO> getAdminEscrowList(String status) {
+        List<EscrowSettlementRequest> list;
+        if ("PENDING".equals(status)) {
+            list = escrowRequestRepository.findAllByStatusOrderByCreatedAtDesc(EscrowRequestStatus.PENDING);
+        } else if ("APPROVED".equals(status)) {
+            list = escrowRequestRepository.findAllByStatusOrderByCreatedAtDesc(EscrowRequestStatus.APPROVED);
+        } else if ("REJECTED".equals(status)) {
+            list = escrowRequestRepository.findAllByStatusOrderByCreatedAtDesc(EscrowRequestStatus.REJECTED);
+        } else {
+            list = escrowRequestRepository.findAllByOrderByCreatedAtDesc();
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+
+        return list.stream().map(req -> {
+            Payment payment = paymentRepository.findById(req.getPaymentId()).orElse(null);
+            String expertName = memberRepository.findById(req.getExpertId())
+                    .map(m -> m.getName()).orElse("(알 수 없음)");
+            String expertEmail = memberRepository.findById(req.getExpertId())
+                    .map(m -> m.getEmail()).orElse("");
+            String statusLabel = switch (req.getStatus()) {
+                case PENDING  -> "대기중";
+                case APPROVED -> "승인";
+                case REJECTED -> "반려";
+            };
+            return new AdminEscrowDTO(
+                    req.getId(),
+                    req.getPaymentId(),
+                    req.getProjectId(),
+                    expertName,
+                    expertEmail,
+                    payment != null ? String.format("%,d", payment.getAmount()) : "-",
+                    payment != null ? String.format("%,d", payment.getNetAmount()) : "-",
+                    sdf.format(java.sql.Timestamp.valueOf(req.getCreatedAt())),
+                    req.getMessage(),
+                    statusLabel,
+                    req.getStatus() == EscrowRequestStatus.PENDING,
+                    req.getStatus() == EscrowRequestStatus.APPROVED,
+                    req.getStatus() == EscrowRequestStatus.REJECTED
+            );
+        }).collect(Collectors.toList());
+    }
+
+    // ── 전문가 정산요청 현황 조회 ──
+
+    public Set<Long> getPendingSettlementPaymentIds(Long expertId) {
+        return escrowRequestRepository.findPendingPaymentIdsByExpertId(expertId);
+    }
+
     // ── private ──
 
     private Payment findById(Long paymentId) {
@@ -241,4 +402,22 @@ public class PaymentService {
                 .getSingleResult();
         return "ADMIN".equals(role);
     }
+
+    // ── DTO ──
+
+    public record AdminEscrowDTO(
+            Long   requestId,
+            Long   paymentId,
+            Long   projectId,
+            String expertName,
+            String expertEmail,
+            String amount,
+            String netAmount,
+            String requestDate,
+            String message,
+            String statusLabel,
+            boolean isPending,
+            boolean isApproved,
+            boolean isRejected
+    ) {}
 }

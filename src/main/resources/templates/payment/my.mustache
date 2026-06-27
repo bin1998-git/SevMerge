@@ -126,6 +126,14 @@
                     <button class="refund-btn" onclick="refund({{id}})">환불</button>
                     {{/isPaid}}
                     {{/isExpert}}
+                    {{#isExpert}}
+                    {{#canRequestSettlement}}
+                    <button class="settle-btn" onclick="requestSettle({{id}})">정산 요청</button>
+                    {{/canRequestSettlement}}
+                    {{#hasSettlementRequest}}
+                    <span style="font-size:11px;color:#b45309;background:#fef3c7;padding:3px 10px;border-radius:20px;font-weight:700;">정산요청 중</span>
+                    {{/hasSettlementRequest}}
+                    {{/isExpert}}
                 </span>
             </div>
         </div>
@@ -164,6 +172,18 @@
             .then(r => r.json())
             .then(d => {
                 if (d.success) { alert('환불이 완료되었습니다.'); location.reload(); }
+                else alert(d.message);
+            });
+    }
+
+    function requestSettle(paymentId) {
+        const msg = prompt('관리자에게 전달할 메시지를 입력하세요 (선택사항):') ?? '';
+        if (msg === null) return;
+        if (!confirm('관리자에게 정산을 요청하시겠습니까?\n의뢰인이 미승인 중인 에스크로 금액의 정산을 요청합니다.')) return;
+        fetch('/payment/' + paymentId + '/request-settle?message=' + encodeURIComponent(msg), { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) { alert('정산 요청이 완료되었습니다. 관리자 검토 후 처리됩니다.'); location.reload(); }
                 else alert(d.message);
             });
     }

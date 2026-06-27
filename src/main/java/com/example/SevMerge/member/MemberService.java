@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.data.domain.PageRequest;
 
 @Slf4j
 @Service
@@ -98,11 +99,15 @@ public class MemberService {
      * 회원 전체 조회 기능
      */
     public List<MemberResponse> getAllMembers() {
-        // 1. DB에서 전체 회원 엔티티 리스트 조회 (기본 내장 메서드)
         List<Member> members = memberRepository.findAllByIsDeletedFalse();
-
-        // 2. 엔티티 리스트를 응답용 DTO 리스트로 변환하여 반환
         return members.stream()
+                .map(MemberResponse::from)
+                .toList();
+    }
+
+    public List<MemberResponse> getRecentMembers() {
+        return memberRepository.findTop5RecentMembers(PageRequest.of(0, 5))
+                .stream()
                 .map(MemberResponse::from)
                 .toList();
     }
@@ -247,6 +252,13 @@ public class MemberService {
             throw new AdminException("관리자 계정은 삭제가 불가능합니다.");
         }
 
+        // 전문가 탈퇴 제한: 낙찰된 진행중 의뢰가 있으면 탈퇴 불가
+        if (member.isExpert()) {
+            if (bidRepository.existsActiveByExpertId(memberId)) {
+                throw new BadRequestException("진행 중인 수주 의뢰가 있어 탈퇴할 수 없습니다. 모든 의뢰가 완료된 후 탈퇴해 주세요.");
+            }
+        }
+
         // 의뢰인 탈퇴 제한: 진행중/완료대기 프로젝트가 있으면 탈퇴 불가
         if (member.isClient()) {
             boolean hasActiveProject = !projectRepository.findBlockingProjectsByMemberId(memberId).isEmpty();
@@ -280,9 +292,11 @@ public class MemberService {
     public void updateMyInfo(Long memberId, MemberRequest.Update request, MultipartFile profileImageFile) {
         Member member = findMemberById(memberId);
 
+        String name = (request.getName() != null && !request.getName().isBlank())
+                ? request.getName() : member.getName();
         String phone = (request.getPhone() != null && !request.getPhone().isBlank())
                 ? request.getPhone() : member.getPhone();
-        member.updateInfo(request.getName(), phone);
+        member.updateInfo(name, phone);
 
         if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
             if (member.getProvider() != null && !member.getProvider().isBlank()) {
@@ -311,6 +325,12 @@ public class MemberService {
                 throw new BadRequestException("이미지 업로드에 실패했습니다.");
             }
         }
+    }
+
+    @Transactional
+    public void deleteProfileImage(Long memberId) {
+        Member member = findMemberById(memberId);
+        member.updateProfileImage(null);
     }
 
     // 비밀번호 검증 메서드

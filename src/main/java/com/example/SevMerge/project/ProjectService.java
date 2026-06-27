@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -478,7 +480,15 @@ public class ProjectService {
 
 
     public List<ProjectResponseDTO.ListDTO> findAllProjectsList() {
-        return projectRepository.findAll().stream() // 전체 조회
+        return projectRepository.findAll().stream()
+                .map(ProjectResponseDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProjectResponseDTO.ListDTO> getRecentProjects() {
+        return projectRepository.findAllProjects(
+                PageRequest.of(0, 5, Sort.by("createdAt").descending())
+        ).stream()
                 .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }

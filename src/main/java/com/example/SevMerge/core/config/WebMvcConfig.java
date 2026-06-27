@@ -141,9 +141,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String externalPath = Paths.get(FileUtil.IMAGES_DIR).toString();
         registry.addResourceHandler("/images/**")
-                // 추후 C:upload/
-                // C:\\upload
-                .addResourceLocations("file:"+externalPath);
+                .addResourceLocations("file:" + externalPath + "/");
 
         // 뱃지 이미지용 별도 핸들러
         registry.addResourceHandler("/badges/**")

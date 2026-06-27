@@ -166,6 +166,13 @@
         text-decoration: none; transition: all .15s;
     }
     .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
+    @media (max-width: 768px) {
+        .board-inner { padding: 0 12px; }
+        .page-header-inner { padding: 0 12px; }
+        .board-table-head { display: none; }
+        .board-table-row { grid-template-columns: 1fr 80px; }
+        .board-table-row > *:nth-child(3), .board-table-row > *:nth-child(4) { display: none; }
+    }
 </style>
 
 <!-- 배경 글로우 -->

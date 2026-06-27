@@ -6,6 +6,7 @@ import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +34,15 @@ public class CommentService {
 
     // 댓글 작성
     public Comment createComment(CommentRequest.SaveDTO saveDTO, long id) {
-        // 게시글 조회
         Board boardEntity = boardRepository.findById(saveDTO.getBoardId()).orElseThrow(
                 () -> new NotFoundException("해당 게시글을 찾을 수 없습니다."));
 
-        // id로 사용자 조회
         Member memberEntity = memberRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (memberEntity.getStatus() == Status.COMMUNITY_RESTRICTED) {
+            throw new BadRequestException("커뮤니티 이용 제한 상태입니다. 제한 기간 중에는 댓글을 작성할 수 없습니다.");
+        }
 
         Comment comment = saveDTO.toEntity(memberEntity, boardEntity);
         commentRepository.save(comment);

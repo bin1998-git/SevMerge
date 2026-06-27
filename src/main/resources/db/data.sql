@@ -1,33 +1,38 @@
 -- Member 샘플데이터
 -- 1번 샘플: 프로젝트를 발주하고 대금을 결제하는 의뢰인 (CLIENT)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
+INSERT IGNORE INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('client01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '김의뢰', '010-1234-5678',
         'CLIENT', 'ACTIVE', false, NOW(), 0);
 
 -- 2번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 1 (EXPERT - 개발자)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
+INSERT IGNORE INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('expert01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '홍길동', '010-9876-5432',
         'EXPERT', 'ACTIVE', false, NOW(), 0);
 
 -- 3번 샘플: 프로젝트에 입찰 제안서를 제출하는 전문가 2 (EXPERT - 디자이너)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
+INSERT IGNORE INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('expert02@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '김디자', '010-5555-4444',
         'EXPERT', 'ACTIVE', false, NOW(), 0);
 
 -- 4번 샘플: 플랫폼을 관리하고 분쟁을 조정하는 최고 관리자 (ADMIN)
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
+INSERT IGNORE INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES ('admin@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '최관리', '010-0000-0000',
         'ADMIN', 'ACTIVE', false, NOW(), 0);
 
 
--- 찜 샘플 데이터 (AI 인기 전문가 테스트를 위해 2번에게 찜 몰아준상태입니다)
--- 1번 회원이 2번 전문가 찜
-INSERT INTO expert_wish_tb (member_id, expert_id, created_at) VALUES (1, 2, NOW());
--- 3번 회원이 2번 전문가 찜
-INSERT INTO expert_wish_tb (member_id, expert_id, created_at) VALUES (3, 2, NOW());
-
--- 1번 회원이 3번 전문가 찜
-INSERT INTO expert_wish_tb (member_id, expert_id, created_at) VALUES (1, 3, NOW());
+-- 찜 샘플 데이터 (ID 하드코딩 대신 서브쿼리 — ddl-auto:create 재시작 시 auto_increment 불일치 방지)
+-- 1번 회원이 expert01 찜
+INSERT INTO expert_wish_tb (member_id, expert_id, created_at)
+SELECT m.id, e.id, NOW() FROM member_tb m, member_tb e
+WHERE m.email = 'client01@sevmerge.com' AND e.email = 'expert01@sevmerge.com';
+-- 3번 회원이 expert01 찜
+INSERT INTO expert_wish_tb (member_id, expert_id, created_at)
+SELECT m.id, e.id, NOW() FROM member_tb m, member_tb e
+WHERE m.email = 'expert02@sevmerge.com' AND e.email = 'expert01@sevmerge.com';
+-- 1번 회원이 expert02 찜
+INSERT INTO expert_wish_tb (member_id, expert_id, created_at)
+SELECT m.id, e.id, NOW() FROM member_tb m, member_tb e
+WHERE m.email = 'client01@sevmerge.com' AND e.email = 'expert02@sevmerge.com';
 
 -- Board 샘플데이터
 -- 1번 샘플 (자유게시판): 프리랜서 전문가의 제안서 작성 노하우 공유
@@ -414,7 +419,7 @@ VALUES
 -- ════════════════════════════════════════════════════════════════
 
 -- ── 회원 더미 (일자별 3,5,2,6,4,7,3 = 30명) ──
-INSERT INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
+INSERT IGNORE INTO member_tb (email, password, name, phone, role, status, is_deleted, created_at, report_count)
 VALUES
 ('chart_m01@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저01', '010-0001-0001', 'CLIENT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),
 ('chart_m02@sevmerge.com', '$2a$10$qr.ZacuGzwkRATQgVkeE4OsxnvzoSvln/5cXKYH3jFd33.mnKvPy2', '차트유저02', '010-0001-0002', 'EXPERT', 'ACTIVE', false, DATE_SUB(NOW(), INTERVAL 6 DAY), 0),

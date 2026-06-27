@@ -29,7 +29,7 @@ import java.util.Map;
 @Controller
 public class CustomErrorController implements ErrorController {
 
-    @RequestMapping(value = "/error", produces = MediaType.TEXT_HTML_VALUE)
+    @RequestMapping(value = "/error", produces = {MediaType.TEXT_HTML_VALUE, MediaType.ALL_VALUE})
     public String handleHtmlError(HttpServletRequest request, Model model) {
         int status = getStatus(request);
         log.warn("[L2] Error endpoint called - status={}, path={}",
@@ -43,8 +43,7 @@ public class CustomErrorController implements ErrorController {
         return "err/500";
     }
 
-    @RequestMapping(value = "/error",
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.ALL_VALUE})
+    @RequestMapping(value = "/error", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<Map<String, Object>> handleJsonError(HttpServletRequest request) {
         int status = getStatus(request);
@@ -58,7 +57,7 @@ public class CustomErrorController implements ErrorController {
                         : "Error",
                 "message", getGenericMessage(status)
         );
-        return ResponseEntity.status(status).body(body);
+        return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(body);
     }
 
     // ── helpers ───────────────────────────────────────────────────────────────

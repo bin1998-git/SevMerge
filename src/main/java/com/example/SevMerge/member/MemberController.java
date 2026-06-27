@@ -63,6 +63,7 @@ public class MemberController {
     private final ChargeService chargeService;
     private final RefundApplicationService refundApplicationService;
     private final BookMarkService bookMarkService;
+    private final com.example.SevMerge.cancelrequest.CancelRequestService cancelRequestService;
 
     @GetMapping("/join-start")
     public String joinStart(Model model) {
@@ -267,11 +268,16 @@ public class MemberController {
         model.addAttribute("isPayments", tab.equalsIgnoreCase("payments"));
         model.addAttribute("isChargeHistory", tab.equalsIgnoreCase("chargeHistory"));
         model.addAttribute("isRefundHistory", tab.equalsIgnoreCase("refundHistory"));
-        // 통계 (등록 프로젝트 수, 완료 프로젝트 수)
         List<ProjectResponseDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
-        model.addAttribute("projectCount", myProjects.size());
-        model.addAttribute("completedCount", myProjects.stream()
-                .filter(ProjectResponseDTO.ListDTO::isDone).count());
+        List<ProjectResponseDTO.ListDTO> visibleProjects = myProjects.stream()
+                .filter(p -> !p.isDone())
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("projectCount", visibleProjects.size());
+        model.addAttribute("inProgressCount", visibleProjects.stream().filter(p -> p.isClosed()).count());
+        model.addAttribute("completedCount", myProjects.stream().filter(p -> p.isDone()).count());
+        long proposalCount = 0L;
+        try { proposalCount = bidService.findBidsForClient(loginMember).size(); } catch (Exception ignore) {}
+        model.addAttribute("proposalCount", proposalCount);
 
         //  메시지 카운트
         long unreadMessageCount = messageRepository.countUnreadMessages(loginMember);
@@ -284,8 +290,29 @@ public class MemberController {
         // 탭별 데이터
         final int MY_PAGE_SIZE = 10;
         if (tab.equals("projects")) {
-            List<ProjectResponseDTO.ListDTO> all = myProjects.stream()
+            String projectFilter = request.getParameter("filter");
+            List<ProjectResponseDTO.ListDTO> base;
+            if ("inprogress".equals(projectFilter)) {
+                base = visibleProjects.stream().filter(p -> p.isClosed()).collect(java.util.stream.Collectors.toList());
+                model.addAttribute("projectsTitle", "진행중인 프로젝트");
+                model.addAttribute("projectsDesc", "낙찰되어 진행 중인 프로젝트예요.");
+            } else if ("done".equals(projectFilter)) {
+                base = myProjects.stream().filter(p -> p.isDone()).collect(java.util.stream.Collectors.toList());
+                model.addAttribute("projectsTitle", "완료된 프로젝트");
+                model.addAttribute("projectsDesc", "정산까지 완료된 프로젝트예요.");
+            } else {
+                base = visibleProjects;
+                projectFilter = "";
+                model.addAttribute("projectsTitle", "내 프로젝트");
+                model.addAttribute("projectsDesc", "내가 등록한 프로젝트를 관리해요.");
+            }
+            model.addAttribute("projectFilter", projectFilter == null ? "" : projectFilter);
+            List<ProjectResponseDTO.ListDTO> all = base.stream()
                     .map(project -> {
+                        project.setBidCount((int) bidService.countByProjectId(project.getId()));
+                        if (project.isClosed()) {
+                            project.setCancelPending(cancelRequestService.hasPendingRequest(project.getId()));
+                        }
                         if (project.getSelectedExpertId() != null) {
                             boolean hasReview = reviewRepository.existsByReviewerAndTargeterAndProject(
                                     loginMember.getId(), project.getSelectedExpertId(), project.getId()
@@ -460,6 +487,16 @@ public class MemberController {
         }
     }
 
+    @DeleteMapping("/my-pages/profile-image")
+    @ResponseBody
+    public ResponseEntity<?> deleteProfileImage(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
+        memberService.deleteProfileImage(loginMember.getId());
+        session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
+        return ResponseEntity.ok().body("삭제 완료");
+    }
+
     // 비밀번호 확인api
     @PostMapping("/api/member/verify-password")
     @ResponseBody
@@ -519,6 +556,7 @@ public class MemberController {
         model.addAttribute("isNewSort","asc".equalsIgnoreCase(sort));
 
         // 3. Mustache select 태그의 selected 유지를 위한 상태값 전달
+        model.addAttribute("roleFilter", roleFilter);
         model.addAttribute("isRoleAll", "ALL".equals(roleFilter));
         model.addAttribute("isRoleClient", "CLIENT".equals(roleFilter));
         model.addAttribute("isRoleExpert", "EXPERT".equals(roleFilter));

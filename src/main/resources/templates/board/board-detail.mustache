@@ -243,13 +243,13 @@
                                     {{#isAdmin}}
                                         {{#isOwner}}
                                             <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
-                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;">
+                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
                                                 <input type="hidden" name="boardId" value="{{boardId}}">
                                                 <button type="submit" class="comment-btn delete">삭제</button>
                                             </form>
                                         {{/isOwner}}
                                         {{^isOwner}}
-                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;">
+                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
                                                 <input type="hidden" name="boardId" value="{{boardId}}">
                                                 <button type="submit" class="comment-btn delete">관리자 삭제</button>
                                             </form>
@@ -259,7 +259,7 @@
                                     {{^isAdmin}}
                                         {{#isOwner}}
                                             <button class="comment-btn" onclick="toggleEdit('{{id}}')">수정</button>
-                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;">
+                                            <form action="/comments/{{id}}/delete" method="POST" style="display:inline; margin:0;" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
                                                 <input type="hidden" name="boardId" value="{{boardId}}">
                                                 <button type="submit" class="comment-btn delete">삭제</button>
                                             </form>

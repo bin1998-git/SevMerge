@@ -111,6 +111,23 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    // ── 전문가 정산 요청 ──
+
+    @PostMapping("/{paymentId}/request-settle")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> requestSettlement(
+            @PathVariable Long paymentId,
+            @RequestParam(required = false) String message,
+            HttpSession session) {
+
+        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        if (sessionUser == null)
+            return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
+
+        paymentService.requestSettlement(paymentId, sessionUser.getId(), message);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
     // ── 내역 조회 ──
 
     @GetMapping("/my")
@@ -122,7 +139,13 @@ public class PaymentController {
         model.addAttribute("balance", balance);
 
         if (sessionUser.isExpert()) {
-            model.addAttribute("payments", paymentService.getExpertPayments(sessionUser.getId()));
+            java.util.Set<Long> pendingIds = paymentService.getPendingSettlementPaymentIds(sessionUser.getId());
+            java.util.List<PaymentResponse> payments = paymentService.getExpertPayments(sessionUser.getId());
+            payments.forEach(p -> {
+                p.setHasSettlementRequest(pendingIds.contains(p.getId()));
+                p.setCanRequestSettlement(p.isPaid() && !pendingIds.contains(p.getId()));
+            });
+            model.addAttribute("payments", payments);
             model.addAttribute("isExpert", true);
         } else {
             model.addAttribute("payments", paymentService.getClientPayments(sessionUser.getId()));

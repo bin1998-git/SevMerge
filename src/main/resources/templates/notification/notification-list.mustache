@@ -91,6 +91,11 @@
 
     .noti-empty { text-align: center; padding: 80px 0; }
     .noti-empty-msg { font-size: 15px; color: #93aecf; }
+    @media (max-width: 640px) {
+        .noti-inner { padding: 0 12px; }
+        .noti-card { padding: 14px 14px; }
+        .noti-card-actions { flex-wrap: wrap; }
+    }
 </style>
 
 <section class="noti-section">
@@ -163,6 +168,7 @@
 
     function deleteNoti(event, btn) {
         event.stopPropagation();
+        if (!confirm('이 알림을 삭제하시겠습니까?')) return;
         const card = btn.closest('.noti-card');
         const id = card.dataset.id;
         fetch('/notifications/' + id + '/delete', { method: 'POST' })

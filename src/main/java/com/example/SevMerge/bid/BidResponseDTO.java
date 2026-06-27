@@ -94,24 +94,46 @@ public class BidResponseDTO {
         private Long id;
         private Long projectId;
         private String projectTitle;
+        private Long clientId;
+        private String clientName;
         private Long proposedPrice;
         private Long estimatedDays;
         private String projectStatus;
         private boolean isInProgress;
+        private boolean isCompleted;  // 검토 대기 중 (전문가 완료신고 후)
         private boolean isDone;
+        private String workStatus;
+        private boolean workIsInProgress;
+        private boolean workIsUnderReview;
+        private boolean workIsDone;
+        private String submittedFileUrl;
+        private String submittedFileName;
+        private String submittedNote;
         private Timestamp createdAt;
         private PaymentInfo payment;
+        private java.util.List<com.example.SevMerge.deliverable.DeliverableResponse.ListDTO> deliverables;
 
         public OrderDTO(Bid bid, Payment paymentEntity) {
             this.id = bid.getId();
             this.projectId = bid.getProject().getId();
             this.projectTitle = bid.getProject().getTitle();
+            this.clientId = bid.getProject().getMember().getId();
+            this.clientName = bid.getProject().getMember().getName();
             this.proposedPrice = bid.getProposedPrice();
             this.estimatedDays = bid.getEstimatedDays();
             ProjectStatus ps = bid.getProject().getProjectStatus();
             this.projectStatus = ps.name();
             this.isInProgress = ps == ProjectStatus.IN_PROGRESS;
+            this.isCompleted = ps == ProjectStatus.COMPLETED;
             this.isDone = ps == ProjectStatus.DONE;
+            WorkStatus ws = bid.getWorkStatus() != null ? bid.getWorkStatus() : WorkStatus.IN_PROGRESS;
+            this.workStatus = ws.name();
+            this.workIsInProgress = ws == WorkStatus.IN_PROGRESS;
+            this.workIsUnderReview = ws == WorkStatus.UNDER_REVIEW;
+            this.workIsDone = ws == WorkStatus.WORK_DONE;
+            this.submittedFileUrl = bid.getSubmittedFileUrl();
+            this.submittedFileName = bid.getSubmittedFileName();
+            this.submittedNote = bid.getSubmittedNote();
             this.createdAt = bid.getCreatedAt();
             this.payment = paymentEntity != null ? new PaymentInfo(paymentEntity) : new PaymentInfo();
         }

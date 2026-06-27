@@ -3,6 +3,7 @@ package com.example.SevMerge.admin;
 import com.example.SevMerge.Report.BlackList;
 import com.example.SevMerge.Report.BlacklistRepository;
 import com.example.SevMerge.Report.ReportService;
+import com.example.SevMerge.Report.ReportResponse;
 import com.example.SevMerge.advertisement.AdvertisementService;
 import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
@@ -10,8 +11,8 @@ import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberService;
 import com.example.SevMerge.member.Role;
-import com.example.SevMerge.partnership.PartnerShipService;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.withdrawal.WithdrawalService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +39,9 @@ public class AdminController {
     private final BoardRepository boardRepository;
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
-    private final PartnerShipService partnerShipService;
     private final WithdrawalService withdrawalService;
     private final AdvertisementService advertisementService;
+    private final PaymentService paymentService;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
@@ -153,7 +154,8 @@ public class AdminController {
         model.addAttribute("memberData", memberData != null ? memberData : emptyZeroList);
         model.addAttribute("projectData", projectData != null ? projectData : emptyZeroList);
         model.addAttribute("completedData", completeData != null ? completeData : emptyZeroList);
-        model.addAttribute("recentPartnerships", partnerShipService.list());
+        model.addAttribute("recentMembers", memberService.getRecentMembers());
+        model.addAttribute("recentProjects", projectService.getRecentProjects());
         return "admin/admin-main";
     }
 
@@ -286,6 +288,10 @@ public class AdminController {
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("keyword", keyword != null ? keyword : "");
+
+        List<ReportResponse.CommentReportSummaryDTO> reportedComments = reportService.getReportedCommentSummaries();
+        model.addAttribute("reportedComments", reportedComments);
+        model.addAttribute("reportedCommentCount", reportedComments.size());
         return "admin/admin-blacklist";
     }
 
@@ -362,8 +368,52 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/admin/experts/grade")
-    public String adminExpertGrade() {
-        return "admin/admin-expert"; // 일단 기존 화면으로 연결
+    // 에스크로 관리 페이지
+    @GetMapping("/admin/escrow")
+    public String adminEscrowPage(@RequestParam(value = "status", required = false) String status,
+                                  @RequestParam(defaultValue = "1") int page,
+                                  Model model, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
+
+        List<PaymentService.AdminEscrowDTO> all = paymentService.getAdminEscrowList(status);
+        int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
+        int s = (page - 1) * ps, e = Math.min(s + ps, total);
+        model.addAttribute("escrowList", s < total ? all.subList(s, e) : new ArrayList<>());
+        model.addAttribute("totalCount", total);
+        long pendingCount = all.stream().filter(PaymentService.AdminEscrowDTO::isPending).count();
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+        model.addAttribute("nextPage", page < tp ? page + 1 : null);
+        model.addAttribute("currentStatus", status != null ? status : "");
+        model.addAttribute("isEscrowAll",      status == null);
+        model.addAttribute("isEscrowPending",  "PENDING".equals(status));
+        model.addAttribute("isEscrowApproved", "APPROVED".equals(status));
+        model.addAttribute("isEscrowRejected", "REJECTED".equals(status));
+        return "admin/admin-escrow";
     }
+
+    // 에스크로 정산 승인
+    @ResponseBody
+    @PatchMapping("/api/admin/escrow/{requestId}/approve")
+    public ResponseEntity<?> approveEscrow(@PathVariable Long requestId, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN)
+            return ResponseEntity.status(403).body("권한 없음");
+        paymentService.adminApproveSettlement(requestId);
+        return ResponseEntity.ok().build();
+    }
+
+    // 에스크로 정산 반려
+    @ResponseBody
+    @PatchMapping("/api/admin/escrow/{requestId}/reject")
+    public ResponseEntity<?> rejectEscrow(@PathVariable Long requestId, HttpSession session) {
+        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN)
+            return ResponseEntity.status(403).body("권한 없음");
+        paymentService.adminRejectSettlement(requestId);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -280,7 +280,8 @@ public class ExpertProfileViewController {
     // ──────────────────────────────────────────────────
     @PostMapping("/my/info-edit")
     public String infoEditSubmit(@ModelAttribute MemberRequest.Update req,
-                                 HttpSession session) {
+                                 HttpSession session,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttrs) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
         if (!sessionUser.isExpert()) return "redirect:/";
@@ -289,8 +290,11 @@ public class ExpertProfileViewController {
             memberService.updateMyInfo(sessionUser.getId(), req, null);
             session.setAttribute(Define.SESSION_USER,
                     memberService.findMemberById(sessionUser.getId()));
+            redirectAttrs.addFlashAttribute("successMessage", "정보가 수정되었습니다.");
         } catch (BadRequestException e) {
             log.warn("개인정보 수정 실패 (memberId={}): {}", sessionUser.getId(), e.getMessage());
+            redirectAttrs.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/experts/my/info-edit";
         }
         return "redirect:/experts/dashboard";
     }

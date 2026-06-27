@@ -389,7 +389,7 @@
             </div>
         </div>
         <form action="/admin/inquiry" method="get" class="search-bar">
-            <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value=""/>
+            <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value="{{keyword}}"/>
             <button type="submit" class="search-btn">검색</button>
         </form>
         <div class="admin-table-wrap">
@@ -410,9 +410,9 @@
             {{/boards}}
         </div>
         <div class="pagination">
-            {{#prevPage}}<a href="/admin/inquiry?page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+            {{#prevPage}}<a href="/admin/inquiry?page={{prevPage}}&keyword={{keyword}}" class="page-btn">이전</a>{{/prevPage}}
             <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-            {{#nextPage}}<a href="/admin/inquiry?page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+            {{#nextPage}}<a href="/admin/inquiry?page={{nextPage}}&keyword={{keyword}}" class="page-btn">다음</a>{{/nextPage}}
         </div>
     </main>
 </div>

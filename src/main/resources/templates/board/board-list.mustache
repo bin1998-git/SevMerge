@@ -79,6 +79,18 @@
     .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
     .page-btn { padding: 9px 15px; border-radius: 8px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
     .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
+    @media (max-width: 768px) {
+        .board-inner { padding: 0 12px; }
+        .col-free, .col-inquiry { grid-template-columns: 1fr 80px; gap: 8px; }
+        .cell-num, .cell-writer, .cell-date { display: none; }
+        .cell-view { display: none; }
+        .board-action { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .board-tabs { overflow-x: auto; }
+    }
+    @media (max-width: 480px) {
+        .board-search { flex-direction: column; }
+        .page-header-inner { padding: 0 12px; }
+    }
 </style>
 
 <!-- 페이지 헤더 + 탭 -->

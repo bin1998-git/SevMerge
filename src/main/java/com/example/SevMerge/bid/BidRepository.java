@@ -109,4 +109,13 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     Page<Bid> findByExpertIdAndStatus(@Param("expertId") Long expertId,
                                       @Param("status") BidStatus status,
                                       Pageable pageable);
+
+    @Query("""
+        SELECT COUNT(b) > 0 FROM Bid b
+        WHERE b.expert.id = :expertId
+        AND b.status = 'SELECTED'
+        AND b.isDeleted = false
+        AND b.project.projectStatus NOT IN ('DONE', 'CANCELLED')
+        """)
+    boolean existsActiveByExpertId(@Param("expertId") Long expertId);
 }

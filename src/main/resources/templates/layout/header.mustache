@@ -413,7 +413,7 @@
                 <a href="/" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
             {{/isLoggedIn}}
 
-            {{#isLoggedIn}}{{^isAdmin}}
+            {{#isLoggedIn}}{{^isAdmin}}{{^isExpert}}
                 {{#isDashboard}}
                     <nav class="nav-tabs" id="tabsUser">
                         <a href="/projects"  class="nav-tab">프로젝트</a>
@@ -436,7 +436,7 @@
                 {{^isDashboard}}
                     <div style="flex:1;"></div>
                 {{/isDashboard}}
-            {{/isAdmin}}{{/isLoggedIn}}
+            {{/isExpert}}{{/isAdmin}}{{/isLoggedIn}}
 
             {{#isAdmin}}
                 <nav class="nav-links">
@@ -455,9 +455,9 @@
                     <div class="admin-dropdown-container">
                         <span class="admin-dropdown-trigger">전문가 승인</span>
                         <div class="nav-submenu">
+                            <a href="/admin/escrow"                 class="submenu-link">에스크로 관리</a>
                             <a href="/admin/experts/withdraw"       class="submenu-link">출금 요청 관리</a>
                             <a href="/admin/experts?status=PENDING" class="submenu-link">전문가 승인 관리</a>
-                            <a href="/admin/experts/grade"          class="submenu-link">등급별 전문가 관리</a>
                             <a href="/admin/refund-applications"    class="submenu-link">환불 요청 관리</a>
                             <a href="/admin/advertisements"         class="submenu-link">광고 승인 관리</a>
                         </div>
@@ -480,9 +480,9 @@
                         <a href="/admin/blacklists"               class="nav-drawer-item">블랙리스트</a>
                         <div class="nav-drawer-divider"></div>
                         <span class="nav-drawer-section-label">전문가 승인</span>
+                        <a href="/admin/escrow"                   class="nav-drawer-item">에스크로 관리</a>
                         <a href="/admin/experts/withdraw"         class="nav-drawer-item">출금 요청 관리</a>
                         <a href="/admin/experts?status=PENDING"   class="nav-drawer-item">전문가 승인 관리</a>
-                        <a href="/admin/experts/grade"            class="nav-drawer-item">등급별 전문가 관리</a>
                         <a href="/admin/refund-applications"      class="nav-drawer-item">환불 요청 관리</a>
                     </div>
                 </div>
@@ -598,24 +598,27 @@
 <!-- ══ SSE 알림 ══ -->
 {{#isLoggedIn}}
     <script>
-        const sse = new EventSource('/notifications/subscribe');
-        sse.addEventListener('notification', function(e) {
-            const data = JSON.parse(e.data);
-            showNotiToast(data);
-            const bell = document.querySelector('.nav-bell');
-            if (bell && !bell.querySelector('.nav-bell-dot')) {
-                const dot = document.createElement('span');
-                dot.className = 'nav-bell-dot';
-                bell.appendChild(dot);
-            }
-        });
-        window.addEventListener('beforeunload', function() { sse.close(); });
-        function showNotiToast(data) {
-            const toast = document.createElement('div');
-            toast.className = 'noti-toast';
-            toast.innerHTML = '<div class="noti-toast-label">' + data.typeLabel + '</div><div class="noti-toast-content">' + data.content + '</div>';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+        if (!window._sseInit) {
+            window._sseInit = true;
+            window.showNotiToast = function(data) {
+                const toast = document.createElement('div');
+                toast.className = 'noti-toast';
+                toast.innerHTML = '<div class="noti-toast-label">' + data.typeLabel + '</div><div class="noti-toast-content">' + data.content + '</div>';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            };
+            const sse = new EventSource('/notifications/subscribe');
+            sse.addEventListener('notification', function(e) {
+                const data = JSON.parse(e.data);
+                window.showNotiToast(data);
+                const bell = document.querySelector('.nav-bell');
+                if (bell && !bell.querySelector('.nav-bell-dot')) {
+                    const dot = document.createElement('span');
+                    dot.className = 'nav-bell-dot';
+                    bell.appendChild(dot);
+                }
+            });
+            window.addEventListener('beforeunload', function() { sse.close(); });
         }
     </script>
 {{/isLoggedIn}}
@@ -727,9 +730,9 @@
                 const match =
                     (href.includes('boards')              && currentPath.includes('board')) ||
                     (href.includes('notices')             && currentPath.includes('notice')) ||
+                    (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
                     (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
                     (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
-                    (href.includes('grade')               && currentPath.includes('/admin/experts/grade')) ||
                     (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications')) ||
                     href === currentPath;
                 if (match) link.classList.add('active');
@@ -740,9 +743,9 @@
                 const match =
                     (href.includes('boards')              && currentPath.includes('board')) ||
                     (href.includes('notices')             && currentPath.includes('notice')) ||
+                    (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
                     (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
                     (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
-                    (href.includes('grade')               && currentPath.includes('/admin/experts/grade')) ||
                     (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications'));
                 if (match) {
                     link.classList.add('active-link');
