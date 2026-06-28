@@ -7,7 +7,7 @@ import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import com.example.SevMerge.core.exception.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -85,7 +85,7 @@ public class BoardController {
     // ── 작성 페이지 ─────────────────────────────────────────────────
     @GetMapping("/boards/save")
     public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
-                                Model model, HttpSession session) throws BadRequestException {
+                                Model model, HttpSession session) {
         Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
 
         if (boardType.equalsIgnoreCase("NOTICE")) {

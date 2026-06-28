@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 import java.sql.Timestamp;
 
 public class PortfolioResponse {
