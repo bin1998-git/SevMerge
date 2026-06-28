@@ -221,9 +221,7 @@ public class MemberService {
         return member;
     }
 
-    /**
-     * Record one failed login attempt; lock account after MAX_FAIL_ATTEMPTS.
-     */
+
     private void recordFailedAttempt(LoginAttempt attempt, long now, String email) {
         int failures = attempt.failures.incrementAndGet();
         log.warn("[L4] 로그인 실패 누적 {}/{} - email={}", failures, MAX_FAIL_ATTEMPTS, email);

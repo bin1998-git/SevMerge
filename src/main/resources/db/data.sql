@@ -531,3 +531,8 @@ INSERT INTO partner_ship_tb
 (company_name, manager_name, email, partner_file_url, content, status, created_at, deleted_at)
 VALUES
     ('스패머컴퍼니', '박배두', 'badguy@spambot.com', '/files/partnership/ad_flyer.png', '단순 광고성 제휴 제안서입니다.', 'REJECTED', NOW(), DATE_ADD(NOW(), INTERVAL 10 SECOND));
+
+-- 10. AD_SLOT_TB 초기 데이터 (고정 슬롯 - 메인 배너)
+-- ======================================================================================
+INSERT INTO ad_slot_tb (slot_name, slot_type, min_bid_price, bid_start_at, bid_end_at, status, created_at)
+VALUES ('메인 배너', 'MAIN_BANNER', 10000, NOW(), DATE_ADD(NOW(), INTERVAL 10 MINUTE), 'OPEN', NOW());

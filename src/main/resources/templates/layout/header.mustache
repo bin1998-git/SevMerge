@@ -62,7 +62,7 @@
             flex: 1; min-width: 0;
             display: flex; align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow: visible;  /* ← 변경 */
         }
         .nav-tab {
             padding: 0 13px; height: 64px;
@@ -246,6 +246,18 @@
         .admin-dropdown-container { position: relative; display: inline-block; }
         .admin-dropdown-trigger { cursor: pointer; }
         .admin-dropdown-container:hover .nav-submenu { display: flex !important; }
+
+        /* 전문가 광고 드롭다운 */
+        .nav-tabs .admin-dropdown-container {
+            position: relative;
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-tabs .admin-dropdown-container .nav-submenu {
+            top: 64px;
+        }
         .nav-submenu {
             display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
             background: #fff; min-width: 140px;
@@ -324,7 +336,15 @@
                 <a href="/boards"               class="nav-tab">게시판</a>
                 <a href="/messages"             class="nav-tab">쪽지함</a>
                 <a href="/chat/room"            class="nav-tab">채팅방</a>
-                <a href="/advertisements/my"    class="nav-tab">광고 신청</a>
+                <div class="admin-dropdown-container">
+                    <span class="admin-dropdown-trigger nav-tab">광고</span>
+                    <div class="nav-submenu">
+                        <a href="/advertisements/my" class="submenu-link">광고 신청</a>
+                        <a href="/ad-auction"        class="submenu-link">광고 경매</a>
+                        <a href="/ad-auction/my-bids" class="submenu-link">내 입찰 내역</a>
+                    </div>
+                </div>
+
             </nav>
             <div class="nav-drawer" id="drawerExpert">
                 <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerExpert','hamburgerExpert')"></div>
@@ -337,7 +357,11 @@
                     <a href="/boards"               class="nav-drawer-item">게시판</a>
                     <a href="/messages"             class="nav-drawer-item">쪽지함</a>
                     <a href="/chat/room"            class="nav-drawer-item">채팅방</a>
+                    <div class="nav-drawer-divider"></div>
+                    <span class="nav-drawer-section-label">광고</span>
                     <a href="/advertisements/my"    class="nav-drawer-item">광고 신청</a>
+                    <a href="/ad-auction"           class="nav-drawer-item">광고 경매</a>
+                    <a href="/ad-auction/my-bids"   class="nav-drawer-item">내 입찰 내역</a>
                 </div>
             </div>
             {{/isMainPage}}
@@ -460,7 +484,14 @@
                             <a href="/admin/experts/withdraw"       class="submenu-link">출금 요청 관리</a>
                             <a href="/admin/experts?status=PENDING" class="submenu-link">전문가 승인 관리</a>
                             <a href="/admin/refund-applications"    class="submenu-link">환불 요청 관리</a>
-                            <a href="/admin/advertisements"         class="submenu-link">광고 승인 관리</a>
+
+                        </div>
+                    </div>
+                    <div class="admin-dropdown-container">
+                        <span class="admin-dropdown-trigger">광고 관리</span>
+                        <div class="nav-submenu">
+                            <a href="/admin/advertisements" class="submenu-link">광고 승인 관리</a>
+                            <a href="/admin/ad-slots"       class="submenu-link">광고 경매 관리</a>
                         </div>
                     </div>
                     <a href="/admin/revenue">수익 현황</a>
@@ -486,6 +517,10 @@
                         <a href="/admin/experts/withdraw"         class="nav-drawer-item">출금 요청 관리</a>
                         <a href="/admin/experts?status=PENDING"   class="nav-drawer-item">전문가 승인 관리</a>
                         <a href="/admin/refund-applications"      class="nav-drawer-item">환불 요청 관리</a>
+                        <div class="nav-drawer-divider"></div>
+                        <span class="nav-drawer-section-label">광고 관리</span>
+                        <a href="/admin/advertisements"           class="nav-drawer-item">광고 승인 관리</a>
+                        <a href="/admin/ad-slots"                 class="nav-drawer-item">광고 경매 관리</a>
                     </div>
                 </div>
             {{/isAdmin}}
@@ -748,7 +783,9 @@
                     (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
                     (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
                     (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
-                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications'));
+                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications')) ||
+                    (href.includes('advertisements')      && currentPath.includes('/admin/advertisements')) ||
+                    (href.includes('ad-slots')            && currentPath.includes('/admin/ad-slots'));
                 if (match) {
                     link.classList.add('active-link');
                     const trigger = link.closest('.admin-dropdown-container')?.querySelector('.admin-dropdown-trigger');
