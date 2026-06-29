@@ -88,8 +88,8 @@ public class AdminController {
         List<Integer> adRevenueData = advertisementService.getRevenueTrendByPeriod(parsedStartDate, parsedEndDate);
         model.addAttribute("adRevenueData", adRevenueData);
 
-        String memberChartName = "ALL".equalsIgnoreCase(roleFilter) ? "총 회원수" :
-                ("CLIENT".equalsIgnoreCase(roleFilter) ? "일반 회원수" : "전문가 회원수");
+        String memberChartName = "ALL".equalsIgnoreCase(roleFilter) ? "일자별 신규 회원수" :
+                ("CLIENT".equalsIgnoreCase(roleFilter) ? "일반 회원 일자별 가입수" : "전문가 일자별 가입수");
         String statusChartName = "IN_PROGRESS".equalsIgnoreCase(statusFilter) ? "진행중 프로젝트 수" :
                 ("COMPLETED".equalsIgnoreCase(statusFilter) ? "완료 프로젝트수" : "취소 프로젝트수");
 
