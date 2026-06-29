@@ -2,10 +2,9 @@ package com.example.SevMerge.Report;
 
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
-import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
-import jdk.swing.interop.SwingInterOpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +23,7 @@ public class ReportController {
     public String showAdminReport(@RequestParam(name = "keyword", required = false) String keyword,
                                   @RequestParam(defaultValue = "1") int page,
                                   Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
         }
@@ -47,7 +46,7 @@ public class ReportController {
                                 @RequestParam(name = "boardId") Long boardId,
                                 ReportRequest.SaveDTO saveDTO,
                                 HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return "<script>" +
                     "alert('로그인이 필요한 서비스입니다.');" +
@@ -77,7 +76,7 @@ public class ReportController {
                                 HttpSession session) {
 
         // 관리자 권한 검증
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
         }
@@ -90,7 +89,7 @@ public class ReportController {
     @PostMapping("admin/reports/{id}/reject")
     public String rejectReport(@PathVariable(name = "id") Long reportId,
                                HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
         }

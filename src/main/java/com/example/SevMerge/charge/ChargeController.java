@@ -1,6 +1,8 @@
 package com.example.SevMerge.charge;
 
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +33,7 @@ public class ChargeController {
     /** 충전 폼 */
     @GetMapping("/form")
     public String chargeForm(HttpSession session, Model model) {
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         model.addAttribute("balance",   chargeService.getBalance(sessionUser.getId()));
@@ -48,7 +50,7 @@ public class ChargeController {
                                 HttpSession session,
                                 Model model) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         chargeService.confirmCharge(sessionUser.getId(), paymentKey, orderId, amount);

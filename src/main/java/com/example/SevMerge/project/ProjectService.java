@@ -10,8 +10,9 @@ import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -252,6 +251,7 @@ public class ProjectService {
                 .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
+
 
     // 관리자 전용 삭제기능
     @Transactional

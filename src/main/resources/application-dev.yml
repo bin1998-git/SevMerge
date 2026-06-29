@@ -71,3 +71,14 @@ logging:
   level:
     root: INFO
     com.example.SevMerge: DEBUG
+
+# 광고 경매 설정
+# 테스트 용으로 입찰기간 10분설정함 운영할때는 2880 (48시간)
+ad:
+  bid:
+    duration:
+      minutes: 10
+  # 광고 노출 기간 테스트용으로 30분 설정 운영은 1440(24시간)
+  display:
+    duration:
+      minutes: 30

@@ -3,16 +3,16 @@ package com.example.SevMerge.admin;
 import com.example.SevMerge.Report.BlackList;
 import com.example.SevMerge.Report.BlacklistRepository;
 import com.example.SevMerge.Report.ReportService;
-import com.example.SevMerge.Report.ReportResponse;
+import com.example.SevMerge.adbid.AdBidService;
 import com.example.SevMerge.advertisement.AdvertisementService;
 import com.example.SevMerge.board.*;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
-import com.example.SevMerge.member.Member;
-import com.example.SevMerge.member.MemberService;
-import com.example.SevMerge.member.Role;
+import com.example.SevMerge.member.*;
+import com.example.SevMerge.partnership.PartnerShipService;
+import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
-import com.example.SevMerge.payment.PaymentService;
+import com.example.SevMerge.revenue.PlatformRevenueService;
 import com.example.SevMerge.withdrawal.WithdrawalService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.example.SevMerge.member.SessionUser;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -39,9 +40,11 @@ public class AdminController {
     private final BoardRepository boardRepository;
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
+    private final PartnerShipService partnerShipService;
     private final WithdrawalService withdrawalService;
     private final AdvertisementService advertisementService;
-    private final PaymentService paymentService;
+    private final PlatformRevenueService platformRevenueService;
+    private final AdBidService adBidService;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
@@ -54,7 +57,7 @@ public class AdminController {
 
         long newMemberCount = memberService.getNewMemberCountThisMonth();
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser);
 
         model.addAttribute("stats", memberService.getAllMembers());
@@ -154,8 +157,13 @@ public class AdminController {
         model.addAttribute("memberData", memberData != null ? memberData : emptyZeroList);
         model.addAttribute("projectData", projectData != null ? projectData : emptyZeroList);
         model.addAttribute("completedData", completeData != null ? completeData : emptyZeroList);
-        model.addAttribute("recentMembers", memberService.getRecentMembers());
-        model.addAttribute("recentProjects", projectService.getRecentProjects());
+        model.addAttribute("recentPartnerships", partnerShipService.list());
+
+        List<MemberResponse> recentMembers = memberService.getRecentMembers();
+        model.addAttribute("recentMembers", recentMembers);
+
+        List<ProjectResponseDTO.ListDTO> recentProjects = projectService.getRecentProjects();
+        model.addAttribute("recentProjects", recentProjects);
         return "admin/admin-main";
     }
 
@@ -164,14 +172,15 @@ public class AdminController {
     public String adminNotices(@RequestParam(value = "keyword", required = false) String keyword,
                                @RequestParam(defaultValue = "1") int page,
                                Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
 
         List<BoardResponse.ListDTO> all = boardService.getAdminBoardsByType(BoardType.NOTICE, keyword);
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("boards", s < total ? all.subList(s, e) : new ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
 
@@ -187,7 +196,7 @@ public class AdminController {
     // 관리자 공지사항 수정화면 띄우기
     @GetMapping("/admin/notices/{id}/update")
     public String updateNoticeForm(@PathVariable("id") Long id, Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         boolean isAdmin = sessionUser != null && sessionUser.getRole() == Role.ADMIN;
 
         Board board = boardRepository.findById(id)
@@ -239,7 +248,8 @@ public class AdminController {
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("experts", s < total ? all.subList(s, e) : new ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("currentStatus", status != null ? status : "");
@@ -284,14 +294,11 @@ public class AdminController {
         int ps = 15, total = filtered.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("blacklistLogs", s < total ? filtered.subList(s, e) : new ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("keyword", keyword != null ? keyword : "");
-
-        List<ReportResponse.CommentReportSummaryDTO> reportedComments = reportService.getReportedCommentSummaries();
-        model.addAttribute("reportedComments", reportedComments);
-        model.addAttribute("reportedCommentCount", reportedComments.size());
         return "admin/admin-blacklist";
     }
 
@@ -299,7 +306,7 @@ public class AdminController {
     @PostMapping("/admin/blacklist/release/{memberId}")
     public String releaseBlacklistMember(@PathVariable(name = "memberId") Long memberId,
                                          HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
         }
@@ -322,14 +329,15 @@ public class AdminController {
         model.addAttribute("withdrawals", s < total ? all.subList(s, e) : new ArrayList<>());
         model.addAttribute("totalCount", total);
         model.addAttribute("pendingCount", pendingCount);
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("currentStatus", status != null ? status : "");
-        model.addAttribute("isWithdrawAll",       status == null);
-        model.addAttribute("isWithdrawPending",   "PENDING".equals(status));
+        model.addAttribute("isWithdrawAll", status == null);
+        model.addAttribute("isWithdrawPending", "PENDING".equals(status));
         model.addAttribute("isWithdrawCompleted", "COMPLETED".equals(status));
-        model.addAttribute("isWithdrawRejected",  "REJECTED".equals(status));
+        model.addAttribute("isWithdrawRejected", "REJECTED".equals(status));
         return "admin/admin-withdraw";
     }
 
@@ -349,6 +357,14 @@ public class AdminController {
         model.addAttribute("pendingAds", advertisementService.getPendingAds());
         model.addAttribute("pendingCount", advertisementService.getPendingAds().size());
         model.addAttribute("processedAds", advertisementService.getProcessedAds());
+
+        // 경매 배너
+        List<com.example.SevMerge.adbid.AdBid> pendingBanners = adBidService.getPendingReviewBids();
+        List<com.example.SevMerge.adbid.AdBid> processedBanners = adBidService.getProcessedReviewBids();
+        model.addAttribute("pendingBanners", pendingBanners);
+        model.addAttribute("hasPendingBanners", !pendingBanners.isEmpty());
+        model.addAttribute("processedBanners", processedBanners);
+        model.addAttribute("hasProcessedBanners", !processedBanners.isEmpty());
         return "admin/admin-advertisement";
     }
 
@@ -363,57 +379,29 @@ public class AdminController {
     // 광고 거절
     @ResponseBody
     @PatchMapping("/api/admin/advertisements/{adId}/reject")
-    public ResponseEntity<?> rejectAd(@PathVariable Long adId) {
-        advertisementService.rejectAd(adId);
+    public ResponseEntity<?> rejectAd(@PathVariable Long adId,
+                                      @RequestBody Map<String, String> body) {
+        String reason = body.getOrDefault("reason", "");
+        advertisementService.rejectAd(adId,reason);
         return ResponseEntity.ok().build();
     }
 
-    // 에스크로 관리 페이지
-    @GetMapping("/admin/escrow")
-    public String adminEscrowPage(@RequestParam(value = "status", required = false) String status,
-                                  @RequestParam(defaultValue = "1") int page,
-                                  Model model, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
-
-        List<PaymentService.AdminEscrowDTO> all = paymentService.getAdminEscrowList(status);
-        int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
-        int s = (page - 1) * ps, e = Math.min(s + ps, total);
-        model.addAttribute("escrowList", s < total ? all.subList(s, e) : new ArrayList<>());
-        model.addAttribute("totalCount", total);
-        long pendingCount = all.stream().filter(PaymentService.AdminEscrowDTO::isPending).count();
-        model.addAttribute("pendingCount", pendingCount);
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-        model.addAttribute("prevPage", page > 1 ? page - 1 : null);
-        model.addAttribute("nextPage", page < tp ? page + 1 : null);
-        model.addAttribute("currentStatus", status != null ? status : "");
-        model.addAttribute("isEscrowAll",      status == null);
-        model.addAttribute("isEscrowPending",  "PENDING".equals(status));
-        model.addAttribute("isEscrowApproved", "APPROVED".equals(status));
-        model.addAttribute("isEscrowRejected", "REJECTED".equals(status));
-        return "admin/admin-escrow";
+    // 수익 현황 페이지
+    @GetMapping("/admin/revenue")
+    public String revenuePage(Model model) {
+        model.addAttribute("totalRevenue",
+                String.format("%,d", platformRevenueService.getTotalRevenue()));
+        model.addAttribute("adRevenue",
+                String.format("%,d", platformRevenueService.getRevenueByType(
+                        com.example.SevMerge.revenue.PlatformRevenueType.AD)));
+        model.addAttribute("thisMonthRevenue",
+                String.format("%,d", platformRevenueService.getThisMonthRevenue()));
+        model.addAttribute("revenues", platformRevenueService.getAllRevenues());
+        return "admin/admin-revenue";
     }
 
-    // 에스크로 정산 승인
-    @ResponseBody
-    @PatchMapping("/api/admin/escrow/{requestId}/approve")
-    public ResponseEntity<?> approveEscrow(@PathVariable Long requestId, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN)
-            return ResponseEntity.status(403).body("권한 없음");
-        paymentService.adminApproveSettlement(requestId);
-        return ResponseEntity.ok().build();
+    @GetMapping("/admin/experts/grade")
+    public String adminExpertGrade() {
+        return "admin/admin-expert"; // 일단 기존 화면으로 연결
     }
-
-    // 에스크로 정산 반려
-    @ResponseBody
-    @PatchMapping("/api/admin/escrow/{requestId}/reject")
-    public ResponseEntity<?> rejectEscrow(@PathVariable Long requestId, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN)
-            return ResponseEntity.status(403).body("권한 없음");
-        paymentService.adminRejectSettlement(requestId);
-        return ResponseEntity.ok().build();
-    }
-
 }

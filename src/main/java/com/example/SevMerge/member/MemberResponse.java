@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 @Getter
 @Builder(toBuilder = true)
@@ -154,4 +155,8 @@ public class MemberResponse {
     }
 
 
+    public String getCreatedAtFormatted() {
+        if (this.createdAt == null) return "";
+        return new SimpleDateFormat("yyyy-MM-dd").format(this.createdAt);
+    }
 }

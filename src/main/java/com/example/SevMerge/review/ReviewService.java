@@ -70,7 +70,7 @@ public class ReviewService {
 
         reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity,project));
 
-        expertProfileService.manageExpertGrade(reviewDTO.getTargetId());
+
     }
 
     // 리뷰조회

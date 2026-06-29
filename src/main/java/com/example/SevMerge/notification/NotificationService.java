@@ -158,5 +158,13 @@ public class NotificationService {
                 "/supports");
     }
 
+    // 광고 거절 -> 전문가
+    @Transactional
+    public void notifyAdRejected(Member expert, String placementLabel, String reason) {
+        notify(expert, NotificationType.AD_REJECTED,
+                "[광고 거절] " + placementLabel + " 광고 신청이 거절되었습니다.\n사유: " + reason + "\n포인트는 자동 환불되었습니다.",
+                "/advertisements/my#history");
+    }
+
 
 }

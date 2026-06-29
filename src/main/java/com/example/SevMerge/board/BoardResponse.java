@@ -17,6 +17,7 @@ public class BoardResponse {
         private BoardInquiryScope inquiryScope;
         private String attachmentUrl;
         private String attachmentName;
+        private boolean answered;
 
         public ListDTO(Board board) {
             this.id = board.getId();
@@ -28,6 +29,7 @@ public class BoardResponse {
             this.inquiryScope = board.getInquiryScope();
             this.attachmentUrl = board.getAttachmentUrl();
             this.attachmentName = board.getAttachmentName();
+            this.answered = board.getAnswerStatus() == BoardAnswerStatus.ANSWERED;
             if (board.getCreatedAt() != null) {
                 this.createdAt = MyDateUtil.timestampFormat(board.getCreatedAt());
             }

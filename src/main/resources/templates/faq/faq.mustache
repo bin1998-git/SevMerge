@@ -1,622 +1,226 @@
 {{>layout/header}}
-
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
-
 <style>
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-sky:       #6BA0FF;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
-    }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    .faq-wrap {
-        font-family: 'Space Grotesk', sans-serif;
-    }
+    .faq-wrap { min-height: calc(100vh - 64px); display: flex; position: relative; z-index: 1; }
 
-    /* ── HERO ── */
-    .faq-hero {
-        background: var(--brand-white);
-        border-bottom: 1px solid var(--brand-line);
-        padding: 48px 28px 0;
-        position: relative;
-        overflow: hidden;
+    /* ── 왼쪽 히어로 사이드바 ── */
+    .faq-sidebar {
+        width: 340px; flex-shrink: 0; position: sticky; top: 64px;
+        height: calc(100vh - 64px); overflow-y: auto;
+        padding: 40px 32px;
+        backdrop-filter: blur(20px); background: rgba(255,255,255,.55);
+        border-right: 1.5px solid rgba(255,255,255,.8);
+        display: flex; flex-direction: column; gap: 20px;
     }
-
-    .faq-hero-inner {
-        max-width: 1140px;
-        margin: 0 auto;
-        text-align: center;
-        padding-bottom: 28px;
-        position: relative;
-        z-index: 1;
-    }
-
+    .faq-logo { font-size: 22px; font-weight: 900; color: #1e3a8a; letter-spacing: -1px; margin-bottom: 4px; }
+    .faq-logo .hl { color: #2563eb; }
     .faq-eyebrow {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .2em;
-        text-transform: uppercase;
-        color: var(--brand-muted);
-        margin-bottom: 14px;
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2);
+        border-radius: 999px; padding: 4px 14px;
+        font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: .3px;
     }
+    .faq-hero-title { font-size: 34px; font-weight: 900; line-height: 1.15; letter-spacing: -1.5px; color: #172554; }
+    .faq-hero-title .hl { color: #2563eb; }
+    .faq-hero-desc { font-size: 14px; color: #4a6fa5; line-height: 1.75; }
 
-    .faq-kw-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 6px;
-        background: #dde8ff;
-        color: var(--brand-blue);
-        margin-bottom: 18px;
-    }
-
-    .faq-hero-icon {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 18px;
-        border-radius: 20px;
-        background: #dde8ff;
-        color: var(--brand-blue);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .faq-hero-icon svg {
-        width: 32px;
-        height: 32px;
-    }
-
-    .faq-hero-inner h1 {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 34px;
-        font-weight: 700;
-        color: var(--brand-ink);
-        letter-spacing: -.02em;
-        margin-bottom: 10px;
-        line-height: 1.2;
-    }
-
-    .faq-hero-inner h1 em {
-        color: var(--brand-blue);
-        font-style: normal;
-    }
-
-    .faq-hero-inner p {
-        font-size: 14px;
-        color: var(--brand-muted);
-        font-weight: 500;
-    }
-
-    /* ── 통계 카드 ── */
-    .faq-stats-wrap {
-        background: var(--brand-white);
-        border-bottom: 1px solid var(--brand-line);
-    }
-
-    .faq-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 24px 28px 32px;
-    }
-
+    /* 통계 카드 */
+    .faq-stats { display: flex; flex-direction: column; gap: 10px; }
     .faq-stat-card {
-        background: var(--brand-white);
-        border: 1px solid var(--brand-line);
-        border-radius: 14px;
-        padding: 20px 22px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        text-decoration: none;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        display: flex; align-items: center; gap: 14px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 16px; padding: 14px 18px;
+        box-shadow: 0 4px 12px rgba(37,99,235,.06); text-decoration: none; transition: all .15s;
     }
+    .faq-stat-card:hover { border-color: rgba(37,99,235,.3); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.1); }
+    .faq-stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .faq-stat-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #4a6fa5; margin-bottom: 3px; }
+    .faq-stat-value { font-size: 18px; font-weight: 900; color: #1e3a6e; }
+    .faq-stat-value.link { font-size: 14px; color: #2563eb; }
 
-    a.faq-stat-card:hover {
-        border-color: var(--brand-blue);
-        box-shadow: 0 0 0 3px #dde8ff;
+    .faq-contact-btn {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 13px; border-radius: 25px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        font-size: 14px; font-weight: 800; text-decoration: none;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
     }
+    .faq-contact-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
-    .faq-stat-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .faq-stat-icon svg {
-        width: 22px;
-        height: 22px;
-    }
-
-    .faq-stat-label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: var(--brand-muted);
-        margin: 0 0 5px;
-    }
-
-    .faq-stat-value {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--brand-ink);
-        margin: 0;
-        letter-spacing: -.02em;
-    }
-
-    .faq-stat-value.sm {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--brand-blue);
-    }
-
-    /* ── 본문 ── */
-    .faq-section-bg {
-        background: var(--brand-mist);
-    }
-
-    .faq-section {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 32px 28px 80px;
-    }
-
-    .faq-toolbar {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 16px;
-    }
-
+    /* ── 오른쪽 FAQ 목록 ── */
+    .faq-main { flex: 1; padding: 40px 36px 80px; overflow-y: auto; }
+    .faq-main-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .faq-main-title { font-size: 18px; font-weight: 900; color: #1e3a6e; }
     .faq-new-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 10px 20px;
-        border-radius: 8px;
-        background: var(--brand-blue);
-        color: #fff;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background 0.15s;
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        text-decoration: none; box-shadow: 0 4px 12px rgba(37,99,235,.25); transition: all .15s;
     }
-
-    .faq-new-btn:hover {
-        background: var(--brand-blue-deep);
-    }
-
-    .faq-new-btn svg {
-        width: 16px;
-        height: 16px;
-    }
+    .faq-new-btn:hover { transform: translateY(-1px); }
 
     .faq-list {
-        background: var(--brand-white);
-        border: 1px solid var(--brand-line);
-        border-radius: 16px;
-        overflow: hidden;
+        backdrop-filter: blur(20px); background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 24px; overflow: hidden;
+        box-shadow: 0 16px 48px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
     }
-
-    .faq-item {
-        border-bottom: 1px solid var(--brand-line);
-    }
-
-    .faq-item:last-child {
-        border-bottom: none;
-    }
+    .faq-item { border-bottom: 1px solid rgba(37,99,235,.07); }
+    .faq-item:last-child { border-bottom: none; }
 
     .faq-question {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        cursor: pointer;
-        padding: 20px 24px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 14.5px;
-        font-weight: 700;
-        color: var(--brand-ink);
-        transition: background 0.15s;
-        user-select: none;
+        display: flex; align-items: center; gap: 14px;
+        cursor: pointer; padding: 20px 26px;
+        font-size: 14.5px; font-weight: 700; color: #1e3a6e;
+        transition: background .15s; user-select: none;
     }
-
-    .faq-question:hover {
-        background: var(--brand-mist);
-    }
-
-    .faq-question.open {
-        background: var(--brand-mist);
-    }
+    .faq-question:hover { background: rgba(37,99,235,.04); }
+    .faq-question.open { background: rgba(37,99,235,.05); }
 
     .badge {
-        flex-shrink: 0;
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        background: #dde8ff;
-        color: var(--brand-blue);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+        background: rgba(37,99,235,.1); color: #2563eb;
+        font-size: 12px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
     }
-    .badge.a-badge {
-        background: var(--brand-mist);
-        color: var(--brand-muted);
-    }
+    .badge.a-badge { background: rgba(100,116,139,.1); color: #4a6fa5; }
+    .q-text { flex: 1; }
+    .chevron { flex-shrink: 0; width: 18px; height: 18px; color: #93aecf; transition: transform .2s; }
+    .faq-question.open .chevron { transform: rotate(180deg); }
 
-    .faq-question .q-text {
-        flex: 1;
-    }
+    .faq-answer { display: none; padding: 8px 26px 20px; font-size: 13.5px; color: #4a6fa5; line-height: 1.9; }
+    .faq-answer.open { display: flex; gap: 14px; align-items: flex-start; }
+    .faq-answer-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .faq-answer-row { margin-top: 7px; display: flex; align-items: flex-start; gap: 14px; }
+    .a-text { flex: 1; font-size: 13.5px; font-weight: 600; color: #4a6fa5; line-height: 1.9; white-space: pre-line; }
 
-    .faq-question .chevron {
-        flex-shrink: 0;
-        width: 18px;
-        height: 18px;
-        color: var(--brand-muted);
-        transition: transform 0.2s;
+    .faq-admin-inline { display: flex; gap: 6px; margin-top: 4px; }
+    .faq-edit-btn, .faq-delete-btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); cursor: pointer;
+        color: #2d4a7a; text-decoration: none; transition: all .15s;
     }
+    .faq-edit-btn:hover { border-color: rgba(37,99,235,.4); color: #2563eb; background: rgba(239,246,255,.9); }
+    .faq-delete-btn:hover { border-color: #fca5a5; color: #ef4444; background: rgba(255,243,243,.9); }
 
-    .faq-question.open .chevron {
-        transform: rotate(180deg);
-    }
-
-    .faq-answer {
-        display: none;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 8px 24px 20px 24px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 13.5px;
-        color: var(--brand-slate);
-        line-height: 1.9;
-        white-space: pre-line;
-    }
-
-    .faq-answer.open {
-        display: flex;
-    }
-
-    .faq-answer-body {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 4px; /* 원하는 간격으로 조절 */
-    }
-
-    .faq-answer-row {
-        margin-top: 7px; /* a 텍스트 와 전체 질문상자 사이의 간격 */
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 0 0 6px 0;
-    }
-
-    .a-text {
-        flex: 1;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 13.5px;
-        font-weight: 700;
-        color: var(--brand-slate);
-        line-height: 1.9;
-        white-space: pre-line;
-    }
-
-    .faq-admin-inline {
-        display: flex;
-        margin-top: -8px; /* 음수로 버튼만 위로 당기기 */
-    }
-
-    .faq-edit-btn,
-    .faq-delete-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        background: var(--brand-white);
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 1;          /* normal → 1 */
-        border: 1px solid var(--brand-line);
-        cursor: pointer;
-        color: var(--brand-slate);
-        text-decoration: none;
-        transition: all 0.15s;
-    }
-
-    .faq-edit-btn svg,
-    .faq-delete-btn svg {
-        width: 13px;
-        height: 13px;
-        display: block;
-        /* position, top 완전 제거 */
-    }
-
-    .faq-edit-btn:hover {
-        border-color: var(--brand-blue);
-        color: var(--brand-blue);
-        background: #dde8ff;
-    }
-
-    .faq-delete-btn:hover {
-        border-color: #d85a30;
-        color: #d85a30;
-        background: #fdf2ee;
-    }
-
-    .faq-empty {
-        text-align: center;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        color: var(--brand-muted);
-        padding: 56px 0;
-        letter-spacing: .05em;
-    }
-
-    /* ── 플로팅 카드 ── */
-    .faq-float-card {
-        position: absolute;
-        background: var(--brand-white);
-        border: 1px solid var(--brand-line);
-        border-radius: 14px;
-        padding: 16px 18px;
-        width: 210px;
-        pointer-events: none;
-        animation: faqFloat linear infinite;
-        z-index: 0;
-    }
-
-    .faq-float-label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 9px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        color: var(--brand-blue);
-        margin-bottom: 7px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .faq-float-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--brand-blue);
-        flex-shrink: 0;
-    }
-
-    .faq-float-q {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--brand-ink);
-        line-height: 1.5;
-        margin-bottom: 7px;
-    }
-
-    .faq-float-a {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 11px;
-        color: var(--brand-muted);
-        line-height: 1.6;
-    }
-
-    @keyframes faqFloat {
-        0%   { transform: translateY(0px) rotate(var(--fc-rot)); }
-        50%  { transform: translateY(var(--fc-dy)) rotate(var(--fc-rot)); }
-        100% { transform: translateY(0px) rotate(var(--fc-rot)); }
-    }
-
-    .fc-1 { left: 32px;  top: 32px;  --fc-rot: -4deg; --fc-dy: -14px; animation-duration: 4.2s; animation-delay: 0s;    width: 200px; }
-    .fc-2 { left: 24px;  top: 195px; --fc-rot:  3deg; --fc-dy: -10px; animation-duration: 5.1s; animation-delay: -1.2s; width: 185px; }
-    .fc-3 { right: 32px; top: 24px;  --fc-rot:  5deg; --fc-dy: -12px; animation-duration: 3.8s; animation-delay: -0.7s; width: 200px; }
-    .fc-4 { right: 24px; top: 200px; --fc-rot: -3deg; --fc-dy: -16px; animation-duration: 4.7s; animation-delay: -2s;   width: 190px; }
+    .faq-empty { text-align: center; padding: 56px 0; font-size: 13px; color: #93aecf; }
 
     @media (max-width: 900px) {
-        .faq-float-card { display: none; }
+        .faq-wrap { flex-direction: column; }
+        .faq-sidebar { width: 100%; height: auto; position: static; }
+        .faq-main { padding: 24px 20px 60px; }
     }
-
-    @media (max-width: 600px) {
-        .faq-stats { grid-template-columns: 1fr; }
-        .faq-hero-inner h1 { font-size: 26px; }
-    }
-
-    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
-    .faq-hero { backdrop-filter: blur(20px); background: rgba(255,255,255,.75); border-bottom: 1px solid rgba(255,255,255,.6); }
-    .faq-stats-wrap { backdrop-filter: blur(16px); background: rgba(255,255,255,.55); border-bottom: 1px solid rgba(255,255,255,.6); }
-    .faq-stat-card { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); box-shadow: 0 4px 16px rgba(37,99,235,.06); }
-    a.faq-stat-card:hover { border-color: rgba(37,99,235,.3); box-shadow: 0 8px 24px rgba(37,99,235,.1); }
-    .faq-section-bg { background: rgba(176,200,232,.25); backdrop-filter: blur(8px); }
-    .faq-list { backdrop-filter: blur(16px); background: rgba(255,255,255,.58); border: 1.5px solid rgba(255,255,255,.85); border-radius: 18px; box-shadow: 0 8px 32px rgba(37,99,235,.07); }
-    .faq-item { border-bottom: 1px solid rgba(37,99,235,.07); }
-    .faq-question:hover { background: rgba(37,99,235,.04); }
-    .faq-question.open { background: rgba(37,99,235,.04); }
-    .faq-float-card { backdrop-filter: blur(12px); background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.85); }
 </style>
 
 <div class="faq-wrap">
 
-    <section class="faq-hero">
-        <!-- 플로팅 FAQ 카드 -->
-        <div class="faq-float-card fc-1">
-            <div class="faq-float-label"><span class="faq-float-dot"></span>결제</div>
-            <div class="faq-float-q">에스크로 결제란 무엇인가요?</div>
-            <div class="faq-float-a">작업 완료 후 자동으로 정산되는 안전 결제 시스템입니다.</div>
+    <!-- 왼쪽 히어로 사이드바 -->
+    <aside class="faq-sidebar">
+        <div class="faq-logo">I<span class="hl">code</span>U</div>
+        <div class="faq-eyebrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Help Center · FAQ
         </div>
-        <div class="faq-float-card fc-2">
-            <div class="faq-float-label"><span class="faq-float-dot"></span>계정</div>
-            <div class="faq-float-q">전문가로 등록하려면?</div>
-            <div class="faq-float-a">회원가입 후 전문가 신청서를 작성하세요.</div>
-        </div>
-        <div class="faq-float-card fc-3">
-            <div class="faq-float-label"><span class="faq-float-dot"></span>프로젝트</div>
-            <div class="faq-float-q">프로젝트 취소 시 환불되나요?</div>
-            <div class="faq-float-a">작업 시작 전이라면 100% 환불 보장됩니다.</div>
-        </div>
-        <div class="faq-float-card fc-4">
-            <div class="faq-float-label"><span class="faq-float-dot"></span>수수료</div>
-            <div class="faq-float-q">수수료는 얼마인가요?</div>
-            <div class="faq-float-a">완료된 프로젝트에 한해 소정의 수수료가 발생합니다.</div>
-        </div>
+        <h1 class="faq-hero-title">자주 묻는<br>질문을<br><span class="hl">확인하세요</span></h1>
+        <p class="faq-hero-desc">코드요 이용 중 궁금한 점을<br>빠르게 해결해 드려요.</p>
 
-        <div class="faq-hero-inner">
-            <div class="faq-eyebrow">Help Center</div>
-            <div class="faq-kw-badge">FAQ</div>
-            <div class="faq-hero-icon">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 17.5V17.51M12 14.5C12 12 14.5 12 14.5 10C14.5 8.5 13.4 7.5 12 7.5C10.6 7.5 9.5 8.5 9.5 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </div>
-            <h1>자주 묻는 질문</h1>
-            <p>SevMerge 이용 중 자주 묻는 질문을 확인하세요.</p>
-        </div>
-    </section>
-
-    <!-- 통계 카드 (전체 너비 배경) -->
-    <div class="faq-stats-wrap">
         <div class="faq-stats">
             <div class="faq-stat-card">
-                <div class="faq-stat-icon" style="background: #dde8ff; color: var(--brand-blue);">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 10h8M8 14h5M5 5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                <div class="faq-stat-icon" style="background:rgba(37,99,235,.1);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#2563eb"><path d="M4 18h2v2H4v2H2V4h2v14Zm16 0H6v-2h14v2Zm2-2h-2V4h2v12Zm-12-2H6v-2h4v2Zm4-4H6V8h8v2Zm6-6H4V2h16v2Z"/></svg>
                 </div>
                 <div>
                     <p class="faq-stat-label">Total FAQ</p>
                     <p class="faq-stat-value">{{faqList.size}}개</p>
                 </div>
             </div>
-
             <div class="faq-stat-card">
-                <div class="faq-stat-icon" style="background: #dcfce7; color: #166534;">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-                        <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                <div class="faq-stat-icon" style="background:rgba(16,185,129,.1);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
                 <div>
                     <p class="faq-stat-label">평균 답변시간</p>
                     <p class="faq-stat-value">5분</p>
                 </div>
             </div>
-
             <a href="/supports" class="faq-stat-card">
-                <div class="faq-stat-icon" style="background: #fef9c3; color: #92400e;">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v4a5 5 0 0 1-5 5h-1l-4 3v-3H8a5 5 0 0 1-5-5V8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                <div class="faq-stat-icon" style="background:rgba(245,158,11,.1);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v4a5 5 0 0 1-5 5h-1l-4 3v-3H8a5 5 0 0 1-5-5V8Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
                 <div>
                     <p class="faq-stat-label">Need Help?</p>
-                    <p class="faq-stat-value sm">고객센터 문의 →</p>
+                    <p class="faq-stat-value link">고객센터 문의 →</p>
                 </div>
             </a>
         </div>
-    </div>
 
-    <!-- FAQ 목록 (전체 너비 배경 + 내용 중앙 정렬) -->
-    <div class="faq-section-bg">
-        <section class="faq-section">
+        <a href="/supports" class="faq-contact-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 18h2v2H4v2H2V4h2v14Zm16 0H6v-2h14v2Zm2-2h-2V4h2v12Zm-12-2H6v-2h4v2Zm4-4H6V8h8v2Zm6-6H4V2h16v2Z"/></svg>
+            고객센터 바로가기
+        </a>
+    </aside>
 
+    <!-- 오른쪽 FAQ 목록 -->
+    <div class="faq-main">
+        <div class="faq-main-header">
+            <h2 class="faq-main-title">전체 질문 목록</h2>
             {{#isAdmin}}
-                <div class="faq-toolbar">
-                    <a href="/faqs/save" class="faq-new-btn">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        FAQ 등록
-                    </a>
-                </div>
+                <a href="/faqs/save" class="faq-new-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2v-6Z"/></svg>
+                    FAQ 등록
+                </a>
             {{/isAdmin}}
+        </div>
 
-            <div class="faq-list">
-                {{#faqList}}
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="toggleAnswer(this)">
-                            <span class="badge">Q</span>
-                            <span class="q-text">{{question}}</span>
-                            <svg class="chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <div class="faq-answer">
-                            <div class="faq-answer-body">
-                                <div class="faq-answer-row">
-                                    <span class="badge a-badge">A</span>
-                                    <span class="a-text">{{answer}}</span>
-                                </div>
-                                {{#isAdmin}}
-                                    <div class="faq-admin-inline">
-                                        <form action="/faqs/edit/{{id}}" method="get" style="display:inline;">
-                                            <button type="submit" class="faq-edit-btn">
-                                                <div style="display:flex; align-items:center;">
-                                                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
-                                                    <span>수정</span>
-                                                </div>
-                                            </button>
-                                        </form>
-                                        <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
-                                            <button type="submit" class="faq-delete-btn">
-                                                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M4 5.5h12M8 5.5V3.5h4v2M5.5 5.5l.7 10a1 1 0 001 1h5.6a1 1 0 001-1l.7-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                                <span>삭제</span>
-                                            </button>
-                                        </form>
-                                    </div>
-                                {{/isAdmin}}
+        <div class="faq-list">
+            {{#faqList}}
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleAnswer(this)">
+                        <span class="badge">Q</span>
+                        <span class="q-text">{{question}}</span>
+                        <svg class="chevron" viewBox="0 0 20 20" fill="none">
+                            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-body">
+                            <div class="faq-answer-row">
+                                <span class="badge a-badge">A</span>
+                                <span class="a-text">{{answer}}</span>
                             </div>
+                            {{#isAdmin}}
+                                <div class="faq-admin-inline">
+                                    <form action="/faqs/edit/{{id}}" method="get" style="display:inline;">
+                                        <button type="submit" class="faq-edit-btn">
+                                            <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M14.17 2.83a2 2 0 0 1 2.83 2.83L6.5 16.17 2.5 17.5l1.33-4L14.17 2.83Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            수정
+                                        </button>
+                                    </form>
+                                    <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
+                                        <button type="submit" class="faq-delete-btn">
+                                            <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M4 5.5h12M8 5.5V3.5h4v2M5.5 5.5l.7 10a1 1 0 001 1h5.6a1 1 0 001-1l.7-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            삭제
+                                        </button>
+                                    </form>
+                                </div>
+                            {{/isAdmin}}
                         </div>
                     </div>
-                {{/faqList}}
-
-                {{^faqList}}
-                    <p class="faq-empty">— 등록된 FAQ가 없습니다 —</p>
-                {{/faqList}}
-            </div>
-
-        </section>
+                </div>
+            {{/faqList}}
+            {{^faqList}}
+                <p class="faq-empty">— 등록된 FAQ가 없습니다 —</p>
+            {{/faqList}}
+        </div>
     </div>
 
-</div><!-- /faq-wrap -->
+</div>
 
 <script>
     function toggleAnswer(el) {
-        const answer = el.nextElementSibling;
-        answer.classList.toggle('open');
+        el.nextElementSibling.classList.toggle('open');
         el.classList.toggle('open');
     }
 </script>

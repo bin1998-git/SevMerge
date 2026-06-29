@@ -3,6 +3,7 @@ package com.example.SevMerge.comment;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.Role;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,7 +23,7 @@ public class CommentController {
     public String saveProc(@PathVariable("boardId") Long boardId,
                            CommentRequest.SaveDTO saveDTO, HttpSession session) {
         // 인증검사
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         // 유효성 검사
         saveDTO.validate();
@@ -37,7 +38,7 @@ public class CommentController {
     @PostMapping("/comments/{commentId}/update")
     public String updateComment(@PathVariable(name = "commentId") Long commentId,
                                 @ModelAttribute CommentRequest.SaveDTO.UpdateDTO updateDTO, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionMember == null) {
             return "redirect:/boards/" + commentId;
         }
@@ -53,7 +54,7 @@ public class CommentController {
     public String delete(@PathVariable(name = "id") Long commentId,
                          HttpSession session,
                          @RequestParam(name = "boardId") Long boardId) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionMember == null) {
             return "redirect:/login";
         }
@@ -72,7 +73,7 @@ public class CommentController {
     @GetMapping("/admin/comments")
     public String showAdminComments(@RequestParam(name = "keyword", required = false) String keyword,
                                     Model model, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionMember == null || sessionMember.getRole() != Role.ADMIN) {
             return "redirect:/login";
         }

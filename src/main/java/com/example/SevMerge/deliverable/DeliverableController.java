@@ -2,6 +2,8 @@ package com.example.SevMerge.deliverable;
 
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import java.io.IOException;
 public class DeliverableController {
 
     private final DeliverableService deliverableService;
+    private final MemberRepository memberRepository;
 
     @PostMapping("/projects/{id}/deliverables")
     public String submit(@PathVariable("id") Long projectId,
@@ -24,9 +27,10 @@ public class DeliverableController {
                          @RequestParam(value = "note", required = false) String note,
                          @RequestParam(value = "isFinal", defaultValue = "false") boolean isFinal,
                          HttpSession session) throws IOException {
-        Member user = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser user = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (user == null) return "redirect:/login";
-        deliverableService.submit(projectId, file, note, isFinal, user);
+        Member member = memberRepository.findById(user.getId()).orElseThrow();
+        deliverableService.submit(projectId, file, note, isFinal, member);
         return "redirect:/bids/my-orders";
     }
 
@@ -35,9 +39,10 @@ public class DeliverableController {
                            @RequestParam("reason") String reason,
                            @RequestParam("projectId") Long projectId,
                            HttpSession session) {
-        Member user = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser user = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (user == null) return "redirect:/login";
-        deliverableService.requestRevision(deliverableId, reason, user);
+        Member member = memberRepository.findById(user.getId()).orElseThrow();
+        deliverableService.requestRevision(deliverableId, reason, member);
         return "redirect:/projects/" + projectId;
     }
 
@@ -45,9 +50,10 @@ public class DeliverableController {
     public String approve(@PathVariable("id") Long deliverableId,
                           @RequestParam("projectId") Long projectId,
                           HttpSession session) {
-        Member user = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser user = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (user == null) return "redirect:/login";
-        deliverableService.approve(deliverableId, user);
+        Member member = memberRepository.findById(user.getId()).orElseThrow();
+        deliverableService.approve(deliverableId, member);
         return "redirect:/projects/" + projectId;
     }
 }

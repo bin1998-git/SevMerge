@@ -3,6 +3,7 @@ package com.example.SevMerge.chatMessage;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class ChatMessageController {
     @PostMapping("/chat/upload")
     @ResponseBody
     public ResponseEntity<?> uploadImage(@RequestParam MultipartFile file, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionMember == null) return ResponseEntity.status(401).build();
         if (!FileUtil.isImageFile(file)) return ResponseEntity.badRequest().body(Map.of("message", "이미지 파일만 업로드 가능합니다"));
         try {

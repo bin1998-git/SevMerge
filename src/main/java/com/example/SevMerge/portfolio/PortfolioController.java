@@ -6,6 +6,7 @@ import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberService;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,7 @@ public class PortfolioController {
     public String showPortfolios(HttpSession session,
                                  Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page) {
 
-        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         Page<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId, page);
         ExpertProfileResponse expertProfile = expertProfileService.getByMemberId(expertId);
 
@@ -63,7 +64,7 @@ public class PortfolioController {
                                   HttpSession session,
                                   Model model) {
 
-        Member expert = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser expert = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         PortfolioResponse.DetailDTO detailPortfolio = portfolioService.findPortfolio(portfolioId);
 
@@ -76,7 +77,7 @@ public class PortfolioController {
 
     @GetMapping("/portfolios/save")
     public String savePortfoliosPage(HttpSession session, Model model, @RequestParam("expertId") Long expertId) {
-        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (member == null) {
             return "redirect:/login";
         }
@@ -93,7 +94,7 @@ public class PortfolioController {
     @PostMapping("/portfolios/save")
     public String savePortfolios(PortfolioRequest.SaveDTO saveDTO, HttpSession session) {
 
-        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (member == null) {
             return "redirect:/login";
         }
@@ -109,7 +110,7 @@ public class PortfolioController {
     @GetMapping("/portfolios/{portfolioId}/edit")
     public String updatePortfoliosPage(@PathVariable(name = "portfolioId") Long portfolioId, Model model, HttpSession session) {
 
-        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (member == null) {
             return "redirect:/login";
         }
@@ -127,7 +128,7 @@ public class PortfolioController {
     public String updatePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, PortfolioRequest.UpdateDTO updateDTO,
                                    @RequestParam(name = "expertId") Long expertId, HttpSession session
     ) {
-        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (member == null) {
             return "redirect:/login";
         }
@@ -143,11 +144,11 @@ public class PortfolioController {
     @PostMapping("/portfolios/{portfolioId}/delete")
     public String deletePortfolios(@PathVariable(name = "portfolioId") Long portfolioId, @RequestParam(name = "expertId") Long expertId, HttpSession session) {
 
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionMember == null) {
             return "redirect:/login";
         }
-        if (sessionMember.getId() != expertId) { // expertId 전문가의 멤버의 아이디이다.
+        if (!sessionMember.getId().equals(expertId)) { // expertId 전문가의 멤버의 아이디이다.
             throw new BadRequestException("삭제 권한이 없습니다.");
         }
 

@@ -1,5 +1,6 @@
 package com.example.SevMerge.comment;
 
+import com.example.SevMerge.member.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,12 +33,15 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 키워드가 포함된 댓글만 필터링하는 검색전용기능
     @Query("""
-        SELECT c FROM Comment c 
-        JOIN FETCH c.member 
-        JOIN FETCH c.board 
-        WHERE c.isDeleted = false 
+        SELECT c FROM Comment c
+        JOIN FETCH c.member
+        JOIN FETCH c.board
+        WHERE c.isDeleted = false
           AND (c.content LIKE %:keyword% OR c.member.name LIKE %:keyword%)
         ORDER BY c.id DESC
     """)
     List<Comment> findByContentContainingForAdmin(@Param("keyword") String keyword);
+
+    @Query("SELECT COUNT(c) FROM Comment c JOIN c.member m WHERE c.board.id = :boardId AND c.isDeleted = false AND m.role = :role")
+    long countByBoardIdAndMemberRole(@Param("boardId") Long boardId, @Param("role") Role role);
 }

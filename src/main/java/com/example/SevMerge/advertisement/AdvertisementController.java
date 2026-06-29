@@ -4,7 +4,7 @@ import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.core.util.FileUtil;
-import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -35,7 +35,7 @@ public class AdvertisementController {
     // 광고 구매 폼
     @GetMapping("/advertisements/form")
     public String purchaseForm(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
         if (!loginMember.isExpert()) return "redirect:/";
 
@@ -51,7 +51,7 @@ public class AdvertisementController {
                            @RequestParam(value = "bannerImageFile", required = false) MultipartFile bannerImageFile,
                            HttpSession session,
                            RedirectAttributes redirectAttrs) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
 
         try {
@@ -81,7 +81,7 @@ public class AdvertisementController {
     public String myAds(HttpSession session, Model model,
                         @ModelAttribute("successMsg") String successMsg,
                         @ModelAttribute("errorMsg") String errorMsg) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
 
         List<AdvertisementResponse> ads = advertisementService.getMyAds(loginMember.getId());

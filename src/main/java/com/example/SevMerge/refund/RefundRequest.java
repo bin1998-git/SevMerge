@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class RefundApplication {
+public class RefundRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

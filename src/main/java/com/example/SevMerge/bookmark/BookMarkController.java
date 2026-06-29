@@ -4,6 +4,7 @@ package com.example.SevMerge.bookmark;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class BookMarkController {
     @PostMapping("/bookmarks/toggle/{expertId}")
     public Map<String, Boolean> toggleBookmark(@PathVariable(name = "expertId") Long expertId, HttpSession session){
 
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if(sessionMember == null){
             throw new BadRequestException("로그인 먼저 해주세요");
         }
@@ -39,7 +40,7 @@ public class BookMarkController {
                                  HttpSession session
                                  ) {
 
-        Member member = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if(member == null) {
             throw new BadRequestException("로그인 먼저 해주세요");
         }

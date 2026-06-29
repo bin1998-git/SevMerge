@@ -1,5 +1,8 @@
 package com.example.SevMerge;
 
+import com.example.SevMerge.adbid.AdBid;
+import com.example.SevMerge.adbid.AdBidService;
+import com.example.SevMerge.adbid.AdSlot;
 import com.example.SevMerge.advertisement.AdvertisementPlacement;
 import com.example.SevMerge.advertisement.AdvertisementResponse;
 import com.example.SevMerge.advertisement.AdvertisementService;
@@ -7,6 +10,8 @@ import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.ReviewService;
@@ -27,17 +32,19 @@ public class main {
     private final AdvertisementService advertisementService;
     private final ExpertProfileService expertProfileService;
     private final ReviewService reviewService;
+    private final AdBidService adBidService;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/")
     public String introPage(HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember != null) return "redirect:/main";
         return "intro";
     }
 
     @GetMapping("/main")
     public String exmainPage(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         model.addAttribute("isMainPage", true);
 
@@ -129,6 +136,25 @@ public class main {
                     reviewService.getRecentReviews(4));
         } catch (Exception e) {
             model.addAttribute("recentReviews", List.of());
+        }
+        // 6. 경매 낙찰 광고
+        try {
+            List<AdBid> approvedBids = adBidService.getApprovedWinnerBids();
+            List<Map<String, Object>> auctionAds = approvedBids.stream().map(b -> {
+                Member winner = memberRepository.findById(b.getExpertId()).orElse(null);
+                Map<String, Object> map = new java.util.HashMap<>();
+                map.put("expertId", b.getExpertId());
+                map.put("expertName", winner != null ? winner.getName() : "");
+                map.put("adMessage", b.getAdMessage() != null ? b.getAdMessage() : "");
+                map.put("bannerImage", b.getBannerImage() != null ?
+                        "/images/" + b.getBannerImage() : "/images/default-banner.png");
+                return map;
+            }).toList();
+            model.addAttribute("auctionAds", auctionAds);
+            model.addAttribute("hasAuctionAds", !auctionAds.isEmpty());
+        } catch (Exception e) {
+            model.addAttribute("auctionAds", List.of());
+            model.addAttribute("hasAuctionAds", false);
         }
 
         return "main";

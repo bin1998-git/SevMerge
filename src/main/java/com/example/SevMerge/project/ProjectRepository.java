@@ -127,6 +127,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     """)
     List<Project> findAdminProjectsByStatusAndKeyword(@Param("status") ProjectStatus status, @Param("keyword") String keyword);
 
+    // 최근 5개 프로젝트 조회하기
+    List<Project> findTop5ByIsDeletedFalseOrIsDeletedIsNullOrderByCreatedAtDesc();
+
     // 시작일부터 종료일까지의 일자별 프로젝트 등록 수 조회
     @Query(value = """
             SELECT DATE_FORMAT(created_at, '%m-%d') as date_str, COUNT(*) as cnt 

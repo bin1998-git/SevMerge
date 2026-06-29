@@ -3,6 +3,7 @@ package com.example.SevMerge.refund;
 import com.example.SevMerge.core.util.ApiResponse;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class RefundApplicationController {
             HttpSession session,
             RedirectAttributes redirectAttrs) {
 
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
 
         try {
@@ -46,7 +47,7 @@ public class RefundApplicationController {
     public String adminRefundList(@RequestParam(required = false) String status,
                                   @RequestParam(defaultValue = "1") int page,
                                   HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) return "redirect:/login";
 
         List<RefundApplicationResponse> all;
@@ -75,7 +76,7 @@ public class RefundApplicationController {
             @RequestParam(required = false) String comment,
             HttpSession session) {
 
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) {
             return ResponseEntity.status(403).body(ApiResponse.fail("관리자 권한이 필요합니다."));
         }
@@ -96,7 +97,7 @@ public class RefundApplicationController {
             @RequestParam String comment,
             HttpSession session) {
 
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) {
             return ResponseEntity.status(403).body(ApiResponse.fail("관리자 권한이 필요합니다."));
         }
@@ -112,7 +113,7 @@ public class RefundApplicationController {
     // 사유 카테고리
     @GetMapping("/refund-applications/form")
     public String refundForm(@RequestParam Long paymentId, HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
 
         model.addAttribute("paymentId", paymentId);

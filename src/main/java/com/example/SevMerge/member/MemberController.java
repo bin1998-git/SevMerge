@@ -110,7 +110,7 @@ public class MemberController {
     // 로그인/ 로그아웃
     @GetMapping("/login")
     public String loginForm(HttpSession session ,Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember != null) {
             return "redirect:/main";
         }
@@ -243,7 +243,7 @@ public class MemberController {
                          @RequestParam(defaultValue = "1") int page,
                          HttpSession session, Model model,
                          HttpServletRequest request) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         // 세션 유저 방어(로그아웃 상태 시 로그인창으로)
         if (loginMember == null) {
             return "redirect:/login";
@@ -252,6 +252,8 @@ public class MemberController {
         if (loginMember.isExpert()) {
             return "redirect:/experts/dashboard";
         }
+
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
 
         model.addAttribute("isDashboard", true);
         if (tab == null) tab = "projects";
@@ -268,7 +270,7 @@ public class MemberController {
         model.addAttribute("isPayments", tab.equalsIgnoreCase("payments"));
         model.addAttribute("isChargeHistory", tab.equalsIgnoreCase("chargeHistory"));
         model.addAttribute("isRefundHistory", tab.equalsIgnoreCase("refundHistory"));
-        List<ProjectResponseDTO.ListDTO> myProjects = projectService.myProjects(loginMember);
+        List<ProjectResponseDTO.ListDTO> myProjects = projectService.myProjects(member);
         List<ProjectResponseDTO.ListDTO> visibleProjects = myProjects.stream()
                 .filter(p -> !p.isDone())
                 .collect(java.util.stream.Collectors.toList());
@@ -276,11 +278,11 @@ public class MemberController {
         model.addAttribute("inProgressCount", visibleProjects.stream().filter(p -> p.isClosed()).count());
         model.addAttribute("completedCount", myProjects.stream().filter(p -> p.isDone()).count());
         long proposalCount = 0L;
-        try { proposalCount = bidService.findBidsForClient(loginMember).size(); } catch (Exception ignore) {}
+        try { proposalCount = bidService.findBidsForClient(member).size(); } catch (Exception ignore) {}
         model.addAttribute("proposalCount", proposalCount);
 
         //  메시지 카운트
-        long unreadMessageCount = messageRepository.countUnreadMessages(loginMember);
+        long unreadMessageCount = messageRepository.countUnreadMessages(member);
         model.addAttribute("messageCount", unreadMessageCount);
         model.addAttribute("isMessages", tab.equalsIgnoreCase("messages"));
         // 북마크
@@ -346,7 +348,7 @@ public class MemberController {
             model.addAttribute("rawName", loginMember.getName());
             model.addAttribute("rawEmail", loginMember.getEmail());
         } else if (tab.equals("messages")) {
-            Page<?> msgPage = messageService.findMessages(loginMember, "received", page, "desc", null);
+            Page<?> msgPage = messageService.findMessages(member, "received", page, "desc", null);
             int tp = msgPage.getTotalPages() == 0 ? 1 : msgPage.getTotalPages();
             model.addAttribute("messages", msgPage.getContent());
             model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
@@ -427,7 +429,7 @@ public class MemberController {
             model.addAttribute("wishTotalElements", wishResult.getTotalElements());
         } else if (tab.equals("bids")) {
             try {
-                List<?> all = bidService.findBidsForClient(loginMember);
+                List<?> all = bidService.findBidsForClient(member);
                 int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
                 int s = (page - 1) * MY_PAGE_SIZE, e2 = Math.min(s + MY_PAGE_SIZE, all.size());
                 model.addAttribute("clientBids", s < all.size() ? all.subList(s, e2) : List.of());
@@ -445,7 +447,7 @@ public class MemberController {
     @DeleteMapping("/my-pages/withdraw")
     @ResponseBody
     public ResponseEntity<?> withdrawMyAccount(HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
         try {
             memberService.withdrawMember(loginMember.getId());
@@ -459,7 +461,7 @@ public class MemberController {
     // 회원 정보 수정 페이지 이동 (GET)
     @GetMapping("/mypage/update") //
     public String updateMemberPage(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) {
             return "redirect:/login";
         }
@@ -475,12 +477,12 @@ public class MemberController {
             @RequestPart("data") MemberRequest.Update request,
             @RequestPart(value = "profileImageFile", required = false) MultipartFile profileImageFile,
             HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
 
         try {
             memberService.updateMyInfo(loginMember.getId(), request, profileImageFile);
-            session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
+            session.setAttribute(Define.SESSION_USER, new SessionUser(memberService.findMemberById(loginMember.getId())));
             return ResponseEntity.ok().body("정보 변경 완료");
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -490,10 +492,10 @@ public class MemberController {
     @DeleteMapping("/my-pages/profile-image")
     @ResponseBody
     public ResponseEntity<?> deleteProfileImage(HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("세션 만료");
         memberService.deleteProfileImage(loginMember.getId());
-        session.setAttribute(Define.SESSION_USER, memberService.findMemberById(loginMember.getId()));
+        session.setAttribute(Define.SESSION_USER, new SessionUser(memberService.findMemberById(loginMember.getId())));
         return ResponseEntity.ok().body("삭제 완료");
     }
 
@@ -501,7 +503,7 @@ public class MemberController {
     @PostMapping("/api/member/verify-password")
     @ResponseBody
     public ResponseEntity<?> verifyCurrentPassword(@RequestBody Map<String, String> body, HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
 
         String currentPassword = body.get("currentPassword");
@@ -582,7 +584,7 @@ public class MemberController {
     public String deleteMemberByAdmin(@PathVariable(name = "id") Long id,
                                       HttpSession session,
                                       Model model) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser.isAdmin());
         memberService.withdrawMember(id);
         return "redirect:/admin/members";
@@ -627,7 +629,7 @@ public class MemberController {
                 return "redirect:/expert-rejected";
             }
 
-            session.setAttribute(Define.SESSION_USER, existing);
+            session.setAttribute(Define.SESSION_USER, new SessionUser(existing));
             log.info("구글 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
         }
@@ -669,7 +671,7 @@ public class MemberController {
                 return "redirect:/expert-rejected";
             }
 
-            session.setAttribute(Define.SESSION_USER, existing);
+            session.setAttribute(Define.SESSION_USER, new SessionUser(existing));
             log.info("카카오 기존 회원 로그인 - memberId={}", existing.getId());
             return "redirect:/";
         }
@@ -730,7 +732,7 @@ public class MemberController {
         }
         if (member != null) {
             Member freshMember = memberService.findMemberById(member.getId());
-            session.setAttribute(Define.SESSION_USER, freshMember);
+            session.setAttribute(Define.SESSION_USER, new SessionUser(freshMember));
             log.info("소셜 회원가입 최종 완료 -> 온전한 세션 주입 완료 - memberId={}", freshMember.getId());
         }
 

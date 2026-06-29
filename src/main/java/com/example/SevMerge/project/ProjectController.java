@@ -5,7 +5,9 @@ import com.example.SevMerge.bid.BidResponseDTO;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.Role;
+import com.example.SevMerge.member.SessionUser;
 import com.example.SevMerge.payment.PaymentResponse;
 import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.review.ReviewService;
@@ -34,6 +36,7 @@ public class ProjectController {
     private final PaymentService paymentService;
     private final ReviewService reviewService;
     private final com.example.SevMerge.deliverable.DeliverableService deliverableService;
+    private final MemberRepository memberRepository;
 
     // 프로젝트 등록 폼
     @GetMapping("/projects/save-form")
@@ -45,10 +48,11 @@ public class ProjectController {
     // 프로젝트 등록
     @PostMapping("/projects/save")
     public String save(ProjectRequestDTO.SaveDTO req, HttpSession session) {
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login-form";
         req.validate();
-        projectService.saveProject(req, sessionUser);
+        Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
+        projectService.saveProject(req, member);
         return "redirect:/projects";
     }
 
@@ -99,7 +103,7 @@ public class ProjectController {
         model.addAttribute("isEtc", "ETC".equals(category));
         model.addAttribute("isCertifiedOnly", "CERTIFIED_ONLY".equals(bidFilter));
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser != null) {
             model.addAttribute("sessionUser", sessionUser);
         }
@@ -112,33 +116,30 @@ public class ProjectController {
     public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
         log.info("프로젝트 상세조회 요청 - projectId: {}", id);
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = sessionUser != null ?
+                memberRepository.findById(sessionUser.getId()).orElse(null) : null;
+
         ProjectResponseDTO.DetailDTO project = projectService.findProjectById(id);
         model.addAttribute("project", project);
 
-
-        // 일반 전문가도 빈 리스트나 전체 리스트를 안전하게 가져옵니다.
-        List<BidResponseDTO.ListDTO> bids = bidService.findAllByProjectId(id,sessionUser);
+        List<BidResponseDTO.ListDTO> bids = bidService.findAllByProjectId(id, member);
         model.addAttribute("bids", bids);
 
-        // 로그인한 사용자가 프로젝트 작성자인지 확인
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(project.getMemberId());
         model.addAttribute("isOwner", isOwner);
 
         model.addAttribute("deliverables", deliverableService.getByProject(id));
 
-        // 총 제안서 개수는 의뢰인이거나, 비공개 프로젝트가 아닐 때만 정확하게 전달합니다.
         int bidCount = (bids != null) ? bids.size() : 0;
         model.addAttribute("bidCount", bidCount);
 
-        // 낙찰된 전문가 카드 (CLOSED 상태일 때 안전하게 활성화)
         bidService.findSelectedBidByProjectId(id).ifPresent(bid -> {
             model.addAttribute("expertCard", true);
             model.addAttribute("expertName", bid.getExpert().getName());
             model.addAttribute("expertEmail", bid.getExpert().getEmail());
             model.addAttribute("taskTitle", project.getTitle());
 
-            // 날짜 포맷팅 에러 완벽 방어
             if (bid.getCreatedAt() != null) {
                 String startStr = bid.getCreatedAt().toString();
                 model.addAttribute("startDate", startStr.length() >= 10 ? startStr.substring(0, 10) : startStr);
@@ -151,6 +152,7 @@ public class ProjectController {
 
         return "project/project-detail";
     }
+
     // 프로젝트 수정 폼
     @GetMapping("/projects/{id}/edit")
     public String updateForm(@PathVariable Long id, Model model) {
@@ -178,11 +180,12 @@ public class ProjectController {
     ) {
         log.info("project 수정 요청");
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         req.validate();
         // 세션유저 검증이 필요없음으로 null
-        projectService.updateProject(id, req, sessionUser);
+        Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
+        projectService.updateProject(id, req, member);
         return ResponseEntity.ok().build();
     }
 
@@ -192,8 +195,9 @@ public class ProjectController {
     public ResponseEntity<?> delete(@PathVariable Long id,
                                     HttpSession session) {
         log.info("project 삭제 요청");
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
-        projectService.deleteProject(id, sessionUser);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
+        projectService.deleteProject(id, member);
         return ResponseEntity.ok().build();
     }
 
@@ -201,7 +205,7 @@ public class ProjectController {
     @PostMapping("/projects/{id}/done")
     public String done(@PathVariable Long id, HttpSession session) {
         log.info("project 검토 확인 요청");
-        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return "redirect:/login";
         }
@@ -212,7 +216,8 @@ public class ProjectController {
                 paymentService.settle(payment.getId(), sessionUser.getId());
             }
             if (!"DONE".equals(projectService.findProjectById(id).getProjectStatus())) {
-                projectService.doneProject(id, sessionUser);
+                Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
+                projectService.doneProject(id, member);
             }
         } catch (Exception e) {
             log.warn("결제 승인 처리 중 - {}", e.getMessage());
@@ -226,7 +231,7 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<?> saveDraft(@RequestBody ProjectRequestDTO.UpdateDTO req, HttpSession session) {
         log.info("프로젝트 임시저장 요청");
-        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return ResponseEntity.status(401).body("로그인이 필요합니다");
         }
@@ -240,7 +245,7 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<?> getDraft(HttpSession session) {
         log.info("project 임시저장 조회");
-        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return ResponseEntity.status(401).body("로그인이 필요합니다");
         }
@@ -255,7 +260,7 @@ public class ProjectController {
                                 @RequestParam(value = "statusFilter", defaultValue = "ALL") String statusFilter,
                                 @RequestParam(defaultValue = "1") int page,
                                 HttpSession session, Model model) {
-        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
 
         String searchKeyword = (keyword != null) ? keyword.trim() : "";
@@ -263,7 +268,8 @@ public class ProjectController {
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("projects", s < total ? all.subList(s, e) : new java.util.ArrayList<>());
-        model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("isFree", false);
@@ -285,7 +291,7 @@ public class ProjectController {
     // 관리자 전용 삭제
     @PostMapping("/admin/projects/{id}/delete")
     public String deleteProjectByAdmin(@PathVariable("id") Long id, HttpSession session) {
-        Member sessionUser = (Member)session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
@@ -299,9 +305,10 @@ public class ProjectController {
 
     @PostMapping("/projects/{id}/skip-review")
     public String skipReview(@PathVariable Long id, HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
-        projectService.skipReview(id, loginMember);
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
+        projectService.skipReview(id, member);
         return "redirect:/my-pages?tab=projects";
     }
 }
