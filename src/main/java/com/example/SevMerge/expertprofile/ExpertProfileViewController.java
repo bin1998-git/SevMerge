@@ -221,9 +221,9 @@ public class ExpertProfileViewController {
         return "expertProfile/expert-dashboard";
     }
 
-    // ──────────────────────────────────────────────────
+
     // 전문가 프로필 수정 (GET /experts/my/form)
-    // ──────────────────────────────────────────────────
+
     @GetMapping("/my/form")
     public String form(HttpSession session, Model model) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
@@ -238,12 +238,16 @@ public class ExpertProfileViewController {
             model.addAttribute("isUpdate", false);
         }
         model.addAttribute("isDashboard", true);
+        model.addAttribute("currentPage", 1);
+        model.addAttribute("totalPages", 1);
+        model.addAttribute("prevPage", null);
+        model.addAttribute("nextPage", null);
         return "expertProfile/expertProfile-form";
     }
 
-    // ──────────────────────────────────────────────────
+
     // 전문가 프로필 수정 처리 (POST /experts/my/form)
-    // ──────────────────────────────────────────────────
+
     @PostMapping("/my/form")
     public String submitForm(@ModelAttribute ExpertProfileRequest.SaveRequest req,
                              HttpSession session) {
@@ -262,9 +266,8 @@ public class ExpertProfileViewController {
         return "redirect:/experts/dashboard";
     }
 
-    // ──────────────────────────────────────────────────
     // 개인정보 수정 폼 (GET /experts/my/info-edit)
-    // ──────────────────────────────────────────────────
+
     @GetMapping("/my/info-edit")
     public String infoEditForm(HttpSession session, Model model) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
@@ -272,13 +275,18 @@ public class ExpertProfileViewController {
         if (!sessionUser.isExpert()) return "redirect:/";
 
         model.addAttribute("member", memberService.getMyInfo(sessionUser.getId()));
+        try {
+            model.addAttribute("expertProfile", expertProfileService.getByMemberId(sessionUser.getId()));
+        } catch (Exception e) {
+            model.addAttribute("expertProfile", null);
+        }
         model.addAttribute("isDashboard", true);
         return "expertProfile/expert-info-edit";
     }
 
-    // ──────────────────────────────────────────────────
+
     // 개인정보 수정 처리 (POST /experts/my/info-edit)
-    // ──────────────────────────────────────────────────
+
     @PostMapping("/my/info-edit")
     public String infoEditSubmit(@ModelAttribute MemberRequest.Update req,
                                  HttpSession session,
@@ -290,7 +298,7 @@ public class ExpertProfileViewController {
         try {
             memberService.updateMyInfo(sessionUser.getId(), req, null);
             session.setAttribute(Define.SESSION_USER,
-                    memberService.findMemberById(sessionUser.getId()));
+                    new SessionUser(memberService.findMemberById(sessionUser.getId())));
             redirectAttrs.addFlashAttribute("successMessage", "정보가 수정되었습니다.");
         } catch (BadRequestException e) {
             log.warn("개인정보 수정 실패 (memberId={}): {}", sessionUser.getId(), e.getMessage());

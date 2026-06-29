@@ -1,305 +1,197 @@
 {{> layout/header}}
-
 <style>
     body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
-
-    /* ── 페이지 래퍼 (공통) ── */
-    .page-wrap {
-        min-height: calc(100vh - 64px);
-        display: flex; align-items: stretch; justify-content: center;
-        padding: 20px 28px 28px; position: relative; z-index: 1;
-    }
-    .board-card {
-        width: 100%;
-        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-        background: rgba(255,255,255,.52);
-        border: 1.5px solid rgba(255,255,255,.82);
-        border-radius: 28px;
-        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
-        display: flex; flex-direction: column; overflow: hidden;
-    }
-
-    /* ── 상단 헤더 바 ── */
-    .board-header {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 28px 32px 20px;
-        border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
-    }
-    .board-title-wrap { display: flex; flex-direction: column; gap: 4px; }
-    .board-title { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; }
-    .board-desc  { font-size: 13px; color: #4a6fa5; }
-
-    /* ── 탭 + 목록 본문 ── */
-    .list-content { flex: 1; padding: 24px 32px 32px; }
-
-    /* ── 탭 ── */
-    .ar-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
-    .ar-tab {
-        padding: 9px 18px; border-radius: 10px;
-        font-size: 13px; font-weight: 700; text-decoration: none; color: #4a6fa5;
-        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
-        border: 1.5px solid rgba(255,255,255,.8); transition: all .15s;
-    }
-    .ar-tab:hover { border-color: #93c5fd; color: #2563eb; }
-    .ar-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
-
-    /* ── 카드 ── */
-    .ar-card {
-        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        background: rgba(255,255,255,.6);
-        border: 1.5px solid rgba(255,255,255,.8);
-        border-radius: 16px; padding: 22px 26px; margin-bottom: 14px;
-        transition: box-shadow .15s;
-        box-shadow: 0 4px 24px rgba(37,99,235,.06);
-    }
-    .ar-card:hover { box-shadow: 0 4px 24px rgba(37,99,235,.12); }
-
-    .ar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
-    .ar-cat {
-        display: inline-block; font-size: 11px; font-weight: 700;
-        color: #2563eb; background: #eff6ff;
-        padding: 3px 9px; border-radius: 5px; margin-bottom: 8px;
-    }
-    .ar-people { font-size: 14px; color: #1e3a6e; }
-    .ar-people strong { font-weight: 800; }
-    .ar-arrow { color: #c4c9d9; margin: 0 6px; }
-    .ar-meta { font-size: 12px; color: #93aecf; margin-top: 4px; }
-
-    /* ── 상태 뱃지 ── */
-    .ar-status { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
-    .ar-status.pending  { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-    .ar-status.approved { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-    .ar-status.rejected { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
-
-    /* ── 사유 / 의견 ── */
-    .ar-reason {
-        font-size: 13.5px; color: #2d4a7a;
-        background: rgba(255,255,255,.5); padding: 12px 14px;
-        border-radius: 10px; line-height: 1.6;
-    }
-    .ar-comment { font-size: 12.5px; color: #4a6fa5; margin-top: 8px; padding-left: 2px; }
-
-    /* ── 액션 버튼 ── */
-    .ar-actions {
-        display: flex; gap: 8px; margin-top: 16px;
-        padding-top: 14px; border-top: 1px solid rgba(37,99,235,.08);
-    }
-    .ar-btn {
-        padding: 8px 18px; border-radius: 20px;
-        font-size: 13px; font-weight: 700; cursor: pointer;
-        border: none; font-family: inherit; transition: all .15s;
-    }
-    .ar-btn-approve { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 3px 10px rgba(37,99,235,.25); }
-    .ar-btn-approve:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(37,99,235,.35); }
-    .ar-btn-reject {
-        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
-        border: 1.5px solid #fecaca; color: #ef4444;
-    }
-    .ar-btn-reject:hover { background: #fff3f3; }
-
-    /* ── 빈 상태 ── */
-    .ar-empty {
-        text-align: center; padding: 80px 0; color: #93aecf;
-        font-size: 15px; border: 2px dashed rgba(37,99,235,.12);
-        border-radius: 14px; background: rgba(255,255,255,.3);
-    }
-
-    /* ── 페이지네이션 ── */
-    .pagination {
-        display: flex; justify-content: center; align-items: center;
-        gap: 10px; padding-top: 8px; margin-top: 8px;
-        border-top: 1px solid rgba(37,99,235,.06);
-    }
-    .page-info { font-size: 13px; color: #4a6fa5; font-weight: 600; }
-    .page-btn {
-        padding: 9px 15px; border-radius: 20px;
-        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
-        border: 1.5px solid rgba(255,255,255,.8);
-        font-size: 13px; font-weight: 600; color: #4a6fa5; text-decoration: none; transition: all .15s;
-    }
-    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
-
-    /* ── 모달 ── */
-    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 9999; align-items: center; justify-content: center; }
-    .ar-modal-bg.open { display: flex; }
-    .ar-modal {
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        background: rgba(255,255,255,.92);
-        border: 1.5px solid rgba(255,255,255,.85);
-        border-radius: 20px; padding: 28px;
-        max-width: 440px; width: 90%;
-        box-shadow: 0 12px 40px rgba(37,99,235,.12);
-    }
-    .ar-modal-title { font-size: 17px; font-weight: 900; color: #1e3a6e; margin-bottom: 6px; }
-    .ar-modal-sub   { font-size: 13px; color: #4a6fa5; margin-bottom: 16px; }
-    .ar-modal-textarea {
-        width: 100%; box-sizing: border-box; padding: 12px 14px;
-        border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px;
-        font-size: 14px; font-family: inherit; resize: vertical; min-height: 90px;
-        background: rgba(255,255,255,.7); outline: none; transition: border-color .15s;
-    }
-    .ar-modal-textarea:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.95); }
-    .ar-modal-btns  { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-    .ar-modal-cancel {
-        padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
-        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8);
-        color: #4a6fa5; cursor: pointer; font-family: inherit; transition: all .15s;
-    }
-    .ar-modal-cancel:hover { background: rgba(255,255,255,.9); color: #2d4a7a; }
-    .ar-modal-confirm {
-        padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
-        border: none; cursor: pointer; font-family: inherit; color: #fff; transition: all .15s;
-    }
-    .ar-modal-confirm:hover { transform: translateY(-1px); }
-
-    @media (max-width: 768px) {
-        .page-wrap   { padding: 12px 12px 16px; }
-        .board-header, .list-content { padding-left: 18px; padding-right: 18px; }
-        .ar-row      { flex-direction: column; gap: 8px; }
-    }
+    .page-wrap { min-height: calc(100vh - 64px); display: flex; align-items: stretch; justify-content: center; padding: 20px 28px 28px; position: relative; z-index: 1; }
+    .edit-card { width: 100%; backdrop-filter: blur(30px); background: rgba(255,255,255,.52); border: 1.5px solid rgba(255,255,255,.82); border-radius: 28px; box-shadow: 0 20px 60px rgba(37,99,235,.1); display: flex; flex-direction: column; overflow: hidden; }
+    .edit-card form { flex: 1; display: flex; flex-direction: column; }
+    .edit-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 36px 0; border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0; }
+    .edit-header-left { display: flex; align-items: center; gap: 14px; }
+    .btn-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); display: flex; align-items: center; justify-content: center; color: #4a6fa5; text-decoration: none; transition: all .15s; }
+    .btn-back:hover { background: rgba(255,255,255,.9); color: #2563eb; }
+    .edit-title { font-size: 20px; font-weight: 900; color: #1e3a6e; }
+    .edit-tabs { display: flex; }
+    .edit-tab { padding: 16px 22px; font-size: 14px; font-weight: 700; color: #4a6fa5; border-bottom: 2.5px solid transparent; text-decoration: none; transition: all .15s; }
+    .edit-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+    .edit-body { flex: 1; }
+    .section-divider { padding: 18px 36px 0; font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: .8px; text-transform: uppercase; }
+    .form-row { display: grid; grid-template-columns: 180px 1fr; align-items: flex-start; padding: 18px 36px; border-bottom: 1px solid rgba(37,99,235,.06); }
+    .form-row-label { display: flex; align-items: center; gap: 8px; padding-top: 13px; }
+    .form-label-text { font-size: 14px; font-weight: 700; color: #1e3a6e; }
+    .form-required { color: #ef4444; font-size: 13px; }
+    .form-optional { font-size: 11px; font-weight: 600; color: #93aecf; background: rgba(37,99,235,.06); border-radius: 5px; padding: 2px 7px; }
+    .form-select { width: 100%; padding: 12px 16px; background: rgba(255,255,255,.6); border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; box-sizing: border-box; }
+    .form-select:focus { border-color: #2563eb; background: rgba(255,255,255,.9); }
+    .form-input { width: 100%; padding: 12px 16px 12px 40px; background: rgba(255,255,255,.6); border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; box-sizing: border-box; }
+    .form-input:focus { border-color: #2563eb; background: rgba(255,255,255,.9); }
+    .form-input-wrap { position: relative; }
+    .form-input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #93aecf; width: 16px; height: 16px; pointer-events: none; }
+    .form-textarea { width: 100%; padding: 12px 16px; background: rgba(255,255,255,.6); border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; resize: vertical; min-height: 160px; line-height: 1.75; box-sizing: border-box; }
+    .form-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.9); }
+    .form-hint { font-size: 12px; color: #4a6fa5; margin-top: 5px; }
+    .stack-box { background: rgba(255,255,255,.5); border: 1.5px solid rgba(37,99,235,.1); border-radius: 12px; padding: 16px; }
+    .stack-box-label { font-size: 11px; font-weight: 700; color: #4a6fa5; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
+    .stack-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+    .stack-chip { display: flex; align-items: center; cursor: pointer; }
+    .stack-chip input[type="checkbox"] { display: none; }
+    .stack-chip-label { padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1.5px solid rgba(37,99,235,.12); background: rgba(255,255,255,.7); color: #2d4a7a; cursor: pointer; transition: all .15s; user-select: none; }
+    .stack-chip input:checked + .stack-chip-label { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .stack-preview { display: flex; align-items: center; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(37,99,235,.08); font-size: 12px; color: #4a6fa5; min-height: 22px; flex-wrap: wrap; }
+    .stack-empty-hint { font-size: 12px; color: #93aecf; }
+    .edit-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 18px 36px 24px; border-top: 1px solid rgba(37,99,235,.08); flex-shrink: 0; }
+    .btn-cancel { padding: 11px 24px; border-radius: 20px; font-size: 14px; font-weight: 700; background: rgba(255,255,255,.65); border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a; text-decoration: none; cursor: pointer; font-family: inherit; }
+    .btn-submit { padding: 11px 28px; border-radius: 20px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; cursor: pointer; font-family: inherit; box-shadow: 0 4px 14px rgba(37,99,235,.3); display: inline-flex; align-items: center; gap: 6px; }
+    .btn-submit:hover { transform: translateY(-1px); }
 </style>
 
+<div id="profileData"
+     data-career="{{expertProfile.career}}"
+     data-speciality="{{expertProfile.speciality}}"
+     data-github="{{#expertProfile.githubUrl}}{{expertProfile.githubUrl}}{{/expertProfile.githubUrl}}"
+     style="display:none"></div>
+
 <section class="page-wrap">
-    <div class="board-card">
-
-        <!-- 헤더 -->
-        <div class="board-header">
-            <div class="board-title-wrap">
-                <h1 class="board-title">환불 신청 관리</h1>
-                <p class="board-desc">의뢰인의 환불 신청을 검토하고 승인 또는 거절을 처리하세요.</p>
+    <div class="edit-card">
+        <div class="edit-header">
+            <div class="edit-header-left">
+                <a href="/experts/dashboard" class="btn-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </a>
+                <div class="edit-title">내 정보 수정</div>
+            </div>
+            <div class="edit-tabs">
+                <a href="/experts/my/info-edit" class="edit-tab">개인정보 수정</a>
+                <a href="/experts/my/form" class="edit-tab active">전문가 프로필 수정</a>
             </div>
         </div>
 
-        <!-- 본문 -->
-        <div class="list-content">
+        <form id="profileForm" action="/experts/my/form" method="POST">
+            <div class="edit-body">
+                <div class="section-divider" style="padding-top:18px;">프로필 정보</div>
 
-            <!-- 탭 -->
-            <div class="ar-tabs">
-                <a href="/admin/refund-applications?status=pending" class="ar-tab {{#isPendingFilter}}active{{/isPendingFilter}}">대기중만 보기</a>
-                <a href="/admin/refund-applications"                class="ar-tab {{^isPendingFilter}}active{{/isPendingFilter}}">전체보기</a>
-            </div>
-
-            <!-- 카드 목록 -->
-            {{#applications}}
-                <div class="ar-card">
-                    <div class="ar-row">
-                        <div>
-                            <span class="ar-cat">{{reasonCategoryLabel}}</span>
-                            <div class="ar-people">
-                                의뢰인 <strong>{{clientName}}</strong>
-                                <span class="ar-arrow">→</span>
-                                전문가 <strong>{{expertName}}</strong> · 결제 #{{paymentId}}
-                            </div>
-                            <div class="ar-meta">{{createdAt}}</div>
-                        </div>
-                        <span class="ar-status {{#isPending}}pending{{/isPending}}{{#isApproved}}approved{{/isApproved}}{{#isRejected}}rejected{{/isRejected}}">
-                        {{#isPending}}대기중{{/isPending}}
-                            {{#isApproved}}승인완료{{/isApproved}}
-                            {{#isRejected}}거절됨{{/isRejected}}
-                    </span>
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <span class="form-label-text">직종 / 전문 분야</span>
+                        <span class="form-required">*</span>
                     </div>
-
-                    <div class="ar-reason">{{reason}}</div>
-                    {{#adminComment}}<div class="ar-comment">💬 처리 의견: {{adminComment}}</div>{{/adminComment}}
-
-                    {{#isPending}}
-                        <div class="ar-actions">
-                            <button type="button" class="ar-btn ar-btn-approve" onclick="openModal({{id}}, 'approve')">승인</button>
-                            <button type="button" class="ar-btn ar-btn-reject"  onclick="openModal({{id}}, 'reject')">거절</button>
-                        </div>
-                    {{/isPending}}
+                    <select name="career" id="careerSelect" class="form-select">
+                        <option value="">직종을 선택하세요</option>
+                        <option value="풀스택">풀스택 개발자</option>
+                        <option value="백엔드">백엔드 개발자</option>
+                        <option value="프론트엔드">프론트엔드 개발자</option>
+                        <option value="앱개발">앱 개발자</option>
+                        <option value="UI/UX">UI/UX 디자이너</option>
+                        <option value="데이터">데이터 엔지니어</option>
+                        <option value="영상편집">영상 편집</option>
+                        <option value="기타">기타</option>
+                    </select>
                 </div>
-            {{/applications}}
 
-            {{^applications}}
-                <div class="ar-empty">환불 신청 내역이 없습니다.</div>
-            {{/applications}}
+                <div class="form-row">
+                    <div class="form-row-label" style="padding-top:13px;">
+                        <span class="form-label-text">기술 스택</span>
+                        <span class="form-optional">선택</span>
+                    </div>
+                    <div>
+                        <div class="stack-box">
+                            <div class="stack-box-label">해당하는 기술을 모두 선택하세요</div>
+                            <div class="stack-grid" id="stackGrid"></div>
+                            <div class="stack-preview" id="stackPreview">
+                                <span class="stack-empty-hint">선택된 기술이 없습니다.</span>
+                            </div>
+                        </div>
+                        <input type="hidden" name="speciality" id="specialityInput"/>
+                        <p class="form-hint">여러 기술을 중복 선택할 수 있습니다.</p>
+                    </div>
+                </div>
 
-            <!-- 페이지네이션 -->
-            <div class="pagination">
-                {{#prevPage}}<a href="/admin/refund-applications?page={{prevPage}}&status={{currentStatus}}" class="page-btn">이전</a>{{/prevPage}}
-                <span class="page-info">{{currentPage}} / {{totalPages}}</span>
-                {{#nextPage}}<a href="/admin/refund-applications?page={{nextPage}}&status={{currentStatus}}" class="page-btn">다음</a>{{/nextPage}}
+                <div class="form-row">
+                    <div class="form-row-label" style="padding-top:13px;">
+                        <span class="form-label-text">자기소개</span>
+                        <span class="form-required">*</span>
+                    </div>
+                    <div>
+                        <textarea name="intro" class="form-textarea" placeholder="본인의 경력, 강점, 대표 프로젝트 경험 등을 자유롭게 소개해주세요.">{{expertProfile.intro}}</textarea>
+                        <p class="form-hint">클라이언트가 가장 먼저 읽는 항목입니다.</p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <span class="form-label-text">GitHub / 포트폴리오</span>
+                        <span class="form-optional">선택</span>
+                    </div>
+                    <div>
+                        <div class="form-input-wrap">
+                            <svg class="form-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            <input id="githubInput" type="url" name="githubUrl" class="form-input" placeholder="https://github.com/your-handle"/>
+                        </div>
+                        <p class="form-hint">GitHub, Notion, 개인 블로그 등 어떤 URL이든 입력 가능합니다.</p>
+                    </div>
+                </div>
             </div>
 
-        </div>
+            <div class="edit-footer">
+                <a href="/experts/dashboard" class="btn-cancel">취소</a>
+                <button type="submit" class="btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    {{#isUpdate}}수정 완료{{/isUpdate}}{{^isUpdate}}신청서 제출{{/isUpdate}}
+                </button>
+            </div>
+        </form>
     </div>
 </section>
 
-<!-- 승인/거절 모달 -->
-<div class="ar-modal-bg" id="arModalBg">
-    <div class="ar-modal">
-        <h3 class="ar-modal-title" id="arModalTitle">처리 의견 입력</h3>
-        <p class="ar-modal-sub"   id="arModalSub"></p>
-        <textarea id="arModalComment" class="ar-modal-textarea" placeholder="의견을 입력해 주세요."></textarea>
-        <div class="ar-modal-btns">
-            <button type="button" class="ar-modal-cancel"  onclick="closeModal()">취소</button>
-            <button type="button" class="ar-modal-confirm" id="arModalConfirmBtn" onclick="submitModal()">처리</button>
-        </div>
-    </div>
-</div>
-
 <script>
-    let currentRefundId = null;
-    let currentAction   = null;
-
-    function openModal(id, action) {
-        currentRefundId = id;
-        currentAction   = action;
-        document.getElementById("arModalComment").value = "";
-
-        const title      = document.getElementById("arModalTitle");
-        const sub        = document.getElementById("arModalSub");
-        const confirmBtn = document.getElementById("arModalConfirmBtn");
-
-        if (action === "approve") {
-            title.textContent       = "환불 승인";
-            sub.textContent         = "승인 시 즉시 환불 처리되고 전문가에게 알림이 발송됩니다. 의견은 선택사항이에요.";
-            confirmBtn.textContent  = "승인하기";
-            confirmBtn.style.background = "linear-gradient(135deg,#2563eb,#1d4ed8)";
-        } else {
-            title.textContent       = "환불 거절";
-            sub.textContent         = "거절 사유는 의뢰인에게 전달돼요. 반드시 입력해 주세요.";
-            confirmBtn.textContent  = "거절하기";
-            confirmBtn.style.background = "#ef4444";
+    (function () {
+        var ALL_STACKS = [
+            'Java','Spring Boot','Python','Django','FastAPI','Node.js','Express',
+            'React','Vue','Angular','TypeScript','Next.js','Nuxt.js','JavaScript','HTML/CSS','Tailwind CSS','SCSS','Webpack','Vite',
+            'Flutter','React Native','Swift','Kotlin','Android','iOS','Dart',
+            'MySQL','PostgreSQL','MongoDB','Redis','Firebase','Docker','AWS',
+            'Figma','Adobe XD','Sketch','Zeplin','Photoshop','Illustrator',
+            'Pandas','NumPy','TensorFlow','PyTorch','SQL','Spark','Tableau','Power BI','R',
+            'Premiere Pro','After Effects','DaVinci Resolve','Final Cut Pro','CapCut','Blender',
+            'Git','Linux','WordPress','Shopify','Nginx','Jenkins','Kubernetes'
+        ];
+        var stackGrid = document.getElementById('stackGrid');
+        var stackPreview = document.getElementById('stackPreview');
+        var specialityInput = document.getElementById('specialityInput');
+        var profileData = document.getElementById('profileData');
+        var savedCareer = profileData ? profileData.getAttribute('data-career') || '' : '';
+        var savedSpeciality = profileData ? profileData.getAttribute('data-speciality') || '' : '';
+        var savedGithub = profileData ? profileData.getAttribute('data-github') || '' : '';
+        var githubInput = document.getElementById('githubInput');
+        var careerSelect = document.getElementById('careerSelect');
+        if (githubInput && savedGithub) githubInput.value = savedGithub;
+        if (careerSelect && savedCareer) careerSelect.value = savedCareer;
+        var preChecked = savedSpeciality ? savedSpeciality.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : [];
+        function getChecked() {
+            return Array.from(stackGrid.querySelectorAll('input[type="checkbox"]:checked')).map(function(cb){ return cb.value; });
         }
-        document.getElementById("arModalBg").classList.add("open");
-    }
-
-    function closeModal() {
-        document.getElementById("arModalBg").classList.remove("open");
-        currentRefundId = null;
-        currentAction   = null;
-    }
-
-    function submitModal() {
-        const comment = document.getElementById("arModalComment").value.trim();
-        if (currentAction === "reject" && !comment) { alert("거절 사유는 필수입니다."); return; }
-
-        const params = new URLSearchParams();
-        if (comment) params.append("comment", comment);
-
-        fetch(`/admin/refund-applications/${currentRefundId}/${currentAction}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString()
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert(currentAction === "approve" ? "승인 처리되었습니다." : "거절 처리되었습니다.");
-                location.reload();
-            } else {
-                alert("처리 실패: " + (data.message || "알 수 없는 오류"));
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); })
-        .finally(closeModal);
-    }
-
-    document.getElementById("arModalBg").addEventListener("click", function(e) {
-        if (e.target === this) closeModal();
-    });
+        function syncHidden() {
+            var checked = getChecked();
+            specialityInput.value = checked.join(', ');
+            stackPreview.innerHTML = checked.length
+                ? '<span style="font-weight:700;color:#2563eb;">선택됨 ' + checked.length + '개</span> ' + checked.join(', ')
+                : '<span class="stack-empty-hint">선택된 기술이 없습니다.</span>';
+        }
+        ALL_STACKS.forEach(function(tech) {
+            var label = document.createElement('label');
+            label.className = 'stack-chip';
+            var cb = document.createElement('input');
+            cb.type = 'checkbox'; cb.value = tech;
+            cb.checked = preChecked.indexOf(tech) !== -1;
+            cb.addEventListener('change', syncHidden);
+            var span = document.createElement('span');
+            span.className = 'stack-chip-label'; span.textContent = tech;
+            label.appendChild(cb); label.appendChild(span);
+            stackGrid.appendChild(label);
+        });
+        syncHidden();
+        document.getElementById('profileForm').addEventListener('submit', function() {
+            specialityInput.value = getChecked().join(', ');
+        });
+    }());
 </script>
 
 {{> layout/footer}}

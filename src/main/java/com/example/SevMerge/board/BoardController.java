@@ -239,6 +239,7 @@ public class BoardController {
         model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
+        model.addAttribute("keyword", keyword != null ? keyword : "");
         return "admin/admin-inquiry";
     }
 }

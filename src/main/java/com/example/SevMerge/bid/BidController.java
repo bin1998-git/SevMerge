@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 
@@ -46,15 +47,14 @@ public class BidController {
 
     // 2. 제안서 등록
     @PostMapping("/bids")
-    public String save(BidRequestDTO.SaveDTO req, HttpSession session) {
-        log.info("제안서 등록 요청");
+    public String save(BidRequestDTO.SaveDTO req, HttpSession session,
+                       RedirectAttributes redirectAttrs) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) {
-            return "redirect:/login";
-        }
+        if (sessionUser == null) return "redirect:/login";
         req.validate();
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         bidService.saveBid(req, member);
+        redirectAttrs.addFlashAttribute("successMessage", "제안서가 성공적으로 제출되었습니다.");
         return "redirect:/projects/" + req.getProjectId();
     }
 

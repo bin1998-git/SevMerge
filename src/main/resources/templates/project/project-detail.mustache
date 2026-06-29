@@ -287,6 +287,11 @@
                     <span>조회 {{project.viewCount}}</span>
                 </div>
             </div>
+            {{#successMessage}}
+                <div style="background:#ecfdf5;border:1px solid #a7f3d0;color:#059669;padding:12px 18px;border-radius:10px;margin-bottom:16px;font-weight:700;">
+                    ✅ {{successMessage}}
+                </div>
+            {{/successMessage}}
 
             <!-- 수정/삭제 (작성자 전용) -->
             {{#isOwner}}

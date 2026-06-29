@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.SevMerge.member.SessionUser;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -68,11 +69,13 @@ public class AdminController {
         model.addAttribute("newCompletedCount", projectService.getMonthDoneProjectsCount());
         model.addAttribute("pendingExpertCount", memberService.getPendingExpertCount());
 
-        // 광고 수익 통계
+        // 광고 수익 통계 (광고 + 경매광고 합산)
+        Long totalAd = platformRevenueService.getRevenueByType(
+                com.example.SevMerge.revenue.PlatformRevenueType.AD);
         model.addAttribute("totalAdRevenue",
-                String.format("%,d", advertisementService.getTotalRevenue()));
+                String.format("%,d", totalAd != null ? totalAd : 0L));
         model.addAttribute("thisMonthAdRevenue",
-                String.format("%,d", advertisementService.getThisMonthRevenue()));
+                String.format("%,d", platformRevenueService.getThisMonthRevenue()));
 
         String defaultStartDate = (startDate != null && !startDate.isEmpty()) ?
                 startDate : LocalDate.now().minusDays(6).toString();
@@ -110,7 +113,6 @@ public class AdminController {
         List<Integer> completeData = new ArrayList<>();
         List<Integer> emptyZeroList = chartLabels.stream().map(i -> 0).toList();
 
-        // adRevenue 체크를 맨 앞으로
         if ("true".equals(adRevenue)) {
             model.addAttribute("isStatusAll", false);
             model.addAttribute("selectedProjectType", null);
@@ -183,30 +185,25 @@ public class AdminController {
         model.addAttribute("totalPages", tp);
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
-
         model.addAttribute("isFree", false);
         model.addAttribute("isNotice", true);
         model.addAttribute("isInquiry", false);
         model.addAttribute("boardType", "NOTICE");
         model.addAttribute("keyword", keyword != null ? keyword : "");
-
         return "admin/admin-notices";
     }
 
-    // 관리자 공지사항 수정화면 띄우기
+    // 관리자 공지사항 수정화면
     @GetMapping("/admin/notices/{id}/update")
     public String updateNoticeForm(@PathVariable("id") Long id, Model model, HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         boolean isAdmin = sessionUser != null && sessionUser.getRole() == Role.ADMIN;
-
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
-
         model.addAttribute("board", board);
         model.addAttribute("isNotice", true);
         model.addAttribute("isFree", false);
         model.addAttribute("isAdmin", isAdmin);
-
         return "admin/admin-noticeupdate";
     }
 
@@ -218,10 +215,8 @@ public class AdminController {
                                @RequestParam("content") String content) {
         Board board = boardRepository.findById(id).orElseThrow(()
                 -> new IllegalArgumentException("해당 게시글이 없습니다. id =" + id));
-
         board.setTitle(title);
         board.setContent(content);
-
         return "redirect:/admin/notices";
     }
 
@@ -229,7 +224,6 @@ public class AdminController {
     @GetMapping("/admin/experts")
     public String adminExpertPage(@RequestParam(value = "status", required = false) String status,
                                   @RequestParam(defaultValue = "1") int page, Model model) {
-
         List<ExpertProfileResponse> all;
         if ("PENDING".equals(status)) {
             all = memberService.getExpertProfilesByStatus(com.example.SevMerge.member.Status.PENDING);
@@ -244,7 +238,6 @@ public class AdminController {
             all = memberService.getExpertProfilesByStatus(com.example.SevMerge.member.Status.PENDING);
             model.addAttribute("isAll", true);
         }
-
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("experts", s < total ? all.subList(s, e) : new ArrayList<>());
@@ -262,22 +255,18 @@ public class AdminController {
     public ResponseEntity<?> processExpertApproval(
             @PathVariable Long memberId,
             @RequestBody Map<String, String> body) {
-
         String action = body.get("action");
-
         if ("APPROVE".equals(action)) {
             memberService.approveExpert(memberId);
         } else if ("REJECT".equals(action)) {
-            String reason = body.get("reason"); // 거절사유 추가
-            memberService.rejectExpert(memberId, reason);
+            memberService.rejectExpert(memberId, body.get("reason"));
         } else {
             throw new IllegalArgumentException("잘못된 요청 액션입니다.");
         }
-
         return ResponseEntity.ok().build();
     }
 
-    // 블랙리스트 관리 페이지 조회
+    // 블랙리스트 관리 페이지
     @GetMapping("/admin/blacklists")
     public String blacklistPage(@RequestParam(value = "keyword", required = false) String keyword,
                                 @RequestParam(defaultValue = "1") int page, Model model) {
@@ -285,12 +274,12 @@ public class AdminController {
         List<BlackList> filtered = new ArrayList<>();
         if (keyword != null && !keyword.trim().isEmpty()) {
             for (BlackList bl : all) {
-                if (bl.getReason().contains(keyword) || bl.getMember().getName().contains(keyword)) filtered.add(bl);
+                if (bl.getReason().contains(keyword) || bl.getMember().getName().contains(keyword))
+                    filtered.add(bl);
             }
         } else {
             filtered = all;
         }
-
         int ps = 15, total = filtered.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("blacklistLogs", s < total ? filtered.subList(s, e) : new ArrayList<>());
@@ -299,22 +288,19 @@ public class AdminController {
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("keyword", keyword != null ? keyword : "");
+        model.addAttribute("reportedCommentCount", 0);  // ← 추가
+        model.addAttribute("reportedComments", new ArrayList<>());  // ← 추가
         return "admin/admin-blacklist";
     }
 
-    // 블랙리스트 차단회원 정지해제
+    // 블랙리스트 정지해제
     @PostMapping("/admin/blacklist/release/{memberId}")
     public String releaseBlacklistMember(@PathVariable(name = "memberId") Long memberId,
                                          HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
-            return "redirect:/login";
-        }
-
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
         reportService.releaseMember(memberId);
         return "redirect:/admin/blacklists";
-
-
     }
 
     // 출금요청 관리 페이지
@@ -323,7 +309,6 @@ public class AdminController {
                                       @RequestParam(defaultValue = "1") int page, Model model) {
         List<WithdrawalService.AdminWithdrawalDTO> all = withdrawalService.getAllForAdmin(status);
         long pendingCount = all.stream().filter(WithdrawalService.AdminWithdrawalDTO::isPending).count();
-
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("withdrawals", s < total ? all.subList(s, e) : new ArrayList<>());
@@ -346,8 +331,7 @@ public class AdminController {
     @PatchMapping("/api/admin/withdraw/{id}")
     public ResponseEntity<?> processWithdraw(@PathVariable Long id,
                                              @RequestBody Map<String, String> body) {
-        String action = body.get("action");
-        withdrawalService.processWithdrawal(id, action);
+        withdrawalService.processWithdrawal(id, body.get("action"));
         return ResponseEntity.ok().build();
     }
 
@@ -357,8 +341,6 @@ public class AdminController {
         model.addAttribute("pendingAds", advertisementService.getPendingAds());
         model.addAttribute("pendingCount", advertisementService.getPendingAds().size());
         model.addAttribute("processedAds", advertisementService.getProcessedAds());
-
-        // 경매 배너
         List<com.example.SevMerge.adbid.AdBid> pendingBanners = adBidService.getPendingReviewBids();
         List<com.example.SevMerge.adbid.AdBid> processedBanners = adBidService.getProcessedReviewBids();
         model.addAttribute("pendingBanners", pendingBanners);
@@ -381,8 +363,7 @@ public class AdminController {
     @PatchMapping("/api/admin/advertisements/{adId}/reject")
     public ResponseEntity<?> rejectAd(@PathVariable Long adId,
                                       @RequestBody Map<String, String> body) {
-        String reason = body.getOrDefault("reason", "");
-        advertisementService.rejectAd(adId,reason);
+        advertisementService.rejectAd(adId, body.getOrDefault("reason", ""));
         return ResponseEntity.ok().build();
     }
 
@@ -402,6 +383,6 @@ public class AdminController {
 
     @GetMapping("/admin/experts/grade")
     public String adminExpertGrade() {
-        return "admin/admin-expert"; // 일단 기존 화면으로 연결
+        return "admin/admin-expert";
     }
 }

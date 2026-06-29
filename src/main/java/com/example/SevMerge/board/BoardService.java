@@ -29,7 +29,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    // ── 파일 저장 유틸 ──────────────────────────────────────────────
+    //  파일 저장 유틸
     private String saveFile(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
         try {
@@ -41,7 +41,7 @@ public class BoardService {
         }
     }
 
-    // ── 조회 ────────────────────────────────────────────────────────
+    // 조회
     public Page<BoardResponse.ListDTO> findAllByBoardType(BoardType boardType, String keyword, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createdAt").descending());
         return boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword, pageable)
@@ -72,7 +72,7 @@ public class BoardService {
         return new BoardResponse.DetailDTO(board);
     }
 
-    // ── 저장 ────────────────────────────────────────────────────────
+    // 저장
     @Transactional
     public void saveBoard(Member member, BoardRequest.SaveBoardDTO dto) {
         Member memberEntity = memberRepository.findById(member.getId())
@@ -85,7 +85,7 @@ public class BoardService {
         boardRepository.save(dto.toEntity(memberEntity, url, name));
     }
 
-    // ── 수정 ────────────────────────────────────────────────────────
+    // 수정
     @Transactional
     public void updateBoard(Long boardId, BoardRequest.UpdateBoardDTO dto,
                             Long memberId, MultipartFile file) {
@@ -105,7 +105,7 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    // ── 삭제 ────────────────────────────────────────────────────────
+    // 삭제
     @Transactional
     public void deleteBoard(Long boardId, Long memberId) {
         Board board = boardRepository.findByIdWithMember(boardId)
@@ -116,7 +116,7 @@ public class BoardService {
         board.softDelete();
     }
 
-    // ── 관리자 ──────────────────────────────────────────────────────
+    //  관리자
     public List<BoardResponse.ListDTO> getAdminBoardsByType(BoardType boardType, String keyword) {
         List<Board> boards = (keyword == null || keyword.trim().isEmpty())
                 ? boardRepository.findAllByBoardTypeIsActive(boardType)

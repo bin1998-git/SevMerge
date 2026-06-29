@@ -2,9 +2,11 @@ package com.example.SevMerge.member;
 
 import com.example.SevMerge.Report.BlackList;
 import com.example.SevMerge.Report.BlacklistRepository;
+import com.example.SevMerge.adbid.AdBidService;
 import com.example.SevMerge.bid.BidService;
 import com.example.SevMerge.board.BoardService;
 import com.example.SevMerge.bookmark.BookMarkService;
+import com.example.SevMerge.cancelrequest.CancelRequestService;
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
@@ -34,7 +36,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,8 @@ public class MemberController {
     private final ChargeService chargeService;
     private final RefundApplicationService refundApplicationService;
     private final BookMarkService bookMarkService;
-    private final com.example.SevMerge.cancelrequest.CancelRequestService cancelRequestService;
+    private final CancelRequestService cancelRequestService;
+    private final AdBidService adBidService;
 
     @GetMapping("/join-start")
     public String joinStart(Model model) {
@@ -109,7 +111,7 @@ public class MemberController {
 
     // 로그인/ 로그아웃
     @GetMapping("/login")
-    public String loginForm(HttpSession session ,Model model) {
+    public String loginForm(HttpSession session, Model model) {
         SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember != null) {
             return "redirect:/main";
@@ -140,8 +142,7 @@ public class MemberController {
                 return "redirect:/admin/main";
             }
             return "redirect:/main";
-        }
-        catch (BadRequestException e) {
+        } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("googleClientId", googleClientId);
             return "member/login-form";
@@ -177,7 +178,7 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<?> findByPhone(@RequestBody Map<String, String> body) {
         String phone = body.get("phone");
-        String name  = body.get("name");
+        String name = body.get("name");
         boolean exists = memberService.existsByNameAndPhone(name, phone);
         if (exists) return ResponseEntity.ok(Map.of("exists", true));
         return ResponseEntity.ok(Map.of("exists", false));
@@ -188,7 +189,7 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
         String phone = body.get("phone");
-        String name  = body.get("name");
+        String name = body.get("name");
         try {
             String tempPw = memberService.resetPasswordByPhone(name, phone);
             return ResponseEntity.ok(Map.of("message", "임시 비밀번호가 문자로 발송되었습니다."));
@@ -202,7 +203,7 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<?> findEmail(@RequestBody Map<String, String> body) {
         String phone = body.get("phone");
-        String name  = body.get("name");
+        String name = body.get("name");
         try {
             String email = memberService.findEmailByNameAndPhone(name, phone);
             return ResponseEntity.ok(Map.of("email", email));
@@ -278,7 +279,10 @@ public class MemberController {
         model.addAttribute("inProgressCount", visibleProjects.stream().filter(p -> p.isClosed()).count());
         model.addAttribute("completedCount", myProjects.stream().filter(p -> p.isDone()).count());
         long proposalCount = 0L;
-        try { proposalCount = bidService.findBidsForClient(member).size(); } catch (Exception ignore) {}
+        try {
+            proposalCount = bidService.findBidsForClient(member).size();
+        } catch (Exception ignore) {
+        }
         model.addAttribute("proposalCount", proposalCount);
 
         //  메시지 카운트
@@ -289,6 +293,17 @@ public class MemberController {
         model.addAttribute("isBookmarks", tab.equalsIgnoreCase("bookmarks"));
         model.addAttribute("isWishlist", tab.equalsIgnoreCase("wishlist"));
         model.addAttribute("isBids", tab.equalsIgnoreCase("bids"));
+
+        List<Map<String, Object>> auctionAds = adBidService.getApprovedWinnerBids().stream()
+                .filter(b -> b.getBannerImage() != null)
+                .map(b -> {
+                    Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("expertId", b.getExpertId());
+                    map.put("bannerImage", "/images/" + b.getBannerImage());
+                    return map;
+                }).toList();
+        model.addAttribute("auctionAds", auctionAds);
+        model.addAttribute("hasAuctionAds", !auctionAds.isEmpty());
         // 탭별 데이터
         final int MY_PAGE_SIZE = 10;
         if (tab.equals("projects")) {
@@ -328,22 +343,28 @@ public class MemberController {
             int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
             int s = (page - 1) * MY_PAGE_SIZE, e = Math.min(s + MY_PAGE_SIZE, all.size());
             model.addAttribute("projects", s < all.size() ? all.subList(s, e) : List.of());
-            model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-            model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tp);
+            model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+            model.addAttribute("nextPage", page < tp ? page + 1 : null);
         } else if (tab.equals("boards")) {
             List<?> all = boardService.findAllByMyBoard(loginMember.getId());
             int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
             int s = (page - 1) * MY_PAGE_SIZE, e = Math.min(s + MY_PAGE_SIZE, all.size());
             model.addAttribute("boards", s < all.size() ? all.subList(s, e) : List.of());
-            model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-            model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tp);
+            model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+            model.addAttribute("nextPage", page < tp ? page + 1 : null);
         } else if (tab.equals("reviews")) {
             List<?> all = reviewService.findMySaveReviews(loginMember.getId());
             int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
             int s = (page - 1) * MY_PAGE_SIZE, e = Math.min(s + MY_PAGE_SIZE, all.size());
             model.addAttribute("reviews", s < all.size() ? all.subList(s, e) : List.of());
-            model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-            model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tp);
+            model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+            model.addAttribute("nextPage", page < tp ? page + 1 : null);
         } else if (tab.equals("edit")) {
             model.addAttribute("rawName", loginMember.getName());
             model.addAttribute("rawEmail", loginMember.getEmail());
@@ -351,16 +372,20 @@ public class MemberController {
             Page<?> msgPage = messageService.findMessages(member, "received", page, "desc", null);
             int tp = msgPage.getTotalPages() == 0 ? 1 : msgPage.getTotalPages();
             model.addAttribute("messages", msgPage.getContent());
-            model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-            model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tp);
+            model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+            model.addAttribute("nextPage", page < tp ? page + 1 : null);
         } else if (tab.equals("payments")) {
             try {
                 List<?> all = paymentService.getClientPayments(loginMember.getId());
                 int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
                 int s = (page - 1) * MY_PAGE_SIZE, e2 = Math.min(s + MY_PAGE_SIZE, all.size());
                 model.addAttribute("payments", s < all.size() ? all.subList(s, e2) : List.of());
-                model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-                model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", tp);
+                model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+                model.addAttribute("nextPage", page < tp ? page + 1 : null);
             } catch (Exception ex) {
                 log.warn("결제 내역 조회 실패 - {}", ex.getMessage());
                 model.addAttribute("payments", List.of());
@@ -371,8 +396,10 @@ public class MemberController {
                 int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
                 int s = (page - 1) * MY_PAGE_SIZE, e2 = Math.min(s + MY_PAGE_SIZE, all.size());
                 model.addAttribute("chargeHistories", s < all.size() ? all.subList(s, e2) : List.of());
-                model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-                model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", tp);
+                model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+                model.addAttribute("nextPage", page < tp ? page + 1 : null);
             } catch (Exception ex) {
                 log.warn("충전 내역 조회 실패 - {}", ex.getMessage());
                 model.addAttribute("chargeHistories", List.of());
@@ -383,8 +410,10 @@ public class MemberController {
                 int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
                 int s = (page - 1) * MY_PAGE_SIZE, e2 = Math.min(s + MY_PAGE_SIZE, all.size());
                 model.addAttribute("refunds", s < all.size() ? all.subList(s, e2) : List.of());
-                model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-                model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", tp);
+                model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+                model.addAttribute("nextPage", page < tp ? page + 1 : null);
             } catch (Exception ex) {
                 log.warn("환불 내역 조회 실패 - {}", ex.getMessage());
                 model.addAttribute("refunds", List.of());
@@ -399,8 +428,10 @@ public class MemberController {
             int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
             int s = (page - 1) * MY_PAGE_SIZE, e2 = Math.min(s + MY_PAGE_SIZE, all.size());
             model.addAttribute("bookMarks", s < all.size() ? all.subList(s, e2) : List.of());
-            model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-            model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tp);
+            model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+            model.addAttribute("nextPage", page < tp ? page + 1 : null);
             model.addAttribute("keyword", keyword);
         } else if (tab.equals("wishlist")) {
             int wishPage = 0;
@@ -433,8 +464,10 @@ public class MemberController {
                 int tp = Math.max(1, (int) Math.ceil((double) all.size() / MY_PAGE_SIZE));
                 int s = (page - 1) * MY_PAGE_SIZE, e2 = Math.min(s + MY_PAGE_SIZE, all.size());
                 model.addAttribute("clientBids", s < all.size() ? all.subList(s, e2) : List.of());
-                model.addAttribute("currentPage", page); model.addAttribute("totalPages", tp);
-                model.addAttribute("prevPage", page > 1 ? page - 1 : null); model.addAttribute("nextPage", page < tp ? page + 1 : null);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", tp);
+                model.addAttribute("prevPage", page > 1 ? page - 1 : null);
+                model.addAttribute("nextPage", page < tp ? page + 1 : null);
             } catch (Exception ex) {
                 log.warn("제안서 목록 조회 실패 - {}", ex.getMessage());
                 model.addAttribute("clientBids", List.of());
@@ -555,7 +588,7 @@ public class MemberController {
         model.addAttribute("keyword", keyword != null ? keyword : "");
         model.addAttribute("isAdmin", true);
         model.addAttribute("sort", sort);
-        model.addAttribute("isNewSort","asc".equalsIgnoreCase(sort));
+        model.addAttribute("isNewSort", "asc".equalsIgnoreCase(sort));
 
         // 3. Mustache select 태그의 selected 유지를 위한 상태값 전달
         model.addAttribute("roleFilter", roleFilter);
@@ -577,7 +610,7 @@ public class MemberController {
         model.addAttribute("nextPage", currentPage + 1);
 
         return "admin/admin-member";
-        }
+    }
 
     // 관리자 - 회원 삭제
     @PostMapping("/admin/members/{id}/delete")

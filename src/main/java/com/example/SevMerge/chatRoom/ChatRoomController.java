@@ -5,6 +5,7 @@ import com.example.SevMerge.core.exception.UnauthorizedException;
 import com.example.SevMerge.core.util.ApiResponse;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-    private final com.example.SevMerge.member.MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/chat/room")
     public String showChatRoom(HttpSession session, Model model) {

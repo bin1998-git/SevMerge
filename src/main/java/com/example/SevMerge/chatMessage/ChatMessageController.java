@@ -3,6 +3,7 @@ package com.example.SevMerge.chatMessage;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,13 @@ public class ChatMessageController {
 
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final MemberRepository memberRepository;
 
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageRequest reqDTO, SimpMessageHeaderAccessor accessor) {
-        Member sender = (Member) accessor.getSessionAttributes().get(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) accessor.getSessionAttributes().get(Define.SESSION_USER);
+        if (sessionUser == null) return;
+        Member sender = memberRepository.findById(sessionUser.getId()).orElse(null);
         if (sender == null) return;
 
         ChatMessageResponse resDTO = chatMessageService.saveMessage(reqDTO, sender);
@@ -53,7 +57,9 @@ public class ChatMessageController {
 
     @MessageMapping("/chat/message/delete")
     public void deleteMessage(ChatMessageRequest reqDTO, SimpMessageHeaderAccessor accessor) {
-        Member sender = (Member) accessor.getSessionAttributes().get(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) accessor.getSessionAttributes().get(Define.SESSION_USER);
+        if (sessionUser == null) return;
+        Member sender = memberRepository.findById(sessionUser.getId()).orElse(null);
         if (sender == null) return;
 
         chatMessageService.deleteMessage(reqDTO.getMessageId(), sender, true);

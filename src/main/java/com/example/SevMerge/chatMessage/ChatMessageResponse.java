@@ -26,14 +26,14 @@ public class ChatMessageResponse {
     public static ChatMessageResponse from(ChatMessage message) {
         LocalDateTime dt = message.getCreatedAt() != null ? message.getCreatedAt().toLocalDateTime() : null;
         return ChatMessageResponse.builder()
-                 .id(message.getId())
-                 .senderId(message.getSender().getId())
-                 .senderName(message.getSender().getName())
-                 .text(message.getText())
-                 .imageUrl(message.getImageUrl())
-                 .createdAt(message.getCreatedAt())
-                 .date(dt != null ? dt.format(DATE_FMT) : "")
-                 .time(dt != null ? dt.format(TIME_FMT) : "")
-                 .build();
+                .id(message.getId())
+                .senderId(message.getSender().getId())
+                .senderName(message.getSender().getName())
+                .text(message.getText() != null ? message.getText() : "")
+                .imageUrl(message.getImageUrl() != null ? message.getImageUrl() : "")
+                .createdAt(message.getCreatedAt())
+                .date(dt != null ? dt.format(DATE_FMT) : "")
+                .time(dt != null ? dt.format(TIME_FMT) : "")
+                .build();
     }
 }

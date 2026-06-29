@@ -2,7 +2,8 @@ package com.example.SevMerge.payment;
 
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.util.ApiResponse;
-import com.example.SevMerge.member.Member;
+import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class PaymentController {
                               HttpSession session,
                               Model model) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         int balance = chargeService.getBalance(sessionUser.getId());
@@ -72,7 +73,7 @@ public class PaymentController {
                                @RequestParam Integer amount,
                                HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         paymentService.createEscrow(sessionUser.getId(), projectId, expertId, amount);
@@ -87,7 +88,7 @@ public class PaymentController {
             @PathVariable Long id,
             HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null)
             return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
 
@@ -103,7 +104,7 @@ public class PaymentController {
             @PathVariable Long id,
             HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null)
             return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
 
@@ -120,7 +121,7 @@ public class PaymentController {
             @RequestParam(required = false) String message,
             HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null)
             return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
 
@@ -132,7 +133,7 @@ public class PaymentController {
 
     @GetMapping("/my")
     public String myPayments(HttpSession session, Model model) {
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         int balance = chargeService.getBalance(sessionUser.getId());

@@ -121,10 +121,22 @@
 <div class="cm-wrap">
 
     <!-- 상단 배너 (광고/이벤트 자리) -->
+    {{#hasAuctionAds}}
+        {{#auctionAds}}
+            <a href="/experts/{{expertId}}" style="display:block;margin-bottom:12px;">
+                <img src="{{bannerImage}}"
+                     style="width:100%;height:90px;object-fit:cover;
+                    border-radius:10px;border:1.5px solid #f59e0b;display:block;
+                    box-shadow:0 4px 20px rgba(245,158,11,.2);"
+                     alt="광고 배너"/>
+            </a>
+        {{/auctionAds}}
+    {{/hasAuctionAds}}
+
     <div class="cm-banner">
         <div class="cm-banner-left">
             <div class="cm-banner-badge"><span class="cm-banner-dot"></span> 이번 주 한정 이벤트</div>
-            <div class="cm-banner-title">첫 프로젝트 수수료 0% 🎉<br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
+            <div class="cm-banner-title">첫 프로젝트 수수료 0% <br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
         </div>
         <a href="/projects/save-form" class="cm-banner-cta">프로젝트 등록하기 →</a>
     </div>
