@@ -5,6 +5,7 @@ import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,12 @@ public class AdBidController {
     //  전문가: 경매 목록 페이지
     @GetMapping("/ad-auction")
     public String auctionPage(HttpSession session, Model model) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
         if (!loginMember.isExpert()) return "redirect:/";
 
         Member freshMember = memberRepository.findById(loginMember.getId())
-                .orElse(loginMember);
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
         List<AdSlot> slots = adBidService.getAllSlots().stream()
                 .filter(s -> s.getStatus() == AdSlotStatus.OPEN)
@@ -82,7 +83,7 @@ public class AdBidController {
     //  전문가: 내 입찰 내역
     @GetMapping("/ad-auction/my-bids")
     public String myBids(HttpSession session, Model model) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return "redirect:/login";
         if (!loginMember.isExpert()) return "redirect:/";
 
@@ -115,7 +116,7 @@ public class AdBidController {
     public ResponseEntity<?> placeBid(@PathVariable Long slotId,
                                       @RequestParam("bidPrice") Integer bidPrice,
                                       HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
         if (!loginMember.isExpert()) return ResponseEntity.status(403).body("전문가만 입찰할 수 있습니다.");
 
@@ -134,7 +135,7 @@ public class AdBidController {
                                           @RequestParam("bannerImageFile") MultipartFile bannerImageFile,
                                           @RequestParam(value = "adMessage", required = false) String adMessage,
                                           HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
 
         try {
@@ -152,7 +153,7 @@ public class AdBidController {
     //  관리자: 슬롯 목록 페이지
     @GetMapping("/admin/ad-slots")
     public String adminSlots(HttpSession session, Model model) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) return "redirect:/login";
 
         model.addAttribute("slots", adBidService.getAllSlots().stream().map(s -> {
@@ -183,7 +184,7 @@ public class AdBidController {
     public ResponseEntity<?> updateSlotSettings(@PathVariable Long slotId,
                                                 @RequestBody Map<String, Object> body,
                                                 HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) {
             return ResponseEntity.status(403).body("관리자만 접근 가능합니다.");
         }
@@ -201,7 +202,7 @@ public class AdBidController {
     @ResponseBody
     @GetMapping("/api/admin/ad-slots/{slotId}/bids")
     public ResponseEntity<?> getSlotBids(@PathVariable Long slotId, HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) {
             return ResponseEntity.status(403).body("관리자만 접근 가능합니다.");
         }
@@ -229,7 +230,7 @@ public class AdBidController {
     @PatchMapping("/api/admin/ad-bids/{bidId}/approve")
     public ResponseEntity<?> approveBidReview(@PathVariable Long bidId,
                                               HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) {
             return ResponseEntity.status(403).body("관리자만 접근 가능합니다.");
         }
@@ -248,7 +249,7 @@ public class AdBidController {
     public ResponseEntity<?> rejectBidReview(@PathVariable Long bidId,
                                              @RequestBody Map<String, String> body,
                                              HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember == null || !loginMember.isAdmin()) {
             return ResponseEntity.status(403).body("관리자만 접근 가능합니다.");
         }

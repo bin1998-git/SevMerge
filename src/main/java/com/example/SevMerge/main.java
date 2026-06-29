@@ -11,6 +11,7 @@ import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
 import com.example.SevMerge.review.ReviewService;
@@ -36,14 +37,14 @@ public class main {
 
     @GetMapping("/")
     public String introPage(HttpSession session) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember != null) return "redirect:/main";
         return "intro";
     }
 
     @GetMapping("/main")
     public String exmainPage(HttpSession session, Model model) {
-        Member loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         model.addAttribute("isMainPage", true);
 

@@ -1,27 +1,20 @@
 package com.example.SevMerge.review;
 
 
-import com.example.SevMerge.bid.BidService;
-import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.util.Define;
-import com.example.SevMerge.expertprofile.ExpertProfile;
-import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
-
+import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.MemberService;
-import com.example.SevMerge.member.Role;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -29,13 +22,14 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     // 전문가 리뷰 확인
     @GetMapping("/reviews/my")
     public String myReviews(HttpSession session, Model model,
                             @RequestParam(defaultValue = "1") int page) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "login-form";
 
         PageRequest pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "id"));
@@ -61,7 +55,7 @@ public class ReviewController {
                                  @RequestParam(required = false) Long targetId,
                                  @RequestParam(required = false) Long projectId) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "login-form";
 
         Member targeter = memberService.findMemberById(targetId);
@@ -80,7 +74,7 @@ public class ReviewController {
                              @RequestParam(required = false) Long targetId,
                              @RequestParam(required = false) Long projectId) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "login-form";
 
         reviewDTO.setProjectId(projectId);  // DTO에 projectId 세팅
@@ -89,7 +83,8 @@ public class ReviewController {
         model.addAttribute("targeter", targeter);
         model.addAttribute("reviewer", sessionUser);
 
-        reviewService.save(reviewDTO, sessionUser);
+        Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
+        reviewService.save(reviewDTO, member);
 
         return "redirect:/my-pages?tab=reviews";
     }
@@ -98,7 +93,7 @@ public class ReviewController {
     @GetMapping("/reviews/{reviewId}")
     public String reviewDetail(@PathVariable(name = "reviewId") Long reviewId, Model model, HttpSession session) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return "login-form";
         }
@@ -113,7 +108,7 @@ public class ReviewController {
     @GetMapping("/reviews/{reviewId}/edit")
     public String editReviewForm(@PathVariable(name = "reviewId") Long reviewId, Model model, HttpSession session) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return "login-form";
         }
@@ -129,7 +124,7 @@ public class ReviewController {
                                           @RequestBody ReviewRequest.UpdateRequestDTO updateRequestDTO,
                                           HttpSession session) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return ResponseEntity.status(401).build();
         }
@@ -143,7 +138,7 @@ public class ReviewController {
     @PostMapping("/reviews/{reviewId}/delete")
     public String deleteReview(@PathVariable(name = "reviewId") Long reviewId, HttpSession session) {
 
-        Member sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return "login-form";
         }

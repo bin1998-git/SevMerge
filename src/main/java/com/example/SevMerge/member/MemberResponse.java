@@ -154,9 +154,6 @@ public class MemberResponse {
         return balance == null ? "0" : String.format("%,d", balance);
     }
 
-    public String getRoleName() {
-        return this.role != null ? this.role.name() : "일반회원";
-    }
 
     public String getCreatedAtFormatted() {
         if (this.createdAt == null) return "";

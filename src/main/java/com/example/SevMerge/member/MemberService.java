@@ -5,6 +5,7 @@ import com.example.SevMerge.board.BoardRepository;
 import com.example.SevMerge.core.exception.AdminException;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.expertprofile.*;
 import com.example.SevMerge.payment.PaymentRepository;
@@ -66,7 +67,7 @@ public class MemberService {
 
     private final NotificationService notificationService;
 
-    // ── [L4] Account lockout state (in-memory, per email) ────────────────────
+
     private static final int MAX_FAIL_ATTEMPTS = 5;
     private static final long LOCKOUT_DURATION_MS = 10 * 60_000L; // 10 minutes
 
@@ -180,7 +181,7 @@ public class MemberService {
     public Member login(MemberRequest.Login request, HttpSession session) {
         String email = request.getEmail();
 
-        // ── [L4] Account lockout check ─────────────────────────────────────
+
         LoginAttempt attempt = loginAttempts.computeIfAbsent(email, k -> new LoginAttempt());
         long now = System.currentTimeMillis();
         if (now < attempt.lockedUntil) {
@@ -190,7 +191,6 @@ public class MemberService {
 
         Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
                 .orElseThrow(() -> {
-                    // Count failed attempt even for non-existent email (timing-safe)
                     recordFailedAttempt(attempt, now, email);
                     return new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다.");
                 });
@@ -216,7 +216,7 @@ public class MemberService {
             return member;
         }
 
-        session.setAttribute("sessionUser", member);
+        session.setAttribute(Define.SESSION_USER, new SessionUser(member));
         log.info("로그인 성공 - memberId={}", member.getId());
         return member;
     }
@@ -327,6 +327,12 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getCurrentPassword(), member.getPassword()))
             throw new BadRequestException("현재 비밀번호가 올바르지 않습니다.");
         member.changePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    @Transactional
+    public void deleteProfileImage(Long memberId) {
+        Member member = findMemberById(memberId);
+        member.updateProfileImage(null);
     }
 
 
@@ -916,7 +922,7 @@ public class MemberService {
                 .build());
     }
 
-    // ===================== 구글 WebClient 방식 =====================
+    // 구글 WebClient 방식
 
     /**
      * 구글 인가 코드 → 액세스 토큰 → 사용자 정보 조회
