@@ -725,25 +725,26 @@
             <div class="c-viewport">
                 <div class="c-track">
                     {{#recentProjects}}
+                        <!-- ✅ 수정 — 메인 배너 스타일로 통일 -->
                         {{#isAd}}
-                            <a class="proj-card ad-infeed-card" href="/experts/{{expertId}}">
-                                <div class="proj-card-top">
-                                    <span class="proj-id" style="color:#92400e;">👤 전문가 광고</span>
-                                    <span class="proj-dday" style="background:#fef3c7;color:#92400e;">AD</span>
+                            <a class="proj-card ad-infeed-card" href="/experts/{{expertId}}" style="padding:0;gap:0;overflow:hidden;">
+                                <div style="position:relative;width:100%;padding-top:58%;background:#f0f4fa;flex-shrink:0;overflow:hidden;">
+                                    <div style="position:absolute;inset:0;background-image:url('{{displayImageUrl}}');background-size:cover;background-position:center;"></div>
+                                    <span style="position:absolute;top:10px;left:10px;background:rgba(255,255,255,.92);color:#92400e;font-size:9px;font-weight:800;letter-spacing:.1em;padding:3px 8px;border-radius:5px;">AD</span>
                                 </div>
-                                <!-- ↓ 이미지 추가 -->
-                                <div style="width:100%;height:90px;border-radius:10px;overflow:hidden;background:#f0f4fa;">
-                                    <img src="{{displayImageUrl}}" alt="{{expertName}}" style="width:100%;height:100%;object-fit:cover;"/>
-                                </div>
-                                <div>
-                                    <div class="proj-title" style="color:#92400e;">{{expertName}} 전문가</div>
-                                    <div class="proj-category" style="color:#b45309;">{{speciality}}</div>
-                                </div>
-                                <div class="proj-footer">
-            <span class="proj-budget" style="color:#92400e;font-size:12px;">
-                "{{customMessage}}"
-            </span>
-                                    <span class="proj-deadline" style="color:#b45309;">프로필 보기 →</span>
+                                <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:0;margin-top:auto;">
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <div style="width:28px;height:28px;border-radius:50%;background:#fef3c7;border:1.5px solid #fde68a;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#92400e;flex-shrink:0;overflow:hidden;">
+                                                {{expertName}}
+                                            </div>
+                                            <div style="display:flex;align-items:center;gap:6px;">
+                                                <span style="font-size:12px;font-weight:700;color:#374151;">{{expertName}}</span>
+                                                <span style="font-size:11px;color:#f59e0b;font-weight:700;">★ {{avgRating}}</span>
+                                            </div>
+                                        </div>
+                                        <span style="font-size:11px;font-weight:700;color:#92400e;">프로필 보기 →</span>
+                                    </div>
                                 </div>
                             </a>
                         {{/isAd}}

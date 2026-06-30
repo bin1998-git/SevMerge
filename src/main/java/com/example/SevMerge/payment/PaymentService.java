@@ -51,6 +51,7 @@ public class PaymentService {
 
     private final PlatformRevenueService platformRevenueService;
 
+
     @PersistenceContext
     private EntityManager em;
 

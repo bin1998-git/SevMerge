@@ -2,13 +2,11 @@ package com.example.SevMerge;
 
 import com.example.SevMerge.adbid.AdBid;
 import com.example.SevMerge.adbid.AdBidService;
-import com.example.SevMerge.adbid.AdSlot;
 import com.example.SevMerge.advertisement.AdvertisementPlacement;
 import com.example.SevMerge.advertisement.AdvertisementResponse;
 import com.example.SevMerge.advertisement.AdvertisementService;
 import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.core.util.Define;
-import com.example.SevMerge.expertprofile.ExpertProfileResponse;
 import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
@@ -42,6 +40,18 @@ public class main {
         SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (loginMember != null) return "redirect:/main";
         return "intro";
+    }
+
+    private Map<String, Object> buildAdItem(AdvertisementResponse ad) {
+        Map<String, Object> adItem = new HashMap<>();
+        adItem.put("isAd", true);
+        adItem.put("expertId", ad.getExpertId());
+        adItem.put("expertName", ad.getExpertName());
+        adItem.put("speciality", ad.getSpeciality());
+        adItem.put("displayImageUrl", ad.getDisplayImageUrl());
+        adItem.put("customMessage", ad.getCustomMessage());
+        adItem.put("avgRating", ad.getAvgRating() != null ? ad.getAvgRating() : "-");
+        return adItem;
     }
 
     @GetMapping("/main")
@@ -82,6 +92,12 @@ public class main {
         List<AdvertisementResponse> carouselAds =
                 advertisementService.getActiveAds(AdvertisementPlacement.EXPERT_CAROUSEL);
         Collections.shuffle(carouselAds);
+        carouselAds.forEach(ad -> {
+            Double avgObj = reviewService.avgRating(ad.getExpertId());
+            double avg = avgObj != null ? avgObj : 0.0;
+            ad.setAvgRating(avg > 0 ? String.format("%.1f", avg) : "-");
+        });
+
 
         // 3. 실시간 프로젝트 + 인피드 광고 합치기
         List<ProjectResponseDTO.ListDTO> projects =
@@ -99,20 +115,14 @@ public class main {
                         .limit(9)
                         .collect(Collectors.toList());
 
-        // 3번째 슬롯마다 광고 1개 삽입
+
+        // 최소 1개는 보이도록, 마지막에 보장 삽입
         List<Map<String, Object>> feedItems = new ArrayList<>();
         int adIdx = 0;
         for (int i = 0; i < projects.size(); i++) {
             if (i > 0 && i % 3 == 0 && adIdx < carouselAds.size()) {
                 AdvertisementResponse ad = carouselAds.get(adIdx++);
-                Map<String, Object> adItem = new HashMap<>();
-                adItem.put("isAd", true);
-                adItem.put("expertId", ad.getExpertId());
-                adItem.put("expertName", ad.getExpertName());
-                adItem.put("speciality", ad.getSpeciality());
-                adItem.put("displayImageUrl", ad.getDisplayImageUrl());
-                adItem.put("customMessage", ad.getCustomMessage());
-                feedItems.add(adItem);
+                feedItems.add(buildAdItem(ad));
             }
             ProjectResponseDTO.ListDTO p = projects.get(i);
             Map<String, Object> projItem = new HashMap<>();
@@ -129,15 +139,13 @@ public class main {
                     ? p.getDeadline().toString().substring(0, 10) : "");
             feedItems.add(projItem);
         }
-        model.addAttribute("recentProjects", feedItems);
 
-        // 4. 마스터 전문가
-        List<ExpertProfileResponse> masterExperts =
-                expertProfileService.getAll().stream()
-                        .filter(e -> "MASTER".equals(e.getGrade()))
-                        .limit(6)
-                        .collect(Collectors.toList());
-        model.addAttribute("masterExperts", masterExperts);
+
+        if (adIdx == 0 && !carouselAds.isEmpty()) {
+            feedItems.add(buildAdItem(carouselAds.get(0)));
+        }
+
+        model.addAttribute("recentProjects", feedItems);
 
         // 5. 최신 리뷰
         try {
