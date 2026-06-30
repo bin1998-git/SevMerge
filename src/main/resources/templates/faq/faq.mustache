@@ -198,7 +198,8 @@
                                             수정
                                         </button>
                                     </form>
-                                    <form action="/faqs/delete/{{id}}" method="post" style="display:inline;">
+                                    <form action="/faqs/delete/{{id}}" method="post" style="display:inline;"
+                                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
                                         <button type="submit" class="faq-delete-btn">
                                             <svg width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M4 5.5h12M8 5.5V3.5h4v2M5.5 5.5l.7 10a1 1 0 001 1h5.6a1 1 0 001-1l.7-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                             삭제
