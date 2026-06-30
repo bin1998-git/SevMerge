@@ -42,7 +42,7 @@
         gap: 20px; margin-bottom: 32px;
     }
 
-    /* ── 카드 ── */
+    /* ── 카드 (a 태그로 전체 클릭) ── */
     .port-card {
         backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
         background: rgba(255,255,255,.6);
@@ -52,6 +52,7 @@
         transition: transform .2s, box-shadow .2s, border-color .2s;
         box-shadow: 0 4px 16px rgba(37,99,235,.06);
         text-decoration: none; color: inherit;
+        cursor: pointer;
     }
     .port-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(37,99,235,.12); border-color: rgba(37,99,235,.25); }
 
@@ -75,10 +76,9 @@
         padding-top: 14px; border-top: 1px solid rgba(37,99,235,.08); margin-top: auto;
     }
     .port-card-date { font-size: 11px; color: #93aecf; }
-    .port-card-links { display: flex; gap: 10px; align-items: center; }
-    .port-link { font-size: 12px; font-weight: 700; color: #2563eb; text-decoration: none; transition: opacity .15s; }
-    .port-link:hover { opacity: .7; }
-    .port-ext-link { font-size: 12px; font-weight: 700; color: #4a6fa5; text-decoration: none; transition: color .15s; }
+    .port-ext-link {
+        font-size: 12px; font-weight: 700; color: #4a6fa5; text-decoration: none; transition: color .15s;
+    }
     .port-ext-link:hover { color: #2563eb; }
 
     /* ── 빈 상태 ── */
@@ -155,7 +155,7 @@
 
             <div class="port-grid">
                 {{#portfolios}}
-                <div class="port-card">
+                <a href="/portfolios/{{id}}" class="port-card">
                     <div class="port-card-thumb">
                         {{#imageUrl}}
                         <img src="/images/portfolio/{{imageUrl}}" alt="{{title}}" onerror="this.parentElement.innerHTML='🖼️'" />
@@ -167,15 +167,12 @@
                         <div class="port-card-desc">{{description}}</div>
                         <div class="port-card-footer">
                             <span class="port-card-date">{{createdAt}}</span>
-                            <div class="port-card-links">
-                                {{#projectUrl}}
-                                <a href="{{projectUrl}}" target="_blank" class="port-ext-link">🔗 보러가기</a>
-                                {{/projectUrl}}
-                                <a href="/portfolios/{{id}}" class="port-link">상세보기 →</a>
-                            </div>
+                            {{#projectUrl}}
+                            <a href="{{projectUrl}}" target="_blank" class="port-ext-link" onclick="event.stopPropagation()">🔗 보러가기</a>
+                            {{/projectUrl}}
                         </div>
                     </div>
-                </div>
+                </a>
                 {{/portfolios}}
 
                 {{^portfolios}}
