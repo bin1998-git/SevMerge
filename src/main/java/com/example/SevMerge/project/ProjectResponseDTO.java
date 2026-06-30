@@ -69,6 +69,7 @@ public class ProjectResponseDTO {
             this.isProjectClosed = "CLOSED".equals(this.projectStatus);
             this.isCancelled = "CANCELLED".equals(this.projectStatus);
             this.isDraft = "DRAFT".equals(this.projectStatus);
+            this.selectedExpertId = null;
         }
 
         public String getCreatedAtFormatted() {

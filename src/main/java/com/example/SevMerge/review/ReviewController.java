@@ -53,19 +53,23 @@ public class ReviewController {
     @GetMapping("/reviews/save")
     public String saveReviewForm(Model model, HttpSession session,
                                  @RequestParam(required = false) Long targetId,
+                                 @RequestParam(required = false) Long expertId,
                                  @RequestParam(required = false) Long projectId) {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "login-form";
 
-        Member targeter = memberService.findMemberById(targetId);
+        // expertId로 넘어온 경우 targetId로 통합
+        if (targetId == null && expertId != null) targetId = expertId;
 
+        Member targeter = memberService.findMemberById(targetId);
         model.addAttribute("targeter", targeter);
         model.addAttribute("reviewer", sessionUser);
         model.addAttribute("projectId", projectId);
 
         return "review/review-save";
     }
+
 
 
     // 리뷰 작성 후 저장

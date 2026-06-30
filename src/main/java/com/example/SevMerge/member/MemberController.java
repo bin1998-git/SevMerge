@@ -330,6 +330,10 @@ public class MemberController {
                         if (project.isClosed()) {
                             project.setCancelPending(cancelRequestService.hasPendingRequest(project.getId()));
                         }
+                        if (project.getSelectedExpertId() == null) {
+                            bidService.findSelectedBidByProjectId(project.getId())
+                                    .ifPresent(bid -> project.setSelectedExpertId(bid.getExpert().getId()));
+                        }
                         if (project.getSelectedExpertId() != null) {
                             boolean hasReview = reviewRepository.existsByReviewerAndTargeterAndProject(
                                     loginMember.getId(), project.getSelectedExpertId(), project.getId()

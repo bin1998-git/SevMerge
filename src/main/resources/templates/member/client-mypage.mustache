@@ -120,26 +120,29 @@
 
 <div class="cm-wrap">
 
-    <!-- 상단 배너 (광고/이벤트 자리) -->
+
     {{#hasAuctionAds}}
         {{#auctionAds}}
-            <a href="/experts/{{expertId}}" style="display:block;margin-bottom:12px;">
+            <a href="/experts/{{expertId}}" style="display:block;margin-bottom:24px;">
                 <img src="{{bannerImage}}"
-                     style="width:100%;height:90px;object-fit:cover;
-                    border-radius:10px;border:1.5px solid #f59e0b;display:block;
-                    box-shadow:0 4px 20px rgba(245,158,11,.2);"
+                     style="width:100%;height:104px;object-fit:cover;
+                border-radius:20px;border:1.5px solid #f59e0b;display:block;
+                box-shadow:0 8px 32px rgba(245,158,11,.2);"
                      alt="광고 배너"/>
             </a>
         {{/auctionAds}}
     {{/hasAuctionAds}}
 
-    <div class="cm-banner">
-        <div class="cm-banner-left">
-            <div class="cm-banner-badge"><span class="cm-banner-dot"></span> 이번 주 한정 이벤트</div>
-            <div class="cm-banner-title">첫 프로젝트 수수료 0% <br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
+    {{^hasAuctionAds}}
+        <div class="cm-banner">
+            <div class="cm-banner-left">
+                <div class="cm-banner-badge"><span class="cm-banner-dot"></span> 이번 주 한정 이벤트</div>
+                <div class="cm-banner-title">첫 프로젝트 수수료 0% <br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
+            </div>
+            <a href="/projects/save-form" class="cm-banner-cta">프로젝트 등록하기 →</a>
         </div>
-        <a href="/projects/save-form" class="cm-banner-cta">프로젝트 등록하기 →</a>
-    </div>
+    {{/hasAuctionAds}}
+
 
     <div class="cm-body">
 
@@ -308,6 +311,29 @@
                                 {{/isCompleted}}
                                 {{#isDone}}
                                     <span class="cm-item-status" style="margin-top:6px; display:block; text-align:center; color:#059669;">정산완료</span>
+                                    {{^hasReview}}
+                                        {{^reviewSkipped}}
+                                            <a href="/reviews/save?projectId={{id}}&targetId={{selectedExpertId}}"
+                                            class="cm-btn cm-btn-primary"
+                                            style="display:block; margin-top:6px; text-align:center; text-decoration:none;">
+                                            리뷰 작성
+                                            </a>
+                                            <button type="button"
+                                                    onclick="skipReview({{id}})"
+                                                    class="cm-btn"
+                                                    style="display:block; margin-top:4px; background:#fff; border:1.5px solid #e2e5ef; color:#9ca3af; transition: all .15s; cursor:pointer;"
+                                                    onmouseover="this.style.borderColor='#2563eb';this.style.color='#2563eb';"
+                                                    onmouseout="this.style.borderColor='#e2e5ef';this.style.color='#9ca3af';">
+                                                건너뛰기
+                                            </button>
+                                        {{/reviewSkipped}}
+                                        {{#reviewSkipped}}
+                                            <span class="cm-item-status" style="margin-top:4px; display:block; text-align:center; color:#9ca3af;">리뷰 건너뜀</span>
+                                        {{/reviewSkipped}}
+                                    {{/hasReview}}
+                                    {{#hasReview}}
+                                        <span class="cm-item-status" style="margin-top:4px; display:block; text-align:center; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe;">리뷰완료</span>
+                                    {{/hasReview}}
                                 {{/isDone}}
                             </div>
                         </div>
@@ -1003,6 +1029,13 @@
         if (res.ok) { location.href = '/my-pages?tab=bids'; }
         else { alert('처리 중 오류가 발생했습니다.'); btn.disabled = false; }
     }
+
+    async function skipReview(projectId) {
+    if (!confirm('리뷰를 건너뛰시겠습니까?')) return;
+    const res = await fetch('/projects/' + projectId + '/skip-review', { method: 'POST' });
+    if (res.ok) { location.reload(); }
+    else { alert('처리 중 오류가 발생했습니다.'); }
+}
 
     function withdrawMember(event) {
         event.preventDefault();
