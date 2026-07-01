@@ -168,12 +168,11 @@ public class MemberService {
             log.info("전문가 신청 완료 - memberId={}", member.getId());
         }
         // 문자 메세지 보내기 기능 예시
-//        if (member.isClient()) {
-//            // todo - SevMerge 프로젝트명으로 수정
-//            solApiService.sendSms(member.getPhone(), member.getName() + "의뢰인님 Sev Merge에 가입하신 걸 환영합니다!");
-//        } else if (member.isExpert()) {
-//            solApiService.sendSms(member.getPhone(), member.getName() + "전문가님 Sev Merge에 가입하신 걸 환영합니다!\n관리자 승인까지 약 30분 소요됩니다.");
-//        }
+        if (member.isClient()) {
+            solApiService.sendSms(member.getPhone(), member.getName() + "의뢰인님 IcodeU 에 가입하신 걸 환영합니다!");
+        } else if (member.isExpert()) {
+            solApiService.sendSms(member.getPhone(), member.getName() + "전문가님 IcodeU에 가입하신 걸 환영합니다!\n관리자 승인까지 약 30분 소요됩니다.");
+        }
     }
 
     //로그인 / 로그아웃
