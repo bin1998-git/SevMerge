@@ -281,7 +281,8 @@ public class AdminController {
         List<BlackList> filtered = new ArrayList<>();
         if (keyword != null && !keyword.trim().isEmpty()) {
             for (BlackList bl : all) {
-                if (bl.getReason().contains(keyword) || bl.getMember().getName().contains(keyword))
+                if ((bl.getReason() != null && bl.getReason().contains(keyword))
+                        || (bl.getMember() != null && bl.getMember().getName() != null && bl.getMember().getName().contains(keyword)))
                     filtered.add(bl);
             }
         } else {

@@ -93,6 +93,7 @@ public class ChatRoomController {
     @GetMapping("/chat/start/expert/{expertId}")
     public String startProfileChat(@PathVariable Long expertId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         return "redirect:/chat/room/" + chatRoomService.getOrCreateProfileRoom(member, expertId);
     }
@@ -102,6 +103,7 @@ public class ChatRoomController {
     public String startProjectChat(@PathVariable Long projectId,
                                    @RequestParam Long withMemberId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         return "redirect:/chat/room/" + chatRoomService.getOrCreateProjectRoom(projectId, member, withMemberId);
     }
@@ -110,6 +112,7 @@ public class ChatRoomController {
     @PostMapping("/chat/room/{roomId}/delete")
     public String deleteRoom(@PathVariable Long roomId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         chatRoomService.deleteRoom(roomId, member);
         return "redirect:/chat/room";
@@ -122,6 +125,7 @@ public class ChatRoomController {
                                               @RequestParam(defaultValue = "false") boolean forAll,
                                               HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return ResponseEntity.status(401).build();
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         chatMessageService.deleteMessage(messageId, member, forAll);
         return ResponseEntity.ok().build();

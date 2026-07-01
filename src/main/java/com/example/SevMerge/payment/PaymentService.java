@@ -263,10 +263,15 @@ public class PaymentService {
             throw new BadRequestException("이미 정산 요청 중입니다. 관리자 처리를 기다려주세요.");
         }
 
-        String projectStatus = (String) em
-                .createNativeQuery("SELECT project_status FROM project_tb WHERE id = :pid")
-                .setParameter("pid", payment.getProjectId())
-                .getSingleResult();
+        String projectStatus;
+        try {
+            projectStatus = (String) em
+                    .createNativeQuery("SELECT project_status FROM project_tb WHERE id = :pid")
+                    .setParameter("pid", payment.getProjectId())
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new NotFoundException("프로젝트 정보를 찾을 수 없습니다.");
+        }
 
         if (!"COMPLETED".equals(projectStatus)) {
             throw new BadRequestException("작업 완료(COMPLETED) 상태의 프로젝트에만 정산 요청이 가능합니다.");
@@ -522,11 +527,15 @@ public class PaymentService {
     }
 
     private boolean isAdminMember(Long memberId) {
-        String role = (String) em
-                .createNativeQuery("SELECT role FROM member_tb WHERE id = :id")
-                .setParameter("id", memberId)
-                .getSingleResult();
-        return "ADMIN".equals(role);
+        try {
+            String role = (String) em
+                    .createNativeQuery("SELECT role FROM member_tb WHERE id = :id")
+                    .setParameter("id", memberId)
+                    .getSingleResult();
+            return "ADMIN".equals(role);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // ── DTO ──

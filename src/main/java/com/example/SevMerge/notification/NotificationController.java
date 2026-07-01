@@ -45,7 +45,7 @@ public class NotificationController {
     @ResponseBody
     public ApiResponse<?> readNotification(@PathVariable("id") Long notificationId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionMember == null) throw new RuntimeException("로그인이 필요합니다.");
+        if (sessionMember == null) return ApiResponse.fail("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         notificationService.markAsRead(notificationId, member);
 
@@ -65,7 +65,7 @@ public class NotificationController {
     @ResponseBody
     public ApiResponse<?> deleteNotification(@PathVariable("id") Long notificationId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionMember == null) throw new RuntimeException("로그인이 필요합니다.");
+        if (sessionMember == null) return ApiResponse.fail("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         notificationService.deleteNotification(notificationId, member);
         return ApiResponse.ok("알림을 삭제했습니다.");

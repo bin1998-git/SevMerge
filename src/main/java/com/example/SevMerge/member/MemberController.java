@@ -547,6 +547,9 @@ public class MemberController {
         if (loginMember == null) return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
 
         String currentPassword = body.get("currentPassword");
+        if (currentPassword == null || currentPassword.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "현재 비밀번호를 입력해주세요."));
+        }
         boolean matches = memberService.verifyPassword(loginMember.getId(), currentPassword);
 
         if (matches) {
@@ -625,7 +628,7 @@ public class MemberController {
                                       HttpSession session,
                                       Model model) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        model.addAttribute("isAdmin", sessionUser.isAdmin());
+        if (sessionUser == null || !sessionUser.isAdmin()) return "redirect:/login";
         memberService.withdrawMember(id);
         return "redirect:/admin/members";
     }

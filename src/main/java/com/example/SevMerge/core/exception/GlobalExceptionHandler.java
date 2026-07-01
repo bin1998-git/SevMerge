@@ -16,7 +16,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseBody
-    public String badRequest(BadRequestException e, HttpServletRequest request) {
+    public String badRequest(BadRequestException e, HttpServletRequest request,
+                             HttpServletResponse response) {
+        if (response.isCommitted()) return null;
         log.warn("=== 400 Bad Request ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
@@ -137,26 +139,40 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public Object runtime(RuntimeException e, HttpServletRequest request, HttpServletResponse response) {
+
+        // 브라우저가 페이지 이동으로 연결을 끊을 때 발생하는 ClientAbortException:
+        // 응답이 이미 커밋됐거나 클라이언트가 끊어진 경우 에러 뷰 렌더링 불가 → 조용히 무시
+        if (isClientAbortException(e) || response.isCommitted()) {
+            log.debug("클라이언트 연결 종료 또는 응답 이미 커밋됨 — 무시: {}", e.getMessage());
+            return null;
+        }
+
         log.warn("=== 예상치 못한 RuntimeException ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
 
-        // SSE 엔드포인트(/notifications/subscribe)에서 예외 발생 시
-        // text/event-stream 요청에 HTML 뷰를 돌려주면 브라우저 EventSource가
-        // 잘못된 응답을 받아 무한 재연결을 시도하거나 "이상한 도메인" 표시가 생길 수 있음.
-        // Accept: text/event-stream 요청이면 빈 SSE 스트림으로 조용히 종료.
+        // SSE 엔드포인트에서 예외 발생 시 HTML 뷰 대신 빈 응답으로 종료
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains(MediaType.TEXT_EVENT_STREAM_VALUE)) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-            try {
-                response.getWriter().write("");
-            } catch (Exception ignored) {}
+            try { response.getWriter().write(""); } catch (Exception ignored) {}
             return null;
         }
 
         request.setAttribute("msg", "시스템 오류가 발생했습니다. 관리자에게 문의해주세요.");
         return "err/500";
+    }
+
+    private boolean isClientAbortException(Exception e) {
+        // Tomcat ClientAbortException / Jetty EofException 등 클라이언트 연결 종료 예외
+        String name = e.getClass().getName();
+        if (name.contains("ClientAbort") || name.contains("EofException")) return true;
+        Throwable cause = e.getCause();
+        return cause instanceof java.io.IOException
+                && (cause.getMessage() == null || cause.getMessage().contains("Broken pipe")
+                    || cause.getMessage().contains("Connection reset")
+                    || cause.getMessage().contains("connection was aborted"));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

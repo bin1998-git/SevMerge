@@ -632,28 +632,59 @@
 <!-- ══ SSE 알림 ══ -->
 {{#isLoggedIn}}
     <script>
-        if (!window._sseInit) {
+        (function() {
+            if (window._sseInit) return;
             window._sseInit = true;
+
             window.showNotiToast = function(data) {
                 const toast = document.createElement('div');
                 toast.className = 'noti-toast';
                 toast.innerHTML = '<div class="noti-toast-label">' + data.typeLabel + '</div><div class="noti-toast-content">' + data.content + '</div>';
                 document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 4000);
+                setTimeout(function() { toast.remove(); }, 4000);
             };
-            const sse = new EventSource('/notifications/subscribe');
-            sse.addEventListener('notification', function(e) {
-                const data = JSON.parse(e.data);
-                window.showNotiToast(data);
-                const bell = document.querySelector('.nav-bell');
-                if (bell && !bell.querySelector('.nav-bell-dot')) {
-                    const dot = document.createElement('span');
-                    dot.className = 'nav-bell-dot';
-                    bell.appendChild(dot);
-                }
+
+            var sse = null;
+            var sseRetryCount = 0;
+            var MAX_RETRIES = 3;
+            var sseDestroyed = false;
+
+            function connectSse() {
+                if (sseDestroyed || sseRetryCount >= MAX_RETRIES) return;
+                sse = new EventSource('/notifications/subscribe');
+
+                sse.addEventListener('notification', function(e) {
+                    sseRetryCount = 0; // 성공 수신 시 재시도 카운터 초기화
+                    try {
+                        var data = JSON.parse(e.data);
+                        window.showNotiToast(data);
+                        var bell = document.querySelector('.nav-bell');
+                        if (bell && !bell.querySelector('.nav-bell-dot')) {
+                            var dot = document.createElement('span');
+                            dot.className = 'nav-bell-dot';
+                            bell.appendChild(dot);
+                        }
+                    } catch(err) {}
+                });
+
+                sse.onerror = function() {
+                    if (sseDestroyed) return;
+                    sse.close();
+                    sseRetryCount++;
+                    if (sseRetryCount < MAX_RETRIES) {
+                        // 지수 백오프: 5s, 15s, 45s
+                        setTimeout(connectSse, 5000 * Math.pow(3, sseRetryCount - 1));
+                    }
+                };
+            }
+
+            connectSse();
+
+            window.addEventListener('beforeunload', function() {
+                sseDestroyed = true;
+                if (sse) { sse.close(); sse = null; }
             });
-            window.addEventListener('beforeunload', function() { sse.close(); });
-        }
+        })();
     </script>
 {{/isLoggedIn}}
 

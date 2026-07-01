@@ -72,47 +72,43 @@ public class SessionInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
                            Object handler, ModelAndView modelAndView) throws Exception {
-        if (modelAndView != null) {
-            if (modelAndView.getView() instanceof RedirectView) return;
-            String viewName = modelAndView.getViewName();
-            if (viewName != null && viewName.startsWith("redirect:")) return;
+        if (modelAndView == null) return;
+        if (modelAndView.getView() instanceof RedirectView) return;
+        String viewName = modelAndView.getViewName();
+        if (viewName != null && viewName.startsWith("redirect:")) return;
 
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                SessionUser member;
-                try {
-                    member = (SessionUser) session.getAttribute(Define.SESSION_USER);
-                } catch (IllegalStateException e) {
-                    // 세션이 이미 invalidate된 경우
-                    modelAndView.addObject("isLoggedIn", false);
-                    modelAndView.addObject("isExpert", false);
-                    modelAndView.addObject("isAdmin", false);
-                    return;
-                }
-                if (member != null) {
-                    modelAndView.addObject("isLoggedIn", true);
-                    modelAndView.addObject("sessionUser", member);
-                    modelAndView.addObject("isExpert", member.isExpert());
-                    modelAndView.addObject("isAdmin", member.isAdmin());
-                    try {
-                        modelAndView.addObject("headerBalance", chargeService.getBalance(member.getId()));
-                    } catch (Exception e) {
-                        modelAndView.addObject("headerBalance", 0);
-                    }
-                    try {
-                        // notificationService.countUnRead()는 Member 엔티티를 파라미터로 받으므로
-                        // 추가 DB 조회 없이 SessionUser의 ID만으로 처리하도록 위임
-                        modelAndView.addObject("hasNewNotification",
-                                notificationService.hasUnRead(member.getId()));
-                    } catch (Exception e) {
-                        modelAndView.addObject("hasNewNotification", false);
-                    }
-                } else {
-                    modelAndView.addObject("isLoggedIn", false);
-                    modelAndView.addObject("isExpert", false);
-                    modelAndView.addObject("isAdmin", false);
-                }
-            }
+        // 기본값 설정 — 세션 조회 실패 시에도 Mustache가 항상 isLoggedIn 변수를 받도록 보장
+        modelAndView.addObject("isLoggedIn", false);
+        modelAndView.addObject("isExpert", false);
+        modelAndView.addObject("isAdmin", false);
+        modelAndView.addObject("headerBalance", 0);
+        modelAndView.addObject("hasNewNotification", false);
+
+        HttpSession session = request.getSession(false);
+        if (session == null) return;
+
+        SessionUser member;
+        try {
+            member = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        } catch (IllegalStateException e) {
+            return; // 세션 이미 invalidate — 기본값(false)으로 렌더링
+        }
+        if (member == null) return;
+
+        modelAndView.addObject("isLoggedIn", true);
+        modelAndView.addObject("sessionUser", member);
+        modelAndView.addObject("isExpert", member.isExpert());
+        modelAndView.addObject("isAdmin", member.isAdmin());
+        try {
+            modelAndView.addObject("headerBalance", chargeService.getBalance(member.getId()));
+        } catch (Exception e) {
+            // 기본값 0 이미 설정됨
+        }
+        try {
+            modelAndView.addObject("hasNewNotification",
+                    notificationService.hasUnRead(member.getId()));
+        } catch (Exception e) {
+            // 기본값 false 이미 설정됨
         }
     }
 }
