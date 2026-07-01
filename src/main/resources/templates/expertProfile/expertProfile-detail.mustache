@@ -316,6 +316,7 @@
 
     // 북마크
     function toggleBookmark(event, expertId, btn) {
+
         event.preventDefault();
         event.stopPropagation();
 
@@ -324,6 +325,11 @@
             credentials: 'include'
         })
                 .then(res => {
+                    if (res.status === 401) {
+                        alert('로그인이 필요한 기능입니다.');
+                        window.location.href = '/login';
+                        return null;
+                    }
                     if (!res.ok) {
                         alert('에러 발생! HTTP 상태 코드: ' + res.status);
                         throw new Error('bookmark toggle failed');
@@ -331,6 +337,7 @@
                     return res.json();
                 })
                 .then(data => {
+                    if (!data) return; // 401로 리다이렉트된 경우
                     // 💡 서버에서 온 북마크 유무(true/false)에 따라 active 클래스 토글!
                     if (data.bookmarked) {
                         btn.classList.add('active');

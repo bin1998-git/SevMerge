@@ -157,6 +157,12 @@
         .list-header, .list-toolbar, .filter-row, .list-meta, .expert-grid, .list-footer { padding-left: 16px; padding-right: 16px; }
         .expert-grid { grid-template-columns: 1fr; }
     }
+    .grade-badge-img {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+        vertical-align: middle;
+    }
 </style>
 
 <section class="page-wrap">
@@ -196,16 +202,16 @@
                     <div class="expert-top">
                         <div class="expert-avatar-wrap">
                             <div class="expert-avatar ep-avatar">{{memberName}}</div>
-                            {{#normal}}<img src="/normal-badge.png" class="expert-badge-icon" alt="일반"/>{{/normal}}
-                            {{#skilled}}<img src="/skilled-badge.png" class="expert-badge-icon" alt="숙련"/>{{/skilled}}
-                            {{#master}}<img src="/master-badge.png" class="expert-badge-icon" alt="마스터"/>{{/master}}
+<!--                            {{!#normal}}<img src="/normal.svg" class="grade-badge-img" alt="일반 전문가"/>{{!/normal}}-->
+<!--                            {{!#skilled}}<img src="/skilled.svg" class="grade-badge-img" alt="숙련 전문가"/>{{!/skilled}}-->
+<!--                            {{!#master}}<img src="/master.svg" class="grade-badge-img" alt="마스터 전문가"/>{{!/master}}-->
                         </div>
                         <div class="expert-info">
                             <div class="expert-name">
                                 {{memberName}}
-                                {{#normal}}<img src="/normal.png" class="grade-img" alt="일반"/>{{/normal}}
-                                {{#skilled}}<img src="/skilled.png" class="grade-img" alt="숙련"/>{{/skilled}}
-                                {{#master}}<img src="/master.png" class="grade-img" alt="마스터"/>{{/master}}
+                                {{#normal}}<img src="/normal.svg" class="grade-badge-img" alt="일반 전문가"/>{{/normal}}
+                                {{#skilled}}<img src="/skilled.svg" class="grade-badge-img" alt="숙련 전문가"/>{{/skilled}}
+                                {{#master}}<img src="/master.svg" class="grade-badge-img" alt="마스터 전문가"/>{{/master}}
                             </div>
                             <div class="expert-career">{{career}}</div>
                         </div>
