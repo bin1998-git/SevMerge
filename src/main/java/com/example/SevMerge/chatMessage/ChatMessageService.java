@@ -32,7 +32,9 @@ public class ChatMessageService {
         if (!chatRoom.validate(sessionMember)) {
             throw new ForbiddenException("채팅방에 접근할 권한이 없습니다.");
         }
-        if (reqDTO.getText() == null || reqDTO.getText().isEmpty()) {
+        boolean hasText = reqDTO.getText() != null && !reqDTO.getText().isEmpty();
+        boolean hasImage = reqDTO.getImageUrl() != null && !reqDTO.getImageUrl().isEmpty();
+        if (!hasText && !hasImage) {
             throw new BadRequestException("메시지 내용을 입력하세요.");
         }
 
@@ -49,7 +51,8 @@ public class ChatMessageService {
         ChatMessage message = chatMessageRepository.save(ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .sender(sessionMember)
-                .text(reqDTO.getText())
+                .text(reqDTO.getText() != null ? reqDTO.getText() : "")
+                .imageUrl(reqDTO.getImageUrl())
                 .isDeleted(false)
                 .build());
 

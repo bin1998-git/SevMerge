@@ -92,7 +92,7 @@ public class MessageService {
                     .map(b -> MessageResponse.ContactDTO
                             .from(b.getExpert(), b.getProject(), b.getStatus() == BidStatus.SELECTED)).toList();
         } else if (member.isExpert()) {
-            return bidRepository.findByExpertId(member.getId())
+            return bidRepository.findAllByExpertId(member.getId())
                     .stream()
                     .map(b -> MessageResponse.ContactDTO
                             .from(b.getProject().getMember(), b.getProject(), b.getStatus() == BidStatus.SELECTED)).toList();

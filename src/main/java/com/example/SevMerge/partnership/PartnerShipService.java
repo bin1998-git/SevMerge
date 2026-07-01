@@ -50,6 +50,11 @@ public class PartnerShipService {
         PartnerShip partnerShipEntity = partnerShipRepository.findById(id).orElseThrow(() ->
                 new BadRequestException("해당하는 제휴가 없습니다.")
         );
+
+        if(partnerShipEntity.getStatus().equals(PartnerShipStatus.APPROVED)) {
+            throw new BadRequestException("이미 승인된 제휴 입니다.");
+        }
+
         partnerShipMailService.sendPartnerShipMailApprove(partnerShipEntity.getEmail());
 
         partnerShipEntity.setStatus(PartnerShipStatus.APPROVED);

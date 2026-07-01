@@ -1,6 +1,14 @@
 {{> layout/header}}
 
 <style>
+    body {
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+    }
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+
     .admin-wrap {
         display: flex;
         min-height: calc(100vh - 64px);
@@ -8,8 +16,10 @@
 
     .admin-sidebar {
         width: 220px;
-        background: #fff;
-        border-right: 1px solid #eaecf4;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.7);
+        border-right: 1px solid rgba(255,255,255,.8);
         padding: 28px 0;
         flex-shrink: 0;
         position: sticky;
@@ -47,12 +57,12 @@
 
     .sidebar-link:hover {
         color: #2563eb;
-        background: #f8f9ff;
+        background: rgba(239,246,255,.7);
     }
 
     .sidebar-link.active {
         color: #2563eb;
-        background: #eff6ff;
+        background: rgba(239,246,255,.6);
         border-left-color: #2563eb;
     }
 
@@ -63,7 +73,9 @@
     .admin-content {
         flex: 1;
         padding: 36px 36px 80px;
-        background: #f5f6fa;
+        background: transparent;
+        position: relative;
+        z-index: 1;
     }
 
     .admin-header {
@@ -95,8 +107,9 @@
     .search-input {
         flex: 1;
         padding: 11px 16px;
-        background: #fff;
-        border: 1.5px solid #e2e5ef;
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
         border-radius: 9px;
         font-size: 14px;
         font-family: inherit;
@@ -107,6 +120,7 @@
 
     .search-input:focus {
         border-color: #2563eb;
+        background: rgba(255,255,255,.9);
         outline: none;
     }
 
@@ -123,9 +137,12 @@
     }
 
     .admin-table-wrap {
-        background: #fff;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
         border-radius: 14px;
-        border: 1.5px solid #eaecf4;
+        border: 1.5px solid rgba(255,255,255,.8);
+        box-shadow: 0 4px 24px rgba(37,99,235,.06);
         overflow: hidden;
     }
 
@@ -137,8 +154,8 @@
     }
 
     .admin-table-head {
-        background: #f8f9fc;
-        border-bottom: 1px solid #eaecf4;
+        background: rgba(255,255,255,.4);
+        border-bottom: 1px solid rgba(255,255,255,.6);
         font-size: 11px;
         font-weight: 700;
         color: #9ca3af;
@@ -147,7 +164,7 @@
 
     .admin-table-row {
         padding: 15px 22px;
-        border-bottom: 1px solid #f3f4f8;
+        border-bottom: 1px solid rgba(255,255,255,.5);
         font-size: 13px;
     }
 
@@ -159,8 +176,8 @@
     }
 
     .admin-table-head {
-        background: #f8f9fc !important;
-        border-bottom: 1px solid #eaecf4 !important;
+        background: rgba(255,255,255,.4) !important;
+        border-bottom: 1px solid rgba(255,255,255,.6) !important;
         font-size: 11px !important;
         font-weight: 700 !important;
         color: #9ca3af !important;
@@ -168,9 +185,9 @@
     }
 
     .admin-table-row {
-        border-bottom: 1px solid #f3f4f8 !important;
+        border-bottom: 1px solid rgba(255,255,255,.5) !important;
         font-size: 13px !important;
-        background: #fff !important;
+        background: transparent !important;
     }
 
     .admin-table-head > *:nth-child(1),
@@ -204,7 +221,7 @@
     }
 
     .admin-table-row:hover {
-        background: #f8f9ff;
+        background: rgba(239,246,255,.5) !important;
     }
 
     .cell-id {
@@ -277,7 +294,9 @@
         background: #fee2e2;
     }
 
-    .paging {
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 24px; }
+    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .unused_paging {
         display: flex;
         justify-content: center;
         gap: 6px;
@@ -287,11 +306,12 @@
     .page-btn {
         padding: 9px 15px;
         border-radius: 8px;
-        border: 1.5px solid #e2e5ef;
+        border: 1.5px solid rgba(255,255,255,.8);
         font-size: 13px;
         font-weight: 600;
         color: #6b7280;
-        background: #fff;
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.6);
         text-decoration: none;
         transition: all .15s;
     }
@@ -317,7 +337,7 @@
         display: none; /* !important를 뺐습니다 */
         flex-direction: column !important;
         width: 100% !important;
-        background: #f8f9ff !important;
+        background: rgba(239,246,255,.7) !important;
     }
 
     .sidebar-submenu.active {
@@ -378,6 +398,9 @@
 
 </style>
 
+<!-- 배경 글로우 -->
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 <div class="admin-wrap">
 
 
@@ -394,7 +417,7 @@
         <div style="position: relative; width: 100%; min-height: 50px; margin-bottom: 20px;">
             <div style="position: absolute; left: 0; top: 0;">
                 <form action="/admin/notices" method="get" class="search-bar" style="margin: 0; display: flex; gap: 10px;">
-                    <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value="" style="width: 350px; box-sizing: border-box;"/>
+                    <input type="text" class="search-input" name="keyword" placeholder="제목 검색..." value="{{keyword}}" style="width: 350px; box-sizing: border-box;"/>
                     <button type="submit" class="search-btn">검색</button>
                 </form>
             </div>
@@ -420,6 +443,11 @@
                     <span class="cell-date">{{createdAt}}</span>
                 </div>
             {{/boards}}
+        </div>
+        <div class="pagination">
+            {{#prevPage}}<a href="/admin/notices?page={{prevPage}}&keyword={{keyword}}" class="page-btn">이전</a>{{/prevPage}}
+            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+            {{#nextPage}}<a href="/admin/notices?page={{nextPage}}&keyword={{keyword}}" class="page-btn">다음</a>{{/nextPage}}
         </div>
     </main>
 </div>

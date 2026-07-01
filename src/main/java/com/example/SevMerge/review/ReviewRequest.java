@@ -30,6 +30,14 @@ public class ReviewRequest {
 
         public void validate(ReviewRequest.SaveReviewDTO review) {
 
+            if(rating==null) {
+                rating = 0;
+            }
+
+            if(rating < 0 || rating > 5) {
+                throw new BadRequestException("별점은 0점 이상 5점 이하만 가능합니다.");
+            }
+
             if (review.getContent() == null || review.getContent().trim().isEmpty()){
                 throw new BadRequestException("리뷰를 작성해 주세요");
             }
@@ -44,6 +52,15 @@ public class ReviewRequest {
         private String content; // 내용
 
         public void validate() {
+
+            if(rating==null) {
+                rating = 0;
+            }
+
+            if(rating < 0 || rating > 5) {
+                throw new BadRequestException("별점은 0점 이상 5점 이하만 가능합니다.");
+            }
+
             if(content == null || content.trim().isEmpty()) {
                 throw new BadRequestException("본문 내용 입력은 필수입니다.");
             }

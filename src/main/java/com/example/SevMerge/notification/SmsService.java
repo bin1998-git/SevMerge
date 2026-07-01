@@ -34,8 +34,7 @@ public class SmsService {
 
         log.info("SMS 인증번호 생성 - phone={}, code={}", to, code);
 
-        // 실제 발송 //테스트비용아끼기
-        //solApiService.sendSms(to, "[Sev Merge] 인증번호는 [" + code + "] 입니다.");
+        solApiService.sendSms(to, "[ IcodeU ] 인증번호는 [ " + code + " ] 입니다.");
     }
 
     // 인증번호 검증

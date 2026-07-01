@@ -2,6 +2,7 @@ package com.example.SevMerge.core.interceptor;
 
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.SessionUser;
 import com.example.SevMerge.project.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class ProjectInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         // 2. 의뢰인(Client)이 아니면 (예: 전문가가 프로젝트 등록/수정 주소로 강제 진입 시)
         if (!sessionUser.isClient()) {

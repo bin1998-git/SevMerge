@@ -42,6 +42,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/members/**",
                         "/my-pages",
                         "/my-pages/**",
+                        "/refund-applications/**",
+                        "/ad-auction",
+                        "/ad-auction/**",
+                        "/api/ad-auction/**",
+                        "/advertisements/**",
+                        "/api/admin/ad-slots/**",
                         "/projects/save-form",
                         "/messages",
                         "/messages/**",
@@ -108,7 +114,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 관리자 체크
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**",
-                        "/faqs/**")
+                        "/faqs/**",
+                "/api/admin")
                 .excludePathPatterns(
                         "/admin/comments/{id}/report"
                         );
@@ -139,11 +146,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String externalPath = Paths.get(FileUtil.IMAGES_DIR).toString();
+        String externalPath = Paths.get(FileUtil.IMAGES_DIR).toUri().toString();
+        if (!externalPath.endsWith("/")) externalPath += "/";
         registry.addResourceHandler("/images/**")
-                // 추후 C:upload/
-                // C:\\upload
-                .addResourceLocations("file:"+externalPath);
+                .addResourceLocations(externalPath);
 
         // 뱃지 이미지용 별도 핸들러
         registry.addResourceHandler("/badges/**")

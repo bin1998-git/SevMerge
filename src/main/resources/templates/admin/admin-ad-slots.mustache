@@ -1,0 +1,336 @@
+{{> layout/header}}
+
+<style>
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
+    .admin-content { flex: 1; padding: 36px 36px 80px; }
+    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 4px; }
+    .admin-desc { font-size: 14px; color: #9ca3af; margin-bottom: 28px; }
+
+    .slot-card {
+        backdrop-filter: blur(16px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 20px; padding: 28px;
+        margin-bottom: 20px; box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    }
+    .slot-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .slot-name { font-size: 20px; font-weight: 900; color: #1e3a6e; }
+    .slot-type-badge { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; background: #dbeafe; color: #1e40af; }
+
+    .slot-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-box { background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.7); border-radius: 14px; padding: 18px; text-align: center; }
+    .stat-box-label { font-size: 11px; font-weight: 700; color: #9ca3af; margin-bottom: 8px; letter-spacing: .5px; }
+    .stat-box-val { font-size: 22px; font-weight: 900; color: #1e3a6e; }
+    .stat-box-val.highlight { color: #d97706; }
+    .stat-box-val.green { color: #059669; }
+
+    .countdown-wrap { display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .cd-unit { display: flex; flex-direction: column; align-items: center; }
+    .cd-num { font-size: 20px; font-weight: 900; color: #1e3a6e; background: rgba(37,99,235,.08); padding: 4px 8px; border-radius: 8px; min-width: 36px; text-align: center; }
+    .cd-label { font-size: 9px; color: #9ca3af; margin-top: 3px; }
+    .cd-colon { font-size: 18px; font-weight: 700; color: #9ca3af; padding-bottom: 12px; }
+
+    .settings-form { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 24px; padding: 20px; background: rgba(255,255,255,.4); border-radius: 14px; border: 1px solid rgba(255,255,255,.6); }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 700; color: #4a6fa5; }
+    .form-input { padding: 10px 14px; background: rgba(255,255,255,.8); border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; }
+    .form-input:focus { border-color: #2563eb; }
+    .save-btn { padding: 10px 20px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+    .bid-table-wrap { background: rgba(255,255,255,.5); border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.7); }
+    .bid-table-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.6); display: flex; justify-content: space-between; align-items: center; }
+    .bid-table-title { font-size: 15px; font-weight: 800; color: #1e3a6e; }
+    .bid-head { display: grid; grid-template-columns: 50px 1fr 120px 120px 80px 140px; gap: 12px; padding: 10px 20px; background: rgba(255,255,255,.4); font-size: 11px; font-weight: 700; color: #9ca3af; }
+    .bid-row { display: grid; grid-template-columns: 50px 1fr 120px 120px 80px 140px; gap: 12px; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.5); align-items: start; font-size: 13px; }
+    .bid-row:hover { background: rgba(239,246,255,.5); }
+    .rank-1 { font-weight: 900; color: #d97706; }
+    .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 11px; font-weight: 900; }
+    .rank-badge.gold { background: #fef3c7; color: #92400e; }
+    .rank-badge.silver { background: #f3f4f6; color: #4b5563; }
+    .rank-badge.bronze { background: #fef3c7; color: #78716c; }
+    .rank-badge.normal { background: #f3f4f6; color: #9ca3af; }
+
+    .status-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; display: inline-block; }
+    .status-open { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .status-awarded { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .status-expired { background: #f3f4f6; color: #9ca3af; }
+    .status-pending-review { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .status-approved { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .status-rejected { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
+
+    .review-btn-approve {
+        padding: 5px 12px; background: linear-gradient(135deg, #059669, #047857);
+        color: #fff; border: none; border-radius: 8px; font-size: 11px; font-weight: 700;
+        cursor: pointer; font-family: inherit; margin-right: 4px;
+    }
+    .review-btn-reject {
+        padding: 5px 12px; background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #fff; border: none; border-radius: 8px; font-size: 11px; font-weight: 700;
+        cursor: pointer; font-family: inherit;
+    }
+
+    .empty-bids { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .toast.error { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
+</style>
+
+<div class="admin-wrap">
+    <main class="admin-content">
+        <h1 class="admin-title">광고 경매 슬롯 관리</h1>
+        <p class="admin-desc">메인 배너 경매 현황을 실시간으로 확인하고 관리합니다.</p>
+
+        {{#slots}}
+            <div class="slot-card">
+                <div class="slot-header">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span class="slot-name">{{slotName}}</span>
+                        <span class="slot-type-badge">메인 배너 728×90</span>
+                    </div>
+                    <div>
+                        {{#isOpen}}<span class="status-badge status-open">⚡ 입찰 진행중</span>{{/isOpen}}
+                        {{#isAwarded}}<span class="status-badge status-awarded">📢 광고 노출중</span>{{/isAwarded}}
+                        {{#isExpired}}<span class="status-badge status-expired">종료</span>{{/isExpired}}
+                    </div>
+                </div>
+
+                <div class="slot-stats">
+                    <div class="stat-box">
+                        <div class="stat-box-label">최소 입찰가</div>
+                        <div class="stat-box-val">{{minBidPrice}}P</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">현재 최고가</div>
+                        <div class="stat-box-val highlight">{{topPrice}}P</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">입찰 참여자</div>
+                        <div class="stat-box-val">{{bidCount}}명</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">
+                            {{#isOpen}}입찰 마감까지{{/isOpen}}
+                            {{#isAwarded}}광고 종료까지{{/isAwarded}}
+                        </div>
+                        <div class="countdown-wrap" id="countdown-{{id}}"
+                             data-end="{{bidEndAt}}">
+                            <div class="cd-unit"><span class="cd-num cd-h">00</span><span class="cd-label">시간</span></div>
+                            <span class="cd-colon">:</span>
+                            <div class="cd-unit"><span class="cd-num cd-m">00</span><span class="cd-label">분</span></div>
+                            <span class="cd-colon">:</span>
+                            <div class="cd-unit"><span class="cd-num cd-s">00</span><span class="cd-label">초</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                {{#isOpen}}
+                    <div class="settings-form">
+                        <div class="form-group">
+                            <label class="form-label">최소 입찰가 (P)</label>
+                            <input type="number" class="form-input" id="minBidPrice-{{id}}"
+                                   value="{{minBidPrice}}" min="1000" step="1000" style="width:160px;"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">입찰 기간 (분)</label>
+                            <input type="number" class="form-input" id="duration-{{id}}"
+                                   placeholder="예) 2880 (48시간)" min="10" style="width:180px;"/>
+                        </div>
+                        <button class="save-btn" onclick="saveSettings({{id}})">설정 저장</button>
+                    </div>
+                {{/isOpen}}
+
+                <div class="bid-table-wrap">
+                    <div class="bid-table-header">
+                        <span class="bid-table-title">입찰자 현황</span>
+                        <button onclick="refreshBids({{id}})"
+                                style="font-size:12px;font-weight:700;color:#2563eb;background:none;border:none;cursor:pointer;">
+                            🔄 새로고침
+                        </button>
+                    </div>
+                    <div class="bid-head">
+                        <span>순위</span>
+                        <span>전문가 / 배너</span>
+                        <span>입찰가</span>
+                        <span>입찰일시</span>
+                        <span>상태</span>
+                        <span>검토</span>
+                    </div>
+                    <div id="bid-list-{{id}}">
+                        <div class="empty-bids">로딩 중...</div>
+                    </div>
+                </div>
+            </div>
+        {{/slots}}
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    function loadBids(slotId) {
+        fetch('/api/admin/ad-slots/' + slotId + '/bids')
+        .then(res => res.json())
+        .then(bids => {
+            const container = document.getElementById('bid-list-' + slotId);
+            if (!bids || bids.length === 0) {
+                container.innerHTML = '<div class="empty-bids">아직 입찰자가 없습니다.</div>';
+                return;
+            }
+            container.innerHTML = bids.map((b, i) => {
+                const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal';
+                const rankLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+
+                // 배너 이미지 미리보기
+                const bannerPreview = b.bannerImage
+                    ? `<div style="margin-top:6px;">
+                           <img src="/images/${b.bannerImage}"
+                                style="width:182px;height:22px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;"
+                                alt="배너"/>
+                       </div>`
+                    : '<div style="font-size:11px;color:#9ca3af;margin-top:4px;">이미지 없음</div>';
+
+                // 광고 문구
+                const adMsg = b.adMessage
+                    ? `<div style="font-size:11px;color:#4a6fa5;margin-top:4px;">"${b.adMessage}"</div>`
+                    : '';
+
+                // 입찰 상태 뱃지
+                const statusLabel = b.status === 'PENDING' ? '입찰중'
+                    : b.status === 'WINNER' ? '낙찰'
+                    : b.status === 'LOST' ? '탈락' : '환불';
+                const statusClass = b.status === 'PENDING' ? 'status-open'
+                    : b.status === 'WINNER' ? 'status-awarded' : 'status-expired';
+
+                // 검토 상태 + 버튼
+                let reviewHtml = '-';
+                if (b.status === 'WINNER') {
+                    if (b.reviewStatus === 'PENDING') {
+                        reviewHtml = `
+                            <div>
+                                <span class="status-badge status-pending-review">검토 대기</span>
+                                <div style="margin-top:6px;">
+                                    <button class="review-btn-approve" onclick="approveBid(${b.id})">✓ 승인</button>
+                                    <button class="review-btn-reject" onclick="rejectBid(${b.id})">✗ 거절</button>
+                                </div>
+                            </div>`;
+                    } else if (b.reviewStatus === 'APPROVED') {
+                        reviewHtml = '<span class="status-badge status-approved">✓ 승인됨</span>';
+                    } else if (b.reviewStatus === 'REJECTED') {
+                        reviewHtml = '<span class="status-badge status-rejected">✗ 거절됨</span>';
+                    }
+                }
+
+                return `
+                    <div class="bid-row ${i === 0 ? 'rank-1' : ''}">
+                        <span><span class="rank-badge ${rankClass}">${rankLabel}</span></span>
+                        <div>
+                            <div style="font-weight:700;">${b.expertName}</div>
+                            ${bannerPreview}
+                            ${adMsg}
+                        </div>
+                        <span style="font-weight:800;color:${i===0?'#d97706':'#1e3a6e'};">
+                            ${b.bidPrice.toLocaleString()}P
+                        </span>
+                        <span style="color:#9ca3af;font-size:12px;">${b.createdAt}</span>
+                        <span><span class="status-badge ${statusClass}">${statusLabel}</span></span>
+                        <span>${reviewHtml}</span>
+                    </div>
+                `;
+            }).join('');
+        })
+        .catch(() => {
+            document.getElementById('bid-list-' + slotId).innerHTML =
+                '<div class="empty-bids">불러오기 실패</div>';
+        });
+    }
+
+    function refreshBids(slotId) { loadBids(slotId); }
+
+    function approveBid(bidId) {
+        if (!confirm('해당 배너를 승인하시겠습니까?\n승인 시 메인화면에 즉시 노출됩니다.')) return;
+        fetch('/api/admin/ad-bids/' + bidId + '/approve', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.text().then(t => ({ ok: res.ok, t })))
+        .then(({ ok, t }) => {
+            showToast(ok ? '✓ 승인되었습니다! 메인화면에 노출됩니다.' : t, ok ? 'success' : 'error');
+            if (ok) setTimeout(() => location.reload(), 1500);
+        });
+    }
+
+    function rejectBid(bidId) {
+        const reason = prompt('거절 사유를 입력하세요:\n(전문가에게 알림이 발송되고 포인트가 환불됩니다.)');
+        if (reason === null) return;
+        if (!reason.trim()) {
+            showToast('거절 사유를 입력해주세요.', 'error');
+            return;
+        }
+        fetch('/api/admin/ad-bids/' + bidId + '/reject', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: reason.trim() })
+        })
+        .then(res => res.text().then(t => ({ ok: res.ok, t })))
+        .then(({ ok, t }) => {
+            showToast(ok ? '거절 처리되었습니다. 포인트가 환불됩니다.' : t, ok ? 'success' : 'error');
+            if (ok) setTimeout(() => location.reload(), 1500);
+        });
+    }
+
+    function saveSettings(slotId) {
+        const minBidPrice = parseInt(document.getElementById('minBidPrice-' + slotId).value);
+        const durationMinutes = parseInt(document.getElementById('duration-' + slotId).value) || null;
+
+        fetch('/api/admin/ad-slots/' + slotId + '/settings', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ minBidPrice, durationMinutes })
+        })
+        .then(res => res.text().then(t => ({ ok: res.ok, t })))
+        .then(({ ok, t }) => {
+            showToast(ok ? '설정이 저장되었습니다!' : t, ok ? 'success' : 'error');
+            if (ok) setTimeout(() => location.reload(), 1500);
+        });
+    }
+
+    function startCountdown(el) {
+        const endStr = el.dataset.end;
+        if (!endStr) return;
+        const endTime = new Date(endStr.replace(' ', 'T')).getTime();
+
+        function tick() {
+            const diff = endTime - Date.now();
+            if (diff <= 0) {
+                el.innerHTML = '<span style="font-size:13px;color:#ef4444;font-weight:700;">마감됨</span>';
+                return;
+            }
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            el.querySelector('.cd-h').textContent = String(h).padStart(2, '0');
+            el.querySelector('.cd-m').textContent = String(m).padStart(2, '0');
+            el.querySelector('.cd-s').textContent = String(s).padStart(2, '0');
+        }
+        tick();
+        setInterval(tick, 1000);
+    }
+
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast ' + type + ' show';
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[id^="countdown-"]').forEach(el => startCountdown(el));
+        document.querySelectorAll('[id^="bid-list-"]').forEach(el => {
+            const slotId = el.id.replace('bid-list-', '');
+            loadBids(slotId);
+        });
+    });
+</script>
+
+{{> layout/footer}}

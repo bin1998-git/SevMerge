@@ -2,9 +2,12 @@ package com.example.SevMerge.comment;
 
 import com.example.SevMerge.board.Board;
 import com.example.SevMerge.board.BoardRepository;
+import com.example.SevMerge.board.BoardType;
+import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,28 +34,33 @@ public class CommentService {
     }
 
     // 댓글 작성
+    @Transactional
     public Comment createComment(CommentRequest.SaveDTO saveDTO, long id) {
-        // 게시글 조회
         Board boardEntity = boardRepository.findById(saveDTO.getBoardId()).orElseThrow(
                 () -> new NotFoundException("해당 게시글을 찾을 수 없습니다."));
 
-        // id로 사용자 조회
         Member memberEntity = memberRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
         Comment comment = saveDTO.toEntity(memberEntity, boardEntity);
         commentRepository.save(comment);
+
+        if (boardEntity.getBoardType() == BoardType.INQUIRY && memberEntity.getRole() == Role.ADMIN) {
+            boardEntity.markAsAnswered();
+            boardRepository.save(boardEntity);
+        }
+
         return comment;
     }
 
     // 댓글 수정
     @Transactional
-    public void updateComment(Long commentId, String newContent, Long sessionUserId) {
+    public void updateComment(Long commentId, String newContent, Long sessionUserId, boolean isAdmin) {
         Comment commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("해당 댓글을 찾을 수 없습니다."));
 
-        if (!commentEntity.getMember().getId().equals(sessionUserId)) {
-            throw new IllegalArgumentException("댓글 수정 권한이 없습니다.");
+        if (!commentEntity.getMember().getId().equals(sessionUserId) && !isAdmin) {
+            throw new BadRequestException("댓글 수정 권한이 없습니다.");
         }
 
         commentEntity.updateContent(newContent);
@@ -60,19 +68,26 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(Long commentId, Long sessionUserId) { // Integer -> Long 변환
-        // 1. 댓글 조회 (Reply -> Comment)
+    public void deleteComment(Long commentId, Long sessionUserId, boolean isAdmin) {
         Comment commentEntity = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다"));
+                () -> new NotFoundException("해당 댓글을 찾을 수 없습니다"));
 
-        // 2. 인가 처리 (본인 확인)
-        // 객체 비교(!=) 대신 안전한 Long 타입 값 비교(!equals)를 사용했습니다.
-        if (!commentEntity.getMember().getId().equals(sessionUserId)) {
-            throw new IllegalArgumentException("댓글 삭제 권한이 없습니다");
+        if (!commentEntity.getMember().getId().equals(sessionUserId) && !isAdmin) {
+            throw new BadRequestException("댓글 삭제 권한이 없습니다");
         }
 
-        // 3. 댓글 삭제
+        boolean wasAdminComment = commentEntity.getMember().getRole() == Role.ADMIN;
+        Board board = commentEntity.getBoard();
+
         commentEntity.softDelete();
+
+        if (board.getBoardType() == BoardType.INQUIRY && wasAdminComment) {
+            long remaining = commentRepository.countByBoardIdAndMemberRole(board.getId(), Role.ADMIN);
+            if (remaining == 0) {
+                board.markAsWaiting();
+                boardRepository.save(board);
+            }
+        }
     }
 
     // 관리자 전용 전체 댓글 조회
@@ -96,7 +111,18 @@ public class CommentService {
         Comment commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
 
+        boolean wasAdminComment = commentEntity.getMember().getRole() == Role.ADMIN;
+        Board board = commentEntity.getBoard();
+
         commentEntity.softDelete();
+
+        if (board.getBoardType() == BoardType.INQUIRY && wasAdminComment) {
+            long remaining = commentRepository.countByBoardIdAndMemberRole(board.getId(), Role.ADMIN);
+            if (remaining == 0) {
+                board.markAsWaiting();
+                boardRepository.save(board);
+            }
+        }
     }
 
 }

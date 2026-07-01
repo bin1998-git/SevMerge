@@ -4,6 +4,7 @@ import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import com.example.SevMerge.member.Status;
 import com.example.SevMerge.notification.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,21 +34,20 @@ public class SessionInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession(false);
         if (session == null) return true;
 
-        Member sessionUser = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return true;
 
         Long lastRefresh = (Long) session.getAttribute(LAST_REFRESH_KEY);
         long now = System.currentTimeMillis();
         if (lastRefresh != null && now - lastRefresh < REFRESH_INTERVAL_MS) return true;
 
-        // 5분마다 DB에서 최신 상태 재조회 — 정지/탈퇴 계정 즉시 차단
         Member fresh = memberRepository.findById(sessionUser.getId()).orElse(null);
         if (fresh == null || fresh.isDeleted() || fresh.getStatus() == Status.SUSPENDED) {
             session.invalidate();
             response.sendRedirect("/login");
             return false;
         }
-        session.setAttribute(Define.SESSION_USER, fresh);
+        session.setAttribute(Define.SESSION_USER, new SessionUser(fresh));
         session.setAttribute(LAST_REFRESH_KEY, now);
         return true;
     }
@@ -55,17 +55,14 @@ public class SessionInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
                            Object handler, ModelAndView modelAndView) throws Exception {
-
         if (modelAndView != null) {
-            // [L3] Skip redirect views — model attributes would become query params in the URL,
-            // leaking auth state (e.g. /login?isLoggedIn=false&isExpert=false&isAdmin=false).
             if (modelAndView.getView() instanceof RedirectView) return;
             String viewName = modelAndView.getViewName();
             if (viewName != null && viewName.startsWith("redirect:")) return;
 
             HttpSession session = request.getSession(false);
             if (session != null) {
-                Member member = (Member) session.getAttribute(Define.SESSION_USER);
+                SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
                 if (member != null) {
                     modelAndView.addObject("isLoggedIn", true);
                     modelAndView.addObject("sessionUser", member);
@@ -77,8 +74,9 @@ public class SessionInterceptor implements HandlerInterceptor {
                         modelAndView.addObject("headerBalance", 0);
                     }
                     try {
+                        Member memberEntity = memberRepository.findById(member.getId()).orElse(null);
                         modelAndView.addObject("hasNewNotification",
-                                notificationService.countUnRead(member) > 0);
+                                memberEntity != null && notificationService.countUnRead(memberEntity) > 0);
                     } catch (Exception e) {
                         modelAndView.addObject("hasNewNotification", false);
                     }

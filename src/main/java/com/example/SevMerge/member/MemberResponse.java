@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 @Getter
 @Builder(toBuilder = true)
@@ -139,10 +140,23 @@ public class MemberResponse {
         return "/images/" + profileImage;
     }
 
+    public String getRoleName() {
+        if (role == null) return "";
+        return switch (role) {
+            case ADMIN -> "관리자";
+            case EXPERT -> "전문가";
+            case CLIENT -> "일반";
+        };
+    }
+
     // 포맷팅용
     public String getDisplayBalance() {
         return balance == null ? "0" : String.format("%,d", balance);
     }
 
 
+    public String getCreatedAtFormatted() {
+        if (this.createdAt == null) return "";
+        return new SimpleDateFormat("yyyy-MM-dd").format(this.createdAt);
+    }
 }

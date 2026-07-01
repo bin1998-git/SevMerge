@@ -47,6 +47,10 @@ public class Advertisement {
     @Column(name = "banner_image", length = 500)
     private String bannerImage;     // 전용 배너 이미지용
 
+    // 거절사유
+    @Column(name = "reject_reason", length = 200)
+    private String rejectReason;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -66,4 +70,20 @@ public class Advertisement {
     public void expire() {
         this.status = AdvertisementStatus.EXPIRED;
     }
+
+    public void approve() {
+        long now = System.currentTimeMillis();
+        long durationMs = this.endDate.getTime() - this.startDate.getTime();
+        this.startDate = new Timestamp(now);
+        this.endDate = new Timestamp(now + durationMs);
+        this.status = AdvertisementStatus.ACTIVE;
+    }
+
+
+
+    public void reject(String reason) {
+        this.status = AdvertisementStatus.REJECTED;
+        this.rejectReason = reason;
+    }
+
 }

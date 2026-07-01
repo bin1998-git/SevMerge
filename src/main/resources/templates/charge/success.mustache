@@ -1,25 +1,51 @@
 {{> layout/header}}
 
 <style>
-    .result-section { padding: 80px 28px; text-align: center; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    .result-section {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        min-height: calc(100vh - 64px); padding: 80px 28px; text-align: center;
+    }
+    .result-box {
+        backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+        background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 28px; padding: 56px 52px;
+        box-shadow: 0 8px 32px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        max-width: 440px; width: 100%;
+    }
     .result-icon  { font-size: 56px; margin-bottom: 20px; }
-    .result-title { font-size: 24px; font-weight: 900; color: #1c1e26; margin-bottom: 8px; }
-    .result-amount { font-size: 32px; font-weight: 900; color: #2563eb; margin: 16px 0; }
-    .result-balance { font-size: 14px; color: #6b7280; margin-bottom: 36px; }
-    .result-balance strong { color: #1c1e26; font-weight: 700; }
+    .result-title { font-size: 22px; font-weight: 900; color: #1e3a6e; margin-bottom: 8px; letter-spacing: -.5px; }
+    .result-amount { font-size: 36px; font-weight: 900; color: #2563eb; margin: 20px 0 8px; letter-spacing: -1px; }
+    .result-balance { font-size: 14px; color: #4a6fa5; margin-bottom: 36px; }
+    .result-balance strong { color: #1e3a6e; font-weight: 700; }
     .btn-wrap { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary { padding: 13px 28px; background: #2563eb; color: #fff; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; }
-    .btn-outline  { padding: 13px 28px; background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; }
+    .btn-primary {
+        padding: 13px 28px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; border-radius: 25px; font-size: 14px; font-weight: 700;
+        text-decoration: none; box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
+    .btn-outline {
+        padding: 13px 28px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a;
+        border-radius: 25px; font-size: 14px; font-weight: 700; text-decoration: none; transition: all .15s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.9); }
 </style>
 
 <section class="result-section">
-    <div class="result-icon">✅</div>
-    <h1 class="result-title">충전이 완료되었습니다!</h1>
-    <div class="result-amount">+{{amount}}원</div>
-    <p class="result-balance">현재 잔액 <strong>{{newBalance}}원</strong></p>
-    <div class="btn-wrap">
-        <a href="/payment/my"  class="btn-primary">결제 내역 보기</a>
-        <a href="/charge/form" class="btn-outline">추가 충전</a>
+    <div class="result-box">
+        <div class="result-icon">✅</div>
+        <h1 class="result-title">충전이 완료되었습니다!</h1>
+        <div class="result-amount">+{{amount}}원</div>
+        <p class="result-balance">현재 잔액 <strong>{{newBalance}}원</strong></p>
+        <div class="btn-wrap">
+            <a href="/payment/my"  class="btn-primary">결제 내역 보기</a>
+            <a href="/charge/form" class="btn-outline">추가 충전</a>
+        </div>
     </div>
 </section>
 

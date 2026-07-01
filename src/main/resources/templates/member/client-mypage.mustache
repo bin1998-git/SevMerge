@@ -1,113 +1,148 @@
 {{> layout/header}}
 
 <style>
-    .cm-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 28px 80px; }
+    /* ── 배경 ── */
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
 
-    /* 상단 배너 (광고/이벤트 영역) */
-    .cm-banner { background: linear-gradient(135deg, #1846C9 0%, #2563eb 55%, #5b8fff 100%); border-radius: 16px; padding: 26px 32px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; position: relative; overflow: hidden; min-height: 104px; }
+    .cm-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 28px 80px; position: relative; z-index: 1; }
+
+    /* 상단 배너 */
+    .cm-banner { background: linear-gradient(135deg, #1846C9 0%, #2563eb 55%, #5b8fff 100%); border-radius: 20px; padding: 26px 32px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; position: relative; overflow: hidden; min-height: 104px; box-shadow: 0 8px 32px rgba(37,99,235,.2); }
     .cm-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 85% 50%, rgba(255,255,255,.12) 0%, transparent 55%); pointer-events: none; }
     .cm-banner-left { display: flex; flex-direction: column; gap: 7px; z-index: 1; }
     .cm-banner-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.18); border-radius: 20px; padding: 3px 11px; width: fit-content; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #fff; }
     .cm-banner-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
     .cm-banner-title { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.02em; line-height: 1.3; }
     .cm-banner-title span { opacity: .8; font-size: 13px; font-weight: 400; }
-    .cm-banner-cta { padding: 11px 22px; background: #fff; color: #2563eb; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; z-index: 1; text-decoration: none; }
-    .cm-banner-cta:hover { background: #eff6ff; }
+    .cm-banner-cta { padding: 11px 22px; background: #fff; color: #2563eb; border: none; border-radius: 25px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; z-index: 1; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.1); transition: all .15s; }
+    .cm-banner-cta:hover { background: #eff6ff; transform: translateY(-1px); }
 
-    .cm-body { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start; }
+    .cm-body { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; }
 
-    /* 왼쪽 사이드 */
-    .cm-side { background: #fff; border: 1px solid #e2e7f0; border-radius: 16px; overflow: hidden; }
-    .cm-profile { padding: 28px 24px; text-align: center; border-bottom: 1px solid #f3f4f8; }
-    .cm-avatar { width: 80px; height: 80px; border-radius: 50%; background: #eff6ff; border: 2px solid #bfdbfe; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 34px; background-size: cover; background-position: center; }
-    .cm-name { font-size: 16px; font-weight: 800; color: #1c1e26; }
-    .cm-role { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 12px; border-radius: 20px; }
+    /* 왼쪽 사이드 - 글래스 */
+    .cm-side { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(37,99,235,.08); }
+    .cm-profile { padding: 28px 24px; text-align: center; border-bottom: 1px solid rgba(37,99,235,.08); }
+    .cm-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #3b82f6); border: 3px solid rgba(255,255,255,.9); margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: #fff; background-size: cover; background-position: center; box-shadow: 0 4px 16px rgba(37,99,235,.2); }
+    .cm-name { font-size: 16px; font-weight: 800; color: #1e3a6e; }
+    .cm-role { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2); padding: 3px 12px; border-radius: 20px; }
     .cm-menu { padding: 10px 0; }
-    .cm-group { font-size: 11px; font-weight: 700; color: #c4c9d9; letter-spacing: 1px; padding: 12px 22px 6px; }
-    .cm-link { display: flex; align-items: center; gap: 10px; padding: 11px 22px; font-size: 14px; font-weight: 600; color: #4b5563; text-decoration: none; border-left: 3px solid transparent; cursor: pointer; transition: all .12s; }
-    .cm-link:hover { background: #f8f9ff; color: #2563eb; }
-    .cm-link.active { background: #eff6ff; color: #2563eb; border-left-color: #2563eb; }
+    .cm-group { font-size: 11px; font-weight: 700; color: #93aecf; letter-spacing: 1px; padding: 12px 22px 6px; }
+    .cm-link { display: flex; align-items: center; gap: 10px; padding: 11px 22px; font-size: 13px; font-weight: 600; color: #4a6fa5; text-decoration: none; border-left: 3px solid transparent; cursor: pointer; transition: all .12s; }
+    .cm-link:hover { background: rgba(37,99,235,.06); color: #2563eb; }
+    .cm-link.active { background: rgba(37,99,235,.08); color: #2563eb; border-left-color: #2563eb; }
     .cm-link.danger { color: #ef4444; }
-    .cm-link.danger:hover { background: #fff3f3; }
-    .cm-icon { width: 18px; text-align: center; }
-    .cm-soon { font-size: 10px; color: #c4c9d9; margin-left: auto; }
+    .cm-link.danger:hover { background: rgba(239,68,68,.06); }
+    .cm-icon { width: 18px; text-align: center; display: flex; align-items: center; }
+    .cm-soon { font-size: 10px; color: #93aecf; margin-left: auto; }
 
     /* 오른쪽 */
-    .cm-main { display: flex; flex-direction: column; gap: 24px; }
+    .cm-main { display: flex; flex-direction: column; gap: 20px; }
     .cm-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
-    .cm-stat { background: #fff; border: 1px solid #e2e7f0; border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 12px; transition: border-color .15s, box-shadow .15s; }
-    .cm-stat:hover { border-color: #bfdbfe; box-shadow: 0 6px 20px rgba(37,99,235,.07); }
+    .cm-stat { backdrop-filter: blur(12px); background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 12px; transition: all .2s; text-decoration: none; color: inherit; box-shadow: 0 4px 16px rgba(37,99,235,.06); }
+    .cm-stat:hover { border-color: rgba(37,99,235,.3); box-shadow: 0 8px 24px rgba(37,99,235,.1); transform: translateY(-2px); background: rgba(255,255,255,.75); }
     .cm-stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
-    .ic-blue { background: #eff6ff; } .ic-green { background: #ecfdf5; } .ic-amber { background: #fffbeb; } .ic-violet { background: #f5f3ff; }
-    .cm-stat-val { font-size: 20px; font-weight: 900; line-height: 1; }
-    .cm-stat-lbl { font-size: 12px; color: #9ca3af; margin-top: 5px; }
+    .ic-blue { background: rgba(37,99,235,.1); } .ic-green { background: rgba(16,185,129,.1); } .ic-amber { background: rgba(245,158,11,.1); } .ic-violet { background: rgba(124,58,237,.1); }
+    .cm-stat-val { font-size: 20px; font-weight: 900; line-height: 1; color: #1e3a6e; }
+    .cm-stat-lbl { font-size: 12px; color: #4a6fa5; margin-top: 5px; }
 
-    .cm-content { background: #fff; border: 1px solid #e2e7f0; border-radius: 16px; padding: 28px 30px; min-height: 420px; }
-    .cm-content-head { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f8; }
-    .cm-content-title { font-size: 18px; font-weight: 900; }
-    .cm-content-sub { font-size: 13px; color: #9ca3af; margin-top: 3px; }
+    .cm-content { backdrop-filter: blur(16px); background: rgba(255,255,255,.55); border: 1.5px solid rgba(255,255,255,.8); border-radius: 20px; padding: 28px 30px; min-height: 420px; box-shadow: 0 8px 32px rgba(37,99,235,.07); }
+    .cm-content-head { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(37,99,235,.08); }
+    .cm-content-title { font-size: 18px; font-weight: 900; color: #1e3a6e; }
+    .cm-content-sub { font-size: 13px; color: #4a6fa5; margin-top: 3px; }
 
-    .cm-item { border: 1px solid #e2e7f0; border-radius: 12px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; text-decoration: none; color: inherit; transition: border-color .15s, box-shadow .15s; }
-    .cm-item:hover { border-color: #bfdbfe; box-shadow: 0 4px 14px rgba(37,99,235,.06); }
+    .cm-item { backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 14px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; text-decoration: none; color: inherit; transition: all .2s; }
+    .cm-item:hover { border-color: rgba(37,99,235,.3); box-shadow: 0 6px 20px rgba(37,99,235,.08); background: rgba(255,255,255,.85); }
     .cm-item-body { flex: 1; }
-    .cm-item-cat { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 9px; border-radius: 5px; display: inline-block; margin-bottom: 6px; }
-    .cm-item-title { font-size: 15px; font-weight: 700; color: #1c1e26; margin-bottom: 4px; }
-    .cm-item-meta { font-size: 12px; color: #9ca3af; }
+    .cm-item-cat { font-size: 11px; font-weight: 700; color: #2563eb; background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.15); padding: 3px 9px; border-radius: 6px; display: inline-block; margin-bottom: 6px; }
+    .cm-item-title { font-size: 15px; font-weight: 700; color: #1e3a6e; margin-bottom: 4px; }
+    .cm-item-meta { font-size: 12px; color: #4a6fa5; }
     .cm-item-right { text-align: right; flex-shrink: 0; margin-left: 16px; }
-    .cm-item-price { font-size: 15px; font-weight: 900; }
+    .cm-item-price { font-size: 15px; font-weight: 900; color: #1e3a6e; }
     .cm-item-status { font-size: 11px; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
     .st-open { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-    .st-closed { background: #f3f4f8; color: #9ca3af; }
+    .st-closed { background: rgba(156,163,175,.1); color: #9ca3af; }
     .st-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-    .cm-empty { text-align: center; padding: 60px 0; font-size: 15px; color: #c4c9d9; }
+    .cm-empty { text-align: center; padding: 60px 0; font-size: 15px; color: #93aecf; }
 
-    .cm-btn { display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; text-decoration: none; margin-top: 8px; }
-    .cm-btn-primary { background: #2563eb; color: #fff; }
+    .cm-btn { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; text-decoration: none; margin-top: 8px; transition: all .15s; }
+    .cm-btn-primary { background: #2563eb; color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.25); }
+    .cm-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
 
     /* 정보수정 폼 */
     .cm-form { display: flex; flex-direction: column; gap: 18px; max-width: 480px; }
     .cm-fg { display: flex; flex-direction: column; gap: 7px; }
-    .cm-flabel { font-size: 13px; font-weight: 700; color: #374151; }
-    .cm-finput { padding: 12px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; }
-    .cm-finput:focus { border-color: #2563eb; background: #fff; }
-    .cm-finput:disabled { color: #9ca3af; }
+    .cm-flabel { font-size: 13px; font-weight: 700; color: #2d4a7a; }
+    .cm-finput { padding: 12px 16px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s; }
+    .cm-finput:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .cm-finput:disabled { color: #93aecf; background: rgba(240,244,250,.6); }
     .cm-form-btns { display: flex; justify-content: flex-end; }
 
-    /* 준비중 안내 */
+    /* 준비중 */
     .cm-soon-box { text-align: center; padding: 70px 0; }
     .cm-soon-icon { font-size: 44px; margin-bottom: 14px; }
-    .cm-soon-title { font-size: 17px; font-weight: 800; color: #1c1e26; margin-bottom: 6px; }
-    .cm-soon-desc { font-size: 14px; color: #9ca3af; }
+    .cm-soon-title { font-size: 17px; font-weight: 800; color: #1e3a6e; margin-bottom: 6px; }
+    .cm-soon-desc { font-size: 14px; color: #4a6fa5; }
 
     /* 페이지네이션 */
-    .cm-paging { display: flex; justify-content: center; gap: 6px; margin-top: 22px; }
-    .cm-page { padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e7f0; font-size: 13px; font-weight: 600; color: #6b7280; background: #fff; cursor: pointer; text-decoration: none; }
-    .cm-page:hover { border-color: #2563eb; color: #2563eb; }
-    .cm-page.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 22px; }
+    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .page-btn { padding: 9px 15px; border-radius: 8px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
+    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
 
-    /* 비밀번호 확인 모달 (추가) */
-    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9999; align-items: center; justify-content: center; }
+    /* 모달 */
+    .ar-modal-bg { display: none; position: fixed; inset: 0; background: rgba(13,27,46,.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .ar-modal-bg.open { display: flex; }
-    .ar-modal { background: #fff; border-radius: 16px; padding: 28px; max-width: 420px; width: 90%; }
-    .ar-modal-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
-    .ar-modal-sub { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
-    .ar-modal-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #e2e5ef; border-radius: 9px; font-size: 14px; font-family: inherit; }
-    .ar-modal-textarea:focus { outline: none; border-color: #2563eb; }
+    .ar-modal { backdrop-filter: blur(20px); background: rgba(255,255,255,.85); border: 1.5px solid rgba(255,255,255,.9); border-radius: 20px; padding: 28px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(37,99,235,.15); }
+    .ar-modal-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; color: #1e3a6e; }
+    .ar-modal-sub { font-size: 13px; color: #4a6fa5; margin-bottom: 16px; }
+    .ar-modal-textarea { width: 100%; box-sizing: border-box; padding: 12px 14px; background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15); border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; }
+    .ar-modal-textarea:focus { border-color: #2563eb; background: rgba(255,255,255,.95); }
     .ar-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-    .ar-modal-cancel { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; background: #f3f4f8; color: #4b5563; border: none; cursor: pointer; font-family: inherit; }
-    .ar-modal-confirm { padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; color: #fff; }
+    .ar-modal-cancel { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; background: rgba(243,244,248,.8); color: #4b5563; border: none; cursor: pointer; font-family: inherit; }
+    .ar-modal-confirm { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; color: #fff; }
+    @media (max-width: 900px) {
+        .cm-body { grid-template-columns: 200px 1fr; }
+        .cm-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+        .cm-wrap { padding: 16px 12px 60px; }
+        .cm-body { grid-template-columns: 1fr; }
+        .cm-sidebar { display: flex; flex-direction: row; overflow-x: auto; gap: 0; border-radius: 14px; padding: 8px; }
+        .cm-link { padding: 8px 12px; font-size: 12px; border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .cm-link.active { border-left: none; border-bottom-color: #2563eb; }
+        .cm-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .cm-banner { padding: 18px 20px; min-height: auto; flex-direction: column; gap: 12px; }
+        .cm-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .cm-item-right { margin-left: 0; text-align: left; }
+        .cm-form { max-width: 100%; }
+    }
 </style>
 
 <div class="cm-wrap">
 
-    <!-- 상단 배너 (광고/이벤트 자리) -->
-    <div class="cm-banner">
-        <div class="cm-banner-left">
-            <div class="cm-banner-badge"><span class="cm-banner-dot"></span> 이번 주 한정 이벤트</div>
-            <div class="cm-banner-title">첫 프로젝트 수수료 0% 🎉<br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
+
+    {{#hasAuctionAds}}
+        {{#auctionAds}}
+            <a href="/experts/{{expertId}}" style="display:block;margin-bottom:24px;">
+                <img src="{{bannerImage}}"
+                     style="width:100%;height:104px;object-fit:cover;
+                border-radius:20px;border:1.5px solid #f59e0b;display:block;
+                box-shadow:0 8px 32px rgba(245,158,11,.2);"
+                     alt="광고 배너"/>
+            </a>
+        {{/auctionAds}}
+    {{/hasAuctionAds}}
+
+    {{^hasAuctionAds}}
+        <div class="cm-banner">
+            <div class="cm-banner-left">
+                <div class="cm-banner-badge"><span class="cm-banner-dot"></span> 이번 주 한정 이벤트</div>
+                <div class="cm-banner-title">첫 프로젝트 수수료 0% <br><span>지금 프로젝트를 등록하고 전문가를 만나보세요</span></div>
+            </div>
+            <a href="/projects/save-form" class="cm-banner-cta">프로젝트 등록하기 →</a>
         </div>
-        <a href="/projects/save-form" class="cm-banner-cta">프로젝트 등록하기 →</a>
-    </div>
+    {{/hasAuctionAds}}
+
 
     <div class="cm-body">
 
@@ -115,35 +150,48 @@
         <aside class="cm-side">
             <div class="cm-profile">
                 {{#member.profileImage}}
-                    <div class="cm-avatar" style="background-image:url('{{member.profileImageUrl}}');"></div>
+                    <div class="cm-avatar" style="background-image:url('{{member.profileImageUrl}}'); font-size:0;"></div>
                 {{/member.profileImage}}
                 {{^member.profileImage}}
-                    <div class="cm-avatar">👤</div>
+                    <div class="cm-avatar" id="sideAvatar">{{member.name}}</div>
                 {{/member.profileImage}}
                 <div class="cm-name">{{member.name}}</div>
-                <img src="/client.png" style="width:114px; height:48px; object-fit:contain;"/>
             </div>
             <nav class="cm-menu">
                 <div class="cm-group">내 활동</div>
-                <a href="/my-pages?tab=projects" class="cm-link {{#isProjects}}active{{/isProjects}}"><span class="cm-icon">📋</span>내 프로젝트</a>
-                <a href="/my-pages?tab=messages" class="cm-link {{#isMessages}}active{{/isMessages}}"><span class="cm-icon">💬</span>쪽지함 {{#messageCount}}<span style="background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">{{messageCount}}</span>{{/messageCount}}</a>
-                <a href="/my-pages?tab=chats" class="cm-link {{#isChats}}active{{/isChats}}"><span class="cm-icon">🗨️</span>1:1 채팅</a>
-                <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon">📝</span>내 게시글</a>
-                <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon">⭐</span>리뷰</a>
-                <a href="/my-pages?tab=bookmarks" class="cm-link {{#isBookmarks}}active{{/isBookmarks}}"><span class="cm-icon">⭐</span>북마크</a>
+                <a href="/my-pages?tab=projects" class="cm-link {{#isProjects}}active{{/isProjects}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H4v-2h16v2ZM4 20H2V4h2v16Zm18 0h-2V4h2v16Zm-11-4H9v-2h2v2Zm-2-2H7v-2h2v2Zm4 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm3-6H4V2h16v2Z"/></svg></span>내 프로젝트</a>
+                <a href="/my-pages?tab=bids" class="cm-link {{#isBids}}active{{/isBids}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2h16v2H4zm0 18h16v2H4zm16-2H4v-2h16v2zm0-12H4V4h16v2zM2 6h2v12H2zm18 0h2v12h-2zM8 10h8v4H8z"/></svg></span>제안서 관리</a>
+                <a href="/my-pages?tab=messages" class="cm-link {{#isMessages}}active{{/isMessages}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v14h2v2h4v2h2v-2h2v2h2v-2h6v-2h2V4h-2V2zm0 14H4V4h16v12z"/><path d="M6 7h12v2H6zm0 4h8v2H6z"/></svg></span>쪽지함 {{#messageCount}}<span style="background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">{{messageCount}}</span>{{/messageCount}}</a>
+                <a href="/my-pages?tab=chats" class="cm-link {{#isChats}}active{{/isChats}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v12h2v2h2v2h2v-2h2v2h2v-2h8v-2h2V4h-2V2zm0 14H4V4h16v12z"/><path d="M6 7h12v2H6zm0 4h6v2H6z"/></svg></span>1:1 채팅</a>
+                <a href="/my-pages?tab=boards" class="cm-link {{#isBoards}}active{{/isBoards}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v18h2v-2h16v2h2V4h-2V2zm0 16H4V4h16v14zM6 7h12v2H6zm0 4h12v2H6zm0 4h8v2H6z"/></svg></span>내 게시글</a>
+                <a href="/my-pages?tab=reviews" class="cm-link {{#isReviews}}active{{/isReviews}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg></span>리뷰</a>
+                <a href="/my-pages?tab=bookmarks" class="cm-link {{#isBookmarks}}active{{/isBookmarks}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg></span>북마크</a>
                 <a href="/my-pages?tab=wishlist" class="cm-link {{#isWishlist}}active{{/isWishlist}}">
-                    <span class="cm-icon">❤️</span>찜한 전문가
+                    <span class="cm-icon"><svg viewBox="0 0 8 6" width="18" height="18" xmlns="http://www.w3.org/2000/svg" style="color:#9ca3af;fill:currentColor">
+                            <rect x="1" y="0" width="2" height="1" fill="currentColor"/>
+                            <rect x="5" y="0" width="2" height="1" fill="currentColor"/>
+                            <rect x="0" y="1" width="1" height="1" fill="currentColor"/>
+                            <rect x="3" y="1" width="2" height="1" fill="currentColor"/>
+                            <rect x="7" y="1" width="1" height="1" fill="currentColor"/>
+                            <rect x="0" y="2" width="1" height="1" fill="currentColor"/>
+                            <rect x="7" y="2" width="1" height="1" fill="currentColor"/>
+                            <rect x="1" y="3" width="1" height="1" fill="currentColor"/>
+                            <rect x="6" y="3" width="1" height="1" fill="currentColor"/>
+                            <rect x="2" y="4" width="1" height="1" fill="currentColor"/>
+                            <rect x="5" y="4" width="1" height="1" fill="currentColor"/>
+                            <rect x="3" y="5" width="2" height="1" fill="currentColor"/>
+                        </svg></span>찜한 전문가
                 </a>
 
                 <div class="cm-group">포인트 / 결제</div>
-                <a href="/charge/form" class="cm-link"><span class="cm-icon">💰</span>포인트 충전</a>
-                <a href="/my-pages?tab=chargeHistory" class="cm-link {{#isChargeHistory}}active{{/isChargeHistory}}"><span class="cm-icon">📑</span>충전 내역</a>
-                <a href="/my-pages?tab=refundHistory" class="cm-link {{#isRefundHistory}}active{{/isRefundHistory}}"><span class="cm-icon">↩️</span>환불 내역</a>
-                <a href="/my-pages?tab=payments" class="cm-link {{#isPayments}}active{{/isPayments}}"><span class="cm-icon">🧾</span>결제 내역</a>
+                <a href="/charge/form" class="cm-link"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3zM1 7h2v10H1zm2 10h18v2H3zM21 7h2v10h-2zM11 9h2v2h-2zm-2 2h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm4 0h2v2h-2zM5 11h2v2H5z"/></svg></span>포인트 충전</a>
+                <a href="/my-pages?tab=chargeHistory" class="cm-link {{#isChargeHistory}}active{{/isChargeHistory}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6v2H4v18h2v-2h12v2h2V4h-2V2zm0 16H6V4h12v14zM8 7h8v2H8zm0 4h8v2H8zm0 4h5v2H8z"/></svg></span>충전 내역</a>
+                <a href="/my-pages?tab=refundHistory" class="cm-link {{#isRefundHistory}}active{{/isRefundHistory}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 5H7V3H5v2H3v2h2v2h2V7h2V5zm8 4h-2V7h-4V5h6v2h2v6h-2V9zm-4 4H7v-2H5v2H3v6h2v-2h2v2h8v-2h2v-4h-2v2h-2v2H7v-2H5v-2h2v-2h6v2h2v-2h-2z"/></svg></span>환불 내역</a>
+                <a href="/my-pages?tab=payments" class="cm-link {{#isPayments}}active{{/isPayments}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v18h2v-2h2v2h2v-2h2v2h2v-2h2v2h2v-2h2v2h2V4h-2V2zm0 16H4V4h16v14zM8 7h8v2H8zm0 4h8v2H8zm0 4h5v2H8z"/></svg></span>결제 내역</a>
 
                 <div class="cm-group">계정</div>
-                <a href="/my-pages?tab=edit" class="cm-link {{#isEdit}}active{{/isEdit}}"><span class="cm-icon">⚙️</span>계정 / 정보 수정</a>
-                <a href="#" onclick="withdrawMember(event)" class="cm-link danger"><span class="cm-icon">🚪</span>회원 탈퇴</a>
+                <a href="/my-pages?tab=edit" class="cm-link {{#isEdit}}active{{/isEdit}}"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h-2v2h-4v-2H8v-2H6v-2h2v-2H6v-2h2V9H6V7h2V5h2V3h-2V1zm4 2h-4v2H8v2H6v2h2v4H6v2h2v2h2v2h4v-2h2v-2h2v-2h-2v-4h2V7h-2V5h-2V3z"/><path d="M10 9h4v6h-4z"/></svg></span>계정 / 정보 수정</a>
+                <a href="#" onclick="withdrawMember(event)" class="cm-link danger"><span class="cm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8v2H6v18h2v-2h12V4h-2V2zm0 16H8V4h12v14zM13 11h2v2h-2z"/></svg></span>회원 탈퇴</a>
             </nav>
         </aside>
 
@@ -153,26 +201,89 @@
             <!-- 통계 -->
             <div class="cm-stats">
                 <a href="/my-pages?tab=projects" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-blue">📋</div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">등록 프로젝트</div></div>
+                    <div class="cm-stat-icon ic-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H4v-2h16v2ZM4 20H2V4h2v16Zm18 0h-2V4h2v16Zm-11-4H9v-2h2v2Zm-2-2H7v-2h2v2Zm4 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm3-6H4V2h16v2Z"/></svg></div><div><div class="cm-stat-val">{{projectCount}}</div><div class="cm-stat-lbl">내 프로젝트</div></div>
                 </a>
-                <a href="/my-pages?tab=projects" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-green">✅</div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료 프로젝트</div></div>
+                <a href="/my-pages?tab=bids" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2h16v2H4zm0 18h16v2H4zm16-2H4v-2h16v2zm0-12H4V4h16v2zM2 6h2v12H2zm18 0h2v12h-2zM8 10h8v4H8z"/></svg></div><div><div class="cm-stat-val">{{proposalCount}}</div><div class="cm-stat-lbl">제안서 관리</div></div>
                 </a>
-                <a href="/my-pages?tab=messages" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-amber">💬</div><div><div class="cm-stat-val">{{messageCount}}</div><div class="cm-stat-lbl">새 메시지</div></div>
+                <a href="/my-pages?tab=projects&filter=inprogress" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 11h-2V7h2Zm0 4h-2v-2h2Z"/></svg></div><div><div class="cm-stat-val">{{inProgressCount}}</div><div class="cm-stat-lbl">진행중인 프로젝트</div></div>
                 </a>
-                <a href="/my-pages?tab=chargeHistory" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
-                    <div class="cm-stat-icon ic-violet">💰</div><div><div class="cm-stat-val">{{member.displayBalance}}</div><div class="cm-stat-lbl">보유 포인트</div></div>
+                <a href="/my-pages?tab=projects&filter=done" class="cm-stat" style="text-decoration:none;color:inherit;cursor:pointer;">
+                    <div class="cm-stat-icon ic-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg></div><div><div class="cm-stat-val">{{completedCount}}</div><div class="cm-stat-lbl">완료된 프로젝트</div></div>
                 </a>
             </div>
             <!-- 콘텐츠 -->
             <section class="cm-content">
 
+                {{! ===== 제안서 관리 ===== }}
+                {{#isBids}}
+                    <div class="cm-content-head">
+                        <div class="cm-content-title">제안서 관리</div>
+                        <div class="cm-content-sub">내 프로젝트에 들어온 전문가 제안서를 검토하고 낙찰하세요.</div>
+                    </div>
+
+                    {{#clientBids}}
+                        <div class="cm-item" style="flex-direction:column; align-items:stretch; gap:0;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div class="cm-item-body">
+                                    <span class="cm-item-cat">
+                                        <a href="/bids?projectId={{projectId}}" style="color:inherit; text-decoration:none;">{{projectTitle}}</a>
+                                    </span>
+                                    <div class="cm-item-title" style="margin-top:4px;">
+                                        <a href="/experts/{{expertId}}" style="color:inherit; text-decoration:none;">{{expertName}}</a>
+                                        <span style="font-size:12px; font-weight:500; color:#4a6fa5; margin-left:6px;">★ {{avgRating}}</span>
+                                    </div>
+                                    <div class="cm-item-meta">
+                                        희망금액 <strong style="color:#2563eb;">{{proposedPrice}}만원</strong>
+                                        &nbsp;·&nbsp; 예상기간 <strong style="color:#1e3a6e;">{{estimatedDays}}일</strong>
+                                    </div>
+                                </div>
+                                <div class="cm-item-right" style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:90px;">
+                                    {{#isPending}}<span class="cm-item-status" style="background:rgba(37,99,235,.08);color:#2563eb;border:1px solid rgba(37,99,235,.2);">검토중</span>{{/isPending}}
+                                    {{#isHold}}<span class="cm-item-status" style="background:rgba(245,158,11,.1);color:#d97706;border:1px solid rgba(245,158,11,.25);">보류</span>{{/isHold}}
+                                    {{#isSelected}}<span class="cm-item-status st-done">낙찰완료</span>{{/isSelected}}
+                                    {{#isRejected}}<span class="cm-item-status st-closed">거절</span>{{/isRejected}}
+                                </div>
+                            </div>
+
+                            {{#coverLetter}}
+                            <div style="margin-top:10px; padding:10px 12px; background:rgba(255,255,255,.5); border-radius:10px; border:1px solid rgba(37,99,235,.08); font-size:13px; color:#4a6fa5; line-height:1.6;">
+                                {{coverLetter}}
+                            </div>
+                            {{/coverLetter}}
+
+                            {{#isPending}}
+                            <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+                                <button type="button" onclick="selectBid({{id}}, this)" class="cm-btn cm-btn-primary" style="margin-top:0;">낙찰 선택</button>
+                                <button type="button" onclick="holdBid({{id}}, this)" class="cm-btn" style="margin-top:0; background:#fff; border:1.5px solid rgba(245,158,11,.4); color:#d97706;">보류</button>
+                                <button type="button" onclick="rejectBid({{id}}, this)" class="cm-btn" style="margin-top:0; background:#fff; border:1.5px solid rgba(239,68,68,.3); color:#ef4444;">거절</button>
+                            </div>
+                            {{/isPending}}
+                            {{#isHold}}
+                            <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
+                                <button type="button" onclick="selectBid({{id}}, this)" class="cm-btn cm-btn-primary" style="margin-top:0;">낙찰 선택</button>
+                                <button type="button" onclick="rejectBid({{id}}, this)" class="cm-btn" style="margin-top:0; background:#fff; border:1.5px solid rgba(239,68,68,.3); color:#ef4444;">거절</button>
+                            </div>
+                            {{/isHold}}
+                        </div>
+                    {{/clientBids}}
+
+                    {{^clientBids}}
+                        <div class="cm-empty">아직 들어온 제안서가 없습니다.</div>
+                    {{/clientBids}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=bids&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=bids&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
+                {{/isBids}}
+
                 {{! ===== 내 프로젝트 ===== }}
                 {{#isProjects}}
                     <div class="cm-content-head">
-                        <div class="cm-content-title">내 프로젝트</div>
-                        <div class="cm-content-sub">내가 등록한 프로젝트를 관리해요.</div>
+                        <div class="cm-content-title">{{projectsTitle}}</div>
+                        <div class="cm-content-sub">{{projectsDesc}}</div>
                     </div>
                     {{#projects}}
                         <div class="cm-item">
@@ -180,43 +291,59 @@
                                 <span class="cm-item-cat">{{categoryName}}</span>
                                 {{#isOpen}}<a href="/bids?projectId={{id}}" style="text-decoration:none;color:inherit;"><div class="cm-item-title">{{title}}</div></a>{{/isOpen}}
                                 {{^isOpen}}<a href="/projects/{{id}}" style="text-decoration:none;color:inherit;"><div class="cm-item-title">{{title}}</div></a>{{/isOpen}}
-                                <div class="cm-item-meta">등록일 {{createdAt}} · 입찰 {{bidCount}}개</div>
+                                <div class="cm-item-meta">등록일 {{createdAt}} · 제안 {{bidCount}}건</div>
                             </div>
                             <div class="cm-item-right">
                                 <div class="cm-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
-                                <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}</span>
+                                <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{#isClosed}}진행중{{/isClosed}}{{#isCompleted}}검토대기{{/isCompleted}}{{^isOpen}}{{^isClosed}}{{^isCompleted}}마감{{/isCompleted}}{{/isClosed}}{{/isOpen}}</span>
+                                {{#isClosed}}
+                                    {{#cancelPending}}
+                                        <span class="cm-item-status" style="margin-top:6px; display:block; text-align:center; background:rgba(245,158,11,.12); color:#d97706; border:1px solid rgba(245,158,11,.3);">취소 승인 대기중</span>
+                                    {{/cancelPending}}
+                                    {{^cancelPending}}
+                                        <button type="button" onclick="requestProjectCancel({{id}})" class="cm-btn" style="margin-top:8px; display:block; background:#fff; border:1.5px solid rgba(239,68,68,.4); color:#ef4444;">취소</button>
+                                    {{/cancelPending}}
+                                {{/isClosed}}
                                 {{#isCompleted}}
                                     <form action="/projects/{{id}}/done" method="POST">
                                         <button type="submit" class="cm-btn cm-btn-primary" style="display:block;">결제 승인</button>
                                     </form>
                                 {{/isCompleted}}
                                 {{#isDone}}
+                                    <span class="cm-item-status" style="margin-top:6px; display:block; text-align:center; color:#059669;">정산완료</span>
                                     {{^hasReview}}
                                         {{^reviewSkipped}}
-                                            <a href="/reviews/save?targetId={{selectedExpertId}}&projectId={{id}}"
-                                            class="btn btn-primary" style="font-size:12px; padding:6px 12px; margin-top:8px; display:block;">
+                                            <a href="/reviews/save?projectId={{id}}&targetId={{selectedExpertId}}"
+                                            class="cm-btn cm-btn-primary"
+                                            style="display:block; margin-top:6px; text-align:center; text-decoration:none;">
                                             리뷰 작성
                                             </a>
-                                            <form action="/projects/{{id}}/skip-review" method="POST">
-                                                <button type="submit"
-                                                        onclick="return confirm('리뷰를 건너뛰시겠습니까? 확인 후에는 다시 작성할 수 없습니다.')"
-                                                        style="font-size:11px; color:#9ca3af; background:none; border:none; cursor:pointer; margin-top:4px; width:100%; text-align:center;">
-                                                    건너뛰기
-                                                </button>
-                                            </form>
+                                            <button type="button"
+                                                    onclick="skipReview({{id}})"
+                                                    class="cm-btn"
+                                                    style="display:block; margin-top:4px; background:#fff; border:1.5px solid #e2e5ef; color:#9ca3af; transition: all .15s; cursor:pointer;"
+                                                    onmouseover="this.style.borderColor='#2563eb';this.style.color='#2563eb';"
+                                                    onmouseout="this.style.borderColor='#e2e5ef';this.style.color='#9ca3af';">
+                                                건너뛰기
+                                            </button>
                                         {{/reviewSkipped}}
                                         {{#reviewSkipped}}
-                                            <span style="font-size:12px; color:#9ca3af; display:block; margin-top:8px;">리뷰 건너뜀</span>
+                                            <span class="cm-item-status" style="margin-top:4px; display:block; text-align:center; color:#9ca3af;">리뷰 건너뜀</span>
                                         {{/reviewSkipped}}
                                     {{/hasReview}}
                                     {{#hasReview}}
-                                        <span style="font-size:12px; color:#059669; display:block; margin-top:8px;">✓ 리뷰 완료</span>
+                                        <span class="cm-item-status" style="margin-top:4px; display:block; text-align:center; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe;">리뷰완료</span>
                                     {{/hasReview}}
                                 {{/isDone}}
                             </div>
                         </div>
                     {{/projects}}
                     {{^projects}}<div class="cm-empty">등록한 프로젝트가 없습니다.</div>{{/projects}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=projects&filter={{projectFilter}}&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=projects&filter={{projectFilter}}&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                 {{/isProjects}}
 
                 {{! ===== 내 게시글 ===== }}
@@ -235,6 +362,11 @@
                         </a>
                     {{/boards}}
                     {{^boards}}<div class="cm-empty">작성한 게시글이 없습니다.</div>{{/boards}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=boards&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=boards&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                 {{/isBoards}}
 
                 {{! ===== 리뷰 ===== }}
@@ -257,6 +389,11 @@
                         </a>
                     {{/reviews}}
                     {{^reviews}}<div class="cm-empty">작성한 리뷰가 없습니다.</div>{{/reviews}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=reviews&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=reviews&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                 {{/isReviews}}
 
                 {{! ===== 북마크 ===== }}
@@ -287,6 +424,11 @@
                         </div>
                     {{/bookMarks}}
                     {{^bookMarks}}<div class="cm-empty">북마크한 전문가가 없습니다.</div>{{/bookMarks}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=bookmarks&page={{prevPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=bookmarks&page={{nextPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                 {{/isBookmarks}}
 
                 {{! ===== 찜한 전문가 ===== }}
@@ -327,17 +469,10 @@
                         <div class="cm-empty">찜한 전문가가 없습니다.</div>
                     {{/wishes}}
 
-                    <!-- 페이지네이션 -->
-                    <div class="cm-paging" style="margin-top:20px;">
-                        {{#wishHasPrev}}
-                            <a href="/my-pages?tab=wishlist&wishPage={{wishPrevPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}"
-                            class="cm-page">‹ 이전</a>
-                        {{/wishHasPrev}}
-                        <span class="cm-page active">{{wishCurrentPage}}</span>
-                        {{#wishHasNext}}
-                            <a href="/my-pages?tab=wishlist&wishPage={{wishNextPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}"
-                            class="cm-page">다음 ›</a>
-                        {{/wishHasNext}}
+                    <div class="pagination">
+                        {{#wishHasPrev}}<a href="/my-pages?tab=wishlist&wishPage={{wishPrevPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}" class="page-btn">이전</a>{{/wishHasPrev}}
+                        <span class="page-info">{{wishCurrentPage}} / {{wishTotalPages}}</span>
+                        {{#wishHasNext}}<a href="/my-pages?tab=wishlist&wishPage={{wishNextPage}}{{#keyword}}&keyword={{keyword}}{{/keyword}}" class="page-btn">다음</a>{{/wishHasNext}}
                     </div>
                 {{/isWishlist}}
 
@@ -364,6 +499,11 @@
                         </a>
                     {{/messages}}
                     {{^messages}}<div class="cm-empty">받은 쪽지가 없습니다.</div>{{/messages}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=messages&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=messages&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                     <div style="text-align:right; margin-top:12px;">
                         <a href="/messages" class="cm-btn cm-btn-primary">쪽지함 전체보기</a>
                     </div>
@@ -376,7 +516,7 @@
                         <div class="cm-content-sub">전문가와 실시간으로 대화해요.</div>
                     </div>
                     <div class="cm-soon-box">
-                        <div class="cm-soon-icon">🗨️</div>
+                        <div class="cm-soon-icon" style="color:#2563eb;"><svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4v2H2v12h2v2h2v2h2v-2h2v2h2v-2h8v-2h2V4h-2V2zm0 14H4V4h40v12z"/><path d="M6 7h12v2H6zm0 4h6v2H6z"/></svg></div>
                         <div class="cm-soon-title">1:1 채팅</div>
                         <div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div>
                     </div>
@@ -409,6 +549,11 @@
                         </div>
                     {{/payments}}
                     {{^payments}}<div class="cm-empty">결제 내역이 없습니다.</div>{{/payments}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=payments&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=payments&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                 {{/isPayments}}
 
                 {{! ===== 충전 내역 ===== }}
@@ -435,6 +580,11 @@
                     {{/chargeHistories}}
                     <div style="text-align:right; margin-top:12px;">
                         <a href="/charge/form" class="cm-btn cm-btn-primary">포인트 충전하기</a>
+                    </div>
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=chargeHistory&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=chargeHistory&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
                     </div>
                 {{/isChargeHistory}}
 
@@ -463,6 +613,11 @@
                         </div>
                     {{/refunds}}
                     {{^refunds}}<div class="cm-empty">환불 신청 내역이 없습니다.</div>{{/refunds}}
+                    <div class="pagination">
+                        {{#prevPage}}<a href="/my-pages?tab=refundHistory&page={{prevPage}}" class="page-btn">이전</a>{{/prevPage}}
+                        <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                        {{#nextPage}}<a href="/my-pages?tab=refundHistory&page={{nextPage}}" class="page-btn">다음</a>{{/nextPage}}
+                    </div>
                 {{/isRefundHistory}}
 
                 {{!  정보 수정  }}
@@ -484,6 +639,9 @@
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     <input type="file" id="profileImageFile" accept="image/*" style="display:none;" onchange="previewImage(this)"/>
                                     <button type="button" class="cm-btn cm-btn-primary" style="margin-top:0;" onclick="document.getElementById('profileImageFile').click()">이미지 변경</button>
+                                    {{#member.profileImage}}
+                                    <button type="button" class="cm-btn" style="margin-top:0;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:#dc2626;" onclick="deleteProfileImage()">이미지 삭제</button>
+                                    {{/member.profileImage}}
                                     <span style="font-size:11px;color:#9ca3af;">JPG, PNG, GIF (5MB 이하)</span>
                                 </div>
                             </div>
@@ -533,12 +691,12 @@
                     </form>
                 {{/isEdit}}
 
-                {{! ===== 준비중 메뉴들 (포인트 충전/출금/결제내역) ===== }}
+
                 {{#isCharge}}
-                    <div class="cm-soon-box"><div class="cm-soon-icon">💰</div><div class="cm-soon-title">포인트 충전</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
+                    <div class="cm-soon-box"><div class="cm-soon-icon" style="color:#2563eb;"><svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3zM1 7h2v10H1zm2 10h18v2H3zM21 7h2v10h-2zM11 9h2v2h-2zm-2 2h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm4 0h2v2h-2zM5 11h2v2H5z"/></svg></div><div class="cm-soon-title">포인트 충전</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
                 {{/isCharge}}
                 {{#isWithdraw}}
-                    <div class="cm-soon-box"><div class="cm-soon-icon">🏦</div><div class="cm-soon-title">포인트 출금</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
+                    <div class="cm-soon-box"><div class="cm-soon-icon" style="color:#2563eb;"><svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3zM1 7h2v10H1zm2 10h18v2H3zM21 7h2v10h-2zM11 9h2v2h-2zm-2 2h2v2H9zm2 2h2v2h-2zm2-2h2v2h-2zm4 0h2v2h-2zM5 11h2v2H5z"/></svg></div><div class="cm-soon-title">포인트 출금</div><div class="cm-soon-desc">준비 중인 기능이에요. 곧 만나보실 수 있습니다.</div></div>
                 {{/isWithdraw}}
             </section>
         </div>
@@ -560,78 +718,104 @@
 
 
 <script>
+    function requestProjectCancel(projectId) {
+        const reason = prompt('프로젝트 취소 사유를 입력해주세요.\n(전문가가 확인 후 승인하면 환불되고 프로젝트가 삭제됩니다.)');
+        if (reason === null) return;
+        if (!reason.trim()) { alert('취소 사유를 입력해주세요.'); return; }
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/projects/' + projectId + '/cancel-request';
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'reason';
+        input.value = reason.trim();
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
     function previewImage(input) {
-    if (!input.files || !input.files[0]) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById("imgPreview");
-        preview.style.backgroundImage = `url('${e.target.result}')`;
-        preview.style.backgroundSize = "cover";
-        preview.style.backgroundPosition = "center";
-        preview.textContent = "";  // 👤 이모지 제거
-    };
-    reader.readAsDataURL(input.files[0]);
-}
-
-function updateMyInfo() {
-    const nameVal = document.getElementById("updateName").value.trim();
-    const currentPwEl = document.getElementById("updateCurrentPassword");
-    const pwEl = document.getElementById("updatePassword");
-    const pwConfirmEl = document.getElementById("updatePasswordConfirm");
-    const currentPasswordVal = currentPwEl ? currentPwEl.value : "";
-    const passwordVal = pwEl ? pwEl.value : "";
-    const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
-    const phoneVal = document.getElementById("updatePhone").value.trim();
-    const originalPhone = "{{member.phone}}";
-
-    if (!nameVal) { alert("이름을 입력해 주세요."); return; }
-
-    if (passwordVal) {
-        if (!currentPasswordVal) {
-            alert("현재 비밀번호를 입력해 주세요.");
-            return;
-        }
-        const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-        if (!pwRegex.test(passwordVal)) {
-            alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
-            return;
-        }
-        if (passwordVal !== confirmVal) {
-            alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-            return;
-        }
-        if (passwordVal === currentPasswordVal) {
-            alert("기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
-            return;
-        }
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById("imgPreview");
+            preview.style.backgroundImage = `url('${e.target.result}')`;
+            preview.style.backgroundSize = "cover";
+            preview.style.backgroundPosition = "center";
+            preview.textContent = "";  // 👤 이모지 제거
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 
-    if (phoneVal !== originalPhone && !phoneVerified) {
-        alert("변경한 휴대폰 번호는 인증이 필요합니다.");
-        return;
+    function updateMyInfo() {
+        const nameVal = document.getElementById("updateName").value.trim();
+        const currentPwEl = document.getElementById("updateCurrentPassword");
+        const pwEl = document.getElementById("updatePassword");
+        const pwConfirmEl = document.getElementById("updatePasswordConfirm");
+        const currentPasswordVal = currentPwEl ? currentPwEl.value : "";
+        const passwordVal = pwEl ? pwEl.value : "";
+        const confirmVal = pwConfirmEl ? pwConfirmEl.value : "";
+        const phoneVal = document.getElementById("updatePhone").value.trim();
+        const originalPhone = "{{member.phone}}";
+
+        if (!nameVal) { alert("이름을 입력해 주세요."); return; }
+
+        if (passwordVal) {
+            if (!currentPasswordVal) {
+                alert("현재 비밀번호를 입력해 주세요.");
+                return;
+            }
+            const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+            if (!pwRegex.test(passwordVal)) {
+                alert("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+                return;
+            }
+            if (passwordVal !== confirmVal) {
+                alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                return;
+            }
+            if (passwordVal === currentPasswordVal) {
+                alert("기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.");
+                return;
+            }
+        }
+
+        if (phoneVal !== originalPhone && !phoneVerified) {
+            alert("변경한 휴대폰 번호는 인증이 필요합니다.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("data", new Blob(
+                [JSON.stringify({ name: nameVal, phone: phoneVal, currentPassword: currentPasswordVal, newPassword: passwordVal })],
+                { type: "application/json" }
+        ));
+
+        const imageFile = document.getElementById("profileImageFile").files[0];
+        if (imageFile) {
+            formData.append("profileImageFile", imageFile);
+        }
+
+        fetch('/my-pages', {
+            method: 'PUT',
+            body: formData
+        })
+                .then(response => {
+                    if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
+                    else { response.text().then(t => alert("수정 실패: " + t)); }
+                })
+                .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
     }
 
-    const formData = new FormData();
-    formData.append("data", new Blob(
-    [JSON.stringify({ name: nameVal, phone: phoneVal, currentPassword: currentPasswordVal, newPassword: passwordVal })],
-    { type: "application/json" }
-    ));
-
-    const imageFile = document.getElementById("profileImageFile").files[0];
-    if (imageFile) {
-        formData.append("profileImageFile", imageFile);
+    function deleteProfileImage() {
+        if (!confirm('프로필 이미지를 삭제하시겠습니까?')) return;
+        fetch('/my-pages/profile-image', { method: 'DELETE' })
+            .then(res => {
+                if (res.ok) { alert('이미지가 삭제되었습니다.'); location.reload(); }
+                else { alert('삭제 실패'); }
+            })
+            .catch(() => alert('통신 오류'));
     }
-
-    fetch('/my-pages', {
-        method: 'PUT',
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) { alert("회원 정보 수정이 완료되었습니다."); window.location.href = "/my-pages?tab=edit"; }
-        else { response.text().then(t => alert("수정 실패: " + t)); }
-    })
-    .catch(error => { console.error("Error:", error); alert("통신 중 오류가 발생했습니다."); });
-}
 
     // ===== 비밀번호 확인 =====
     const pwInput = document.getElementById("updatePassword");
@@ -694,16 +878,16 @@ function updateMyInfo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phone })
         })
-        .then(res => {
-            if (res.ok) {
-                document.getElementById("phoneCodeBox").style.display = "flex";
-                document.getElementById("phoneCodeBox").style.flexDirection = "column";
-                alert("인증번호가 발송되었습니다.");
-            } else {
-                alert("인증번호 발송에 실패했습니다.");
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+                .then(res => {
+                    if (res.ok) {
+                        document.getElementById("phoneCodeBox").style.display = "flex";
+                        document.getElementById("phoneCodeBox").style.flexDirection = "column";
+                        alert("인증번호가 발송되었습니다.");
+                    } else {
+                        alert("인증번호 발송에 실패했습니다.");
+                    }
+                })
+                .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
     }
 
     function verifyPhoneCode() {
@@ -717,102 +901,168 @@ function updateMyInfo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phone, code: code })
         })
-        .then(res => res.json().then(data => ({ ok: res.ok, data })))
-        .then(({ ok, data }) => {
-            if (ok) {
-                phoneVerified = true;
-                msg.textContent = "✓ 인증되었습니다.";
-                msg.style.color = "#22c55e";
-            } else {
-                phoneVerified = false;
-                msg.textContent = "✗ " + data.message;
-                msg.style.color = "#ef4444";
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok) {
+                        phoneVerified = true;
+                        msg.textContent = "✓ 인증되었습니다.";
+                        msg.style.color = "#22c55e";
+                    } else {
+                        phoneVerified = false;
+                        msg.textContent = "✗ " + data.message;
+                        msg.style.color = "#ef4444";
+                    }
+                })
+                .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
     }
 
     function requestRefund(paymentId) {
-    if (!confirm("정말 환불 신청하시겠습니까?\n진행 중인 프로젝트는 취소되고 잔액으로 환불됩니다.")) return;
-    fetch(`/payment/${paymentId}/refund`, { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert("환불이 완료되었습니다.");
-                window.location.href = "/my-pages?tab=payments";
-            } else {
-                alert("환불 실패: " + (data.message || "알 수 없는 오류"));
-            }
-        })
-        .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
-}
+        if (!confirm("정말 환불 신청하시겠습니까?\n진행 중인 프로젝트는 취소되고 잔액으로 환불됩니다.")) return;
+        fetch(`/payment/${paymentId}/refund`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("환불이 완료되었습니다.");
+                        window.location.href = "/my-pages?tab=payments";
+                    } else {
+                        alert("환불 실패: " + (data.message || "알 수 없는 오류"));
+                    }
+                })
+                .catch(err => { console.error(err); alert("통신 오류가 발생했습니다."); });
+    }
 
     let currentPasswordVerified = false;
 
-function openPwVerifyModal() {
-    if (currentPasswordVerified) return; // 이미 확인됐으면 모달 안 띄움
-    document.getElementById("pwVerifyInput").value = "";
-    document.getElementById("pwVerifyModalMsg").textContent = "";
-    document.getElementById("pwVerifyModalBg").classList.add("open");
-    setTimeout(() => document.getElementById("pwVerifyInput").focus(), 100);
-}
-
-function closePwVerifyModal() {
-    document.getElementById("pwVerifyModalBg").classList.remove("open");
-}
-
-function confirmCurrentPassword() {
-    const currentPw = document.getElementById("pwVerifyInput").value;
-    const msg = document.getElementById("pwVerifyModalMsg");
-
-    if (!currentPw) {
-        msg.textContent = "현재 비밀번호를 입력해 주세요.";
-        msg.style.color = "#ef4444";
-        return;
+    function openPwVerifyModal() {
+        if (currentPasswordVerified) return; // 이미 확인됐으면 모달 안 띄움
+        document.getElementById("pwVerifyInput").value = "";
+        document.getElementById("pwVerifyModalMsg").textContent = "";
+        document.getElementById("pwVerifyModalBg").classList.add("open");
+        setTimeout(() => document.getElementById("pwVerifyInput").focus(), 100);
     }
 
-    fetch('/api/member/verify-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword: currentPw })
-    })
-    .then(res => res.json().then(data => ({ ok: res.ok, data })))
-    .then(({ ok, data }) => {
-        if (ok) {
-            currentPasswordVerified = true;
-            document.getElementById("updateCurrentPassword").value = currentPw;
-            const pwInput = document.getElementById("updatePassword");
-            pwInput.readOnly = false;   // disabled = false → readOnly = false 로 변경
-            pwInput.placeholder = "새 비밀번호를 입력하세요";
-            pwInput.style.cursor = "text";
-            closePwVerifyModal();
-            pwInput.focus();
-        } else {
-            msg.textContent = data.message;
-            msg.style.color = "#ef4444";
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        msg.textContent = "통신 오류가 발생했습니다.";
-        msg.style.color = "#ef4444";
-    });
-}
+    function closePwVerifyModal() {
+        document.getElementById("pwVerifyModalBg").classList.remove("open");
+    }
 
-// 배경 클릭 시 닫기
-document.getElementById("pwVerifyModalBg").addEventListener("click", function(e) {
-    if (e.target === this) closePwVerifyModal();
-});
+    function confirmCurrentPassword() {
+        const currentPw = document.getElementById("pwVerifyInput").value;
+        const msg = document.getElementById("pwVerifyModalMsg");
+
+        if (!currentPw) {
+            msg.textContent = "현재 비밀번호를 입력해 주세요.";
+            msg.style.color = "#ef4444";
+            return;
+        }
+
+        fetch('/api/member/verify-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword: currentPw })
+        })
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok) {
+                        currentPasswordVerified = true;
+                        document.getElementById("updateCurrentPassword").value = currentPw;
+                        const pwInput = document.getElementById("updatePassword");
+                        pwInput.readOnly = false;   // disabled = false → readOnly = false 로 변경
+                        pwInput.placeholder = "새 비밀번호를 입력하세요";
+                        pwInput.style.cursor = "text";
+                        closePwVerifyModal();
+                        pwInput.focus();
+                    } else {
+                        msg.textContent = data.message;
+                        msg.style.color = "#ef4444";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    msg.textContent = "통신 오류가 발생했습니다.";
+                    msg.style.color = "#ef4444";
+                });
+    }
+
+    // 배경 클릭 시 닫기
+    document.getElementById("pwVerifyModalBg").addEventListener("click", function(e) {
+        if (e.target === this) closePwVerifyModal();
+    });
 
     async function cancelWish(expertId, btn) {
-    if (!confirm('찜을 취소하시겠습니까?')) return;
-    const res = await fetch('/experts/wish/' + expertId, { method: 'POST' });
-    if (res.ok) {
-        btn.closest('.cm-item').remove();
-    } else {
-        alert('처리 중 오류가 발생했습니다.');
+        if (!confirm('찜을 취소하시겠습니까?')) return;
+        const res = await fetch('/experts/wish/' + expertId, { method: 'POST' });
+        if (res.ok) {
+            btn.closest('.cm-item').remove();
+        } else {
+            alert('처리 중 오류가 발생했습니다.');
+        }
     }
+    async function selectBid(bidId, btn) {
+        if (!confirm('이 전문가를 낙찰하시겠습니까?\n낙찰 시 에스크로 결제가 자동으로 진행됩니다.')) return;
+        btn.disabled = true;
+        btn.textContent = '처리중...';
+        try {
+            const res = await fetch('/bids/' + bidId + '/select', { method: 'POST' });
+            if (res.ok) {
+                alert('낙찰 처리 완료! 에스크로 결제가 진행되었습니다.');
+                location.href = '/my-pages?tab=bids';
+            } else {
+                const data = await res.json().catch(() => ({}));
+                alert('낙찰 실패: ' + (data.message || '잠시 후 다시 시도해 주세요.'));
+                btn.disabled = false; btn.textContent = '낙찰 선택';
+            }
+        } catch (e) { alert('통신 오류가 발생했습니다.'); btn.disabled = false; btn.textContent = '낙찰 선택'; }
+    }
+
+    async function holdBid(bidId, btn) {
+        if (!confirm('이 제안서를 보류 처리하시겠습니까?')) return;
+        btn.disabled = true;
+        const res = await fetch('/bids/' + bidId + '/hold', { method: 'POST' });
+        if (res.ok) { location.href = '/my-pages?tab=bids'; }
+        else { alert('처리 중 오류가 발생했습니다.'); btn.disabled = false; }
+    }
+
+    async function rejectBid(bidId, btn) {
+        if (!confirm('이 제안서를 거절하시겠습니까?')) return;
+        btn.disabled = true;
+        const res = await fetch('/bids/' + bidId + '/reject', { method: 'DELETE' });
+        if (res.ok) { location.href = '/my-pages?tab=bids'; }
+        else { alert('처리 중 오류가 발생했습니다.'); btn.disabled = false; }
+    }
+
+    async function skipReview(projectId) {
+    if (!confirm('리뷰를 건너뛰시겠습니까?')) return;
+    const res = await fetch('/projects/' + projectId + '/skip-review', { method: 'POST' });
+    if (res.ok) { location.reload(); }
+    else { alert('처리 중 오류가 발생했습니다.'); }
 }
+
+    function withdrawMember(event) {
+        event.preventDefault();
+        if (!confirm("정말 탈퇴하시겠습니까?\n탈퇴 후 복구가 불가능합니다.")) return;
+
+        fetch("/my-pages/withdraw", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        })
+                .then(res => {
+                    if (res.ok) {
+                        alert("탈퇴가 완료되었습니다.");
+                        window.location.href = "/";
+                    } else {
+                        res.text().then(t => alert("탈퇴 처리 실패: " + t));
+                    }
+                })
+                .catch(() => alert("서버 오류가 발생했습니다."));
+    }
+
+    // 아바타 첫 글자 처리
+    const sideAvatarEl = document.getElementById('sideAvatar');
+    if (sideAvatarEl) {
+        const t = sideAvatarEl.textContent.trim();
+        sideAvatarEl.textContent = t ? t.charAt(0) : '?';
+    }
+
 </script>
 
 {{> layout/footer}}

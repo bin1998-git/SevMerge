@@ -1,0 +1,105 @@
+<style>
+    .esn-bar {
+        position: sticky;
+        top: 64px;
+        z-index: 900;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.72);
+        border-bottom: 1px solid rgba(255,255,255,.6);
+        box-shadow: 0 2px 12px rgba(37,99,235,.07);
+    }
+    .esn-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 46px;
+        overflow-x: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .esn-inner::-webkit-scrollbar { display: none; }
+    .esn-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #4a6fa5;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background .12s, color .12s;
+        flex-shrink: 0;
+    }
+    .esn-link:hover {
+        background: rgba(37,99,235,.08);
+        color: #2563eb;
+    }
+    .esn-link.active {
+        background: rgba(37,99,235,.1);
+        color: #2563eb;
+        font-weight: 700;
+    }
+    .esn-link svg { flex-shrink: 0; }
+    .esn-divider {
+        width: 1px;
+        height: 16px;
+        background: rgba(37,99,235,.12);
+        margin: 0 6px;
+        flex-shrink: 0;
+    }
+    @media (max-width: 640px) {
+        .esn-inner { padding: 0 12px; gap: 0; }
+        .esn-link { padding: 6px 10px; font-size: 12px; }
+        .esn-divider { display: none; }
+    }
+</style>
+
+<nav class="esn-bar">
+    <div class="esn-inner">
+        <a href="/experts/dashboard" class="esn-link" data-esn="/experts/dashboard">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            대시보드
+        </a>
+        <div class="esn-divider"></div>
+        <a href="/bids/my-list" class="esn-link" data-esn="/bids/my-list">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8zm0-4h5v2H8z"/></svg>
+            제안서 목록
+        </a>
+        <a href="/bids/my-orders" class="esn-link" data-esn="/bids/my-orders">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+            주문 관리
+        </a>
+        <div class="esn-divider"></div>
+        <a href="/portfolios" class="esn-link" data-esn="/portfolios">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34 0-2.58-2.09-4.66-4.67-4.66-1.28 0-2.44.52-3.29 1.35C9.29 0.52 8.13 0 6.85 0 4.27 0 2.18 2.08 2.18 4.66c0 .46.1.9.18 1.34H.5c-.28 0-.5.22-.5.5v15c0 .28.22.5.5.5h19c.28 0 .5-.22.5-.5v-15c0-.28-.22-.5-.5-.5zM9.86 1.34c.63-.63 1.49-1 2.39-1 1.86 0 3.33 1.48 3.33 3.32 0 .46-.1.9-.28 1.34H9.86V1.34zM3.52 4.66C3.52 2.82 5 1.34 6.84 1.34c.9 0 1.76.37 2.39 1v3.66H4.12c-.37-.63-.6-1.3-.6-2zM19 21H1V7h18v14z"/></svg>
+            포트폴리오
+        </a>
+        <div class="esn-divider"></div>
+        <a href="/experts/my/form" class="esn-link" data-esn="/experts/my/form">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            프로필 수정
+        </a>
+        <a href="/experts/my/info-edit" class="esn-link" data-esn="/experts/my/info-edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            계정 설정
+        </a>
+    </div>
+</nav>
+
+<script>
+    (function () {
+        var path = window.location.pathname;
+        document.querySelectorAll('.esn-link').forEach(function (link) {
+            var target = link.getAttribute('data-esn');
+            if (path === target || path.startsWith(target + '/') || (target !== '/experts/dashboard' && path.startsWith(target))) {
+                link.classList.add('active');
+            }
+        });
+    })();
+</script>

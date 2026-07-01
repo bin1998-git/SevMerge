@@ -1,191 +1,154 @@
 {{> layout/header}}
 
 <style>
-    .save-section { padding: 52px 28px 80px; }
-    .save-inner { max-width: 760px; margin: 0 auto; }
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; }
-    .project-preview { background: #f8f9ff; border: 1.5px solid #e0e8ff; border-radius: 12px; padding: 18px 20px; margin-bottom: 32px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
+    }
+    .board-card {
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── 헤더 바 ── */
+    .board-header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .board-title { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 4px; }
+    .board-desc  { font-size: 13px; color: #4a6fa5; }
+
+    /* ── 폼 본문 ── */
+    .form-content { flex: 1; padding: 28px 32px 32px; }
+
+    /* ── 프로젝트 프리뷰 ── */
+    .project-preview {
+        backdrop-filter: blur(12px); background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.8);
+        border-radius: 12px; padding: 18px 20px; margin-bottom: 28px;
+    }
     .project-preview-label { font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-    .project-preview-title { font-size: 16px; font-weight: 800; color: #1c1e26; margin-bottom: 6px; }
-    .project-preview-meta { font-size: 12px; color: #9ca3af; display: flex; gap: 14px; }
+    .project-preview-title { font-size: 16px; font-weight: 800; color: #1e3a6e; margin-bottom: 6px; }
+    .project-preview-meta  { font-size: 12px; color: #4a6fa5; display: flex; gap: 14px; flex-wrap: wrap; }
+
+    /* ── 폼 ── */
     .save-form { display: flex; flex-direction: column; gap: 22px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+    .form-group  { display: flex; flex-direction: column; gap: 8px; }
+    .form-label  { font-size: 13px; font-weight: 700; color: #2d4a7a; }
     .form-label .required { color: #ef4444; margin-left: 2px; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; resize: vertical; min-height: 240px; line-height: 1.7; transition: border-color .15s; }
-    .form-textarea::placeholder { color: #c4c9d9; }
-    .form-textarea:focus { border-color: #2563eb; }
-    .form-hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+    .form-hint   { font-size: 12px; color: #93aecf; }
+
+    .form-input, .form-textarea {
+        padding: 13px 16px;
+        backdrop-filter: blur(12px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.8); border-radius: 10px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e;
+        outline: none; transition: all .15s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
+    .form-input:focus, .form-textarea:focus { border-color: rgba(37,99,235,.4); background: rgba(255,255,255,.95); }
+    .form-textarea { resize: vertical; min-height: 200px; line-height: 1.7; }
+
+    /* ── 버튼 ── */
     .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-    .btn { display: inline-block; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; text-decoration: none; }
-    .btn-primary { background: #2563eb; color: #fff; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-outline { background: #fff; border: 1.5px solid #e2e5ef; color: #4b5563; }
-    .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
-    /* ── FOOTER (exmain 스타일) ── */
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-sky:       #6BA0FF;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        padding: 10px 22px; border-radius: 20px;
+        font-size: 14px; font-weight: 700; cursor: pointer;
+        border: none; font-family: inherit; transition: all .15s; text-decoration: none;
     }
-    .footer {
-        background: var(--brand-ink) !important;
-        border-top: 1px solid rgba(255,255,255,.06) !important;
-        padding: 40px 32px 28px !important;
+    .btn-primary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        box-shadow: 0 4px 12px rgba(37,99,235,.25);
     }
-    .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    .btn-outline {
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8); color: #2d4a7a;
     }
-    .footer-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-    .footer-brand-logo {
-        font-size: 20px;
-        font-weight: 800;
-        color: rgba(255,255,255,.85);
-        letter-spacing: .05em;
-    }
-    .footer-brand-logo span { color: var(--brand-sky); }
-    .footer-actions { display: flex; gap: 8px; }
-    .footer-actions .btn-outline {
-        background: transparent;
-        border: 1.5px solid rgba(255,255,255,.18);
-        color: rgba(255,255,255,.55);
-        font-size: 13px;
-        padding: 8px 16px;
-        border-radius: 7px;
-        transition: border-color .15s, color .15s;
-    }
-    .footer-actions .btn-outline:hover {
-        border-color: var(--brand-sky);
-        color: var(--brand-sky);
-    }
-    .footer-nav {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-    }
-    .footer-nav a {
-        font-size: 13px;
-        color: rgba(255,255,255,.45);
-        transition: color .15s;
-    }
-    .footer-nav a:hover { color: rgba(255,255,255,.8); }
-    .footer-nav-sep {
-        display: inline-block;
-        width: 1px;
-        height: 12px;
-        background: rgba(255,255,255,.15);
-        vertical-align: middle;
-    }
-    .footer-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255,255,255,.07);
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .footer-policy-links {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .footer-policy-links a {
-        font-size: 12px;
-        color: rgba(255,255,255,.32);
-        transition: color .15s;
-    }
-    .footer-policy-links a:hover { color: rgba(255,255,255,.6); }
-    .footer-policy-strong {
-        font-weight: 700;
-        color: rgba(255,255,255,.5) !important;
-    }
-    .footer-hours-inline {
-        font-size: 12px;
-        color: rgba(255,255,255,.22);
-    }
-    .footer-copy {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--brand-muted) !important;
-        letter-spacing: .02em;
+    .btn-outline:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); color: #2563eb; }
+    .btn-lg { padding: 13px 32px; font-size: 15px; border-radius: 25px; }
+
+    @media (max-width: 600px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .board-header, .form-content { padding-left: 18px; padding-right: 18px; }
+        .form-btns { flex-direction: column; }
+        .btn-lg { width: 100%; }
     }
 </style>
 
-<section class="save-section">
-    <div class="save-inner">
+<section class="page-wrap">
+    <div class="board-card">
 
-        <div class="save-header">
-            <h1 class="save-title">제안서 작성</h1>
-            <p class="save-desc">프로젝트 의뢰인에게 제안서를 보내세요.</p>
-        </div>
-
-        <!-- 프로젝트 미리보기 -->
-        <div class="project-preview">
-            <div class="project-preview-label">제안 대상 프로젝트</div>
-            <div class="project-preview-title">{{project.title}}</div>
-            <div class="project-preview-meta">
-                <span>{{project.categoryName}}</span>
-                <span>예산 {{project.budgetMin}}~{{project.budgetMax}}만원</span>
-                <span>D-{{project.dDay}}</span>
+        <!-- 헤더 -->
+        <div class="board-header">
+            <div>
+                <h1 class="board-title">제안서 작성</h1>
+                <p class="board-desc">프로젝트 의뢰인에게 제안서를 보내세요.</p>
             </div>
+            <a href="/projects/{{project.id}}" class="btn btn-outline" style="flex-shrink:0;">← 돌아가기</a>
         </div>
+
+        <!-- 폼 본문 -->
+        <div class="form-content">
+
+            <!-- 프로젝트 프리뷰 -->
+            <div class="project-preview">
+                <div class="project-preview-label">제안 대상 프로젝트</div>
+                <div class="project-preview-title">{{project.title}}</div>
+                <div class="project-preview-meta">
+                    <span>{{project.categoryName}}</span>
+                    <span>예산 {{project.budgetMin}}~{{project.budgetMax}}만원</span>
+                    <span>D-{{project.dDay}}</span>
+                </div>
+            </div>
 
             <form class="save-form" action="/bids" method="POST">
+                <input type="hidden" name="projectId" value="{{project.id}}" />
 
-            <input type="hidden" name="projectId" value="{{project.id}}" />
+                <div class="form-group">
+                    <label class="form-label">제목 <span class="required">*</span></label>
+                    <input type="text" name="title" class="form-input" placeholder="제안서 제목을 입력하세요" maxlength="100" />
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">제목 <span class="required">*</span></label>
-                <input type="text" name="title" class="form-input" placeholder="제안서 제목을 입력하세요" maxlength="100" />
-            </div>
+                <div class="form-group">
+                    <label class="form-label">자기소개 <span class="required">*</span></label>
+                    <textarea name="coverLetter" class="form-textarea"
+                              placeholder="본인 소개 및 경력&#10;관련 프로젝트 경험&#10;포트폴리오 링크 등"></textarea>
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">자기소개 <span class="required">*</span></label>
-                <textarea name="coverLetter" class="form-textarea" style="min-height:160px;"
-                          placeholder="본인 소개 및 경력&#10;관련 프로젝트 경험&#10;포트폴리오 링크 등"></textarea>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">접근 방식 <span class="required">*</span></label>
+                    <textarea name="approach" class="form-textarea"
+                              placeholder="프로젝트 접근 방식, 개발 계획 등을 입력하세요"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">예상 작업 기간 <span class="required">*</span></label>
+                    <input type="number" name="estimatedDays" class="form-input" placeholder="예: 30 (일 단위)" min="1" />
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">예상 작업 기간 <span class="required">*</span></label>
-                <input type="number" name="estimatedDays" class="form-input" placeholder="예: 30 (일 단위)" min="1" />
-            </div>
+                <div class="form-group">
+                    <label class="form-label">희망 금액 (만원) <span class="required">*</span></label>
+                    <input type="number" name="proposedPrice" class="form-input" placeholder="희망하는 금액을 입력하세요" min="0" />
+                    <span class="form-hint">프로젝트 예산 범위: {{project.budgetMin}}~{{project.budgetMax}}만원</span>
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">희망 금액 (만원) <span class="required">*</span></label>
-                <input type="number" name="proposedPrice" class="form-input" placeholder="희망하는 금액을 입력하세요" min="0" />
-                <span class="form-hint">프로젝트 예산 범위: {{project.budgetMin}}~{{project.budgetMax}}만원</span>
-            </div>
+                <div class="form-btns">
+                    <a href="/projects/{{project.id}}" class="btn btn-outline">취소</a>
+                    <button type="submit" class="btn btn-primary btn-lg">제안서 제출</button>
+                </div>
+            </form>
 
-            <div class="form-btns">
-                <a href="/projects/{{project.id}}" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary btn-lg">제안서 제출</button>
-            </div>
-
-        </form>
+        </div>
     </div>
 </section>
 

@@ -1,103 +1,346 @@
 {{> layout/header}}
-
 <style>
-    .start-section {
+
+    :root {
+        --blue: #2563eb; --blue-dark: #1d4ed8;
+        --navy: #172554; --cyan: #00c8e0;
+        --text: #1e293b; --sub: #64748b;
+    }
+
+    /* ── 배경 공통 ── */
+    .page-section {
         min-height: calc(100vh - 64px);
-        background: #f0f4fa;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
+            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        position: relative; overflow: hidden;
         display: flex; align-items: center; justify-content: center;
-        padding: 48px 28px;
+        padding: 60px 28px;
     }
-    .start-inner { width: 100%; max-width: 440px; }
-
-    .start-header { text-align: center; margin-bottom: 32px; }
-    .start-logo {
-        font-size: 24px; font-weight: 900; color: #0f172a;
-        margin-bottom: 12px; letter-spacing: -1px;
-    }
-    .start-logo .hl { color: var(--blue); }
-    .start-title {
-        font-size: 22px; font-weight: 900; color: #0f172a;
-        line-height: 1.4; letter-spacing: -0.5px;
-    }
-    .start-desc { font-size: 14px; color: var(--gray-lt); margin-top: 6px; }
-
-    .start-card {
-        background: #fff; border: 1.5px solid var(--border);
-        border-radius: 20px; padding: 36px;
-        display: flex; flex-direction: column; gap: 12px;
-        box-shadow: 0 4px 24px rgba(37,99,235,.06);
+    .page-section::before {
+        content: ''; position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 40px 40px; opacity: .35; pointer-events: none;
     }
 
+    /* ── 2컬럼 레이아웃 ── */
+    .page-inner {
+        width: 100%; max-width: 1280px;
+        display: grid; grid-template-columns: 1fr 480px;
+        gap: 80px; align-items: center;
+        position: relative; z-index: 2;
+    }
+
+    /* ── 좌측 히어로 ── */
+    .hero-side { padding-right: 20px; }
+    .page-logo {
+        font-size: 30px; font-weight: 900; color: #1e3a8a;
+        margin-bottom: 32px; letter-spacing: -1px;
+    }
+    .page-logo .hl { color: var(--blue); }
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2);
+        border-radius: 999px; padding: 5px 14px;
+        font-size: 12px; font-weight: 700; color: var(--blue);
+        margin-bottom: 20px; letter-spacing: .3px;
+    }
+    .hero-title {
+        font-size: clamp(36px, 4vw, 56px); line-height: 1.1; font-weight: 900;
+        letter-spacing: -2px; color: var(--navy); margin-bottom: 20px;
+    }
+    .hero-title .hl { color: var(--blue); }
+    .hero-desc {
+        font-size: 18px; color: #4a6fa5; line-height: 1.8; margin-bottom: 40px;
+    }
+
+    /* ── 신뢰 지표 ── */
+    .trust-row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .trust-item {
+        display: flex; align-items: center; gap: 10px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.8);
+        border-radius: 14px; padding: 14px 18px;
+        box-shadow: 0 4px 16px rgba(37,99,235,.07);
+    }
+    .trust-icon { color: var(--blue); display: flex; }
+    .trust-val { font-size: 18px; font-weight: 900; color: var(--navy); letter-spacing: -.5px; }
+    .trust-val em { color: var(--blue); font-style: normal; }
+    .trust-label { font-size: 11px; color: #4a6fa5; font-weight: 500; }
+
+    /* ── 글래스 카드 ── */
+    .glass-card {
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 32px; padding: 42px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.12), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative;
+    }
+    .glass-card::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    }
+
+    .card-logo {
+        font-size: 22px; font-weight: 900; color: #1e3a8a;
+        margin-bottom: 6px; letter-spacing: -1px;
+    }
+    .card-logo .hl { color: var(--blue); }
+    .card-header { margin-bottom: 28px; }
+    .card-header h2 { font-size: 26px; font-weight: 900; color: var(--navy); margin-bottom: 6px; letter-spacing: -.5px; }
+    .card-header p { color: var(--sub); font-size: 14px; }
+
+    /* ── 폼 요소 ── */
+    .form-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
+    .form-label .required { color: #ef4444; margin-left: 2px; }
+    .form-label .opt { color: #93aecf; font-weight: 500; margin-left: 4px; }
+    .form-input, .form-textarea {
+        padding: 13px 16px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 12px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #93aecf; }
+    .form-input:focus, .form-textarea:focus {
+        border-color: var(--blue); background: rgba(255,255,255,.95);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    .form-input:disabled { color: #93aecf; background: rgba(240,244,250,.6); cursor: not-allowed; }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: #4a6fa5; }
+
+    /* 구분선 */
+    .f-divider, .section-divider { height: 1px; background: rgba(37,99,235,.1); margin: 4px 0; border: none; }
+    .section-label {
+        font-size: 11px; font-weight: 700; color: var(--blue);
+        letter-spacing: .8px; text-transform: uppercase; margin-bottom: 16px; margin-top: 4px;
+    }
+
+    /* 인증 버튼 */
+    .email-verify-wrap { display: flex; gap: 8px; }
+    .email-verify-wrap .form-input { flex: 1; }
+    .verify-btn {
+        padding: 0 18px; background: #1e3a6e; color: #fff;
+        border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
+    }
+    .verify-btn:hover { background: var(--blue); }
+    .verify-btn:disabled { background: #93aecf; cursor: not-allowed; }
+
+    /* 소셜 버튼 */
     .start-btn {
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-        width: 100%; padding: 14px; border-radius: 25px;
-        font-size: 14px; font-weight: 700; text-decoration: none;
-        font-family: inherit; cursor: pointer; border: none;
-        transition: opacity .15s, transform .15s;
+        width: 100%; display: flex; align-items: center; gap: 14px;
+        padding: 16px 20px; border-radius: 18px; text-decoration: none;
+        font-weight: 700; transition: .2s ease; margin-bottom: 12px;
+        position: relative; overflow: hidden; border: none; cursor: pointer; font-family: inherit;
     }
-    .start-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .start-btn::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,.15), transparent);
+        pointer-events: none;
+    }
+    .start-btn:hover { transform: translateY(-2px); }
+    .start-btn strong { display: block; font-size: 14px; }
+    .start-btn small { display: block; font-size: 11px; opacity: .7; margin-top: 1px; }
+    .btn-kakao { background: #FEE500; color: #191600; box-shadow: 0 8px 20px rgba(254,229,0,.35); }
+    .btn-google { background: rgba(255,255,255,.85); border: 1px solid rgba(255,255,255,.9); color: #374151; }
+    .btn-email { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 8px 20px rgba(37,99,235,.3); }
 
-    .btn-kakao { background: #FEE500; color: #191600; }
-    .btn-google { background: #fff; border: 1.5px solid var(--border); color: #374151; }
-    .btn-email { background: var(--blue); color: #fff; }
-    .btn-email:hover { opacity: 1; background: var(--blue-dark); }
+    /* 제출 버튼 */
+    .submit-btn {
+        width: 100%; padding: 15px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
+        cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
+    /* 업로드 버튼 */
+    .upload-btn {
+        display: inline-block; padding: 10px 22px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.3);
+        color: var(--blue); border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
+    }
+    .upload-btn:hover { background: rgba(255,255,255,.95); border-color: var(--blue); }
+
+    /* 역할 태그 */
+    .role-tag {
+        display: inline-block; font-size: 12px; font-weight: 700;
+        color: var(--blue); background: rgba(37,99,235,.1);
+        border: 1px solid rgba(37,99,235,.2); padding: 4px 14px; border-radius: 20px;
+    }
+
+    /* 공지 박스 */
+    .notice-box {
+        backdrop-filter: blur(8px);
+        background: rgba(254,243,199,.7); border: 1px solid rgba(253,230,138,.8);
+        border-radius: 12px; padding: 14px 16px;
+        font-size: 13px; color: #b45309; line-height: 1.6; margin-bottom: 20px;
+    }
+
+    /* 에러 박스 */
+    .error-box {
+        background: rgba(255,243,243,.8); border: 1px solid #fecaca;
+        border-radius: 10px; padding: 12px 14px;
+        font-size: 13px; color: #ef4444; font-weight: 600;
+    }
+
+    /* 약관 */
+    .terms-box {
+        background: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.7);
+        border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+        margin-bottom: 4px;
+    }
+    .terms-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #2d4a7a; }
+    .terms-item input { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; }
+    .terms-item label { cursor: pointer; }
+
+    /* 기술 스택 */
+    .sp-chip {
+        padding: 6px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        cursor: pointer; border: 1.5px solid rgba(37,99,235,.2);
+        background: rgba(255,255,255,.7); color: #2d4a7a;
+        font-family: inherit; transition: all .12s; user-select: none;
+    }
+    .sp-chip:hover { border-color: var(--blue); color: var(--blue); background: rgba(255,255,255,.95); }
+    .sp-chip.selected { background: var(--blue); border-color: var(--blue); color: #fff; }
+    #spBody {
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,.5); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 10px; padding: 14px;
+        display: flex; flex-wrap: wrap; gap: 8px; min-height: 72px;
+    }
+    .skill-tag {
+        display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px;
+        background: rgba(37,99,235,.1); color: var(--blue);
+        border: 1px solid rgba(37,99,235,.2); border-radius: 20px; font-size: 12px; font-weight: 600;
+    }
+    .skill-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+    .skill-tag button:hover { color: #ef4444; }
+    .skill-empty { font-size: 12px; color: #93aecf; }
+    select.form-input { background: rgba(255,255,255,.7); color: #1e3a6e; }
+
+    /* 구분선 */
     .start-divider {
-        display: flex; align-items: center; gap: 12px;
-        margin: 4px 0; color: var(--gray-lt); font-size: 12px; font-weight: 500;
+        display: flex; align-items: center; gap: 14px; margin: 20px 0; color: #64748b; font-size: 13px;
     }
-    .start-divider::before, .start-divider::after {
-        content: ""; flex: 1; height: 1px; background: var(--border);
+    .start-divider::before, .start-divider::after { content: ''; flex: 1; height: 1px; background: rgba(37,99,235,.12); }
+
+    /* 하단 링크 */
+    .login-link, .auth-footer {
+        text-align: center; margin-top: 20px; color: #64748b; font-size: 14px; line-height: 1.8;
+    }
+    .login-link a, .auth-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
+    .login-link a:hover, .auth-footer a:hover { text-decoration: underline; }
+
+    /* 반응형 */
+    @media (max-width: 1024px) {
+        .page-inner { grid-template-columns: 1fr; gap: 40px; }
+        .hero-side { text-align: center; padding-right: 0; }
+        .trust-row { justify-content: center; }
+        .glass-card { max-width: 520px; margin: auto; }
+        .hero-title { font-size: 36px; }
+        .hero-desc { font-size: 16px; }
+    }
+    @media (max-width: 640px) {
+        .page-section { padding: 32px 20px; }
+        .glass-card { padding: 28px; border-radius: 24px; }
+        .hero-title { font-size: 30px; }
     }
 
-    .start-footer {
-        text-align: center; margin-top: 20px;
-        font-size: 14px; color: var(--gray-lt);
+    .network { position: relative; width: 100%; height: 400px; margin-top: 40px; }
+    .network-center {
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+        width: 200px; height: 200px; border-radius: 40px;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 8px; font-size: 18px; font-weight: 800;
+        box-shadow: 0 24px 56px rgba(37,99,235,.3);
     }
-    .start-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
-    .start-footer a:hover { text-decoration: underline; }
+    .network::before {
+        content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+        width: 440px; height: 440px; border: 2px dashed rgba(37,99,235,.15); border-radius: 50%;
+    }
+    .network-card {
+        position: absolute; display: flex; align-items: center; gap: 10px;
+        padding: 14px 20px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.85);
+        border-radius: 18px; font-size: 14px; font-weight: 700; color: #1e3a8a;
+        box-shadow: 0 10px 28px rgba(37,99,235,.1);
+    }
+    .n-dev   { left:0;   top:20px; }
+    .n-design{ right:0;  top:20px; }
+    .n-pm    { left:30px; bottom:20px; }
+    .n-client{ right:30px; bottom:20px; }
+    .n-icon { color: var(--blue); display: flex; }
 </style>
 
-<section class="start-section">
-    <div class="start-inner">
+<section class="page-section">
+    <div class="page-inner">
 
-        <div class="start-header">
-            <div class="start-logo">I<span class="hl">code</span>U</div>
-            <h1 class="start-title">코드요와 함께<br>시작해 보세요!</h1>
-            <p class="start-desc">가입하고 IT 프리랜서 매칭을 경험해보세요.</p>
+        <!-- LEFT -->
+        <div class="hero-side">
+            <div class="page-logo">I<span class="hl">code</span>U</div>
+            <div class="hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> IT 프리랜서 매칭 플랫폼
+            </div>
+            <h1 class="hero-title">검증된 IT 전문가와<br>프로젝트를<br><span class="hl">연결하세요</span></h1>
+            <p class="hero-desc">개발자 · 디자이너 · 기획자를 빠르게 매칭하고<br>프로젝트를 성공적으로 시작해보세요.</p>
+
+            <div class="trust-row">
+                <div class="trust-item">
+                    <div class="trust-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 23h-2v-4h2v4Zm-2-4H9v-4h2v4Zm4 0h-2v-4h2v4Zm-6-4H5v-2h4v2Zm10-2v2h-4v-2h4ZM5 13H1v-2h4v2Zm18 0h-4v-2h4v2ZM9 11H5V9h4v2Zm10 0h-4V9h4v2Zm-8-2H9V5h2v4Zm4 0h-2V5h2v4Zm-2-4h-2V1h2v4Z"/></svg></div>
+                    <div><div class="trust-val">1,200<em>+</em></div><div class="trust-label">등록 전문가</div></div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 22H5v-2h14v2ZM5 20H3V10h2v10Zm16 0h-2V10h2v10ZM9 8h10v2H5V8h2V4h2v4Zm8-2h-2V4h2v2Zm-2-2H9V2h6v2Z"/></svg></div>
+                    <div><div class="trust-val">98<em>%</em></div><div class="trust-label">의뢰인 만족도</div></div>
+                </div>
+            </div>
+
+            <div class="network">
+                <div class="network-center">
+                    <div style="color:#00c8e0;"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h8v6h2v2h-2v2h-2v-8H2v-4h2v2Zm12 6h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2v-2h2v2Zm-6-6h8v4h-2v-2h-8V5h-2V3h2V1h2v8Zm-8 2H4V9h2v2Zm2-2H6V7h2v2Zm2-2H8V5h2v2Z"/></svg></div>
+                    <span>프로젝트</span>
+                </div>
+                <div class="network-card n-dev"><span class="n-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22H0v-4h2v4Zm14 0h-2v-4h2v4Zm8 0h-2v-4h2v4ZM4 18H2v-2h2v2Zm10 0h-2v-2h2v2Zm8 0h-2v-2h2v2Zm-10-2H4v-2h8v2Zm8 0h-4v-2h4v2Zm-9-4H5v-2h6v2Zm8 0h-4v-2h4v2ZM5 10H3V4h2v6Zm8 0h-2V4h2v6Zm8 0h-2V4h2v6ZM11 4H5V2h6v2Zm8 0h-4V2h4v2Z"/></svg></span> 개발자</div>
+                <div class="network-card n-design"><span class="n-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5h2v2H8V5ZM6 7h2v2H6V7ZM4 9h2v2H4V9Zm-2 2h2v2H2v-2Zm2 2h2v2H4v-2Zm2 2h2v2H6v-2Zm2 2h2v2H8v-2Zm8-12h-2v2h2V5Zm2 2h-2v2h2V7Zm2 2h-2v2h2V9Zm2 2h-2v2h2v-2Zm-2 2h-2v2h2v-2Zm-2 2h-2v2h2v-2Zm-2 2h-2v2h2v-2Z"/></svg></span> 디자이너</div>
+                <div class="network-card n-pm"><span class="n-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 23H4v-2h16v2ZM4 21H2v-6h2v6Zm18 0h-2v-6h2v6ZM8 19H6v-2h2v2Zm10 0h-8v-2h8v2Zm-8-8v2h4v-2h-4ZM6 9H4V3h2v6Zm14 0h-2V3h2v6Zm-2-6H6V1h12v2Zm-2 10h4v2H4v-2h4v-2H6V9h12v2h-2v2Z"/></svg></span> 기획자</div>
+                <div class="network-card n-client"><span class="n-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M2 8h2v12H2zm18 0h2v12h-2zM4 6h16v2H4zm0 14h16v2H4zM8 4h2v2H8zm2-2h4v2h-4zm4 2h2v2h-2z"/></svg></span> 클라이언트</div>
+            </div>
         </div>
 
-        <div class="start-card">
-            <!-- 카카오 -->
-            <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code"
-               class="start-btn btn-kakao">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#191600">
-                    <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.636 5.076 4.1 6.514L5.1 21l4.373-2.329C10.243 18.88 11.11 19 12 19c5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
-                </svg>
-                카카오로 시작하기
+        <!-- RIGHT: 카드 -->
+        <div class="glass-card">
+            <div class="card-header">
+                <h2>시작하기</h2>
+                <p>원하는 방식으로 회원가입하세요</p>
+            </div>
+
+            <a href="https://kauth.kakao.com/oauth/authorize?client_id=af204550b1d40839b55edce162cf4123&redirect_uri=http://localhost:8080/kakao-redirect&response_type=code" class="start-btn btn-kakao">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#191600"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.636 5.076 4.1 6.514L5.1 21l4.373-2.329C10.243 18.88 11.11 19 12 19c5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/></svg>
+                <div><strong>카카오로 계속하기</strong><small>3초 만에 회원가입</small></div>
             </a>
 
-            <!-- 구글 -->
-            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile"
-            class="start-btn btn-google">
+            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id={{googleClientId}}&redirect_uri=http://localhost:8080/google-redirect&response_type=code&scope=email%20profile" class="start-btn btn-google">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google"/>
-            Google로 시작하기
+            <div><strong>Google로 계속하기</strong><small>3초 만에 회원가입</small></div>
             </a>
 
             <div class="start-divider">또는</div>
 
-            <!-- 이메일 -->
             <a href="/join-role" class="start-btn btn-email">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                </svg>
-                이메일로 시작하기
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                <div><strong>이메일로 시작하기</strong><small>직접 회원가입</small></div>
             </a>
-        </div>
 
-        <div class="start-footer">
-            이미 계정이 있으신가요? <a href="/login">로그인</a>
+            <div class="login-link">이미 계정이 있으신가요? <a href="/login">로그인</a></div>
         </div>
 
     </div>

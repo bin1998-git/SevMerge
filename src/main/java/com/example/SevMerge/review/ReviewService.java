@@ -63,13 +63,14 @@ public class ReviewService {
             throw new BadRequestException("이미 해당 프로젝트에 리뷰를 작성했습니다.");
         }
 
+
         System.out.println("projectId: " + reviewDTO.getProjectId());
         System.out.println("reviewerId: " + reviewer.getId());
         System.out.println("targeterId: " + targetEntity.getId());
 
         reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity,project));
 
-        expertProfileService.manageExpertGrade(reviewDTO.getTargetId());
+
     }
 
     // 리뷰조회
@@ -125,6 +126,12 @@ public class ReviewService {
                 .toList();
     }
 
+    // 전문가 리뷰 조회 (페이징)
+    public org.springframework.data.domain.Page<ReviewResponse.ReviewListDTO> findMyReviewsPage(Long targetId, org.springframework.data.domain.Pageable pageable) {
+        return reviewRepository.findMyReviewsPage(targetId, pageable)
+                .map(ReviewResponse.ReviewListDTO::new);
+    }
+
     // 내가 작성한 리뷰 조회
     public List<ReviewResponse.ReviewListDTO> findMySaveReviews(Long reviewerId) {
         return reviewRepository.findMySaveReviews(reviewerId)
@@ -138,4 +145,12 @@ public class ReviewService {
         return reviewRepository.avgRating(targetId);
     }
 
+
+    public List<ReviewResponse.ReviewListDTO> getRecentReviews(int limit) {
+        return reviewRepository.findRecentReviews(
+                        org.springframework.data.domain.PageRequest.of(0, limit))
+                .stream()
+                .map(ReviewResponse.ReviewListDTO::new)
+                .toList();
+    }
 }

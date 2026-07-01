@@ -1,200 +1,181 @@
 {{> layout/header}}
 
 <style>
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
+    }
+    .board-card {
+        width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── 헤더 바 ── */
+    .board-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08); flex-shrink: 0;
+    }
+    .board-title { font-size: 22px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 4px; }
+    .board-desc  { font-size: 13px; color: #4a6fa5; }
+    .board-count { font-size: 13px; color: #4a6fa5; font-weight: 500; }
+    .board-count strong { color: #1e3a6e; font-weight: 700; }
+
     /* ── 본문 ── */
-    .page-section { padding: 40px 28px 80px; }
-    .page-inner { max-width: 1200px; margin: 0 auto; }
-    .page-head { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .page-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; }
-    .page-count { font-size: 13px; color: #9ca3af; font-weight: 500; }
+    .list-content { flex: 1; padding: 24px 32px 32px; display: flex; flex-direction: column; }
 
     /* ── 테이블 ── */
-    .bid-table { width: 100%; background: #fff; border: 1.5px solid #eaecf4; border-radius: 16px; overflow: hidden; }
-    .bid-table-head { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 140px; gap: 12px; padding: 13px 24px; background: #f8f9fc; border-bottom: 1px solid #eaecf4; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .3px; }
-    .bid-row { display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 140px; gap: 12px; padding: 18px 24px; border-bottom: 1px solid #f3f4f8; align-items: center; transition: background .12s; }
+    .bid-table {
+        backdrop-filter: blur(16px); background: rgba(255,255,255,.55);
+        border: 1.5px solid rgba(255,255,255,.8);
+        border-radius: 18px; overflow: hidden;
+        box-shadow: 0 4px 20px rgba(37,99,235,.07);
+    }
+    .bid-table-head {
+        display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 140px;
+        gap: 12px; padding: 13px 24px;
+        background: rgba(37,99,235,.06); border-bottom: 1.5px solid rgba(37,99,235,.1);
+        font-size: 12px; font-weight: 800; color: #4a6fa5; letter-spacing: .3px;
+    }
+    .bid-row {
+        display: grid; grid-template-columns: 1fr 110px 100px 90px 110px 140px;
+        gap: 12px; padding: 18px 24px;
+        border-bottom: 1px solid rgba(37,99,235,.06);
+        align-items: center; transition: background .12s;
+    }
     .bid-row:last-child { border-bottom: none; }
-    .bid-row:hover { background: #f8f9ff; }
-    .cell { font-size: 13px; color: #4b5563; }
-    .cell-title { font-weight: 700; color: #1c1e26; font-size: 14px; }
-    .cell-price { font-weight: 700; color: #1c1e26; }
+    .bid-row:hover { background: rgba(255,255,255,.5); }
 
-    /* ── 상태 뱃지 ── */
+    .cell       { font-size: 13px; color: #4a6fa5; }
+    .cell-title { font-weight: 700; color: #1e3a6e; font-size: 14px; }
+    .cell-price { font-weight: 700; color: #1e3a6e; }
+
     .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-    .badge-pending  { background: #fef3c7; color: #92400e; }
-    .badge-selected { background: #d1fae5; color: #065f46; }
-    .badge-rejected { background: #f3f4f6; color: #6b7280; }
+    .badge-pending  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-selected { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-rejected { background: rgba(156,163,175,.12); color: #4a6fa5; border: 1px solid rgba(156,163,175,.2); }
 
-    /* ── 버튼 ── */
-    .btn-edit { padding: 6px 12px; background: #eef2ff; border: 1.5px solid #e0e7ff; color: #4f46e5; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
-    .btn-edit:hover { background: #e0e7ff; }
-    .btn-cancel { padding: 6px 12px; background: #fff; border: 1.5px solid #fca5a5; color: #dc2626; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
-    .btn-cancel:hover { background: #fef2f2; }
-    .btn-disabled { padding: 6px 12px; background: #f9fafb; border: 1.5px solid #e5e7eb; color: #d1d5db; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: not-allowed; }
+    .btn-edit {
+        padding: 6px 12px;
+        background: rgba(99,102,241,.1); border: 1.5px solid rgba(99,102,241,.2);
+        color: #4f46e5; border-radius: 20px; font-size: 12px; font-weight: 600;
+        cursor: pointer; text-decoration: none; display: inline-block; transition: all .15s;
+    }
+    .btn-edit:hover { background: rgba(99,102,241,.2); }
+    .btn-cancel {
+        padding: 6px 12px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(254,202,202,.8); color: #dc2626;
+        border-radius: 20px; font-size: 12px; font-weight: 600;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: rgba(254,242,242,.85); border-color: #dc2626; }
+    .btn-disabled {
+        padding: 6px 12px; background: rgba(156,163,175,.1);
+        border: 1.5px solid rgba(156,163,175,.2);
+        color: #93aecf; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: not-allowed;
+    }
+    .cell-btns { display: flex; gap: 6px; }
 
     /* ── 빈 상태 ── */
     .empty-state { text-align: center; padding: 80px 0; }
-    .empty-icon { font-size: 36px; margin-bottom: 14px; }
-    .empty-msg { font-size: 14px; color: #c4c9d9; margin-bottom: 18px; }
-    /* ── FOOTER (exmain 스타일) ── */
-    :root {
-        --brand-blue:      #2D6BFF;
-        --brand-blue-deep: #1846C9;
-        --brand-sky:       #6BA0FF;
-        --brand-ink:       #0C1424;
-        --brand-slate:     #33415C;
-        --brand-muted:     #5A6B85;
-        --brand-mist:      #EBEEF4;
-        --brand-line:      #E2E7F0;
-        --brand-white:     #FFFFFF;
+    .empty-icon  { font-size: 36px; margin-bottom: 14px; }
+    .empty-msg   { font-size: 14px; color: #93aecf; margin-bottom: 18px; }
+
+    /* ── 페이지네이션 ── */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 24px; margin-top: auto; }
+    .page-info { font-size: 13px; color: #4a6fa5; font-weight: 600; }
+    .page-btn {
+        padding: 8px 16px; border-radius: 20px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        font-size: 13px; font-weight: 600; color: #4a6fa5; text-decoration: none; transition: all .15s;
     }
-    .footer {
-        background: var(--brand-ink) !important;
-        border-top: 1px solid rgba(255,255,255,.06) !important;
-        padding: 40px 32px 28px !important;
-    }
-    .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .footer-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-    .footer-brand-logo {
-        font-size: 20px;
-        font-weight: 800;
-        color: rgba(255,255,255,.85);
-        letter-spacing: .05em;
-    }
-    .footer-brand-logo span { color: var(--brand-sky); }
-    .footer-actions { display: flex; gap: 8px; }
-    .footer-actions .btn-outline {
-        background: transparent;
-        border: 1.5px solid rgba(255,255,255,.18);
-        color: rgba(255,255,255,.55);
-        font-size: 13px;
-        padding: 8px 16px;
-        border-radius: 7px;
-        transition: border-color .15s, color .15s;
-    }
-    .footer-actions .btn-outline:hover {
-        border-color: var(--brand-sky);
-        color: var(--brand-sky);
-    }
-    .footer-nav {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-    }
-    .footer-nav a {
-        font-size: 13px;
-        color: rgba(255,255,255,.45);
-        transition: color .15s;
-    }
-    .footer-nav a:hover { color: rgba(255,255,255,.8); }
-    .footer-nav-sep {
-        display: inline-block;
-        width: 1px;
-        height: 12px;
-        background: rgba(255,255,255,.15);
-        vertical-align: middle;
-    }
-    .footer-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255,255,255,.07);
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .footer-policy-links {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .footer-policy-links a {
-        font-size: 12px;
-        color: rgba(255,255,255,.32);
-        transition: color .15s;
-    }
-    .footer-policy-links a:hover { color: rgba(255,255,255,.6); }
-    .footer-policy-strong {
-        font-weight: 700;
-        color: rgba(255,255,255,.5) !important;
-    }
-    .footer-hours-inline {
-        font-size: 12px;
-        color: rgba(255,255,255,.22);
-    }
-    .footer-copy {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--brand-muted) !important;
-        letter-spacing: .02em;
+    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
+
+    @media (max-width: 900px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .board-header, .list-content { padding-left: 18px; padding-right: 18px; }
+        .bid-table-head { display: none; }
+        .bid-row { grid-template-columns: 1fr; padding: 16px 18px; gap: 6px; }
+        .cell-btns { justify-content: flex-start; }
     }
 </style>
 
-<section class="page-section">
-    <div class="page-inner">
+<section class="page-wrap">
+    <div class="board-card">
 
-        <div class="page-head">
-            <h1 class="page-title">📋 제안서 관리</h1>
-            <span class="page-count">총 <strong>{{bidCount}}</strong>건</span>
+        <!-- 헤더 -->
+        <div class="board-header">
+            <div>
+                <h1 class="board-title">제안서 관리</h1>
+                <p class="board-desc">내가 제출한 제안서 현황을 확인하세요.</p>
+            </div>
+            <span class="board-count">총 <strong>{{bidCount}}</strong>건</span>
         </div>
 
-        <div class="bid-table">
-            <div class="bid-table-head">
-                <span>프로젝트</span>
-                <span>제안 금액</span>
-                <span>예상 기간</span>
-                <span>제안일</span>
-                <span>상태</span>
-                <span>관리</span>
+        <!-- 본문 -->
+        <div class="list-content">
+
+            <div class="bid-table">
+                <div class="bid-table-head">
+                    <span>프로젝트</span>
+                    <span>제안 금액</span>
+                    <span>예상 기간</span>
+                    <span>제안일</span>
+                    <span>상태</span>
+                    <span>관리</span>
+                </div>
+
+                {{#bids}}
+                <div class="bid-row">
+                    <span class="cell cell-title">{{projectTitle}}</span>
+                    <span class="cell cell-price">{{proposedPrice}}만원</span>
+                    <span class="cell">{{estimatedDays}}일</span>
+                    <span class="cell">{{createdAt}}</span>
+                    <span class="cell">
+                        {{#isPending}}<span class="badge badge-pending">검토중</span>{{/isPending}}
+                        {{#isSelected}}<span class="badge badge-selected">낙찰됨</span>{{/isSelected}}
+                        {{^isPending}}{{^isSelected}}<span class="badge badge-rejected">미선정</span>{{/isSelected}}{{/isPending}}
+                    </span>
+                    <span class="cell">
+                        {{#isPending}}
+                        <div class="cell-btns">
+                            <a href="/bids/{{id}}/edit" class="btn-edit">수정</a>
+                            <button class="btn-cancel" data-bid-id="{{id}}">취소</button>
+                        </div>
+                        {{/isPending}}
+                        {{^isPending}}
+                        <span class="btn-disabled">수정/취소불가</span>
+                        {{/isPending}}
+                    </span>
+                </div>
+                {{/bids}}
+
+                {{^bids}}
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <p class="empty-msg">아직 제출한 제안서가 없습니다.</p>
+                    <a href="/projects" style="font-size:13px;color:#2563eb;font-weight:600;">프로젝트 둘러보기 →</a>
+                </div>
+                {{/bids}}
             </div>
 
-            {{#bids}}
-            <div class="bid-row">
-                <span class="cell cell-title">{{projectTitle}}</span>
-                <span class="cell cell-price">{{proposedPrice}}만원</span>
-                <span class="cell">{{estimatedDays}}일</span>
-                <span class="cell">{{createdAt}}</span>
-                <span class="cell">
-                    {{#isPending}}<span class="badge badge-pending">검토중</span>{{/isPending}}
-                    {{#isSelected}}<span class="badge badge-selected">낙찰됨</span>{{/isSelected}}
-                    {{^isPending}}{{^isSelected}}<span class="badge badge-rejected">미선정</span>{{/isSelected}}{{/isPending}}
-                </span>
-                <span class="cell">
-                    {{#isPending}}
-                    <div style="display: flex; gap: 6px;">
-                        <a href="/bids/{{id}}/edit" class="btn-edit">수정</a>
-                        <button class="btn-cancel" data-bid-id="{{id}}">취소</button>
-                    </div>
-                    {{/isPending}}
-                    {{^isPending}}
-                    <span class="btn-disabled">수정/취소불가</span>
-                    {{/isPending}}
-                </span>
+            <div class="pagination">
+                {{#hasPrev}}<a href="/bids/my-list?page={{prevPage}}" class="page-btn">← 이전</a>{{/hasPrev}}
+                <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+                {{#hasNext}}<a href="/bids/my-list?page={{nextPage}}" class="page-btn">다음 →</a>{{/hasNext}}
             </div>
-            {{/bids}}
 
-            {{^bids}}
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <p class="empty-msg">아직 제출한 제안서가 없습니다.</p>
-                <a href="/projects" style="font-size:13px;color:#2563eb;font-weight:600;">프로젝트 둘러보기 →</a>
-            </div>
-            {{/bids}}
         </div>
-
     </div>
 </section>
 
@@ -205,12 +186,8 @@ document.querySelectorAll('.btn-cancel').forEach(btn => {
         if (!confirm('제안서를 취소하시겠습니까? 취소 후 복구할 수 없습니다.')) return;
         fetch(`/bids/${bidId}`, { method: 'DELETE' })
             .then(res => {
-                if (res.ok) {
-                    alert('제안서가 취소되었습니다.');
-                    location.reload();
-                } else {
-                    alert('취소 처리 중 오류가 발생했습니다.');
-                }
+                if (res.ok) { alert('제안서가 취소되었습니다.'); location.reload(); }
+                else alert('취소 처리 중 오류가 발생했습니다.');
             })
             .catch(() => alert('서버와 통신 중 오류가 발생했습니다.'));
     });

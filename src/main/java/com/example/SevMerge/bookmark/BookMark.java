@@ -3,6 +3,7 @@ package com.example.SevMerge.bookmark;
 
 import com.example.SevMerge.expertprofile.ExpertProfile;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.portfolio.Portfolio;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

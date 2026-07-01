@@ -1,0 +1,336 @@
+{{> layout/header}}
+
+<style>
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-section { padding: 40px 28px 80px; position: relative; z-index: 1; }
+    .page-inner { max-width: 900px; margin: 0 auto; }
+
+    .page-header { margin-bottom: 28px; }
+    .page-title { font-size: 24px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; margin-bottom: 6px; }
+    .page-desc { font-size: 14px; color: #4a6fa5; }
+
+    /* 잔액 카드 */
+    .balance-card {
+        backdrop-filter: blur(16px); background: rgba(239,246,255,.75);
+        border: 1.5px solid rgba(147,197,253,.5); border-radius: 18px; padding: 18px 24px;
+        margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;
+        box-shadow: 0 4px 16px rgba(37,99,235,.08);
+    }
+    .balance-label { font-size: 13px; font-weight: 600; color: #2563eb; margin-bottom: 4px; }
+    .balance-amount { font-size: 24px; font-weight: 900; color: #1d4ed8; }
+
+    /* 슬롯 카드 */
+    .slot-list { display: flex; flex-direction: column; gap: 16px; }
+    .slot-card {
+        backdrop-filter: blur(16px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); border-radius: 20px; padding: 24px 28px;
+        box-shadow: 0 4px 20px rgba(37,99,235,.07); transition: all .2s;
+    }
+    .slot-card:hover { background: rgba(255,255,255,.8); box-shadow: 0 8px 28px rgba(37,99,235,.1); }
+
+    .slot-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .slot-name { font-size: 17px; font-weight: 900; color: #1e3a6e; margin-bottom: 4px; }
+    .slot-badge {
+        font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+        background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .6; }
+    }
+
+    /* 카운트다운 */
+    .countdown-section {
+        text-align: center; margin-bottom: 20px;
+        padding: 20px; background: linear-gradient(135deg, rgba(13,27,46,.85), rgba(29,78,216,.8));
+        border-radius: 16px; position: relative; overflow: hidden;
+    }
+    .countdown-section::before {
+        content: ''; position: absolute; inset: 0;
+        background-image: linear-gradient(rgba(0,200,224,.05) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(0,200,224,.05) 1px, transparent 1px);
+        background-size: 20px 20px; pointer-events: none;
+    }
+    .countdown-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.6); letter-spacing: .1em; margin-bottom: 12px; }
+    .countdown-wrap { display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .cd-unit { display: flex; flex-direction: column; align-items: center; }
+    .cd-num {
+        font-size: 32px; font-weight: 900; color: #fff;
+        background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+        padding: 8px 14px; border-radius: 10px; min-width: 60px; text-align: center;
+        letter-spacing: -1px;
+    }
+    .cd-label { font-size: 10px; color: rgba(255,255,255,.5); margin-top: 5px; letter-spacing: .05em; }
+    .cd-colon { font-size: 28px; font-weight: 700; color: rgba(255,255,255,.4); padding-bottom: 18px; }
+
+    /* 통계 */
+    .slot-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .slot-stat {
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.5);
+        border: 1px solid rgba(255,255,255,.7); border-radius: 12px; padding: 14px;
+        text-align: center;
+    }
+    .slot-stat-label { font-size: 11px; color: #4a6fa5; font-weight: 600; margin-bottom: 6px; }
+    .slot-stat-val { font-size: 18px; font-weight: 900; color: #1e3a6e; }
+    .slot-stat-val.top-price { color: #d97706; }
+
+    /* 내 입찰 현황 */
+    .my-bid-status {
+        margin-bottom: 16px; padding: 14px 18px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .my-bid-status.leading {
+        background: rgba(5,150,105,.1); border: 1.5px solid rgba(5,150,105,.3);
+    }
+    .my-bid-status.behind {
+        background: rgba(239,68,68,.08); border: 1.5px solid rgba(239,68,68,.2);
+    }
+    .my-bid-label { font-size: 13px; font-weight: 700; }
+    .my-bid-label.leading { color: #059669; }
+    .my-bid-label.behind { color: #ef4444; }
+    .my-bid-price { font-size: 15px; font-weight: 900; color: #1e3a6e; }
+
+    /* 입찰 배너 사이즈 안내 */
+    .banner-guide {
+        margin-bottom: 16px; padding: 14px 18px;
+        background: rgba(245,158,11,.08); border: 1.5px solid rgba(245,158,11,.25);
+        border-radius: 12px; font-size: 12px; color: #92400e; line-height: 1.6;
+    }
+    .banner-guide strong { font-weight: 800; }
+
+    /* 입찰 폼 */
+    .bid-form { display: flex; gap: 10px; align-items: center; }
+    .bid-input {
+        flex: 1; padding: 12px 16px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.2);
+        border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e;
+        outline: none; transition: all .15s;
+    }
+    .bid-input:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .bid-btn {
+        padding: 12px 24px; background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
+        cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(37,99,235,.25);
+        transition: all .15s; white-space: nowrap;
+    }
+    .bid-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+    .bid-btn.my-bid { background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 4px 12px rgba(5,150,105,.25); }
+    .bid-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .bid-hint { font-size: 12px; color: #4a6fa5; margin-top: 8px; }
+
+    .empty-state { text-align: center; padding: 80px 0; color: #93aecf; font-size: 14px; }
+
+    /* 토스트 */
+    .toast {
+        position: fixed; bottom: 24px; right: 24px;
+        padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 700;
+        z-index: 9999; opacity: 0; transform: translateY(10px);
+        transition: all .3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .toast.error { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
+</style>
+
+<section class="page-section">
+    <div class="page-inner">
+
+        <div class="page-header">
+            <h1 class="page-title">⚡ 광고 경매</h1>
+            <p class="page-desc">입찰 마감 시 최고가 입찰자가 메인화면 배너 광고 슬롯을 획득합니다.</p>
+        </div>
+
+        <!-- 잔액 카드 -->
+        <div class="balance-card">
+            <div>
+                <div class="balance-label">보유 포인트</div>
+                <div class="balance-amount">{{balance}}P</div>
+            </div>
+            <a href="/charge/form" style="font-size:13px;font-weight:700;color:#2563eb;text-decoration:underline;">포인트 충전 →</a>
+        </div>
+
+        <div class="slot-list">
+            {{#slots}}
+                <div class="slot-card">
+
+                    <!-- 슬롯 헤더 -->
+                    <div class="slot-top">
+                        <div>
+                            <div class="slot-name">{{slotName}}</div>
+                            <div style="font-size:12px;color:#4a6fa5;margin-top:4px;">
+                                📐 배너 사이즈: 728 × 90px
+                            </div>
+                        </div>
+                        <span class="slot-badge">⚡ 입찰 진행중</span>
+                    </div>
+
+                    <!-- 카운트다운 -->
+                    <div class="countdown-section">
+                        <div class="countdown-label">⏰ 입찰 마감까지</div>
+                        <div class="countdown-wrap" data-end="{{bidEndAt}}">
+                            <div class="cd-unit">
+                                <span class="cd-num cd-h">00</span>
+                                <span class="cd-label">시간</span>
+                            </div>
+                            <span class="cd-colon">:</span>
+                            <div class="cd-unit">
+                                <span class="cd-num cd-m">00</span>
+                                <span class="cd-label">분</span>
+                            </div>
+                            <span class="cd-colon">:</span>
+                            <div class="cd-unit">
+                                <span class="cd-num cd-s">00</span>
+                                <span class="cd-label">초</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 통계 -->
+                    <div class="slot-stats">
+                        <div class="slot-stat">
+                            <div class="slot-stat-label">최소 입찰가</div>
+                            <div class="slot-stat-val">{{minBidPrice}}P</div>
+                        </div>
+                        <div class="slot-stat">
+                            <div class="slot-stat-label">현재 최고가</div>
+                            <div class="slot-stat-val top-price">{{topPrice}}P</div>
+                        </div>
+                        <div class="slot-stat">
+                            <div class="slot-stat-label">입찰 참여자</div>
+                            <div class="slot-stat-val">{{bidCount}}명</div>
+                        </div>
+                    </div>
+
+                    <!-- 내 입찰 현황 -->
+                    {{#myBid}}
+                        {{#isFirst}}
+                            <div class="my-bid-status leading">
+                                <span class="my-bid-label leading">🥇 현재 1위 입찰 중!</span>
+                                <span class="my-bid-price">내 입찰가: {{myBidPrice}}P</span>
+                            </div>
+                        {{/isFirst}}
+                        {{^isFirst}}
+                            <div class="my-bid-status behind">
+                                <span class="my-bid-label behind">⚠️ {{myRank}}위 — 최고가보다 낮습니다</span>
+                                <span class="my-bid-price">내 입찰가: {{myBidPrice}}P</span>
+                            </div>
+                        {{/isFirst}}
+                    {{/myBid}}
+
+                    <!-- 배너 제작 안내 -->
+                    <div class="banner-guide">
+                        📌 <strong>배너 제작 안내:</strong> 낙찰 후 <strong>728 × 90px</strong> 사이즈의 배너 이미지를 제출해 주세요.
+                        JPG/PNG 형식, 최대 2MB. 광고 심사 후 메인화면에 노출됩니다.
+                    </div>
+
+                    <!-- 입찰 폼 -->
+                    <div class="bid-form">
+                        <input type="number" class="bid-input" id="bid-input-{{id}}"
+                               placeholder="입찰가 입력 (P)"
+                               min="{{minBidPrice}}" step="1000"/>
+                        <button class="bid-btn {{#myBid}}my-bid{{/myBid}}"
+                                onclick="placeBid({{id}})">
+                            {{#myBid}}재입찰{{/myBid}}{{^myBid}}입찰하기{{/myBid}}
+                        </button>
+                    </div>
+                    {{#myBid}}
+                        <div class="bid-hint">✓ 재입찰 시 기존 {{myBidPrice}}P는 즉시 환불됩니다.</div>
+                    {{/myBid}}
+                    {{^myBid}}
+                        <div class="bid-hint">현재 최고가({{topPrice}}P)보다 높게 입찰하세요. 마감 시 최고가 입찰자가 낙찰됩니다.</div>
+                    {{/myBid}}
+
+                </div>
+            {{/slots}}
+
+            {{^slots}}
+                <div class="empty-state">
+                    현재 진행중인 경매가 없습니다.<br>
+                    <span style="font-size:12px;color:#b0c4de;margin-top:8px;display:block;">
+                        경매는 자동으로 주기적으로 열립니다.
+                    </span>
+                </div>
+            {{/slots}}
+        </div>
+    </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // 카운트다운
+    document.querySelectorAll('.countdown-wrap').forEach(el => {
+        const endStr = el.dataset.end;
+        if (!endStr) return;
+        const endTime = new Date(endStr.replace(' ', 'T')).getTime();
+
+        function tick() {
+            const diff = endTime - Date.now();
+            if (diff <= 0) {
+                el.innerHTML = '<span style="font-size:16px;color:#ef4444;font-weight:700;">마감됨 — 곧 다음 경매가 시작됩니다</span>';
+                setTimeout(() => location.reload(), 90000);
+                return;
+            }
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            el.querySelector('.cd-h').textContent = String(h).padStart(2, '0');
+            el.querySelector('.cd-m').textContent = String(m).padStart(2, '0');
+            el.querySelector('.cd-s').textContent = String(s).padStart(2, '0');
+        }
+        tick();
+        setInterval(tick, 1000);
+    });
+
+    // 입찰
+    function placeBid(slotId) {
+    const bidPrice = parseInt(document.getElementById('bid-input-' + slotId).value);
+
+    if (!bidPrice || bidPrice <= 0) {
+        showToast('입찰가를 입력해주세요.', 'error');
+        return;
+    }
+
+    const btn = document.querySelector(`[onclick="placeBid(${slotId})"]`);
+    btn.disabled = true;
+    btn.textContent = '처리중...';
+
+    // FormData 대신 URLSearchParams로 변경
+    const params = new URLSearchParams();
+    params.append('bidPrice', bidPrice);
+
+    fetch('/api/ad-auction/' + slotId + '/bid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+    })
+    .then(res => res.text().then(text => ({ ok: res.ok, text })))
+    .then(({ ok, text }) => {
+        if (ok) {
+            showToast('🎉 입찰 완료!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast(text, 'error');
+            btn.disabled = false;
+            btn.textContent = btn.classList.contains('my-bid') ? '재입찰' : '입찰하기';
+        }
+    })
+    .catch(() => {
+        showToast('통신 오류가 발생했습니다.', 'error');
+        btn.disabled = false;
+        btn.textContent = '입찰하기';
+    });
+}
+
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast ' + type + ' show';
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+</script>
+
+{{> layout/footer}}

@@ -2,6 +2,8 @@ package com.example.SevMerge.message;
 
 import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class MessageController {
 
     private final MessageService messageService;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/messages")
     public String messageList(@RequestParam(defaultValue = "received") String box,
@@ -30,9 +32,9 @@ public class MessageController {
                               @RequestParam(required = false) String keyword,
                               Model model, HttpSession session) {
 
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-
-        Page<MessageResponse.ListDTO> messagePage = messageService.findMessages(sessionMember, box, page, sort, keyword);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
+        Page<MessageResponse.ListDTO> messagePage = messageService.findMessages(member, box, page, sort, keyword);
 
         model.addAttribute("isReceived", box.equals("received"));
         model.addAttribute("isSent", box.equals("sent"));
@@ -52,8 +54,9 @@ public class MessageController {
 
     @GetMapping("/messages/{id}")
     public String messageDetail(@PathVariable Long id, Model model, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        MessageResponse.DetailDTO message = messageService.findMessageByIdWithDetails(id, sessionMember);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
+        MessageResponse.DetailDTO message = messageService.findMessageByIdWithDetails(id, member);
         model.addAttribute("message", message);
         return "message/message-detail";
     }
@@ -62,9 +65,9 @@ public class MessageController {
     public String messageSendPage(@RequestParam(required = false) Long receiverId,
                                   @RequestParam(required = false) Long projectId,
                                   Model model, HttpSession session) {
-
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        List<MessageResponse.ContactDTO> contacts = messageService.findContacts(sessionMember);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
+        List<MessageResponse.ContactDTO> contacts = messageService.findContacts(member);
 
         model.addAttribute("contacts", contacts);
         model.addAttribute("preReceive", receiverId != null ? String.valueOf(receiverId) : "");
@@ -73,22 +76,25 @@ public class MessageController {
     }
     @PostMapping("/messages/send")
     public String sendMessage(MessageRequest.SendDTO reqDTO, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        messageService.sendMessage(sessionMember, reqDTO);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
+        messageService.sendMessage(member, reqDTO);
         return "redirect:/messages?box=sent";
     }
 
     @PostMapping("/messages/{id}/delete")
     public String deleteMessage(@PathVariable Long id, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        boolean isSenderDelete = messageService.deleteMessage(id, sessionMember);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
+        boolean isSenderDelete = messageService.deleteMessage(id, member);
         return isSenderDelete ? "redirect:/messages?box=sent" : "redirect:/messages?box=received";
     }
 
     @GetMapping("/messages/files/{messageFilesId}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long messageFilesId, HttpSession session) {
-        Member sessionMember = (Member) session.getAttribute(Define.SESSION_USER);
-        return messageService.downloadFile(messageFilesId, sessionMember);
+        SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
+        return messageService.downloadFile(messageFilesId, member);
 
     }
 

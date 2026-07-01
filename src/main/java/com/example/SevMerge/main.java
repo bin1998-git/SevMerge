@@ -1,20 +1,27 @@
 package com.example.SevMerge;
 
+import com.example.SevMerge.adbid.AdBid;
+import com.example.SevMerge.adbid.AdBidService;
 import com.example.SevMerge.advertisement.AdvertisementPlacement;
 import com.example.SevMerge.advertisement.AdvertisementResponse;
 import com.example.SevMerge.advertisement.AdvertisementService;
+import com.example.SevMerge.bid.BidRepository;
 import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.expertprofile.ExpertProfileService;
 import com.example.SevMerge.member.Member;
+import com.example.SevMerge.member.MemberRepository;
+import com.example.SevMerge.member.SessionUser;
 import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.review.ReviewService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,19 +29,36 @@ public class main {
 
     private final ProjectService projectService;
     private final AdvertisementService advertisementService;
+    private final ExpertProfileService expertProfileService;
+    private final ReviewService reviewService;
+    private final AdBidService adBidService;
+    private final MemberRepository memberRepository;
+    private final BidRepository bidRepository;
 
     @GetMapping("/")
     public String introPage(HttpSession session) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
-        if (loginMember != null) {
-            return "redirect:/exmain";
-        }
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (loginMember != null) return "redirect:/main";
         return "intro";
     }
 
-    @GetMapping("/exmain")
+    private Map<String, Object> buildAdItem(AdvertisementResponse ad) {
+        Map<String, Object> adItem = new HashMap<>();
+        adItem.put("isAd", true);
+        adItem.put("expertId", ad.getExpertId());
+        adItem.put("expertName", ad.getExpertName());
+        adItem.put("speciality", ad.getSpeciality());
+        adItem.put("displayImageUrl", ad.getDisplayImageUrl());
+        adItem.put("customMessage", ad.getCustomMessage());
+        adItem.put("avgRating", ad.getAvgRating() != null ? ad.getAvgRating() : "-");
+        return adItem;
+    }
+
+    @GetMapping("/main")
     public String exmainPage(HttpSession session, Model model) {
-        Member loginMember = (Member) session.getAttribute(Define.SESSION_USER);
+        SessionUser loginMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+
+        model.addAttribute("isMainPage", true);
 
         if (loginMember != null) {
             model.addAttribute("isLoggedIn", true);
@@ -43,48 +67,113 @@ public class main {
             model.addAttribute("isClient", loginMember.isClient());
         } else {
             model.addAttribute("isLoggedIn", false);
+            model.addAttribute("isExpert", false);
         }
 
         advertisementService.expireOutdatedAds();
 
-        // 메인 배너 광고
-        List<AdvertisementResponse> mainAds = advertisementService.getActiveAds(AdvertisementPlacement.MAIN_BANNER);
-        model.addAttribute("mainAds", mainAds);
-        model.addAttribute("hasMainAds", !mainAds.isEmpty());
+        // 1. 메인 배너 광고 — 랜덤 로테이션 최대 3개
+        List<AdvertisementResponse> mainAds =
+                advertisementService.getActiveAds(AdvertisementPlacement.MAIN_BANNER);
+        Collections.shuffle(mainAds);
+        List<AdvertisementResponse> topAds = mainAds.stream()
+                .limit(3)
+                .map(ad -> {
+                    Double avgObj = reviewService.avgRating(ad.getExpertId());
+                    double avg = avgObj != null ? avgObj : 0.0;
+                    ad.setAvgRating(avg > 0 ? String.format("%.1f", avg) : "-");
+                    return ad;
+                })
+                .collect(Collectors.toList());
+        model.addAttribute("adExperts", topAds);
+        model.addAttribute("hasAdExperts", !topAds.isEmpty());
 
-        // 캐러셀 광고 — null 대신 아예 안 넣는 방식 (mustache {{#carouselAd}} 블록이 완전히 무시됨)
-        List<AdvertisementResponse> carouselAdList = advertisementService.getActiveAds(AdvertisementPlacement.EXPERT_CAROUSEL);
-        if (!carouselAdList.isEmpty()) {
-            model.addAttribute("carouselAd", carouselAdList.get(0));
+        // 2. 인피드 캐러셀 광고 — 랜덤 로테이션
+        List<AdvertisementResponse> carouselAds =
+                advertisementService.getActiveAds(AdvertisementPlacement.EXPERT_CAROUSEL);
+        Collections.shuffle(carouselAds);
+        carouselAds.forEach(ad -> {
+            Double avgObj = reviewService.avgRating(ad.getExpertId());
+            double avg = avgObj != null ? avgObj : 0.0;
+            ad.setAvgRating(avg > 0 ? String.format("%.1f", avg) : "-");
+        });
+
+
+        // 3. 실시간 프로젝트 + 인피드 광고 합치기
+        List<ProjectResponseDTO.ListDTO> projects =
+                projectService.findAllProjectsList().stream()
+                        .filter(p -> "OPEN".equals(p.getProjectStatus()))
+                        .filter(p -> {
+                            // ↓ 추가: 전문가면 이미 제안한 프로젝트 제외
+                            if (loginMember != null && loginMember.isExpert()) {
+                                return !bidRepository.findByProjectIdAndExpertId(p.getId(), loginMember.getId()).isPresent();
+                            }
+                            return true;
+                        })
+                        .sorted(Comparator.comparing(
+                                ProjectResponseDTO.ListDTO::getCreatedAt).reversed())
+                        .limit(9)
+                        .collect(Collectors.toList());
+
+
+        // 최소 1개는 보이도록, 마지막에 보장 삽입
+        List<Map<String, Object>> feedItems = new ArrayList<>();
+        int adIdx = 0;
+        for (int i = 0; i < projects.size(); i++) {
+            if (i > 0 && i % 3 == 0 && adIdx < carouselAds.size()) {
+                AdvertisementResponse ad = carouselAds.get(adIdx++);
+                feedItems.add(buildAdItem(ad));
+            }
+            ProjectResponseDTO.ListDTO p = projects.get(i);
+            Map<String, Object> projItem = new HashMap<>();
+            projItem.put("isAd", false);
+            projItem.put("id", p.getId());
+            projItem.put("title", p.getTitle());
+            projItem.put("categoryName", p.getCategoryName());
+            projItem.put("category", p.getCategoryName());
+            projItem.put("budgetMin", p.getBudgetMin());
+            projItem.put("budgetMax", p.getBudgetMax());
+            projItem.put("budget", p.getBudgetMin());
+            projItem.put("dday", p.getDDay());
+            projItem.put("endDate", p.getDeadline() != null
+                    ? p.getDeadline().toString().substring(0, 10) : "");
+            feedItems.add(projItem);
         }
 
-        List<ProjectResponseDTO.ListDTO> all = projectService.findAllProjects()
-                .stream()
-                .filter(p -> "OPEN".equals(p.getProjectStatus()))
-                .toList();
 
-        // 섹션 1 — 마감 임박 의뢰: dDay 오름차순 상위 6개
-        List<ProjectResponseDTO.ListDTO> urgentProjects = all.stream()
-                .filter(p -> p.getDDay() >= 0)
-                .sorted(Comparator.comparingInt(ProjectResponseDTO.ListDTO::getDDay))
-                .limit(6)
-                .toList();
+        if (adIdx == 0 && !carouselAds.isEmpty()) {
+            feedItems.add(buildAdItem(carouselAds.get(0)));
+        }
 
-        // 섹션 2 — 합리적인 예산 의뢰: budgetMax 오름차순 상위 6개
-        List<ProjectResponseDTO.ListDTO> budgetProjects = all.stream()
-                .sorted(Comparator.comparingInt(ProjectResponseDTO.ListDTO::getBudgetMax))
-                .limit(6)
-                .toList();
+        model.addAttribute("recentProjects", feedItems);
 
-        // 섹션 3 — 최신 의뢰: createdAt 최신순 상위 6개
-        List<ProjectResponseDTO.ListDTO> latestProjects = all.stream()
-                .sorted(Comparator.comparing(ProjectResponseDTO.ListDTO::getCreatedAt).reversed())
-                .limit(6)
-                .toList();
+        // 5. 최신 리뷰
+        try {
+            model.addAttribute("recentReviews",
+                    reviewService.getRecentReviews(4));
+        } catch (Exception e) {
+            model.addAttribute("recentReviews", List.of());
+        }
+        // 6. 경매 낙찰 광고
+        try {
+            List<AdBid> approvedBids = adBidService.getApprovedWinnerBids();
+            List<Map<String, Object>> auctionAds = approvedBids.stream().map(b -> {
+                Member winner = memberRepository.findById(b.getExpertId()).orElse(null);
+                Map<String, Object> map = new java.util.HashMap<>();
+                map.put("expertId", b.getExpertId());
+                map.put("expertName", winner != null ? winner.getName() : "");
+                map.put("adMessage", b.getAdMessage() != null ? b.getAdMessage() : "");
+                map.put("bannerImage", b.getBannerImage() != null ?
+                        "/images/" + b.getBannerImage() : "/images/default-banner.png");
+                return map;
+            }).toList();
+            model.addAttribute("auctionAds", auctionAds);
+            model.addAttribute("hasAuctionAds", !auctionAds.isEmpty());
+        } catch (Exception e) {
+            model.addAttribute("auctionAds", List.of());
+            model.addAttribute("hasAuctionAds", false);
+        }
 
-        model.addAttribute("urgentProjects", urgentProjects);
-        model.addAttribute("budgetProjects", budgetProjects);
-        model.addAttribute("latestProjects", latestProjects);
-        return "exmain";
+        return "main";
     }
 }

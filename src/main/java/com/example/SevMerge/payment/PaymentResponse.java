@@ -25,10 +25,14 @@ public class PaymentResponse {
     private String status;
     private Timestamp paidAt;
 
-    // Mustache boolean 조건 ({{#isPaid}}, {{#isSettled}}, {{#isRefunded}})
+    // Mustache boolean 조건
     private boolean isPaid;
     private boolean isSettled;
     private boolean isRefunded;
+
+    // 정산 요청 상태 (전문가용)
+    private boolean hasSettlementRequest;
+    private boolean canRequestSettlement;
 
 
     public static PaymentResponse from(Payment payment) {

@@ -32,6 +32,24 @@ public class ReportService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReportResponse.CommentReportSummaryDTO> getReportedCommentSummaries() {
+        List<Report> reports = reportRepository.findAllWithDetails(null);
+
+        java.util.Map<Long, List<Report>> byComment = new java.util.LinkedHashMap<>();
+        for (Report r : reports) {
+            if (r.getComment() == null) continue;
+            byComment.computeIfAbsent(r.getComment().getId(), k -> new ArrayList<>()).add(r);
+        }
+
+        List<ReportResponse.CommentReportSummaryDTO> result = new ArrayList<>();
+        for (List<Report> group : byComment.values()) {
+            result.add(new ReportResponse.CommentReportSummaryDTO(group));
+        }
+        result.sort((a, b) -> b.getReportCount() - a.getReportCount());
+        return result;
+    }
+
     @Transactional
     public void submitReport(Long commentId, Long sessionUserId, ReportRequest.SaveDTO saveDTO) {
         Comment commentEntity = commentRepository.findById(commentId)
@@ -71,14 +89,14 @@ public class ReportService {
             }
             String accumulatedReportIds = String.join(",", reportIdList);
 
-            // 차단 기간 설정 7일 정지
-            LocalDateTime expireDate = LocalDateTime.now().plusDays(7);
+            // 커뮤니티 부분 차단 30일 (계정 전체 차단 아님)
+            LocalDateTime expireDate = LocalDateTime.now().plusDays(30);
 
-            reportedMember.changeStatusByBlacklist(Status.SUSPENDED);
+            reportedMember.changeStatusByBlacklist(Status.COMMUNITY_RESTRICTED);
 
             BlackList blackList = BlackList.builder()
                     .member(reportedMember)
-                    .reason("댓글 신고 3회 누적 자동 정지 처리")
+                    .reason("댓글 신고 3회 누적 커뮤니티 이용 제한")
                     .reportIds(accumulatedReportIds)
                     .expiredAt(expireDate)
                     .isActive(true)

@@ -1,96 +1,375 @@
 {{> layout/header}}
-
 <style>
-    /* ── BOARD EDIT ── */
-    .save-section { padding: 52px 28px 80px; }
-    .save-inner { max-width: 760px; margin: 0 auto; }
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
-    .save-form { display: flex; flex-direction: column; gap: 20px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
-    .form-textarea::placeholder { color: #c4c9d9; }
-    .form-textarea:focus { border-color: #2563eb; }
-    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
+    }
+
+    .editor-card {
+        width: 100%; max-width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        overflow: hidden; display: flex; flex-direction: column;
+    }
+    .editor-card form { flex: 1; display: flex; flex-direction: column; }
+
+    /* 헤더 */
+    .editor-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 24px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08);
+    }
+    .editor-header-left { display: flex; align-items: center; gap: 14px; }
+    .editor-back {
+        width: 36px; height: 36px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        display: flex; align-items: center; justify-content: center;
+        color: #4a6fa5; text-decoration: none; transition: all .15s; flex-shrink: 0;
+    }
+    .editor-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .editor-title { font-size: 20px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; }
+    .editor-desc { font-size: 13px; color: #4a6fa5; margin-top: 2px; }
+
+    /* 최종 수정일 뱃지 */
+    .editor-date-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px; border-radius: 20px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        font-size: 12px; font-weight: 600; color: #4a6fa5;
+    }
+
+    /* 폼 바디 */
+    .editor-body { flex: 1; }
+
+    .form-row {
+        display: grid; grid-template-columns: 160px 1fr;
+        align-items: flex-start; gap: 0;
+        padding: 20px 32px;
+        border-bottom: 1px solid rgba(37,99,235,.06);
+        transition: background .15s;
+    }
+    .form-row:last-child { border-bottom: none; }
+    .form-row:focus-within { background: rgba(37,99,235,.02); }
+
+    .form-row-label {
+        display: flex; align-items: center; gap: 10px;
+        padding-top: 14px; flex-shrink: 0;
+    }
+    .form-label-text {
+        font-size: 14px; font-weight: 700; color: #1e3a6e;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .form-required { color: #ef4444; font-size: 13px; }
+    .form-readonly-badge {
+        font-size: 10px; font-weight: 600; color: #93aecf;
+        background: rgba(255,255,255,.6); border: 1px solid rgba(37,99,235,.1);
+        padding: 2px 8px; border-radius: 20px; margin-left: 4px;
+    }
+
+    /* 입력 요소 */
+    .form-input {
+        width: 100%; padding: 13px 18px;
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(37,99,235,.1);
+        border-radius: 14px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .18s;
+        display: flex; align-items: center; justify-content: space-between;
+        box-sizing: border-box;
+    }
+    input.form-input::placeholder { color: #93aecf; }
+    input.form-input:focus {
+        border-color: #2563eb; background: rgba(255,255,255,.88);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    input.form-input:disabled {
+        color: #93aecf; background: rgba(240,244,250,.5); cursor: not-allowed;
+    }
+    .form-input-wrap { position: relative; }
+    .form-input-wrap input { padding-right: 80px; }
+    .form-input-hint {
+        position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+        font-size: 11px; color: #93aecf; pointer-events: none;
+    }
+
+    .form-textarea {
+        width: 100%; padding: 14px 18px;
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(37,99,235,.1);
+        border-radius: 14px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .18s;
+        resize: vertical; min-height: 320px; line-height: 1.8; box-sizing: border-box;
+    }
+    .form-textarea:focus {
+        border-color: #2563eb; background: rgba(255,255,255,.88);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    .char-hint { font-size: 11px; color: #93aecf; text-align: right; margin-top: 6px; }
+
+    /* 문의 유형 */
+    .inquiry-type-btns { display: flex; gap: 8px; padding-top: 4px; }
+    .inquiry-type-btn {
+        padding: 9px 20px; font-size: 13px; font-weight: 700;
+        border: 1.5px solid rgba(37,99,235,.15); border-radius: 20px;
+        background: rgba(255,255,255,.55); color: #4a6fa5;
+        cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .inquiry-type-btn:hover { border-color: #2563eb; color: #2563eb; background: rgba(255,255,255,.9); }
+    .inquiry-type-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+
+    /* 첨부파일 목록 */
+    .file-list { display: flex; flex-direction: column; gap: 8px; }
+    .file-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 16px;
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 12px; transition: all .15s;
+    }
+    .file-item:hover { border-color: rgba(37,99,235,.2); background: rgba(255,255,255,.85); }
+    .file-item-icon { color: #2563eb; flex-shrink: 0; }
+    .file-item-name { flex: 1; font-size: 13px; font-weight: 600; color: #1e3a6e; word-break: break-all; }
+    .file-item-size { font-size: 11px; color: #93aecf; flex-shrink: 0; }
+    .file-item-remove {
+        background: none; border: none; color: #93aecf; cursor: pointer;
+        font-size: 16px; line-height: 1; padding: 2px; transition: color .15s; flex-shrink: 0;
+    }
+    .file-item-remove:hover { color: #ef4444; }
+
+    /* 파일 추가 존 */
+    .file-add-zone {
+        display: flex; align-items: center; gap: 10px;
+        padding: 14px 16px;
+        background: rgba(255,255,255,.4); border: 1.5px dashed rgba(37,99,235,.2);
+        border-radius: 12px; cursor: pointer; transition: all .2s;
+        position: relative;
+    }
+    .file-add-zone:hover { border-color: #2563eb; background: rgba(239,246,255,.6); }
+    .file-add-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .file-add-icon { color: #93aecf; font-size: 18px; font-weight: 300; transition: color .15s; }
+    .file-add-zone:hover .file-add-icon { color: #2563eb; }
+    .file-add-text { font-size: 13px; font-weight: 600; color: #4a6fa5; }
+    .file-add-sub { font-size: 11px; color: #93aecf; margin-top: 1px; }
+
+    /* 푸터 */
+    .editor-footer {
+        display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+        padding: 20px 32px 26px;
+        border-top: 1px solid rgba(37,99,235,.08);
+    }
+    .btn-delete {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 12px 22px; border-radius: 20px; font-size: 14px; font-weight: 700;
+        background: rgba(255,243,243,.8); border: 1.5px solid #fecaca; color: #ef4444;
+        cursor: pointer; font-family: inherit; transition: all .15s; margin-right: auto;
+    }
+    .btn-delete:hover { background: #fff0f0; border-color: #ef4444; }
+    .btn-cancel {
+        padding: 12px 28px; border-radius: 20px; font-size: 14px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a;
+        text-decoration: none; display: inline-flex; align-items: center;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-submit {
+        padding: 12px 36px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 16px rgba(37,99,235,.3); transition: all .15s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,.4); }
+
+    @media (max-width: 640px) {
+        .page-wrap { padding: 12px 12px 16px; }
+        .editor-header, .form-row, .editor-footer { padding-left: 18px; padding-right: 18px; }
+        .form-row { grid-template-columns: 1fr; gap: 8px; }
+        .form-row-label { padding-top: 0; }
+        .editor-date-badge { display: none; }
+    }
 </style>
 
-<section class="save-section">
-    <div class="save-inner">
+<section class="page-wrap">
+    <div class="editor-card">
 
-        <div class="save-header">
-            {{#isFree}}
-                <h1 class="save-title">자유게시판 수정</h1>
-                <p class="save-desc">게시글을 수정합니다.</p>
-            {{/isFree}}
-            {{#isNotice}}
-                <h1 class="save-title">공지사항 수정</h1>
-                <p class="save-desc">공지사항을 수정합니다.</p>
-            {{/isNotice}}
+        <!-- 헤더 -->
+        <div class="editor-header">
+            <div class="editor-header-left">
+                <a href="/boards/{{board.id}}" class="editor-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </a>
+                <div>
+                    {{#isFree}}<div class="editor-title">게시글 수정</div><div class="editor-desc">게시글 내용을 수정하고 변경사항을 저장하세요.</div>{{/isFree}}
+                    {{#isNotice}}<div class="editor-title">공지사항 수정</div><div class="editor-desc">공지사항 내용을 수정합니다.</div>{{/isNotice}}
+                    {{#isInquiry}}<div class="editor-title">1:1 문의 수정</div><div class="editor-desc">문의 내용을 수정합니다.</div>{{/isInquiry}}
+                </div>
+            </div>
+            <div class="editor-date-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                최종 수정일 {{board.createdAt}}
+            </div>
         </div>
 
-        {{! action에 게시글 id 포함 — 컨트롤러에서 board.id 넘겨줘야 함 }}
-        <form class="save-form" action="/boards/{{board.id}}/edit" method="POST">
+        <!-- 폼 -->
+        <form action="/boards/{{board.id}}/update" method="POST" enctype="multipart/form-data" id="updateForm">
+            <div class="editor-body">
 
-            <div class="form-group">
-                <label class="form-label">제목</label>
-                <input
-                        type="text"
-                        name="title"
-                        class="form-input"
-                        value="{{board.title}}"
-                        placeholder="제목을 입력하세요"
-                        maxlength="100"
-                />
+                {{#isInquiry}}
+                    <div class="form-row">
+                        <div class="form-row-label">
+                            <span class="form-label-text">유형</span>
+                        </div>
+                        <div>
+                            <input type="hidden" name="inquiryScope" id="inquiryScopeInput" value="{{board.inquiryScope}}"/>
+                            <div class="inquiry-type-btns">
+                                <button type="button" class="inquiry-type-btn {{#isNormal}}active{{/isNormal}}" onclick="selectScope('NORMAL',this)">일반문의</button>
+                                <button type="button" class="inquiry-type-btn {{#isPayment}}active{{/isPayment}}" onclick="selectScope('PAYMENT',this)">결제문의</button>
+                                <button type="button" class="inquiry-type-btn {{#isSecurity}}active{{/isSecurity}}" onclick="selectScope('SECURITY',this)">계정관련</button>
+                            </div>
+                        </div>
+                    </div>
+                {{/isInquiry}}
+
+                <!-- 제목 -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <span class="form-label-text">제목 <span class="form-required">*</span></span>
+                    </div>
+                    <div class="form-input-wrap">
+                        <input type="text" name="title" class="form-input" value="{{board.title}}" placeholder="제목을 입력해주세요." maxlength="100" id="titleInput"/>
+                        <span class="form-input-hint"><span id="titleCount">0</span> / 100</span>
+                    </div>
+                </div>
+
+                <!-- 작성자 (수정 불가) -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <span class="form-label-text">작성자 <span class="form-readonly-badge">수정 불가</span></span>
+                    </div>
+                    <input type="text" class="form-input" value="{{board.memberName}}" disabled placeholder="작성자명을 입력해주세요."/>
+                </div>
+
+                <!-- 내용 -->
+                <div class="form-row">
+                    <div class="form-row-label" style="padding-top: 14px;">
+                        <span class="form-label-text">내용 <span class="form-required">*</span></span>
+                    </div>
+                    <div>
+                        <textarea name="content" class="form-textarea" id="contentInput" placeholder="내용을 입력해주세요." maxlength="2000">{{board.content}}</textarea>
+                        <div class="char-hint"><span id="charCount">0</span> / 2000</div>
+                    </div>
+                </div>
+
+                <!-- 첨부파일 -->
+                <div class="form-row">
+                    <div class="form-row-label" style="padding-top: 14px;">
+                        <span class="form-label-text">첨부파일</span>
+                    </div>
+                    <div class="file-list" id="fileList">
+
+                        {{#board.hasAttachment}}
+                            <div class="file-item" id="existingFile">
+                                <svg class="file-item-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+                                <span class="file-item-name">{{board.attachmentName}}</span>
+                                <span class="file-item-size">기존 파일</span>
+                                <button type="button" class="file-item-remove" onclick="removeExisting()">×</button>
+                            </div>
+                        {{/board.hasAttachment}}
+
+                        <div class="file-item" id="newFileItem" style="display:none;">
+                            <svg class="file-item-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+                            <span class="file-item-name" id="newFileName"></span>
+                            <span class="file-item-size" id="newFileSize"></span>
+                            <button type="button" class="file-item-remove" onclick="removeNew()">×</button>
+                        </div>
+
+                        <label class="file-add-zone" id="fileAddZone">
+                            <input type="file" name="attachmentFile" id="fileInput"/>
+                            <span class="file-add-icon">+</span>
+                            <div>
+                                <div class="file-add-text">파일 추가</div>
+                                <div class="file-add-sub">파일을 드래그하거나 클릭하여 추가하세요. (최대 10MB)</div>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+
             </div>
 
-            <div class="form-group">
-                <label class="form-label">내용</label>
-                <textarea
-                        name="content"
-                        class="form-textarea"
-                        placeholder="내용을 입력하세요"
-                >{{board.content}}</textarea>
+            <!-- 푸터 -->
+            <div class="editor-footer">
+                <button type="button" class="btn-delete" onclick="deleteBoard({{board.id}})">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    삭제
+                </button>
+                <a href="/boards/{{board.id}}" class="btn-cancel">취소</a>
+                <button type="submit" class="btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    수정 완료
+                </button>
             </div>
-
-            <div class="form-btns">
-                {{#isAdmin}}
-                <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
-                {{/isAdmin}}
-                {{^isAdmin}}
-                    <a href="/boards/{{board.id}}" class="btn btn-outline">취소</a>
-                {{/isAdmin}}
-
-                <button type="button" onclick="updateBoard({{board.id}})" class="btn btn-primary">수정완료</button>
-            </div>
-
         </form>
 
     </div>
 </section>
-<script>
-    async function updateBoard(boardId) {
-      try {
-        const title = document.querySelector('input[name="title"]').value;
-        const content = document.querySelector(
-          'textarea[name="content"]',
-        ).value;
 
-        const res = await fetch("/boards/" + boardId, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, content }),
-        });
-        if (res.ok) {
-          location.href = "/boards/" + boardId;
+<script>
+    function selectScope(scope, btn) {
+        document.querySelectorAll('.inquiry-type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('inquiryScopeInput').value = scope;
+    }
+
+    // 글자수
+    const titleEl = document.getElementById('titleInput');
+    const titleCount = document.getElementById('titleCount');
+    titleCount.textContent = titleEl.value.length;
+    titleEl.addEventListener('input', () => titleCount.textContent = titleEl.value.length);
+
+    const contentEl = document.getElementById('contentInput');
+    const charCount = document.getElementById('charCount');
+    charCount.textContent = contentEl.value.length;
+    contentEl.addEventListener('input', () => charCount.textContent = contentEl.value.length);
+
+    // 파일
+    const fileInput = document.getElementById('fileInput');
+    const newFileItem = document.getElementById('newFileItem');
+    const newFileName = document.getElementById('newFileName');
+    const newFileSize = document.getElementById('newFileSize');
+    const fileAddZone = document.getElementById('fileAddZone');
+
+    fileInput.addEventListener('change', () => {
+        const f = fileInput.files[0];
+        if (f) {
+            newFileName.textContent = f.name;
+            newFileSize.textContent = (f.size / 1024 / 1024).toFixed(1) + ' MB';
+            newFileItem.style.display = 'flex';
+            fileAddZone.style.display = 'none';
         }
-      } catch (e) {
-        alert(e.message);
-      }
+    });
+
+    function removeNew() {
+        fileInput.value = '';
+        newFileItem.style.display = 'none';
+        fileAddZone.style.display = 'flex';
+    }
+
+    function removeExisting() {
+        document.getElementById('existingFile').style.display = 'none';
+    }
+
+    async function deleteBoard(boardId) {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        try {
+            const res = await fetch('/boards/' + boardId, { method: 'DELETE' });
+            if (res.ok) location.href = '/boards';
+        } catch(e) { alert(e.message); }
     }
 </script>
 {{> layout/footer}}

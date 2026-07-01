@@ -57,4 +57,55 @@ public class ReportResponse {
             return this.isProcessed;
         }
     }
+
+    @Data
+    public static class CommentReportSummaryDTO {
+        private Long commentId;
+        private Long boardId;
+        private String commentContent;
+        private String commentWriterName;
+        private int reportCount;
+        private boolean reReported;
+        private boolean commentDeleted;
+        private String reasons;
+        private String latestReportedAt;
+
+        public CommentReportSummaryDTO(java.util.List<Report> reports) {
+            this.reportCount = reports.size();
+            this.reReported = reports.size() >= 2;
+
+            com.example.SevMerge.comment.Comment c = reports.get(0).getComment();
+            if (c != null) {
+                this.commentId = c.getId();
+                this.commentContent = c.getContent();
+                this.commentDeleted = c.isDeleted();
+                this.commentWriterName = (c.getMember() != null)
+                        ? c.getMember().getName() : "알 수 없는 사용자";
+                if (c.getBoard() != null) this.boardId = c.getBoard().getId();
+            } else {
+                this.commentContent = "삭제되거나 존재하지 않는 댓글입니다.";
+                this.commentWriterName = "-";
+                this.commentDeleted = true;
+            }
+
+            this.reasons = reports.stream()
+                    .map(Report::getReason)
+                    .filter(r -> r != null && !r.isEmpty())
+                    .distinct()
+                    .collect(java.util.stream.Collectors.joining(", "));
+
+            java.sql.Timestamp latest = null;
+            for (Report r : reports) {
+                if (r.getCreatedAt() != null && (latest == null || r.getCreatedAt().after(latest))) {
+                    latest = r.getCreatedAt();
+                }
+            }
+            if (latest != null) {
+                this.latestReportedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(latest);
+            }
+        }
+
+        public boolean getReReported() { return this.reReported; }
+        public boolean getCommentDeleted() { return this.commentDeleted; }
+    }
 }

@@ -2,7 +2,8 @@ package com.example.SevMerge.payment;
 
 import com.example.SevMerge.charge.ChargeService;
 import com.example.SevMerge.core.util.ApiResponse;
-import com.example.SevMerge.member.Member;
+import com.example.SevMerge.core.util.Define;
+import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class PaymentController {
                               HttpSession session,
                               Model model) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         int balance = chargeService.getBalance(sessionUser.getId());
@@ -51,8 +52,8 @@ public class PaymentController {
         model.addAttribute("expertId",         expertId);
         model.addAttribute("amount",           amount);
         model.addAttribute("balance",          balance);
-        model.addAttribute("platformFee",      (int)(amount * 0.10));
-        model.addAttribute("netAmount",        amount - (int)(amount * 0.10));
+        model.addAttribute("platformFee",      (int)(amount * 0.03));
+        model.addAttribute("netAmount",        amount - (int)(amount * 0.03));
         model.addAttribute("balanceSufficient",   balance >= amount);
         model.addAttribute("balanceInsufficient", balance < amount);
         model.addAttribute("shortage",            Math.max(0, amount - balance));
@@ -72,7 +73,7 @@ public class PaymentController {
                                @RequestParam Integer amount,
                                HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         paymentService.createEscrow(sessionUser.getId(), projectId, expertId, amount);
@@ -87,7 +88,7 @@ public class PaymentController {
             @PathVariable Long id,
             HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null)
             return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
 
@@ -103,7 +104,7 @@ public class PaymentController {
             @PathVariable Long id,
             HttpSession session) {
 
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null)
             return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
 
@@ -111,18 +112,41 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    // ── 전문가 정산 요청 ──
+
+    @PostMapping("/{paymentId}/request-settle")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> requestSettlement(
+            @PathVariable Long paymentId,
+            @RequestParam(required = false) String message,
+            HttpSession session) {
+
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null)
+            return ResponseEntity.status(401).body(ApiResponse.fail("로그인이 필요합니다."));
+
+        paymentService.requestSettlement(paymentId, sessionUser.getId(), message);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
     // ── 내역 조회 ──
 
     @GetMapping("/my")
     public String myPayments(HttpSession session, Model model) {
-        Member sessionUser = (Member) session.getAttribute("sessionUser");
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return "redirect:/login";
 
         int balance = chargeService.getBalance(sessionUser.getId());
         model.addAttribute("balance", balance);
 
         if (sessionUser.isExpert()) {
-            model.addAttribute("payments", paymentService.getExpertPayments(sessionUser.getId()));
+            java.util.Set<Long> pendingIds = paymentService.getPendingSettlementPaymentIds(sessionUser.getId());
+            java.util.List<PaymentResponse> payments = paymentService.getExpertPayments(sessionUser.getId());
+            payments.forEach(p -> {
+                p.setHasSettlementRequest(pendingIds.contains(p.getId()));
+                p.setCanRequestSettlement(p.isPaid() && !pendingIds.contains(p.getId()));
+            });
+            model.addAttribute("payments", payments);
             model.addAttribute("isExpert", true);
         } else {
             model.addAttribute("payments", paymentService.getClientPayments(sessionUser.getId()));

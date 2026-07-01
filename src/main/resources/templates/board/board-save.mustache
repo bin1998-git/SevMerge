@@ -1,72 +1,319 @@
 {{> layout/header}}
-
 <style>
-    /* ── BOARD SAVE ── */
-    .save-section { padding: 52px 28px 80px; }
-    .save-inner { max-width: 760px; margin: 0 auto; }
-    .save-header { margin-bottom: 32px; }
-    .save-title { font-size: 24px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .save-desc { font-size: 14px; color: #9ca3af; font-weight: 400; }
-    .save-form { display: flex; flex-direction: column; gap: 20px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-input { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input::placeholder { color: #c4c9d9; }
-    .form-input:focus { border-color: #2563eb; }
-    .form-textarea { padding: 13px 16px; background: #fff; border: 1.5px solid #e2e5ef; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; resize: vertical; min-height: 280px; line-height: 1.7; }
-    .form-textarea::placeholder { color: #c4c9d9; }
-    .form-textarea:focus { border-color: #2563eb; }
-    .form-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .page-wrap {
+        min-height: calc(100vh - 64px);
+        display: flex; align-items: stretch; justify-content: center;
+        padding: 20px 28px 28px; position: relative; z-index: 1;
+    }
+
+    /* 메인 글래스 카드 */
+    .editor-card {
+        width: 100%; max-width: 100%;
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.52);
+        border: 1.5px solid rgba(255,255,255,.82);
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        overflow: hidden; display: flex; flex-direction: column;
+    }
+
+    .editor-card form { flex: 1; display: flex; flex-direction: column; }
+    .editor-body { flex: 1; }
+
+    /* 헤더 */
+    .editor-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 24px 32px 20px;
+        border-bottom: 1px solid rgba(37,99,235,.08);
+    }
+    .editor-header-left { display: flex; align-items: center; gap: 14px; }
+    .editor-back {
+        width: 36px; height: 36px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        display: flex; align-items: center; justify-content: center;
+        color: #4a6fa5; text-decoration: none; transition: all .15s; flex-shrink: 0;
+    }
+    .editor-back:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.3); color: #2563eb; }
+    .editor-title { font-size: 20px; font-weight: 900; color: #1e3a6e; letter-spacing: -.5px; }
+    .editor-desc { font-size: 13px; color: #4a6fa5; margin-top: 2px; }
+    .editor-close {
+        width: 36px; height: 36px; border-radius: 50%;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.8);
+        display: flex; align-items: center; justify-content: center;
+        color: #93aecf; text-decoration: none; cursor: pointer; transition: all .15s;
+        font-size: 16px; font-weight: 400;
+    }
+    .editor-close:hover { background: rgba(255,243,243,.9); border-color: #fecaca; color: #ef4444; }
+
+    /* 폼 바디 */
+    .editor-body { padding: 8px 0; }
+
+    /* 폼 행: 왼쪽 아이콘+라벨 / 오른쪽 입력 */
+    .form-row {
+        display: grid; grid-template-columns: 160px 1fr;
+        align-items: flex-start; gap: 0;
+        padding: 20px 32px;
+        border-bottom: 1px solid rgba(37,99,235,.06);
+        transition: background .15s;
+    }
+    .form-row:last-child { border-bottom: none; }
+    .form-row:focus-within { background: rgba(37,99,235,.02); }
+
+    .form-row-label {
+        display: flex; align-items: center; gap: 10px;
+        padding-top: 14px; flex-shrink: 0;
+    }
+    .form-row-icon {
+        width: 28px; height: 28px; border-radius: 8px;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(37,99,235,.12);
+        display: flex; align-items: center; justify-content: center;
+        color: #2563eb; flex-shrink: 0; transition: all .15s;
+    }
+    .form-row:focus-within .form-row-icon {
+        background: rgba(37,99,235,.1); border-color: rgba(37,99,235,.3);
+    }
+    .form-label-text {
+        font-size: 14px; font-weight: 700; color: #1e3a6e;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .form-required { color: #ef4444; font-size: 13px; }
+
+    /* 입력 요소 */
+    .form-input {
+        width: 100%; padding: 13px 18px;
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(37,99,235,.1);
+        border-radius: 14px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .18s;
+    }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus {
+        border-color: #2563eb; background: rgba(255,255,255,.88);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    .form-textarea {
+        width: 100%; padding: 14px 18px;
+        background: rgba(255,255,255,.55); border: 1.5px solid rgba(37,99,235,.1);
+        border-radius: 14px; font-size: 14px; font-family: inherit;
+        color: #1e3a6e; outline: none; transition: all .18s;
+        resize: vertical; min-height: 320px; line-height: 1.8;
+    }
+    .form-textarea::placeholder { color: #93aecf; }
+    .form-textarea:focus {
+        border-color: #2563eb; background: rgba(255,255,255,.88);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+    }
+    .char-hint { font-size: 11px; color: #93aecf; text-align: right; margin-top: 6px; }
+
+    /* 문의 유형 버튼 */
+    .inquiry-type-btns { display: flex; gap: 8px; padding-top: 4px; }
+    .inquiry-type-btn {
+        padding: 9px 20px; font-size: 13px; font-weight: 700;
+        border: 1.5px solid rgba(37,99,235,.15); border-radius: 20px;
+        background: rgba(255,255,255,.55); color: #4a6fa5;
+        cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .inquiry-type-btn:hover { border-color: #2563eb; color: #2563eb; background: rgba(255,255,255,.9); }
+    .inquiry-type-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,.25); }
+
+    /* 파일 업로드 */
+    .file-row { display: flex; align-items: center; gap: 14px; padding-top: 4px; flex-wrap: wrap; }
+    .file-select-btn {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 10px 20px; border-radius: 14px; font-size: 13px; font-weight: 700;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit; position: relative; overflow: hidden;
+        box-shadow: 0 4px 14px rgba(37,99,235,.25); transition: all .15s;
+    }
+    .file-select-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.35); }
+    .file-select-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .file-name-text { font-size: 13px; color: #4a6fa5; font-weight: 500; }
+    .file-hint { width: 100%; font-size: 11px; color: #93aecf; margin-top: 2px; }
+
+    .file-preview-tag {
+        display: none; align-items: center; gap: 8px; padding: 8px 14px;
+        background: rgba(239,246,255,.85); border: 1px solid rgba(37,99,235,.2);
+        border-radius: 20px; font-size: 12px; font-weight: 600; color: #2563eb;
+    }
+    .file-preview-tag.show { display: inline-flex; }
+    .file-remove-btn { background: none; border: none; color: #93aecf; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; transition: color .15s; }
+    .file-remove-btn:hover { color: #ef4444; }
+
+    /* 푸터 */
+    .editor-footer {
+        display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+        padding: 20px 32px 26px;
+        border-top: 1px solid rgba(37,99,235,.08);
+    }
+    .btn-cancel {
+        padding: 12px 28px; border-radius: 20px; font-size: 14px; font-weight: 700;
+        backdrop-filter: blur(8px); background: rgba(255,255,255,.65);
+        border: 1.5px solid rgba(255,255,255,.85); color: #2d4a7a;
+        text-decoration: none; display: inline-flex; align-items: center;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.9); border-color: rgba(37,99,235,.2); }
+    .btn-submit {
+        padding: 12px 36px; border-radius: 20px; font-size: 14px; font-weight: 800;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+        border: none; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 16px rgba(37,99,235,.3); transition: all .15s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,.4); }
+
+    @media (max-width: 640px) {
+        .page-wrap { padding: 20px 16px 40px; }
+        .editor-header, .form-row, .editor-footer { padding-left: 20px; padding-right: 20px; }
+        .form-row { grid-template-columns: 1fr; gap: 8px; }
+        .form-row-label { padding-top: 0; }
+    }
 </style>
 
-<section class="save-section">
-    <div class="save-inner">
+<section class="page-wrap">
+    <div class="editor-card">
 
-        <div class="save-header">
-            {{! boardType에 따라 제목 분기 }}
-            {{#isFree}}
-            <h1 class="save-title">자유게시판 글쓰기</h1>
-            <p class="save-desc">자유롭게 의견을 나눠보세요.</p>
-            {{/isFree}}
-            {{#isNotice}}
-            <h1 class="save-title">공지사항 작성</h1>
-            <p class="save-desc">공지사항을 작성합니다. 관리자만 작성 가능합니다.</p>
-            {{/isNotice}}
+        <!-- 헤더 -->
+        <div class="editor-header">
+            <div class="editor-header-left">
+                <a href="/boards?boardType={{boardType}}" class="editor-back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                </a>
+                <div>
+                    {{#isFree}}<div class="editor-title">자유게시판 글쓰기</div><div class="editor-desc">자유롭게 의견을 나눠보세요.</div>{{/isFree}}
+                    {{#isNotice}}<div class="editor-title">공지사항 작성</div><div class="editor-desc">공지사항을 작성합니다.</div>{{/isNotice}}
+                    {{#isInquiry}}<div class="editor-title">1:1 문의 작성</div><div class="editor-desc">궁금한 점을 남겨주세요.</div>{{/isInquiry}}
+                </div>
+            </div>
+            <a href="/boards?boardType={{boardType}}" class="editor-close">✕</a>
         </div>
 
-        <form class="save-form" action="/boards/save" method="POST">
+        <!-- 폼 -->
+        <form action="/boards/save" method="POST" enctype="multipart/form-data" id="saveForm">
+            <input type="hidden" name="boardType" value="{{boardType}}"/>
 
-            {{! boardType 히든 필드 — 컨트롤러에서 FREE or NOTICE 넘겨줘야 함 }}
-            <input type="hidden" name="boardType" value="{{boardType}}" />
+            <div class="editor-body">
 
-            <div class="form-group">
-                <label class="form-label">제목</label>
-                <input
-                    type="text"
-                    name="title"
-                    class="form-input"
-                    placeholder="제목을 입력하세요"
-                    maxlength="100"
-                />
+                {{#isInquiry}}
+                    <!-- 문의 유형 -->
+                    <div class="form-row">
+                        <div class="form-row-label">
+                            <div class="form-row-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            </div>
+                            <span class="form-label-text">유형</span>
+                        </div>
+                        <div>
+                            <input type="hidden" name="inquiryScope" id="inquiryScopeInput" value="NORMAL"/>
+                            <div class="inquiry-type-btns">
+                                <button type="button" class="inquiry-type-btn active" onclick="selectScope('NORMAL',this)">일반문의</button>
+                                <button type="button" class="inquiry-type-btn" onclick="selectScope('PAYMENT',this)">결제문의</button>
+                                <button type="button" class="inquiry-type-btn" onclick="selectScope('SECURITY',this)">계정관련</button>
+                            </div>
+                        </div>
+                    </div>
+                {{/isInquiry}}
+
+                <!-- 제목 -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <div class="form-row-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </div>
+                        <span class="form-label-text">제목 <span class="form-required">*</span></span>
+                    </div>
+                    <input type="text" name="title" class="form-input" placeholder="제목을 입력해주세요." maxlength="100"/>
+                </div>
+
+                <!-- 내용 -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <div class="form-row-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+                        </div>
+                        <span class="form-label-text">내용 <span class="form-required">*</span></span>
+                    </div>
+                    <div>
+                        <textarea name="content" class="form-textarea" id="contentInput" placeholder="내용을 입력해주세요." maxlength="2000"></textarea>
+                        <div class="char-hint"><span id="charCount">0</span> / 2000</div>
+                    </div>
+                </div>
+
+                <!-- 첨부파일 -->
+                <div class="form-row">
+                    <div class="form-row-label">
+                        <div class="form-row-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 015 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 006 0V5c0-2.76-2.24-5-5-5S5 2.24 5 5v12.5c0 3.87 3.13 7 7 7s7-3.13 7-7V6h-2.5z"/></svg>
+                        </div>
+                        <span class="form-label-text">첨부파일</span>
+                    </div>
+                    <div>
+                        <div class="file-row">
+                            <label class="file-select-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4-4m0 0L8 12m4-4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                파일 선택
+                                <input type="file" name="attachmentFile" id="fileInput" style="display:none;"/>
+                            </label>
+                            <span class="file-name-text" id="fileNameText">선택된 파일이 없습니다.</span>
+                            <span class="file-preview-tag" id="filePreviewTag">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/></svg>
+                                <span id="fileTagName"></span>
+                                <button type="button" class="file-remove-btn" id="removeFile">×</button>
+                            </span>
+                        </div>
+                        <div class="file-hint">첨부 가능 파일 : jpg, jpeg, png, gif, pdf, zip (최대 10MB)</div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="form-group">
-                <label class="form-label">내용</label>
-                <textarea
-                    name="content"
-                    class="form-textarea"
-                    placeholder="내용을 입력하세요"
-                ></textarea>
-            </div>
-
-            <div class="form-btns">
-                <a href="/boards?boardType={{boardType}}" class="btn btn-outline">취소</a>
-                <button type="submit" class="btn btn-primary">등록</button>
+            <!-- 푸터 버튼 -->
+            <div class="editor-footer">
+                <a href="/boards?boardType={{boardType}}" class="btn-cancel">취소</a>
+                <button type="submit" class="btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    등록
+                </button>
             </div>
 
         </form>
-
     </div>
 </section>
 
+<script>
+    function selectScope(scope, btn) {
+        document.querySelectorAll('.inquiry-type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('inquiryScopeInput').value = scope;
+    }
+
+    const fileInput = document.getElementById('fileInput');
+    const fileNameText = document.getElementById('fileNameText');
+    const filePreviewTag = document.getElementById('filePreviewTag');
+    const fileTagName = document.getElementById('fileTagName');
+
+    fileInput.addEventListener('change', () => {
+        const f = fileInput.files[0];
+        if (f) {
+            fileTagName.textContent = f.name;
+            filePreviewTag.classList.add('show');
+            fileNameText.style.display = 'none';
+        }
+    });
+    document.getElementById('removeFile').addEventListener('click', () => {
+        fileInput.value = '';
+        filePreviewTag.classList.remove('show');
+        fileNameText.style.display = '';
+    });
+
+    const contentEl = document.getElementById('contentInput');
+    document.getElementById('charCount').textContent = contentEl.value.length;
+    contentEl.addEventListener('input', () => {
+        document.getElementById('charCount').textContent = contentEl.value.length;
+    });
+</script>
 {{> layout/footer}}

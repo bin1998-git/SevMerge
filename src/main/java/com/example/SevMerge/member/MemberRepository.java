@@ -27,6 +27,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.isDeleted = false OR m.isDeleted IS NULL ORDER BY m.name ASC")
     Page<Member> findByIsDeletedFalse(Pageable pageable);
 
+    // 최근 가입한 회원 5명 조회
+    List<Member> findTop5ByIsDeletedFalseOrIsDeletedIsNullOrderByCreatedAtDesc();
+
     // 이름/ 이멜 검색 + 가입일 과거순 정렬 전용
     @Query("SELECT m FROM Member m WHERE (m.name LIKE %:keyword% OR m.email LIKE %:keyword%) AND (m.isDeleted = false OR m.isDeleted IS NULL)")
     Page<Member> searchByKeywordOrderByCreatedAt(@Param("keyword") String keyword, Pageable pageable);
@@ -64,6 +67,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 역할Role 조건으로 회원 조회
     List<Member> findByRoleAndIsDeletedFalse(Role role);
+
+    // 최근 가입 회원 5명 (대시보드용)
+    @Query("SELECT m FROM Member m WHERE m.isDeleted = false OR m.isDeleted IS NULL ORDER BY m.createdAt DESC")
+    List<Member> findTop5RecentMembers(Pageable pageable);
 
     // 역할과 검색어 조건으로 탈퇴하지 않은 회원 목록 페이징 조회
     @Query("SELECT m FROM Member m WHERE m.role = :role " +

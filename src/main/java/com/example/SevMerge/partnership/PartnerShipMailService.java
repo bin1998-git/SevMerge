@@ -19,9 +19,28 @@ public class PartnerShipMailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo("dkswnsgus88@naver.com");
             helper.setReplyTo(request.getEmail()); // 발송한 메일에 답장하면 다시 내게오지않고 되돌아가는기능
+            String subject;
+            String typeLabel;
+            String typeColor;
+
+            if (request.getPartnerShipType() == PartnerShipType.COMPANY) {
+                subject = "[기업 제휴 문의] " + request.getCompanyName();
+                typeLabel = "🏢 기업 제휴";
+                typeColor = "#2563eb";
+            } else if (request.getPartnerShipType() == PartnerShipType.EDUCATION) {
+                subject = "[교육기관 제휴 문의] " + request.getCompanyName();
+                typeLabel = "🎓 교육기관 제휴";
+                typeColor = "#059669";
+            } else {
+                subject = "[마케팅 제휴 문의] " + request.getCompanyName();
+                typeLabel = "📣 마케팅 제휴";
+                typeColor = "#f59e0b";
+            }
+            helper.setSubject(subject);
             helper.setText(
                     "<div style='font-family:Arial, sans-serif; max-width:600px; margin:auto; padding:30px; border:1px solid #e0e0e0; border-radius:8px;'>" +
-                            "  <h2 style='color:#2196F3;'>📩 제휴 문의가 접수되었습니다.</h2>" +
+                            "  <h2 style='color:" + typeColor + ";'>📩 제휴 문의가 접수되었습니다.</h2>" +
+                            "  <p style='color:" + typeColor + "; font-weight:bold; margin-bottom:16px;'>" + typeLabel + "</p>" +
                             "  <table style='width:100%; border-collapse:collapse;'>" +
                             "    <tr style='border-bottom:1px solid #e0e0e0;'>" +
                             "      <td style='padding:12px; color:#888; width:30%;'>회사명</td>" +
@@ -43,7 +62,7 @@ public class PartnerShipMailService {
                             "  <hr style='border:none; border-top:1px solid #e0e0e0; margin-top:20px;'/>" +
                             "  <p style='color:#888; font-size:12px;'>본 메일은 자동 발송된 메일입니다.</p>" +
                             "</div>"
-            ,true);
+                    , true);
             if (request.getPartnerFile() != null && !request.getPartnerFile().isEmpty()) {
                 helper.addAttachment(
                         request.getPartnerFile().getOriginalFilename(),

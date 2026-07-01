@@ -13,5 +13,6 @@ public class PartnerShipRequest {
     private String email;
     private MultipartFile partnerFile;
     private String content;
+    private PartnerShipType partnerShipType;
 
 }

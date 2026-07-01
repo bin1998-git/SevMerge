@@ -1,6 +1,5 @@
 package com.example.SevMerge.expertprofile;
 
-import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.CalculateException;
 import com.example.SevMerge.member.Member;
 import jakarta.persistence.*;
@@ -8,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "expert_profile_tb")

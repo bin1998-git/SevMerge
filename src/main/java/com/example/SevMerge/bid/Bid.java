@@ -47,6 +47,24 @@
         @Column(nullable = false)
         private BidStatus status;
 
+        @Enumerated(EnumType.STRING)
+        @Column(name = "work_status")
+        @Builder.Default
+        private WorkStatus workStatus = WorkStatus.IN_PROGRESS;
+
+        // 작업물 제출 정보
+        @Column(name = "submitted_file_url", length = 500)
+        private String submittedFileUrl;
+
+        @Column(name = "submitted_file_name", length = 255)
+        private String submittedFileName;
+
+        @Column(name = "submitted_note", columnDefinition = "TEXT")
+        private String submittedNote;
+
+        @Column(name = "submitted_at")
+        private Timestamp submittedAt;
+
         @Column(nullable = false)
         @Builder.Default
         private boolean isDeleted = false;
@@ -70,6 +88,19 @@
 
         public void select() {
             this.status = BidStatus.SELECTED;
+            this.workStatus = WorkStatus.IN_PROGRESS;
+        }
+
+        public void changeWorkStatus(WorkStatus ws) {
+            this.workStatus = ws;
+        }
+
+        public void submitWork(String fileUrl, String fileName, String note) {
+            this.submittedFileUrl = fileUrl;
+            this.submittedFileName = fileName;
+            this.submittedNote = note;
+            this.submittedAt = new Timestamp(System.currentTimeMillis());
+            this.workStatus = WorkStatus.WORK_DONE;
         }
 
         public void fail() {

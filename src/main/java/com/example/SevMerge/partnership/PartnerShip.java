@@ -39,6 +39,10 @@ public class PartnerShip {
     @CreationTimestamp
     private Timestamp createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private PartnerShipType type;
+
+
     private Timestamp deletedAt;
 
 

@@ -64,7 +64,7 @@ public class RefundApplicationService {
             throw new BadRequestException("환불 사유를 입력해 주세요.");
         }
 
-        RefundApplication application = RefundApplication.builder()
+        RefundRequest application = RefundRequest.builder()
                 .paymentId(paymentId)
                 .clientId(clientId)
                 .expertId(payment.getExpertId())
@@ -82,7 +82,7 @@ public class RefundApplicationService {
     // 관리자 승인 시
     @Transactional
     public RefundApplicationResponse approve(Long applicationId, String adminComment) {
-        RefundApplication application = findById(applicationId);
+        RefundRequest application = findById(applicationId);
 
         application.approve(adminComment);
 
@@ -106,7 +106,7 @@ public class RefundApplicationService {
     //  관리자 거절 시
     @Transactional
     public RefundApplicationResponse reject(Long applicationId, String adminComment) {
-        RefundApplication application = findById(applicationId);
+        RefundRequest application = findById(applicationId);
 
         application.reject(adminComment);
 
@@ -141,12 +141,12 @@ public class RefundApplicationService {
     }
 
     //  private
-    private RefundApplication findById(Long id) {
+    private RefundRequest findById(Long id) {
         return refundApplicationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("환불 신청 정보를 찾을 수 없습니다."));
     }
 
-    private RefundApplicationResponse toResponse(RefundApplication application) {
+    private RefundApplicationResponse toResponse(RefundRequest application) {
         String clientName = memberRepository.findById(application.getClientId())
                 .map(Member::getName).orElse("알 수 없음");
         String expertName = memberRepository.findById(application.getExpertId())

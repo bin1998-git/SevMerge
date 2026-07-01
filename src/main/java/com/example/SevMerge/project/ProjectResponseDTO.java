@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 
 public class ProjectResponseDTO {
@@ -40,6 +41,7 @@ public class ProjectResponseDTO {
         private boolean isProjectClosed;
         private boolean isCancelled;
         private boolean isDraft;
+        private boolean cancelPending;
 
         public ListDTO(Project project) {
             this.id = project.getId();
@@ -59,7 +61,7 @@ public class ProjectResponseDTO {
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
             this.createdAt = project.getCreatedAt();
-            long diff = project.getDeadline().getTime() - System.currentTimeMillis();
+            long diff = project.getDeadline() != null ? project.getDeadline().getTime() - System.currentTimeMillis() : 0;
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
             this.isUrgent = this.dDay <= 3;
             this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
@@ -67,8 +69,13 @@ public class ProjectResponseDTO {
             this.isProjectClosed = "CLOSED".equals(this.projectStatus);
             this.isCancelled = "CANCELLED".equals(this.projectStatus);
             this.isDraft = "DRAFT".equals(this.projectStatus);
+            this.selectedExpertId = null;
         }
 
+        public String getCreatedAtFormatted() {
+            if (this.createdAt == null) return "";
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this.createdAt);
+        }
     }
 
     // 상세 조회 응답 DTO
@@ -93,6 +100,7 @@ public class ProjectResponseDTO {
         private Integer dDay;
         private boolean isCertifiedOnly;
         private Timestamp createdAt;
+        private boolean isOpen;
 
         public DetailDTO(Project project) {
             this.id = project.getId();
@@ -105,14 +113,15 @@ public class ProjectResponseDTO {
             this.budgetMax = project.getBudgetMax();
             this.deadline = project.getDeadline();
             this.privateProject = project.isPrivate();
-            this.deadlineDate = project.getDeadline().toString().substring(0, 10);
+            this.deadlineDate = project.getDeadline() != null ? project.getDeadline().toString().substring(0, 10) : "";
             this.bidFilter = project.getBidFilter().name();
             this.projectStatus = project.getProjectStatus().name();
             this.viewCount = project.getViewCount();
             this.bidCount = 0;
             this.isCertifiedOnly = project.getBidFilter() == BidFilter.CERTIFIED_ONLY;
+            this.isOpen = project.getProjectStatus() == ProjectStatus.OPEN;
             this.createdAt = project.getCreatedAt();
-            long diff = project.getDeadline().getTime() - System.currentTimeMillis();
+            long diff = project.getDeadline() != null ? project.getDeadline().getTime() - System.currentTimeMillis() : 0;
             this.dDay = (int) (diff / (1000 * 60 * 60 * 24));
         }
     }

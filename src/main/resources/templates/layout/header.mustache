@@ -62,7 +62,7 @@
             flex: 1; min-width: 0;
             display: flex; align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow: visible;  /* ← 변경 */
         }
         .nav-tab {
             padding: 0 13px; height: 64px;
@@ -113,6 +113,17 @@
         }
         .nav-drawer-item:hover { background: #f8f9ff; color: var(--blue); border-color: var(--blue); }
         .nav-drawer-item.active { color: var(--blue); border-color: var(--blue); background: #eff6ff; }
+
+        /* 드로어 섹션 구분선 */
+        .nav-drawer-divider {
+            height: 1px; background: #f3f4f6;
+            margin: 6px 16px;
+        }
+        .nav-drawer-section-label {
+            display: block; padding: 10px 24px 4px;
+            font-size: 11px; font-weight: 700; color: #9ca3af;
+            letter-spacing: .05em; text-transform: uppercase;
+        }
 
         /* 비로그인/관리자 일반 링크 */
         .nav-links {
@@ -235,6 +246,18 @@
         .admin-dropdown-container { position: relative; display: inline-block; }
         .admin-dropdown-trigger { cursor: pointer; }
         .admin-dropdown-container:hover .nav-submenu { display: flex !important; }
+
+        /* 전문가 광고 드롭다운 */
+        .nav-tabs .admin-dropdown-container {
+            position: relative;
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-tabs .admin-dropdown-container .nav-submenu {
+            top: 64px;
+        }
         .nav-submenu {
             display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
             background: #fff; min-width: 140px;
@@ -283,6 +306,7 @@
         @media (max-width: 960px) {
             .nav-links { display: none; }
             #hamburgerGuest { display: flex; }
+            #hamburgerAdmin { display: flex; } /* ← admin 햄버거 추가 */
         }
         @media (max-width: 480px) {
             .nav-inner { padding: 0 12px; }
@@ -300,59 +324,69 @@
         {{! 전문가                                                 }}
         {{! ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ }}
         {{#isExpert}}
-            <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+            <a href="/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
 
-            {{#isDashboard}}
-                <nav class="nav-tabs" id="tabsExpert">
-                    <a href="/bids/my-list"         class="nav-tab">제안서 관리</a>
-                    <a href="/bids/my-orders"       class="nav-tab">주문 관리</a>
-                    <a href="/payment/my"           class="nav-tab">수익&amp;정산</a>
-                    <a href="/reviews/my"           class="nav-tab">평가·리뷰</a>
-                    <a href="/experts/my/info-edit" class="nav-tab">정보 수정</a>
-                    <a href="/boards"               class="nav-tab">게시판</a>
-                    <a href="/messages"             class="nav-tab">쪽지함</a>
-                    <a href="/chat/room"            class="nav-tab">채팅방</a>
-                </nav>
-                <div class="nav-drawer" id="drawerExpert">
-                    <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerExpert','hamburgerExpert')"></div>
-                    <div class="nav-drawer-panel">
-                        <a href="/bids/my-list"         class="nav-drawer-item">제안서 관리</a>
-                        <a href="/bids/my-orders"       class="nav-drawer-item">주문 관리</a>
-                        <a href="/payment/my"           class="nav-drawer-item">수익 &amp; 정산</a>
-                        <a href="/reviews/my"           class="nav-drawer-item">평가 및 리뷰</a>
-                        <a href="/experts/my/info-edit" class="nav-drawer-item">내 정보 수정</a>
-                        <a href="/boards"               class="nav-drawer-item">게시판</a>
-                        <a href="/messages"             class="nav-drawer-item">쪽지함</a>
-                        <a href="/chat/room"            class="nav-drawer-item">채팅방</a>
+            {{^isMainPage}}
+            <nav class="nav-tabs" id="tabsExpert">
+                <a href="/bids/my-list"         class="nav-tab">제안서 관리</a>
+                <a href="/bids/my-orders"       class="nav-tab">주문 관리</a>
+                <a href="/payment/my"           class="nav-tab">수익&amp;정산</a>
+                <a href="/reviews/my"           class="nav-tab">평가·리뷰</a>
+                <a href="/experts/my/info-edit" class="nav-tab">정보 수정</a>
+                <a href="/boards"               class="nav-tab">게시판</a>
+                <a href="/messages"             class="nav-tab">쪽지함</a>
+                <a href="/chat/room"            class="nav-tab">채팅방</a>
+                <div class="admin-dropdown-container">
+                    <span class="admin-dropdown-trigger nav-tab">광고</span>
+                    <div class="nav-submenu">
+                        <a href="/advertisements/my" class="submenu-link">광고 신청</a>
+                        <a href="/ad-auction"        class="submenu-link">광고 경매</a>
+                        <a href="/ad-auction/my-bids" class="submenu-link">내 입찰 내역</a>
                     </div>
                 </div>
-            {{/isDashboard}}
 
-            {{^isDashboard}}
+            </nav>
+            <div class="nav-drawer" id="drawerExpert">
+                <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerExpert','hamburgerExpert')"></div>
+                <div class="nav-drawer-panel">
+                    <a href="/bids/my-list"         class="nav-drawer-item">제안서 관리</a>
+                    <a href="/bids/my-orders"       class="nav-drawer-item">주문 관리</a>
+                    <a href="/payment/my"           class="nav-drawer-item">수익 &amp; 정산</a>
+                    <a href="/reviews/my"           class="nav-drawer-item">평가 및 리뷰</a>
+                    <a href="/experts/my/info-edit" class="nav-drawer-item">내 정보 수정</a>
+                    <a href="/boards"               class="nav-drawer-item">게시판</a>
+                    <a href="/messages"             class="nav-drawer-item">쪽지함</a>
+                    <a href="/chat/room"            class="nav-drawer-item">채팅방</a>
+                    <div class="nav-drawer-divider"></div>
+                    <span class="nav-drawer-section-label">광고</span>
+                    <a href="/advertisements/my"    class="nav-drawer-item">광고 신청</a>
+                    <a href="/ad-auction"           class="nav-drawer-item">광고 경매</a>
+                    <a href="/ad-auction/my-bids"   class="nav-drawer-item">내 입찰 내역</a>
+                </div>
+            </div>
+            {{/isMainPage}}
+            {{#isMainPage}}
                 <div style="flex:1;"></div>
-            {{/isDashboard}}
+            {{/isMainPage}}
 
             <div class="nav-actions">
-                {{#isDashboard}}
-                    <button class="nav-hamburger" id="hamburgerExpert" aria-label="메뉴 열기">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
-                {{/isDashboard}}
-                {{^isDashboard}}
+                {{^isMainPage}}
+                <button class="nav-hamburger" id="hamburgerExpert" aria-label="메뉴 열기">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                {{/isMainPage}}
+                {{#isMainPage}}
                     <a href="/experts/dashboard" class="btn-dashboard">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-                            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 20h4v-6h2v6h4v2H4v-2h4v-6h2v6Zm-6 0H2V10h2v10Zm18 0h-2V10h2v10Zm-8-6h-4v-2h4v2Zm-8-4H4V8h2v2Zm14 0h-2V8h2v2ZM8 8H6V6h2v2Zm10 0h-2V6h2v2Zm-8-2H8V4h2v2Zm6 0h-2V4h2v2Zm-2-2h-4V2h4v2Z"/>
                         </svg>
                         대시보드
                     </a>
-                {{/isDashboard}}
+                {{/isMainPage}}
                 <a href="/notifications" class="nav-bell" aria-label="알림">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -396,14 +430,14 @@
                     <a href="/admin/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
                 {{/isAdmin}}
                 {{^isAdmin}}
-                    <a href="/exmain" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
+                    <a href="/main" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
                 {{/isAdmin}}
             {{/isLoggedIn}}
             {{^isLoggedIn}}
                 <a href="/" class="nav-logo"><img src="/logo-horizontal.svg" alt="IcodeU"></a>
             {{/isLoggedIn}}
 
-            {{#isLoggedIn}}{{^isAdmin}}
+            {{#isLoggedIn}}{{^isAdmin}}{{^isExpert}}
                 {{#isDashboard}}
                     <nav class="nav-tabs" id="tabsUser">
                         <a href="/projects"  class="nav-tab">프로젝트</a>
@@ -426,7 +460,7 @@
                 {{^isDashboard}}
                     <div style="flex:1;"></div>
                 {{/isDashboard}}
-            {{/isAdmin}}{{/isLoggedIn}}
+            {{/isExpert}}{{/isAdmin}}{{/isLoggedIn}}
 
             {{#isAdmin}}
                 <nav class="nav-links">
@@ -445,13 +479,49 @@
                     <div class="admin-dropdown-container">
                         <span class="admin-dropdown-trigger">전문가 승인</span>
                         <div class="nav-submenu">
+                            <a href="/payment/my" class="submenu-link">에스크로 관리</a>
                             <a href="/admin/experts/withdraw"       class="submenu-link">출금 요청 관리</a>
                             <a href="/admin/experts?status=PENDING" class="submenu-link">전문가 승인 관리</a>
-                            <a href="/admin/experts/grade"          class="submenu-link">등급별 전문가 관리</a>
                             <a href="/admin/refund-applications"    class="submenu-link">환불 요청 관리</a>
+
                         </div>
                     </div>
+                    <div class="admin-dropdown-container">
+                        <span class="admin-dropdown-trigger">광고 관리</span>
+                        <div class="nav-submenu">
+                            <a href="/admin/advertisements" class="submenu-link">광고 승인 관리</a>
+                            <a href="/admin/ad-slots"       class="submenu-link">광고 경매 관리</a>
+                        </div>
+                    </div>
+                    <a href="/admin/revenue">수익 현황</a>
                 </nav>
+
+                {{! ── [FIX] admin 모바일 드로어 추가 ── }}
+                <div class="nav-drawer" id="drawerAdmin">
+                    <div class="nav-drawer-backdrop" onclick="closeDrawer('drawerAdmin','hamburgerAdmin')"></div>
+                    <div class="nav-drawer-panel">
+                        <a href="/admin/members"                  class="nav-drawer-item">회원 관리</a>
+                        <a href="/admin/projects"                 class="nav-drawer-item">프로젝트 관리</a>
+                        <div class="nav-drawer-divider"></div>
+                        <span class="nav-drawer-section-label">게시판 관리</span>
+                        <a href="/admin/boards"                   class="nav-drawer-item">자유게시판</a>
+                        <a href="/admin/notices"                  class="nav-drawer-item">공지사항</a>
+                        <a href="/admin/reports"                  class="nav-drawer-item">댓글신고관리</a>
+                        <a href="/admin/inquiry"                  class="nav-drawer-item">1:1문의관리</a>
+                        <div class="nav-drawer-divider"></div>
+                        <a href="/admin/blacklists"               class="nav-drawer-item">블랙리스트</a>
+                        <div class="nav-drawer-divider"></div>
+                        <span class="nav-drawer-section-label">전문가 승인</span>
+                        <a href="/payment/my"                     class="nav-drawer-item">에스크로 관리</a>
+                        <a href="/admin/experts/withdraw"         class="nav-drawer-item">출금 요청 관리</a>
+                        <a href="/admin/experts?status=PENDING"   class="nav-drawer-item">전문가 승인 관리</a>
+                        <a href="/admin/refund-applications"      class="nav-drawer-item">환불 요청 관리</a>
+                        <div class="nav-drawer-divider"></div>
+                        <span class="nav-drawer-section-label">광고 관리</span>
+                        <a href="/admin/advertisements"           class="nav-drawer-item">광고 승인 관리</a>
+                        <a href="/admin/ad-slots"                 class="nav-drawer-item">광고 경매 관리</a>
+                    </div>
+                </div>
             {{/isAdmin}}
 
             {{^isLoggedIn}}
@@ -479,6 +549,17 @@
             {{/isLoggedIn}}
 
             <div class="nav-actions">
+                {{! ── [FIX] admin 햄버거 버튼 추가 ── }}
+                {{#isAdmin}}
+                    <button class="nav-hamburger" id="hamburgerAdmin" aria-label="메뉴 열기">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                {{/isAdmin}}
+
                 {{#isLoggedIn}}{{^isAdmin}}
                     {{#isDashboard}}
                         <button class="nav-hamburger" id="hamburgerUser" aria-label="메뉴 열기">
@@ -491,21 +572,19 @@
                     {{/isDashboard}}
                     {{^isDashboard}}
                         <a href="/my-pages" class="btn-dashboard" id="dashBtnUser">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-                                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 20h4v-6h2v6h4v2H4v-2h4v-6h2v6Zm-6 0H2V10h2v10Zm18 0h-2V10h2v10Zm-8-6h-4v-2h4v2Zm-8-4H4V8h2v2Zm14 0h-2V8h2v2ZM8 8H6V6h2v2Zm10 0h-2V6h2v2Zm-8-2H8V4h2v2Zm6 0h-2V4h2v2Zm-2-2h-4V2h4v2Z"/>
                             </svg>
                             마이페이지
                         </a>
                     {{/isDashboard}}
                 {{/isAdmin}}{{/isLoggedIn}}
+
                 {{#isLoggedIn}}
                     <a href="/notifications" class="nav-bell" aria-label="알림">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 2h6v2H9zM7 4h2v2H7zm8 0h2v2h-2zM5 6h2v7H5zm12 0h2v7h-2zM3 13h2v4H3zm16 0h2v4h-2z"/>
+                            <path d="M3 15h18v2H3zm5 3h2v2H8zm6 0h2v2h-2zm-4 2h4v2h-4z"/>
                         </svg>
                         {{#hasNewNotification}}<span class="nav-bell-dot"></span>{{/hasNewNotification}}
                     </a>
@@ -555,24 +634,27 @@
 <!-- ══ SSE 알림 ══ -->
 {{#isLoggedIn}}
     <script>
-        const sse = new EventSource('/notifications/subscribe');
-        sse.addEventListener('notification', function(e) {
-            const data = JSON.parse(e.data);
-            showNotiToast(data);
-            const bell = document.querySelector('.nav-bell');
-            if (bell && !bell.querySelector('.nav-bell-dot')) {
-                const dot = document.createElement('span');
-                dot.className = 'nav-bell-dot';
-                bell.appendChild(dot);
-            }
-        });
-        window.addEventListener('beforeunload', function() { sse.close(); });
-        function showNotiToast(data) {
-            const toast = document.createElement('div');
-            toast.className = 'noti-toast';
-            toast.innerHTML = '<div class="noti-toast-label">' + data.typeLabel + '</div><div class="noti-toast-content">' + data.content + '</div>';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+        if (!window._sseInit) {
+            window._sseInit = true;
+            window.showNotiToast = function(data) {
+                const toast = document.createElement('div');
+                toast.className = 'noti-toast';
+                toast.innerHTML = '<div class="noti-toast-label">' + data.typeLabel + '</div><div class="noti-toast-content">' + data.content + '</div>';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            };
+            const sse = new EventSource('/notifications/subscribe');
+            sse.addEventListener('notification', function(e) {
+                const data = JSON.parse(e.data);
+                window.showNotiToast(data);
+                const bell = document.querySelector('.nav-bell');
+                if (bell && !bell.querySelector('.nav-bell-dot')) {
+                    const dot = document.createElement('span');
+                    dot.className = 'nav-bell-dot';
+                    bell.appendChild(dot);
+                }
+            });
+            window.addEventListener('beforeunload', function() { sse.close(); });
         }
     </script>
 {{/isLoggedIn}}
@@ -594,8 +676,13 @@
             }
         });
 
-        /* 햄버거 버튼 클릭 */
-        [['hamburgerExpert','drawerExpert'],['hamburgerUser','drawerUser'],['hamburgerGuest','drawerGuest']].forEach(function(pair) {
+        /* 햄버거 버튼 클릭 — [FIX] admin 쌍 추가 */
+        [
+            ['hamburgerExpert', 'drawerExpert'],
+            ['hamburgerUser',   'drawerUser'],
+            ['hamburgerGuest',  'drawerGuest'],
+            ['hamburgerAdmin',  'drawerAdmin']
+        ].forEach(function(pair) {
             const btn = document.getElementById(pair[0]);
             if (!btn) return;
             btn.addEventListener('click', function() {
@@ -672,15 +759,32 @@
                     link.style.cssText = 'color:#2563eb!important;font-weight:bold!important;';
             });
 
+            /* 드로어 아이템 active도 동일 로직으로 처리 */
+            document.querySelectorAll('#drawerAdmin .nav-drawer-item').forEach(function(link) {
+                const href = link.getAttribute('href');
+                if (!href) return;
+                const match =
+                    (href.includes('boards')              && currentPath.includes('board')) ||
+                    (href.includes('notices')             && currentPath.includes('notice')) ||
+                    (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
+                    (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
+                    (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
+                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications')) ||
+                    href === currentPath;
+                if (match) link.classList.add('active');
+            });
+
             document.querySelectorAll('.nav-submenu .submenu-link').forEach(function(link) {
                 const href = link.getAttribute('href');
                 const match =
                     (href.includes('boards')              && currentPath.includes('board')) ||
                     (href.includes('notices')             && currentPath.includes('notice')) ||
+                    (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
                     (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
                     (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
-                    (href.includes('grade')               && currentPath.includes('/admin/experts/grade')) ||
-                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications'));
+                    (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications')) ||
+                    (href.includes('advertisements')      && currentPath.includes('/admin/advertisements')) ||
+                    (href.includes('ad-slots')            && currentPath.includes('/admin/ad-slots'));
                 if (match) {
                     link.classList.add('active-link');
                     const trigger = link.closest('.admin-dropdown-container')?.querySelector('.admin-dropdown-trigger');

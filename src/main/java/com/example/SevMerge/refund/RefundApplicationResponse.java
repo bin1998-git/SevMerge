@@ -18,7 +18,7 @@ public class RefundApplicationResponse {
     private String status;
     private String createdAt;
 
-    public RefundApplicationResponse(RefundApplication r, String clientName, String expertName) {
+    public RefundApplicationResponse(RefundRequest r, String clientName, String expertName) {
         this.id = r.getId();
         this.paymentId = r.getPaymentId();
         this.clientId = r.getClientId();

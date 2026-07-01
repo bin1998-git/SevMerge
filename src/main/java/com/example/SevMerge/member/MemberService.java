@@ -1,11 +1,16 @@
 package com.example.SevMerge.member;
 
 import com.example.SevMerge.bid.BidRepository;
+import com.example.SevMerge.board.BoardRepository;
 import com.example.SevMerge.core.exception.AdminException;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
+import com.example.SevMerge.core.util.Define;
 import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.expertprofile.*;
+import com.example.SevMerge.payment.PaymentRepository;
+import com.example.SevMerge.payment.PaymentStatus;
+import com.example.SevMerge.project.ProjectRepository;
 import com.example.SevMerge.notification.NotificationService;
 import com.example.SevMerge.notification.SolApiService;
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,13 +58,16 @@ public class MemberService {
     private final HttpSession session;
     private final ExpertReviewLogRepository expertReviewLogRepository;
     private final BidRepository bidRepository;
+    private final ProjectRepository projectRepository;
+    private final BoardRepository boardRepository;
+    private final PaymentRepository paymentRepository;
 
     //문자 발송
     private final SolApiService solApiService;
 
     private final NotificationService notificationService;
 
-    // ── [L4] Account lockout state (in-memory, per email) ────────────────────
+
     private static final int MAX_FAIL_ATTEMPTS = 5;
     private static final long LOCKOUT_DURATION_MS = 10 * 60_000L; // 10 minutes
 
@@ -159,12 +168,11 @@ public class MemberService {
             log.info("전문가 신청 완료 - memberId={}", member.getId());
         }
         // 문자 메세지 보내기 기능 예시
-//        if (member.isClient()) {
-//            // todo - SevMerge 프로젝트명으로 수정
-//            solApiService.sendSms(member.getPhone(), member.getName() + "의뢰인님 Sev Merge에 가입하신 걸 환영합니다!");
-//        } else if (member.isExpert()) {
-//            solApiService.sendSms(member.getPhone(), member.getName() + "전문가님 Sev Merge에 가입하신 걸 환영합니다!\n관리자 승인까지 약 30분 소요됩니다.");
-//        }
+        if (member.isClient()) {
+            solApiService.sendSms(member.getPhone(), member.getName() + "의뢰인님 IcodeU 에 가입하신 걸 환영합니다!");
+        } else if (member.isExpert()) {
+            solApiService.sendSms(member.getPhone(), member.getName() + "전문가님 IcodeU에 가입하신 걸 환영합니다!\n관리자 승인까지 약 30분 소요됩니다.");
+        }
     }
 
     //로그인 / 로그아웃
@@ -172,7 +180,7 @@ public class MemberService {
     public Member login(MemberRequest.Login request, HttpSession session) {
         String email = request.getEmail();
 
-        // ── [L4] Account lockout check ─────────────────────────────────────
+
         LoginAttempt attempt = loginAttempts.computeIfAbsent(email, k -> new LoginAttempt());
         long now = System.currentTimeMillis();
         if (now < attempt.lockedUntil) {
@@ -182,7 +190,6 @@ public class MemberService {
 
         Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
                 .orElseThrow(() -> {
-                    // Count failed attempt even for non-existent email (timing-safe)
                     recordFailedAttempt(attempt, now, email);
                     return new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다.");
                 });
@@ -208,14 +215,12 @@ public class MemberService {
             return member;
         }
 
-        session.setAttribute("sessionUser", member);
+        session.setAttribute(Define.SESSION_USER, new SessionUser(member));
         log.info("로그인 성공 - memberId={}", member.getId());
         return member;
     }
 
-    /**
-     * Record one failed login attempt; lock account after MAX_FAIL_ATTEMPTS.
-     */
+
     private void recordFailedAttempt(LoginAttempt attempt, long now, String email) {
         int failures = attempt.failures.incrementAndGet();
         log.warn("[L4] 로그인 실패 누적 {}/{} - email={}", failures, MAX_FAIL_ATTEMPTS, email);
@@ -236,11 +241,29 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        //엔티티 메서드를 호출해 상태만 true 변경.
-
         if (member.isAdmin()) {
             throw new AdminException("관리자 계정은 삭제가 불가능합니다.");
         }
+
+        // 의뢰인 탈퇴 제한: 진행중/완료대기 프로젝트가 있으면 탈퇴 불가
+        if (member.isClient()) {
+            boolean hasActiveProject = !projectRepository.findBlockingProjectsByMemberId(memberId).isEmpty();
+            if (hasActiveProject) {
+                throw new BadRequestException("진행 중인 의뢰가 있어 탈퇴할 수 없습니다. 작업 완료 후 정산까지 완료된 뒤 탈퇴해 주세요.");
+            }
+
+            // 미정산 결제(에스크로 보관 중)가 있으면 탈퇴 불가
+            boolean hasUnSettled = paymentRepository.existsByClientIdAndStatus(memberId, PaymentStatus.PAID);
+            if (hasUnSettled) {
+                throw new BadRequestException("정산이 완료되지 않은 의뢰가 있어 탈퇴할 수 없습니다. 정산 완료 후 탈퇴해 주세요.");
+            }
+
+            // 프로젝트 및 게시글 소프트 삭제
+            projectRepository.softDeleteAllByMemberId(memberId);
+            boardRepository.softDeleteAllByMemberId(memberId);
+            log.info("의뢰인 탈퇴 - 프로젝트/게시글 소프트 삭제 완료 - memberId={}", memberId);
+        }
+
         member.withdraw();
         log.info("회원 탈퇴 완료 (Dirty Checking으로 DB 반영) - memberId={}", memberId);
     }
@@ -303,6 +326,12 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getCurrentPassword(), member.getPassword()))
             throw new BadRequestException("현재 비밀번호가 올바르지 않습니다.");
         member.changePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    @Transactional
+    public void deleteProfileImage(Long memberId) {
+        Member member = findMemberById(memberId);
+        member.updateProfileImage(null);
     }
 
 
@@ -398,6 +427,15 @@ public class MemberService {
     @Transactional(readOnly = true)
     public long getNewMemberCountThisMonth() {
         return memberRepository.countNewMembersThisMonth();
+    }
+
+    // 최근 가입한 신규 회원 수 조회
+    public List<MemberResponse> getRecentMembers() {
+        List<Member> members = memberRepository.findTop5ByIsDeletedFalseOrIsDeletedIsNullOrderByCreatedAtDesc();
+
+        return members.stream()
+                .map(MemberResponse::from)
+                .collect(Collectors.toList());
     }
 
     // 역할별 카테고리 조회
@@ -883,7 +921,7 @@ public class MemberService {
                 .build());
     }
 
-    // ===================== 구글 WebClient 방식 =====================
+    // 구글 WebClient 방식
 
     /**
      * 구글 인가 코드 → 액세스 토큰 → 사용자 정보 조회

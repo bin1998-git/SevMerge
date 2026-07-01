@@ -1,0 +1,167 @@
+{{> layout/header}}
+
+<style>
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+    .bg-glow { position: fixed; pointer-events: none; z-index: 0; }
+    .bg-glow-1 { width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.5) 0%, transparent 70%); top: -150px; left: -150px; }
+    .bg-glow-2 { width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.12) 0%, transparent 70%); bottom: 10%; right: -100px; }
+    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
+    .admin-sidebar { width: 220px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(255,255,255,.7); border-right: 1px solid rgba(255,255,255,.8); padding: 28px 0; flex-shrink: 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
+    .sidebar-label { font-size: 11px; font-weight: 700; color: #c4c9d9; letter-spacing: 1.5px; text-transform: uppercase; padding: 0 20px; margin-bottom: 8px; margin-top: 20px; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .12s; border-left: 3px solid transparent; }
+    .sidebar-link:hover { color: #2563eb; background: rgba(239,246,255,.7); }
+    .sidebar-link.active { color: #2563eb; background: rgba(239,246,255,.6); border-left-color: #2563eb; }
+    .sidebar-icon { font-size: 16px; }
+    .admin-content { flex: 1; padding: 36px 36px 80px; background: transparent; position: relative; z-index: 1; }
+    .admin-header { margin-bottom: 24px; }
+    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .admin-desc { font-size: 14px; color: #9ca3af; }
+
+    .stats-row { display: flex; gap: 14px; margin-bottom: 24px; }
+    .stat-card { flex: 1; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 14px; padding: 18px 22px; box-shadow: 0 4px 24px rgba(37,99,235,.06); }
+    .stat-label { font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 6px; }
+    .stat-value { font-size: 26px; font-weight: 900; color: #1c1e26; }
+    .stat-value.accent { color: #2563eb; }
+    .stat-value.warn { color: #f59e0b; }
+
+    .filter-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+    .tab { padding: 8px 18px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); text-decoration: none; transition: all .15s; }
+    .tab:hover { border-color: #2563eb; color: #2563eb; }
+    .tab.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+
+    .wd-table-wrap { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 24px rgba(37,99,235,.06); }
+    .wd-table { width: 100%; border-collapse: collapse; }
+    .wd-table thead tr th { background: rgba(255,255,255,.4); border-bottom: 1px solid rgba(255,255,255,.6); padding: 13px 16px; font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: .5px; text-align: left; white-space: nowrap; }
+    .wd-table tbody tr { border-bottom: 1px solid rgba(255,255,255,.5); }
+    .wd-table tbody tr:last-child { border-bottom: none; }
+    .wd-table tbody tr:hover { background: rgba(239,246,255,.45); }
+    .wd-table tbody td { padding: 14px 16px; font-size: 13px; color: #374151; vertical-align: middle; }
+    .td-name { font-weight: 700; color: #1c1e26; }
+    .td-email { font-size: 12px; color: #9ca3af; }
+    .td-amount { font-weight: 800; color: #2563eb; font-size: 15px; }
+    .td-msg { font-size: 12px; color: #6b7280; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-pending  { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-approved { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .badge-rejected { background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; }
+
+    .action-btns { display: flex; gap: 6px; }
+    .btn-approve { padding: 7px 14px; background: #059669; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .btn-approve:hover { background: #047857; }
+    .btn-reject  { padding: 7px 14px; background: #fff; color: #ef4444; border: 1.5px solid #fecaca; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .btn-reject:hover  { background: #fff3f3; }
+    .empty-state { text-align: center; padding: 60px 0; font-size: 15px; color: #c4c9d9; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 24px; }
+    .pagination .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .page-btn { padding: 9px 15px; border-radius: 8px; backdrop-filter: blur(8px); background: rgba(255,255,255,.6); border: 1.5px solid rgba(255,255,255,.8); font-size: 13px; font-weight: 600; color: #6b7280; text-decoration: none; transition: all .15s; }
+    .page-btn:hover { border-color: #93c5fd; color: #2563eb; background: rgba(255,255,255,.9); }
+</style>
+
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<div class="admin-wrap">
+    <main class="admin-content">
+        <div class="admin-header">
+            <h1 class="admin-title">에스크로 관리</h1>
+            <p class="admin-desc">전문가가 요청한 에스크로 정산을 승인하거나 반려합니다. 승인 시 전문가 97% · 플랫폼 3%로 정산됩니다.</p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">전체 요청</div>
+                <div class="stat-value">{{totalCount}}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">처리 대기</div>
+                <div class="stat-value warn">{{pendingCount}}</div>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <a href="/admin/escrow"                    class="tab {{#isEscrowAll}}active{{/isEscrowAll}}">전체</a>
+            <a href="/admin/escrow?status=PENDING"     class="tab {{#isEscrowPending}}active{{/isEscrowPending}}">대기중</a>
+            <a href="/admin/escrow?status=APPROVED"    class="tab {{#isEscrowApproved}}active{{/isEscrowApproved}}">승인</a>
+            <a href="/admin/escrow?status=REJECTED"    class="tab {{#isEscrowRejected}}active{{/isEscrowRejected}}">반려</a>
+        </div>
+
+        <div class="wd-table-wrap">
+            <table class="wd-table">
+                <thead>
+                    <tr>
+                        <th>전문가</th>
+                        <th>프로젝트 ID</th>
+                        <th>계약금액</th>
+                        <th>전문가 수령액 (97%)</th>
+                        <th>요청 메시지</th>
+                        <th>요청일</th>
+                        <th>상태</th>
+                        <th>처리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#escrowList}}
+                    <tr id="escrow-row-{{requestId}}">
+                        <td>
+                            <div class="td-name">{{expertName}}</div>
+                            <div class="td-email">{{expertEmail}}</div>
+                        </td>
+                        <td><a href="/admin/projects?id={{projectId}}" style="color:#2563eb;font-weight:700;text-decoration:none;">#{{projectId}}</a></td>
+                        <td class="td-amount">{{amount}}원</td>
+                        <td class="td-amount" style="color:#059669;">{{netAmount}}원</td>
+                        <td class="td-msg">{{message}}</td>
+                        <td style="font-size:12px;color:#6b7280;">{{requestDate}}</td>
+                        <td>
+                            {{#isPending}}  <span class="badge badge-pending">대기중</span>  {{/isPending}}
+                            {{#isApproved}} <span class="badge badge-approved">승인</span>   {{/isApproved}}
+                            {{#isRejected}} <span class="badge badge-rejected">반려</span>   {{/isRejected}}
+                        </td>
+                        <td>
+                            {{#isPending}}
+                            <div class="action-btns">
+                                <button class="btn-approve" onclick="processEscrow({{requestId}}, 'approve')">정산 승인</button>
+                                <button class="btn-reject"  onclick="processEscrow({{requestId}}, 'reject')">반려</button>
+                            </div>
+                            {{/isPending}}
+                            {{^isPending}}<span style="font-size:12px;color:#d1d5db;">처리됨</span>{{/isPending}}
+                        </td>
+                    </tr>
+                    {{/escrowList}}
+                    {{^escrowList}}
+                    <tr><td colspan="8" class="empty-state">에스크로 정산 요청이 없습니다.</td></tr>
+                    {{/escrowList}}
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            {{#prevPage}}<a href="/admin/escrow?page={{prevPage}}&status={{currentStatus}}" class="page-btn">이전</a>{{/prevPage}}
+            <span class="page-info">{{currentPage}} / {{totalPages}}</span>
+            {{#nextPage}}<a href="/admin/escrow?page={{nextPage}}&status={{currentStatus}}" class="page-btn">다음</a>{{/nextPage}}
+        </div>
+    </main>
+</div>
+
+<script>
+function processEscrow(requestId, action) {
+    const isApprove = action === 'approve';
+    const msg = isApprove
+        ? '정산을 승인하시겠습니까?\n전문가에게 97%, 플랫폼에 3%가 지급됩니다.'
+        : '정산 요청을 반려하시겠습니까?\n전문가에게 반려 사유를 별도 안내해주세요.';
+    if (!confirm(msg)) return;
+
+    fetch('/api/admin/escrow/' + requestId + '/' + action, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+    }).then(function(res) {
+        if (res.ok) {
+            alert(isApprove ? '정산이 승인되었습니다. 전문가에게 수익이 지급되었습니다.' : '반려 처리되었습니다.');
+            location.reload();
+        } else {
+            res.text().then(function(t) { alert('처리 실패: ' + t); });
+        }
+    }).catch(function() { alert('네트워크 오류가 발생했습니다.'); });
+}
+</script>
+
+{{> layout/footer}}

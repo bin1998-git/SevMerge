@@ -9,6 +9,10 @@ import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,10 +38,10 @@ public class ProjectService {
     private final MemberRepository memberRepository;
 
     // 프로젝트 전체조회 서비스
-    public List<ProjectResponseDTO.ListDTO> findAllProjects() {
+    public List<ProjectResponseDTO.ListDTO> findAllProjects(Pageable pageable) {
         log.info("project 전체 조회 서비스 시작");
-        List<Project> projectList = projectRepository.findAllProjects();
-        return projectList.stream()
+        Page<Project> projectPage = projectRepository.findAllProjects(pageable);
+        return projectPage.getContent().stream()
                 .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
@@ -74,23 +78,24 @@ public class ProjectService {
     }
 
     // 카테고리별 조회
-    public List<ProjectResponseDTO.ListDTO> findByCategory(String category) {
+    // 리턴 타입을 Page<ProjectResponseDTO.ListDTO>로 변경
+    public Page<ProjectResponseDTO.ListDTO> findByCategory(String category, Pageable pageable) {
         log.info("project 카테고리별 조회 서비스 시작");
-        List<Project> projectList = projectRepository.findByCategory(Category.valueOf(category));
-        return projectList.stream()
-                .map(ProjectResponseDTO.ListDTO::new)
-                .collect(Collectors.toList());
+
+        Page<Project> projectPage = projectRepository.findByCategory(Category.valueOf(category), pageable);
+
+
+        return projectPage.map(ProjectResponseDTO.ListDTO::new);
     }
 
 
-    // 중복 체크
-    public List<ProjectResponseDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter) {
+    // 파라미터가 5개인 이 메서드 하나만 존재해야 합니다!
+    public Page<ProjectResponseDTO.ListDTO> findByFilters(String keyword, String category, String statusFilter, String bidFilter, Pageable pageable) {
 
-        List<Project> projectList = projectCustomRepository.findByFilters(keyword, category, statusFilter, bidFilter);
+        // 여기서 레포지토리 호출할 때 반드시 5개 다 던져주세요.
+        Page<Project> projectPage = projectCustomRepository.findByFilters(keyword, category, statusFilter, bidFilter, pageable);
 
-        return projectList.stream()
-                .map(ProjectResponseDTO.ListDTO::new)
-                .collect(Collectors.toList());
+        return projectPage.map(ProjectResponseDTO.ListDTO::new);
     }
 
 
@@ -111,9 +116,9 @@ public class ProjectService {
     }
 
     // 입찰 필터 조회
-    public List<ProjectResponseDTO.ListDTO> findByBidFilter(String bidFilter) {
+    public List<ProjectResponseDTO.ListDTO> findByBidFilter(String bidFilter, Pageable pageable) {
         log.info("findByBidFilter 서비스 시작 - bidFilter: {}", bidFilter);
-        List<Project> projectList = projectRepository.findByBidFilter(BidFilter.valueOf(bidFilter));
+        Page<Project> projectList = projectRepository.findByBidFilter(BidFilter.valueOf(bidFilter), pageable);
         return projectList.stream()
                 .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
@@ -121,9 +126,9 @@ public class ProjectService {
     }
 
     // 키워드 검색
-    public List<ProjectResponseDTO.ListDTO> findByKeyword(String keyword) {
+    public List<ProjectResponseDTO.ListDTO> findByKeyword(String keyword, Pageable pageable) {
         log.info("project 키워드 검색 서비스 시작");
-        List<Project> projectList = projectRepository.findByKeyword(keyword);
+        Page<Project> projectList = projectRepository.findByKeyword(keyword, pageable);
         return projectList.stream()
                 .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
@@ -243,9 +248,11 @@ public class ProjectService {
         List<Project> projectList = projectRepository.findAdminProjectsByKeyword(keyword);
 
         return projectList.stream()
+
                 .map(ProjectResponseDTO.ListDTO::new)
                 .collect(Collectors.toList());
     }
+
 
     // 관리자 전용 삭제기능
     @Transactional
@@ -277,7 +284,7 @@ public class ProjectService {
             sumInPast7Days += dateCountMap.getOrDefault(targetDate, 0);
         }
 
-        int cumulativeCount = findAllProjects().size() - sumInPast7Days;
+        int cumulativeCount = (int) getDoneProjectsCount() - sumInPast7Days;
 
         // 6일전부터 오늘까지 그날의 등록수를 더해줌
         List<Integer> trendData = new ArrayList<>();
@@ -345,7 +352,8 @@ public class ProjectService {
             sumInPeriod += dateCountMap.getOrDefault(targetDate, 0);
         }
 
-        int cumulativeCount = findAllProjects().size() - sumInPeriod;
+        int totalProjects = (int) projectRepository.count(); // 전체 개수 조회
+        int cumulativeCount = totalProjects - sumInPeriod;
 
         List<Integer> trendData = new ArrayList<>();
         for (int i = 0; i <= daysBetween; i++) {
@@ -441,5 +449,48 @@ public class ProjectService {
             trendData.add(dateCountMap.getOrDefault(targetDate, 0));
         }
         return trendData;
+    }
+
+    // 상태별 + 선택기간 동안 일자별 프로젝트 등록조회
+    public List<Integer> getProjectTrendByStatusAndPeriod(String statusFilter, LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawData = projectRepository.findProjectCountByStatusAndPeriod(statusFilter, startDate, endDate);
+        Map<String, Integer> dateCountMap = new HashMap<>();
+
+        if (rawData != null) {
+            for (Object[] row : rawData) {
+                if (row != null && row.length >= 2) {
+                    dateCountMap.put(String.valueOf(row[0]), Integer.parseInt(String.valueOf(row[1])));
+                }
+            }
+        }
+
+        List<Integer> trendData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        for (int i = 0; i <= daysBetween; i++) {
+            String targetDate = startDate.plusDays(i).format(formatter);
+            trendData.add(dateCountMap.getOrDefault(targetDate, 0));
+        }
+        return trendData;
+    }
+
+    public long getTotalProjectCount() {
+        return projectRepository.count(); // 카운트쿼리 용
+    }
+
+
+    public List<ProjectResponseDTO.ListDTO> findAllProjectsList() {
+        return projectRepository.findAll().stream()
+                .map(ProjectResponseDTO.ListDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProjectResponseDTO.ListDTO> getRecentProjects() {
+        return projectRepository.findAllProjects(
+                PageRequest.of(0, 5, Sort.by("createdAt").descending())
+        ).stream()
+                .map(ProjectResponseDTO.ListDTO::new)
+                .collect(Collectors.toList());
     }
 }

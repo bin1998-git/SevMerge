@@ -1,60 +1,116 @@
 {{> layout/header}}
 
 <style>
-    .fa-section { padding: 72px 28px 80px; }
-    .fa-inner { max-width: 440px; margin: 0 auto; }
-    .fa-header { text-align: center; margin-bottom: 32px; }
-    .fa-logo { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 10px; }
-    .fa-logo span { color: #2563eb; }
-    .fa-title { font-size: 22px; font-weight: 900; color: #1c1e26; letter-spacing: -.5px; margin-bottom: 6px; }
-    .fa-desc { font-size: 14px; color: #9ca3af; }
+    :root { --blue: #2563eb; --blue-dark: #1d4ed8; --navy: #172554; }
+
+    .fa-section {
+        min-height: calc(100vh - 64px);
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.6), transparent 25%),
+            radial-gradient(circle at 90% 90%, rgba(37,99,235,.15), transparent 30%),
+            linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        position: relative; overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        padding: 60px 28px;
+    }
+    .fa-section::before {
+        content: ''; position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 40px 40px; opacity: .35; pointer-events: none;
+    }
+
+    .fa-inner { width: 100%; max-width: 460px; position: relative; z-index: 2; }
+
+    .fa-header { text-align: center; margin-bottom: 28px; }
+    .fa-logo { font-size: 24px; font-weight: 900; color: #1e3a8a; margin-bottom: 10px; letter-spacing: -1px; }
+    .fa-logo .hl { color: var(--blue); }
+    .fa-title { font-size: 22px; font-weight: 900; color: var(--navy); letter-spacing: -.5px; margin-bottom: 6px; }
+    .fa-desc { font-size: 14px; color: #4a6fa5; }
 
     /* 탭 */
-    .fa-tabs { display: flex; border-bottom: 2px solid #eaecf4; margin-bottom: 28px; }
-    .fa-tab { flex: 1; padding: 12px 0; text-align: center; font-size: 14px; font-weight: 700;
-        color: #9ca3af; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
-        transition: all .15s; background: none; border-top: none; border-left: none; border-right: none;
-        font-family: inherit; }
-    .fa-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+    .fa-tabs {
+        display: flex; margin-bottom: 24px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.4); border: 1.5px solid rgba(255,255,255,.7);
+        border-radius: 14px; padding: 4px; gap: 4px;
+    }
+    .fa-tab {
+        flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 700;
+        color: #4a6fa5; cursor: pointer; border-radius: 10px;
+        transition: all .15s; background: none; border: none; font-family: inherit;
+    }
+    .fa-tab.active {
+        background: rgba(255,255,255,.85); color: var(--blue);
+        box-shadow: 0 2px 8px rgba(37,99,235,.1);
+    }
 
-    .fa-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 18px; padding: 32px 36px; display: flex; flex-direction: column; gap: 18px; }
+    /* 글래스 카드 */
+    .fa-card {
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        background: rgba(255,255,255,.58);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 28px; padding: 36px 40px;
+        display: flex; flex-direction: column; gap: 18px;
+        box-shadow: 0 20px 60px rgba(37,99,235,.1), inset 0 1px 0 rgba(255,255,255,.9);
+        position: relative;
+    }
+    .fa-card::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    }
+
     .form-group { display: flex; flex-direction: column; gap: 7px; }
-    .form-label { font-size: 13px; font-weight: 700; color: #374151; }
-    .form-input { padding: 13px 16px; background: #f8f9fc; border: 1.5px solid #e2e5ef; border-radius: 10px;
-        font-size: 14px; font-family: inherit; color: #1c1e26; outline: none; transition: border-color .15s; }
-    .form-input:focus { border-color: #2563eb; background: #fff; }
-    .form-hint { font-size: 12px; color: #9ca3af; }
+    .form-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
+    .form-input {
+        padding: 13px 16px; background: rgba(255,255,255,.7);
+        border: 1.5px solid rgba(37,99,235,.15); border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #1e3a6e; outline: none; transition: all .15s;
+    }
+    .form-input::placeholder { color: #93aecf; }
+    .form-input:focus { border-color: var(--blue); background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .form-hint { font-size: 12px; color: #4a6fa5; }
 
     .phone-row { display: flex; gap: 8px; }
     .phone-row .form-input { flex: 1; }
-    .send-btn { padding: 0 18px; background: #1c1e26; color: #fff; border: none; border-radius: 10px;
-        font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
-    .send-btn:hover { background: #2563eb; }
-    .send-btn:disabled { background: #c4c9d9; cursor: not-allowed; }
+    .send-btn {
+        padding: 0 18px; background: #1e3a6e; color: #fff;
+        border: none; border-radius: 12px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s;
+    }
+    .send-btn:hover { background: var(--blue); }
+    .send-btn:disabled { background: #93aecf; cursor: not-allowed; }
 
-    .submit-btn { width: 100%; padding: 14px; background: #2563eb; color: #fff; border: none;
-        border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .submit-btn:hover { background: #1d4ed8; }
+    .submit-btn {
+        width: 100%; padding: 15px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 25px; font-size: 15px; font-weight: 800;
+        cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 14px rgba(37,99,235,.3); transition: all .15s;
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(37,99,235,.4); }
 
-    .result-box { border-radius: 12px; padding: 20px 22px; font-size: 14px; line-height: 1.7; display: none; }
-    .result-box.success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
-    .result-box.error   { background: #fff3f3; border: 1px solid #fecaca; color: #ef4444; }
-    .result-label { font-size: 11px; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px; color: #9ca3af; }
-    .result-value { font-size: 18px; font-weight: 900; color: #1c1e26; }
+    .divider { height: 1px; background: rgba(37,99,235,.1); }
 
-    .fa-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #9ca3af; }
-    .fa-footer a { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .result-box { border-radius: 14px; padding: 18px 20px; font-size: 14px; line-height: 1.7; display: none; }
+    .result-box.success { background: rgba(236,253,245,.8); border: 1px solid #a7f3d0; color: #065f46; }
+    .result-box.error   { background: rgba(255,243,243,.8); border: 1px solid #fecaca; color: #ef4444; }
+    .result-label { font-size: 11px; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px; color: #4a6fa5; text-transform: uppercase; }
+    .result-value { font-size: 20px; font-weight: 900; color: #1e3a6e; }
 
-    .tab-panel { display: none; }
-    .tab-panel.active { display: flex; flex-direction: column; gap: 18px; }
+    .tab-panel { display: none; flex-direction: column; gap: 18px; }
+    .tab-panel.active { display: flex; }
 
-    .divider { height: 1px; background: #f3f4f8; }
+    .fa-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #4a6fa5; }
+    .fa-footer a { color: var(--blue); font-weight: 700; text-decoration: none; }
+    .fa-footer a:hover { text-decoration: underline; }
 </style>
 
 <section class="fa-section">
     <div class="fa-inner">
         <div class="fa-header">
-            <div class="fa-logo">Sev<span>Merge</span></div>
+            <div class="fa-logo">I<span class="hl">code</span>U</div>
             <h1 class="fa-title">계정 찾기</h1>
             <p class="fa-desc">이름과 휴대폰 번호로 계정 정보를 찾아드려요.</p>
         </div>
@@ -66,23 +122,23 @@
 
         <div class="fa-card">
 
-            <!-- 이메일 찾기 탭 -->
+            <!-- 이메일 찾기 -->
             <div id="tab-email" class="tab-panel active">
                 <div class="form-group">
                     <label class="form-label">이름</label>
-                    <input type="text" id="email-name" class="form-input" placeholder="가입 시 입력한 이름" />
+                    <input type="text" id="email-name" class="form-input" placeholder="가입 시 입력한 이름"/>
                 </div>
                 <div class="form-group">
                     <label class="form-label">휴대폰 번호</label>
                     <div class="phone-row">
-                        <input type="tel" id="email-phone" class="form-input" placeholder="010-0000-0000" />
+                        <input type="tel" id="email-phone" class="form-input" placeholder="010-0000-0000"/>
                         <button type="button" class="send-btn" onclick="sendSms('email')">인증</button>
                     </div>
                 </div>
                 <div class="form-group" id="email-sms-group" style="display:none;">
                     <label class="form-label">인증번호</label>
                     <div class="phone-row">
-                        <input type="text" id="email-sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6" />
+                        <input type="text" id="email-sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6"/>
                         <button type="button" class="send-btn" onclick="verifySms('email')">확인</button>
                     </div>
                     <span id="email-sms-hint" class="form-hint"></span>
@@ -92,23 +148,23 @@
                 <div id="email-result" class="result-box"></div>
             </div>
 
-            <!-- 비밀번호 찾기 탭 -->
+            <!-- 비밀번호 찾기 -->
             <div id="tab-password" class="tab-panel">
                 <div class="form-group">
                     <label class="form-label">이름</label>
-                    <input type="text" id="pw-name" class="form-input" placeholder="가입 시 입력한 이름" />
+                    <input type="text" id="pw-name" class="form-input" placeholder="가입 시 입력한 이름"/>
                 </div>
                 <div class="form-group">
                     <label class="form-label">휴대폰 번호</label>
                     <div class="phone-row">
-                        <input type="tel" id="pw-phone" class="form-input" placeholder="010-0000-0000" />
+                        <input type="tel" id="pw-phone" class="form-input" placeholder="010-0000-0000"/>
                         <button type="button" class="send-btn" onclick="sendSms('password')">인증</button>
                     </div>
                 </div>
                 <div class="form-group" id="pw-sms-group" style="display:none;">
                     <label class="form-label">인증번호</label>
                     <div class="phone-row">
-                        <input type="text" id="pw-sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6" />
+                        <input type="text" id="pw-sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6"/>
                         <button type="button" class="send-btn" onclick="verifySms('password')">확인</button>
                     </div>
                     <span id="pw-sms-hint" class="form-hint"></span>
@@ -117,6 +173,7 @@
                 <button type="button" class="submit-btn" onclick="resetPassword()">임시 비밀번호 받기</button>
                 <div id="pw-result" class="result-box"></div>
             </div>
+
         </div>
 
         <div class="fa-footer">
@@ -126,7 +183,6 @@
 </section>
 
 <script>
-    // 탭 전환
     let emailVerified = false;
     let pwVerified = false;
 
@@ -138,7 +194,6 @@
         document.getElementById('tab-password').classList.toggle('active', tab === 'password');
     }
 
-    // 전화번호 하이픈 자동
     ['email-phone', 'pw-phone'].forEach(id => {
         const el = document.getElementById(id);
         el.addEventListener('input', function() {
@@ -162,9 +217,7 @@
             document.getElementById(groupId).style.display = 'flex';
             document.getElementById(groupId).style.flexDirection = 'column';
             alert('인증번호가 발송되었습니다.');
-        } else {
-            alert('발송에 실패했습니다. 다시 시도해주세요.');
-        }
+        } else { alert('발송에 실패했습니다.'); }
     }
 
     async function verifySms(type) {
@@ -179,11 +232,9 @@
         if (res.ok) {
             if (type === 'email') emailVerified = true;
             else pwVerified = true;
-            hint.textContent = '✓ 인증되었습니다.';
-            hint.style.color = '#10b981';
+            hint.textContent = '✓ 인증되었습니다.'; hint.style.color = '#10b981';
         } else {
-            hint.textContent = '✗ 인증번호가 일치하지 않습니다.';
-            hint.style.color = '#ef4444';
+            hint.textContent = '✗ 인증번호가 일치하지 않습니다.'; hint.style.color = '#ef4444';
         }
     }
 
@@ -193,7 +244,6 @@
         const result = document.getElementById('email-result');
         if (!name || !phone) { alert('이름과 휴대폰 번호를 입력해주세요.'); return; }
         if (!emailVerified) { alert('휴대폰 인증을 완료해주세요.'); return; }
-
         const res = await fetch('/api/member/find-email', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, phone })
@@ -215,7 +265,6 @@
         const result = document.getElementById('pw-result');
         if (!name || !phone) { alert('이름과 휴대폰 번호를 입력해주세요.'); return; }
         if (!pwVerified) { alert('휴대폰 인증을 완료해주세요.'); return; }
-
         const res = await fetch('/api/member/reset-password', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, phone })

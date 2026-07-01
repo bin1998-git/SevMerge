@@ -3,6 +3,7 @@ package com.example.SevMerge.board;
 import com.example.SevMerge.core.exception.BadRequestException;
 import com.example.SevMerge.core.exception.NotFoundException;
 import com.example.SevMerge.core.exception.UnauthorizedException;
+import com.example.SevMerge.core.util.FileUtil;
 import com.example.SevMerge.member.Member;
 import com.example.SevMerge.member.MemberRepository;
 import com.example.SevMerge.member.Role;
@@ -14,8 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,147 +29,124 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
+    //  파일 저장 유틸
+    private String saveFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+        try {
+            String savedName = FileUtil.saveFile(file, FileUtil.IMAGES_DIR);
+            return "/images/" + savedName;
+        } catch (IOException e) {
+            log.error("파일 저장 실패", e);
+            throw new BadRequestException("파일 저장에 실패했습니다.");
+        }
+    }
+
+    // 조회
     public Page<BoardResponse.ListDTO> findAllByBoardType(BoardType boardType, String keyword, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createdAt").descending());
-        Page<Board> boardPage = boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword, pageable);
-        return boardPage.map(BoardResponse.ListDTO::new);
+        return boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword, pageable)
+                .map(BoardResponse.ListDTO::new);
     }
 
     public List<BoardResponse.ListDTO> findAllByMyBoard(Long memberId) {
-
-        return boardRepository.findByMyBoard(memberId)
-                .stream()
-                .map(BoardResponse.ListDTO::new)
-                .toList();
+        return boardRepository.findByMyBoard(memberId).stream()
+                .map(BoardResponse.ListDTO::new).toList();
     }
 
-    // 1:1 게시글 조회
-    public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member) {
-        Member memberEntity = memberRepository.findById(member.getId()).orElseThrow(
-                () -> new NotFoundException("멤버를 찾을 수 없습니다.")
-        );
-
-        List<BoardResponse.ListDTO> inquiryBoards;
-
+    public List<BoardResponse.ListDTO> findAllInquiry(BoardType boardType, Member member, String keyword) {
+        memberRepository.findById(member.getId())
+                .orElseThrow(() -> new NotFoundException("멤버를 찾을 수 없습니다."));
         if (member.getRole().equals(Role.ADMIN)) {
-            inquiryBoards = boardRepository.findAllByBoardTypeIsActive(boardType)
-                    .stream()
-                    .map(BoardResponse.ListDTO::new)
-                    .toList();
-        } else {
-            inquiryBoards = boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType, memberEntity.getId())
-                    .stream()
-                    .map(BoardResponse.ListDTO::new)
-                    .toList();
-            ;
+            List<Board> boards = (keyword == null || keyword.trim().isEmpty())
+                    ? boardRepository.findAllByBoardTypeIsActive(boardType)
+                    : boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword);
+            return boards.stream().map(BoardResponse.ListDTO::new).toList();
         }
-
-        return inquiryBoards;
+        return boardRepository.findInquiryByBoardTypeWithMemberIdAndIsActive(boardType, member.getId()).stream()
+                .map(BoardResponse.ListDTO::new).toList();
     }
 
     public BoardResponse.DetailDTO detailBoard(Long boardId) {
-        Board boardEntity = boardRepository.findByIdWithMember(boardId).orElseThrow(
-                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
-        );
-
-        return new BoardResponse.DetailDTO(boardEntity);
+        Board board = boardRepository.findByIdWithMember(boardId)
+                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        return new BoardResponse.DetailDTO(board);
     }
 
-    // 게시글 저장
+    // 저장
     @Transactional
-    public void saveBoard(Member member,
-                          BoardRequest.SaveBoardDTO saveBoardDTO) {
+    public void saveBoard(Member member, BoardRequest.SaveBoardDTO dto) {
+        Member memberEntity = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new BadRequestException("사용자를 찾을 수 없습니다."));
 
-        // 1. 로그인 여부 확인 - 로그인 인터셉트
+        String url = saveFile(dto.getAttachmentFile());
+        String name = (dto.getAttachmentFile() != null && !dto.getAttachmentFile().isEmpty())
+                ? dto.getAttachmentFile().getOriginalFilename() : null;
 
-        Member memberEntity = memberRepository.findById(member.getId()).orElseThrow(
-                () -> new BadRequestException("사용자를 찾을 수 없습니다.")
-        );
-
-        boardRepository.save(saveBoardDTO.toEntity(memberEntity));
+        boardRepository.save(dto.toEntity(memberEntity, url, name));
     }
 
+    // 수정
     @Transactional
-    public void updateBoard(Long boardId, BoardRequest.UpdateBoardDTO updateBoardDTO, Long memberId) {
-        Board boardEntity = boardRepository.findById(boardId).orElseThrow(
-                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
-        );
-
-        if (!boardEntity.getMember().getId().equals(memberId)) {
+    public void updateBoard(Long boardId, BoardRequest.UpdateBoardDTO dto,
+                            Long memberId, MultipartFile file) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        if (!board.getMember().getId().equals(memberId)) {
             throw new UnauthorizedException("수정 권한이 없습니다.");
         }
+        dto.validate();
 
-        updateBoardDTO.validate();
-
-        boardEntity.update(updateBoardDTO);
-
-        boardRepository.save(boardEntity);
-    }
-
-    @Transactional
-    public void deleteBoard(Long boardId, Long memberId) {
-        Board boardEntity = boardRepository.findByIdWithMember(boardId).orElseThrow(
-                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
-        );
-
-        if (!boardEntity.getMember().getId().equals(memberId)) {
-            throw new UnauthorizedException("삭제 권한이 없습니다.");
+        // 새 파일이 올라온 경우에만 교체
+        if (file != null && !file.isEmpty()) {
+            dto.setAttachmentUrl(saveFile(file));
+            dto.setAttachmentName(file.getOriginalFilename());
         }
-
-        boardEntity.softDelete();
-    }
-
-    // 관리자 게시판 관리 >> 전체 게시판 조회
-    public List<BoardResponse.ListDTO> getAdminBoardsByType(BoardType boardType, String keyword) {
-        // 리포지토리 쿼리 메소드 호출
-        List<Board> boards;
-
-        if (keyword == null || keyword.trim().isEmpty()) {
-            boards = boardRepository.findAllByBoardTypeIsActive(boardType);
-        } else {
-            boards = boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword);
-        }
-
-        return boards.stream()
-                .map(board -> new BoardResponse.ListDTO(board))
-                .collect(Collectors.toList());
-    }
-
-    // 관리자 전용 삭제기능
-    @Transactional
-    public void deleteBoardByAdmin(Long boardId) {
-        Board boardEntity = boardRepository.findByIdWithMember(boardId).orElseThrow(
-                () -> new NotFoundException("게시글을 찾을 수 없습니다.")
-        );
-        boardEntity.softDelete();
-    }
-
-    // 관리자 공지사항 작성
-    @Transactional
-    public void createNotice(String title, String content, Long memberId) {
-        Member adminMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자입니다. id = " + memberId));
-
-        Board board = new Board(BoardType.NOTICE, title, content, 0, null, adminMember, true);
-
+        board.update(dto);
         boardRepository.save(board);
     }
 
-    // 관리자 공지사항 수정
+    // 삭제
     @Transactional
-    public void updateNotice(Long id, BoardRequest.UpdateBoardDTO updateDTO) {
-        // 수정할 게시글 조회
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
-        board.update(updateDTO);
+    public void deleteBoard(Long boardId, Long memberId) {
+        Board board = boardRepository.findByIdWithMember(boardId)
+                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        if (!board.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("삭제 권한이 없습니다.");
+        }
+        board.softDelete();
     }
 
-    // 공지사항 삭제
+    //  관리자
+    public List<BoardResponse.ListDTO> getAdminBoardsByType(BoardType boardType, String keyword) {
+        List<Board> boards = (keyword == null || keyword.trim().isEmpty())
+                ? boardRepository.findAllByBoardTypeIsActive(boardType)
+                : boardRepository.findAllByBoardTypeAndKeyword(boardType, keyword);
+        return boards.stream().map(BoardResponse.ListDTO::new).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteBoardByAdmin(Long boardId) {
+        boardRepository.findByIdWithMember(boardId)
+                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다.")).softDelete();
+    }
+
+    @Transactional
+    public void createNotice(String title, String content, Long memberId) {
+        Member admin = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자입니다. id=" + memberId));
+        boardRepository.save(new Board(null, BoardType.NOTICE, title, content, 0, null, admin, true, null, null));
+    }
+
+    @Transactional
+    public void updateNotice(Long id, BoardRequest.UpdateBoardDTO dto) {
+        boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id)).update(dto);
+    }
+
     @Transactional
     public void deleteNotice(Long id) {
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
-        boardRepository.delete(board);
+        boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id)).softDelete();
     }
 
     @Transactional

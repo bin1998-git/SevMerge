@@ -1,0 +1,410 @@
+{{> layout/header}}
+
+<style>
+    .admin-wrap { display: flex; min-height: calc(100vh - 64px); }
+    .admin-content { flex: 1; padding: 36px 36px 80px; background: #f5f6fa; }
+    .admin-title { font-size: 22px; font-weight: 900; color: #1c1e26; margin-bottom: 4px; }
+    .admin-desc { font-size: 14px; color: #9ca3af; margin-bottom: 28px; }
+
+    .section-title { font-size: 17px; font-weight: 800; color: #1c1e26; margin: 32px 0 16px; padding-bottom: 10px; border-bottom: 1px solid #eaecf4; }
+
+    .ad-list { display: flex; flex-direction: column; gap: 16px; }
+    .ad-card { background: #fff; border: 1.5px solid #eaecf4; border-radius: 14px; padding: 22px 24px; display: flex; gap: 20px; align-items: flex-start; }
+    .ad-thumb { width: 120px; height: 80px; border-radius: 8px; background: #f0f4fa; flex-shrink: 0; overflow: hidden; border: 1px solid #eaecf4; cursor: pointer; transition: opacity .15s; }
+    .ad-thumb:hover { opacity: .85; }
+    .ad-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .ad-thumb-banner { width: 200px; height: 50px; border-radius: 6px; background: #f0f4fa; flex-shrink: 0; overflow: hidden; border: 1px solid #fde68a; cursor: pointer; transition: opacity .15s; }
+    .ad-thumb-banner:hover { opacity: .85; }
+    .ad-thumb-banner img { width: 100%; height: 100%; object-fit: cover; }
+    .ad-body { flex: 1; }
+    .ad-expert-name { font-size: 16px; font-weight: 800; color: #1c1e26; margin-bottom: 4px; }
+    .ad-placement { display: inline-block; font-size: 11px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 2px 10px; border-radius: 20px; margin-bottom: 8px; }
+    .ad-placement-auction { display: inline-block; font-size: 11px; font-weight: 700; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; padding: 2px 10px; border-radius: 20px; margin-bottom: 8px; }
+    .ad-msg { font-size: 13px; color: #6b7280; margin-bottom: 8px; line-height: 1.5; }
+    .ad-meta { font-size: 12px; color: #9ca3af; }
+    .ad-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+    .approve-btn { padding: 9px 18px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .approve-btn:hover { background: #1d4ed8; }
+    .reject-btn { padding: 9px 18px; background: #fff; color: #ef4444; border: 1.5px solid #fecaca; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .reject-btn:hover { background: #fff3f3; }
+    .empty-state { text-align: center; padding: 40px 0; font-size: 15px; color: #c4c9d9; }
+
+    .status-pending  { font-size: 11px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-active   { font-size: 11px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-rejected { font-size: 11px; background: #fff3f3; color: #ef4444; border: 1px solid #fecaca; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-expired  { font-size: 11px; background: #f3f4f8; color: #9ca3af; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+    .status-auction-pending { font-size: 11px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 20px; font-weight: 700; display: inline-block; }
+
+    /* 이미지 모달 */
+    .img-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 9998; align-items: center; justify-content: center; cursor: pointer; }
+    .img-modal-bg.open { display: flex; }
+    .img-modal-bg img { max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+
+    /* 거절 사유 모달 */
+    .reject-modal-bg {
+        display: none; position: fixed; inset: 0;
+        background: rgba(13,27,46,.55); backdrop-filter: blur(6px);
+        z-index: 9999; align-items: center; justify-content: center;
+    }
+    .reject-modal-bg.open { display: flex; }
+    .reject-modal {
+        background: rgba(255,255,255,.92); backdrop-filter: blur(20px);
+        border: 1.5px solid rgba(255,255,255,.9);
+        border-radius: 20px; padding: 32px 36px;
+        max-width: 460px; width: 90%;
+        box-shadow: 0 20px 60px rgba(13,27,46,.15);
+        position: relative;
+    }
+    .reject-modal::before {
+        content: ''; position: absolute; left: 10%; right: 10%; top: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent);
+    }
+    .reject-modal-title { font-size: 17px; font-weight: 900; color: #1e3a6e; margin-bottom: 6px; }
+    .reject-modal-sub { font-size: 13px; color: #4a6fa5; margin-bottom: 16px; line-height: 1.6; }
+    .reject-modal-textarea {
+        width: 100%; box-sizing: border-box; min-height: 100px; resize: vertical;
+        padding: 12px 14px;
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 12px; font-size: 14px; font-family: inherit; color: #1e3a6e;
+        outline: none; transition: border-color .15s;
+    }
+    .reject-modal-textarea:focus { border-color: #ef4444; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(239,68,68,.08); }
+    .reject-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .reject-modal-cancel {
+        padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700;
+        background: rgba(255,255,255,.6); border: 1.5px solid rgba(37,99,235,.15);
+        color: #4a6fa5; cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .reject-modal-cancel:hover { background: rgba(255,255,255,.9); }
+    .reject-modal-confirm {
+        padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700;
+        background: linear-gradient(135deg, #ef4444, #dc2626); border: none;
+        color: #fff; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 12px rgba(239,68,68,.3); transition: all .15s;
+    }
+    .reject-modal-confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(239,68,68,.4); }
+</style>
+
+<div class="admin-wrap">
+    <main class="admin-content">
+        <h1 class="admin-title">광고 승인 관리</h1>
+        <p class="admin-desc">전문가가 신청한 광고를 검토하고 승인 또는 거절합니다.</p>
+
+        <!-- ⚡ 경매 낙찰 배너 검토 -->
+        {{#hasPendingBanners}}
+            <div class="section-title">⚡ 경매 낙찰 배너 검토 대기</div>
+            <div class="ad-list">
+                {{#pendingBanners}}
+                    <div class="ad-card">
+                        <div class="ad-thumb-banner" onclick="openImg('/images/{{bannerImage}}')">
+                            {{#bannerImage}}
+                                <img src="/images/{{bannerImage}}" alt="배너"/>
+                            {{/bannerImage}}
+                            {{^bannerImage}}
+                                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11px;">이미지 없음</div>
+                            {{/bannerImage}}
+                        </div>
+                        <div class="ad-body">
+                            <div class="ad-expert-name">낙찰 전문가 ID: {{expertId}}</div>
+                            <span class="ad-placement-auction">⚡ 경매 낙찰 배너</span>
+                            <span class="status-auction-pending">배너 검토 대기</span>
+                            {{#adMessage}}
+                                <div class="ad-msg">"{{adMessage}}"</div>
+                            {{/adMessage}}
+                            <div class="ad-meta">728 × 90px 메인 배너 | 낙찰가: {{bidPrice}}P</div>
+                        </div>
+                        <div class="ad-actions">
+                            <button class="approve-btn" onclick="approveBanner({{id}})">승인</button>
+                            <button class="reject-btn" onclick="openBannerRejectModal({{id}})">거절</button>
+                        </div>
+                    </div>
+                {{/pendingBanners}}
+            </div>
+        {{/hasPendingBanners}}
+
+        <!-- 승인 대기 -->
+        <div class="section-title">⏳ 승인 대기 ({{pendingCount}}건)</div>
+        <div class="ad-list">
+            {{#pendingAds}}
+                <div class="ad-card" id="ad-card-{{id}}">
+                    <div class="ad-thumb" onclick="openImg('{{displayImageUrl}}')">
+                        {{#bannerImage}}
+                            <img src="{{displayImageUrl}}" alt="배너"/>
+                        {{/bannerImage}}
+                        {{^bannerImage}}
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11px;">이미지 없음</div>
+                        {{/bannerImage}}
+                    </div>
+                    <div class="ad-body">
+                        <div class="ad-expert-name">{{expertName}}</div>
+                        <span class="ad-placement">{{placement}}</span>
+                        <span class="status-pending">승인 대기</span>
+                        <div class="ad-msg">"{{customMessage}}"</div>
+                        <div class="ad-meta">신청 기간: {{startDate}} ~ {{endDate}} | 결제 금액: {{price}}P</div>
+                    </div>
+                    <div class="ad-actions">
+                        <button class="approve-btn" onclick="processAd({{id}}, 'approve')">승인</button>
+                        <button class="reject-btn" onclick="processAd({{id}}, 'reject')">거절</button>
+                    </div>
+                </div>
+            {{/pendingAds}}
+            {{^pendingAds}}
+                <div class="empty-state">승인 대기 중인 광고가 없습니다.</div>
+            {{/pendingAds}}
+        </div>
+
+        <!-- 처리 완료 이력 -->
+        <div class="section-title">📋 처리 완료 이력</div>
+        <div class="ad-list">
+            {{#processedAds}}
+                <div class="ad-card">
+                    <div class="ad-thumb" onclick="openImg('{{displayImageUrl}}')">
+                        {{#bannerImage}}
+                            <img src="{{displayImageUrl}}" alt="배너"/>
+                        {{/bannerImage}}
+                        {{^bannerImage}}
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11px;">이미지 없음</div>
+                        {{/bannerImage}}
+                    </div>
+                    <div class="ad-body">
+                        <div class="ad-expert-name">{{expertName}}</div>
+                        <span class="ad-placement">{{placement}}</span>
+                        {{#isActive}}<span class="status-active">노출중</span>{{/isActive}}
+                        {{#isRejected}}<span class="status-rejected">거절됨</span>{{/isRejected}}
+                        {{#isExpired}}<span class="status-expired">종료</span>{{/isExpired}}
+                        <div class="ad-msg">"{{customMessage}}"</div>
+                        <div class="ad-meta">기간: {{startDate}} ~ {{endDate}} | {{price}}P</div>
+                        {{#hasRejectReason}}
+                            <div style="margin-top:8px;font-size:12px;color:#ef4444;background:#fff3f3;border:1px solid #fecaca;border-radius:8px;padding:6px 10px;">
+                                거절 사유: {{rejectReason}}
+                            </div>
+                        {{/hasRejectReason}}
+                    </div>
+                </div>
+            {{/processedAds}}
+            {{^processedAds}}
+                <div class="empty-state">처리된 광고 이력이 없습니다.</div>
+            {{/processedAds}}
+        </div>
+        <!-- ⚡ 경매 배너 처리 완료 이력 -->
+        {{#hasProcessedBanners}}
+            <div class="section-title">⚡ 경매 배너 처리 이력</div>
+            <div class="ad-list">
+                {{#processedBanners}}
+                    <div class="ad-card">
+                        <div class="ad-thumb-banner" onclick="openImg('/images/{{bannerImage}}')">
+                            {{#bannerImage}}
+                                <img src="/images/{{bannerImage}}" alt="배너"/>
+                            {{/bannerImage}}
+                            {{^bannerImage}}
+                                <div style="width:100%;height:100%;display:flex;align-items:center;
+                                    justify-content:center;color:#9ca3af;font-size:11px;">이미지 없음</div>
+                            {{/bannerImage}}
+                        </div>
+                        <div class="ad-body">
+                            <div class="ad-expert-name">전문가 ID: {{expertId}}</div>
+                            <span class="ad-placement-auction">⚡ 경매 낙찰 배너</span>
+                            {{#reviewStatus}}
+                                <!-- APPROVED -->
+                            {{/reviewStatus}}
+                            <span class="{{#isApprovedReview}}status-active{{/isApprovedReview}}{{#isRejectedReview}}status-rejected{{/isRejectedReview}}">
+                        {{#isApprovedReview}}✓ 승인됨 — 메인 노출중{{/isApprovedReview}}
+                                {{#isRejectedReview}}✗ 거절됨{{/isRejectedReview}}
+                    </span>
+                            {{#adMessage}}
+                                <div class="ad-msg">"{{adMessage}}"</div>
+                            {{/adMessage}}
+                            <div class="ad-meta">낙찰가: {{bidPrice}}P</div>
+                        </div>
+                    </div>
+                {{/processedBanners}}
+            </div>
+        {{/hasProcessedBanners}}
+    </main>
+</div>
+
+<!-- 이미지 모달 -->
+<div class="img-modal-bg" id="imgModal" onclick="closeImg()">
+    <img id="imgModalSrc" src="" alt="배너 이미지"/>
+</div>
+
+<!-- 광고 거절 사유 모달 -->
+<div class="reject-modal-bg" id="rejectModalBg">
+    <div class="reject-modal">
+        <h3 class="reject-modal-title">광고 거절</h3>
+        <p class="reject-modal-sub">거절 사유를 입력해 주세요.<br>전문가의 광고 내역에 안내됩니다.</p>
+        <textarea id="rejectReasonInput" class="reject-modal-textarea"
+                  placeholder="예) 이미지가 부적절합니다. / 홍보 문구가 과장되어 있습니다."
+                  maxlength="200"></textarea>
+        <span style="font-size:11px;color:#93aecf;text-align:right;display:block;margin-top:4px;">
+            <span id="rejectCharCount">0</span>/200
+        </span>
+        <div class="reject-modal-btns">
+            <button class="reject-modal-cancel" onclick="closeRejectModal()">취소</button>
+            <button class="reject-modal-confirm" onclick="confirmReject()">거절 처리</button>
+        </div>
+    </div>
+</div>
+
+<!-- 배너 거절 사유 모달 -->
+<div class="reject-modal-bg" id="bannerRejectModalBg">
+    <div class="reject-modal">
+        <h3 class="reject-modal-title">경매 배너 거절</h3>
+        <p class="reject-modal-sub">거절 사유를 입력해 주세요.<br>낙찰자에게 알림이 발송되고 포인트가 환불됩니다.</p>
+        <textarea id="bannerRejectReasonInput" class="reject-modal-textarea"
+                  placeholder="예) 이미지 사이즈가 맞지 않습니다. / 부적절한 광고 내용입니다."
+                  maxlength="200"></textarea>
+        <span style="font-size:11px;color:#93aecf;text-align:right;display:block;margin-top:4px;">
+            <span id="bannerRejectCharCount">0</span>/200
+        </span>
+        <div class="reject-modal-btns">
+            <button class="reject-modal-cancel" onclick="closeBannerRejectModal()">취소</button>
+            <button class="reject-modal-confirm" onclick="confirmBannerReject()">거절 처리</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 이미지 모달
+    function openImg(url) {
+        if (!url || url === '/images/default.png') return;
+        document.getElementById('imgModalSrc').src = url;
+        document.getElementById('imgModal').classList.add('open');
+    }
+    function closeImg() {
+        document.getElementById('imgModal').classList.remove('open');
+    }
+
+    // 광고 거절 모달
+    let currentRejectAdId = null;
+
+    function processAd(adId, action) {
+        if (action === 'approve') {
+            if (!confirm('해당 광고를 승인하시겠습니까?')) return;
+            fetch(`/api/admin/advertisements/${adId}/approve`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => {
+                if (res.ok) { alert('광고가 승인되었습니다.'); location.reload(); }
+                else alert('처리 중 오류가 발생했습니다.');
+            })
+            .catch(() => alert('통신 오류가 발생했습니다.'));
+        } else {
+            currentRejectAdId = adId;
+            document.getElementById('rejectReasonInput').value = '';
+            document.getElementById('rejectCharCount').textContent = '0';
+            document.getElementById('rejectModalBg').classList.add('open');
+            setTimeout(() => document.getElementById('rejectReasonInput').focus(), 100);
+        }
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModalBg').classList.remove('open');
+        currentRejectAdId = null;
+    }
+
+    function confirmReject() {
+        const reason = document.getElementById('rejectReasonInput').value.trim();
+        if (!reason) {
+            alert('거절 사유를 입력해 주세요.');
+            document.getElementById('rejectReasonInput').focus();
+            return;
+        }
+        fetch(`/api/admin/advertisements/${currentRejectAdId}/reject`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(res => {
+            if (res.ok) {
+                alert('광고가 거절되었습니다.');
+                closeRejectModal();
+                location.reload();
+            } else {
+                alert('처리 중 오류가 발생했습니다.');
+            }
+        })
+        .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    // 경매 배너 승인/거절
+    let currentBannerBidId = null;
+
+    function approveBanner(bidId) {
+        if (!confirm('배너를 승인하시겠습니까?\n승인 시 메인화면에 즉시 노출됩니다.')) return;
+        fetch(`/api/admin/ad-bids/${bidId}/approve`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => {
+            if (res.ok) { alert('승인되었습니다! 메인화면에 노출됩니다.'); location.reload(); }
+            else alert('처리 중 오류가 발생했습니다.');
+        })
+        .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    function openBannerRejectModal(bidId) {
+        currentBannerBidId = bidId;
+        document.getElementById('bannerRejectReasonInput').value = '';
+        document.getElementById('bannerRejectCharCount').textContent = '0';
+        document.getElementById('bannerRejectModalBg').classList.add('open');
+        setTimeout(() => document.getElementById('bannerRejectReasonInput').focus(), 100);
+    }
+
+    function closeBannerRejectModal() {
+        document.getElementById('bannerRejectModalBg').classList.remove('open');
+        currentBannerBidId = null;
+    }
+
+    function confirmBannerReject() {
+        const reason = document.getElementById('bannerRejectReasonInput').value.trim();
+        if (!reason) {
+            alert('거절 사유를 입력해 주세요.');
+            document.getElementById('bannerRejectReasonInput').focus();
+            return;
+        }
+        fetch(`/api/admin/ad-bids/${currentBannerBidId}/reject`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(res => {
+            if (res.ok) {
+                alert('거절 처리되었습니다. 포인트가 환불됩니다.');
+                closeBannerRejectModal();
+                location.reload();
+            } else {
+                alert('처리 중 오류가 발생했습니다.');
+            }
+        })
+        .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    // 글자수 카운트
+    document.getElementById('rejectReasonInput').addEventListener('input', function() {
+        document.getElementById('rejectCharCount').textContent = this.value.length;
+    });
+    document.getElementById('bannerRejectReasonInput').addEventListener('input', function() {
+        document.getElementById('bannerRejectCharCount').textContent = this.value.length;
+    });
+
+    // 배경 클릭 시 닫기
+    document.getElementById('rejectModalBg').addEventListener('click', function(e) {
+        if (e.target === this) closeRejectModal();
+    });
+    document.getElementById('bannerRejectModalBg').addEventListener('click', function(e) {
+        if (e.target === this) closeBannerRejectModal();
+    });
+
+    // ESC 키로 닫기
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeRejectModal();
+            closeBannerRejectModal();
+            closeImg();
+        }
+    });
+</script>
+
+{{> layout/footer}}

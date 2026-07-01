@@ -31,10 +31,11 @@ public class ChatMessage {
     @JoinColumn(name = "sender_id", nullable = false)
     private Member sender; // 메시지 발신자 (FK)
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String text;
 
-    // private String imageUrl; // 이미지 URL (선택 사항)
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
     @Column(nullable = false)
     @ColumnDefault("false")
@@ -59,11 +60,12 @@ public class ChatMessage {
     private Timestamp updatedAt;
 
     @Builder
-    public ChatMessage(Long id, ChatRoom chatRoom, Member sender, String text, Boolean isDeleted, Timestamp createdAt, Timestamp updatedAt) {
+    public ChatMessage(Long id, ChatRoom chatRoom, Member sender, String text, String imageUrl, Boolean isDeleted, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.chatRoom = chatRoom;
         this.sender = sender;
         this.text = text;
+        this.imageUrl = imageUrl;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

@@ -20,6 +20,8 @@ public class AdvertisementResponse {
     private String status;
     private String customMessage;
     private String bannerImage;
+    private String avgRating;
+    private String rejectReason;
 
     public AdvertisementResponse(Advertisement ad, String expertName, String speciality, String profileImage) {
         this.id = ad.getId();
@@ -35,15 +37,30 @@ public class AdvertisementResponse {
         this.status = ad.getStatus().name();
         this.customMessage = ad.getCustomMessage();
         this.bannerImage = ad.getBannerImage();
+        this.rejectReason = ad.getRejectReason();
+    }
+
+    public void setAvgRating(String avgRating) {
+        this.avgRating = avgRating;
     }
 
     public boolean isActive()  { return "ACTIVE".equals(status); }
     public boolean isExpired() { return "EXPIRED".equals(status); }
+    public boolean isPending()  { return "PENDING".equals(status); }
+    public boolean isRejected() { return "REJECTED".equals(status); }
 
     public String getDisplayImageUrl() {
         String img = (bannerImage != null && !bannerImage.isBlank()) ? bannerImage : profileImage;
         if (img == null || img.isBlank()) return "/images/default.png";
         if (img.startsWith("http")) return img;
         return "/images/" + img;
+    }
+
+    public boolean isHasProfileImage() {
+        return profileImage != null && !profileImage.isBlank();
+    }
+
+    public boolean isHasRejectReason() {
+        return rejectReason != null && !rejectReason.isBlank();
     }
 }
