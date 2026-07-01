@@ -180,6 +180,16 @@
         .hero-title-light { max-width: 58%; }
         .hero-steps { display: none; }
     }
+    html {
+        scroll-behavior: smooth; /* 부드럽게 스크롤 */
+    }
+
+    #features,
+    #how,
+    #categories,
+    #trust {
+        scroll-margin-top: 64px; /* 고정 헤더 높이만큼 여유 */
+    }
 </style>
 
 <div class="bg-glow bg-glow-1"></div>
@@ -247,7 +257,7 @@
 </div>
 
 <!-- 서비스 소개 -->
-<div class="intro-section intro-features">
+<div class="intro-section intro-features" id="features">
     <div class="intro-section-inner">
         <div class="intro-section-header">
             <p class="intro-eyebrow">WHY ICODEU</p>
@@ -275,7 +285,7 @@
 </div>
 
 <!-- 이용 방법 -->
-<div class="intro-section intro-how">
+<div class="intro-section intro-how" id="how">
     <div class="intro-section-inner">
         <div class="intro-section-header">
             <p class="intro-eyebrow">HOW IT WORKS</p>
@@ -318,7 +328,7 @@
 </div>
 
 <!-- 분야 -->
-<div class="intro-section intro-categories">
+<div class="intro-section intro-categories" id="categories">
     <div class="intro-section-inner">
         <div class="intro-section-header">
             <p class="intro-eyebrow">CATEGORIES</p>
@@ -339,7 +349,7 @@
 </div>
 
 <!-- 신뢰 -->
-<div class="intro-section intro-trust">
+<div class="intro-section intro-trust" id="trust">
     <div class="intro-section-inner">
         <div class="intro-section-header">
             <p class="intro-eyebrow">TRUST & SAFETY</p>
