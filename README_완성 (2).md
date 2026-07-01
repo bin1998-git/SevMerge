@@ -157,29 +157,199 @@ SevMerge는 프로젝트 등록, 제안서 비교, 계약, 결제, 작업 진행
 
 ## ERD 및 도메인 모델
 
+<img src="docs/ERD_img/Erd_img.png" width="800">
+
 | 엔티티 | 테이블명 | 설명 | 핵심 상태/필드 |
 |---|---|---|---|
-| Member | member_tb | 회원 | role(CLIENT/EXPERT/ADMIN), status(ACTIVE/PENDING/REJECTED/SUSPENDED/BLACKLISTED/COMMUNITY_RESTRICTED), balance |
-| ExpertProfile | expert_profile_tb | 전문가 프로필 | isCertified, expertGrade(NORMAL/SKILLED/MASTER), 베이지안 평균 기반 등급 산정 |
-| Project | project_tb | 프로젝트(의뢰) | projectStatus(OPEN/CLOSED/IN_PROGRESS/COMPLETED/DONE/CANCELLED/DRAFT), category, bidFilter |
-| Bid | bid_tb | 제안서 | status(PENDING/SELECTED/REJECTED/HOLD), workStatus(IN_PROGRESS/UNDER_REVIEW/WORK_DONE) |
-| Payment | payment_tb | 에스크로 결제 | status(PAID/SETTLED/REFUNDED), platformFee |
+| Member | member_tb | 회원 | role(CLIENT/EXPERT/ADMIN)<br>status(ACTIVE/PENDING/REJECTED/SUSPENDED/BLACKLISTED/COMMUNITY_RESTRICTED)<br>balance |
+| ExpertProfile | expert_profile_tb | 전문가 프로필 | isCertified<br>expertGrade(NORMAL/SKILLED/MASTER)<br>베이지안 평균 기반 등급 산정 |
+| Project | project_tb | 프로젝트(의뢰) | projectStatus(OPEN/CLOSED/IN_PROGRESS/COMPLETED/DONE/CANCELLED/DRAFT)<br>category<br>bidFilter |
+| Bid | bid_tb | 제안서 | status(PENDING/SELECTED/REJECTED/HOLD)<br>workStatus(IN_PROGRESS/UNDER_REVIEW/WORK_DONE) |
+| Payment | payment_tb | 에스크로 결제 | status(PAID/SETTLED/REFUNDED)<br>platformFee |
 | EscrowSettlementRequest | escrow_settlement_request_tb | 정산 요청 | status(PENDING/APPROVED/REJECTED) |
-| Deliverable | deliverable_tb | 작업 산출물 | status(SUBMITTED/REVISION_REQUESTED/APPROVED), round |
+| Deliverable | deliverable_tb | 작업 산출물 | status(SUBMITTED/REVISION_REQUESTED/APPROVED)<br>round |
 | CancelRequest | cancel_request_tb | 작업 취소 요청 | status(PENDING/APPROVED) |
 | Charge | charge_tb | 잔액 충전 | status(PENDING/DONE/FAILED) |
 | Withdrawal | withdrawal_tb | 정산금 출금 | status(PENDING/COMPLETED/REJECTED) |
 | RefundRequest | refund_application_tb | 환불 신청 | status(PENDING/APPROVED/REJECTED) |
 | Review | review_tb | 리뷰 | countStar |
-| Notification | notification_tb | 알림 | type(NEW_BID/BID_SELECTED/BID_REJECTED/EXPERT_APPROVED/EXPERT_REJECTED/PAYMENT_COMPLETED/<br>MESSAGE_RECEIVED/CHAT_RECEIVED/EXPERT_SUSPENDED/REFUND_APPROVED/REFUND_REJECTED/AD_REJECTED), isRead |
-| Advertisement | advertisement_tb | 광고 신청 | status(PENDING/ACTIVE/REJECTED/EXPIRED), placement(MAIN_BANNER/EXPERT_CAROUSEL) |
-| AdSlot / AdBid | ad_slot_tb / ad_bid_tb | 광고 슬롯 경매 | AdSlotStatus(OPEN/CLOSED/AWARDED), AdBidStatus(PENDING/WINNER/LOST) |
-| Report / BlackList | comment_report_tb / blacklist_tb | 신고 / 제재 | isProcessed, isActive (누적 3회 자동 정지) |
-| PlatformRevenue | platform_revenue_tb | 플랫폼 수익 | type(AD/PARTNERSHIP/COMMISSION), status(CONFIRMED/CANCELLED) |
-| Board / Comment | - / comment_tb | 게시판 / 댓글 | boardType(FREE/NOTICE/INQUIRY), inquiryScope(NORMAL/PAYMENT/SECURITY), answerStatus(WAITING/ANSWERED) |
+| Notification | notification_tb | 알림 | type(NEW_BID/BID_SELECTED/BID_REJECTED/EXPERT_APPROVED/EXPERT_REJECTED/PAYMENT_COMPLETED)<br>type(MESSAGE_RECEIVED/CHAT_RECEIVED/EXPERT_SUSPENDED/REFUND_APPROVED/REFUND_REJECTED/AD_REJECTED)<br>isRead |
+| Advertisement | advertisement_tb | 광고 신청 | status(PENDING/ACTIVE/REJECTED/EXPIRED)<br>placement(MAIN_BANNER/EXPERT_CAROUSEL) |
+| AdSlot / AdBid | ad_slot_tb / ad_bid_tb | 광고 슬롯 경매 | AdSlotStatus(OPEN/CLOSED/AWARDED)<br>AdBidStatus(PENDING/WINNER/LOST) |
+| Report / BlackList | comment_report_tb / blacklist_tb | 신고 / 제재 | isProcessed<br>isActive (누적 3회 자동 정지) |
+| PlatformRevenue | platform_revenue_tb | 플랫폼 수익 | type(AD/PARTNERSHIP/COMMISSION)<br>status(CONFIRMED/CANCELLED) |
+| Board / Comment | - / comment_tb | 게시판 / 댓글 | boardType(FREE/NOTICE/INQUIRY)<br>inquiryScope(NORMAL/PAYMENT/SECURITY)<br>answerStatus(WAITING/ANSWERED) |
 | ChatRoom / ChatMessage | chat_room_tb / chat_message_tb | 실시간 채팅 | - |
 | Message | - | 쪽지 (파일 첨부 지원) | - |
-| PartnerShip | partner_ship_tb | 제휴 문의 | status(PENDING/APPROVED/REJECTED), type(COMPANY/MARKET/EDUCATION) |
+| PartnerShip | partner_ship_tb | 제휴 문의 | status(PENDING/APPROVED/REJECTED)<br>type(COMPANY/MARKET/EDUCATION) |
+
+## 기능 시연
+
+## 프로젝트
+
+<table>
+<tr>
+  <td align="center"><b>검색 다중 필터</b></td>
+  <td align="center"><b>작성 (비공개 옵션)</b></td>
+  <td align="center"><b>수정·삭제</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/project/project-search-filter.gif" width="270"></td>
+  <td><img src="docs/demo/project/project-write-private.gif" width="270"></td>
+  <td><img src="docs/demo/project/project-edit-delete.gif" width="270"></td>
+</tr>
+</table>
+
+<br/>
+
+## 제안서
+
+<table>
+<tr>
+  <td align="center"><b>작성 ~ 낙찰</b></td>
+  <td align="center"><b>목록·수정·삭제</b></td>
+  <td align="center"><b>보류</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/bid/bid-write-to-win.gif" width="270"></td>
+  <td><img src="docs/demo/bid/bid-list-edit-delete.gif" width="270"></td>
+  <td><img src="docs/demo/bid/bid-hold.gif" width="270"></td>
+</tr>
+</table>
+
+<br/>
+
+## 포트폴리오
+
+<table>
+<tr>
+  <td align="center"><b>생성</b></td>
+  <td align="center"><b>수정·삭제</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/portfolio/portfolio-create.gif" width="380"></td>
+  <td><img src="docs/demo/portfolio/portfolio-edit-delete.gif" width="380"></td>
+</tr>
+</table>
+
+<br/>
+
+## 게시글
+
+<table>
+<tr>
+  <td align="center"><b>목록</b></td>
+  <td align="center"><b>작성</b></td>
+  <td align="center"><b>상세보기·수정·삭제</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/board/board-list.gif" width="270"></td>
+  <td><img src="docs/demo/board/board-write.gif" width="270"></td>
+  <td><img src="docs/demo/board/board-detail-edit-delete.gif" width="270"></td>
+</tr>
+</table>
+
+<br/>
+
+## 리뷰
+
+<table>
+<tr>
+  <td align="center"><b>작성 및 건너뛰기</b></td>
+  <td align="center"><b>목록·수정·삭제</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/review/review-write-skip.gif" width="380"></td>
+  <td><img src="docs/demo/review/review-list-edit-delete.gif" width="380"></td>
+</tr>
+</table>
+
+<br/>
+
+## 채팅 · 쪽지 · 알림
+
+<table>
+<tr>
+  <td align="center"><b>소켓 채팅</b></td>
+  <td align="center"><b>채팅 삭제</b></td>
+  <td align="center"><b>쪽지 보내기</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/chat/chat-socket.gif" width="270"></td>
+  <td><img src="docs/demo/chat/chat-delete.gif" width="270"></td>
+  <td><img src="docs/demo/message/message-send.gif" width="270"></td>
+</tr>
+<tr>
+  <td align="center" colspan="3"><b>실시간 알림</b></td>
+</tr>
+<tr>
+  <td align="center" colspan="3"><img src="docs/demo/notification/notification.gif" width="500"></td>
+</tr>
+</table>
+
+<br/>
+
+## 광고
+
+<table>
+<tr>
+  <td align="center"><b>광고 신청</b></td>
+  <td align="center"><b>광고 입찰</b></td>
+  <td align="center"><b>광고배너 승인·거절</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/ad/ad-apply.gif" width="270"></td>
+  <td><img src="docs/demo/ad/ad-bid.gif" width="270"></td>
+  <td><img src="docs/demo/ad/ad-banner-approve.gif" width="270"></td>
+</tr>
+</table>
+
+<br/>
+
+## 어드민
+
+<table>
+<tr>
+  <td align="center"><b>관리자 차트</b></td>
+  <td align="center"><b>전문가 승인·거절</b></td>
+  <td align="center"><b>환불 처리</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/admin/admin-chart.gif" width="270"></td>
+  <td><img src="docs/demo/admin/admin-expert-approve.gif" width="270"></td>
+  <td><img src="docs/demo/admin/admin-refund.gif" width="270"></td>
+</tr>
+</table>
+
+<br/>
+
+## 회원 · 검색 · 기타
+
+<table>
+<tr>
+  <td align="center"><b>회원가입</b></td>
+  <td align="center"><b>비밀번호 변경</b></td>
+  <td align="center"><b>북마크</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/member/member-signup.gif" width="270"></td>
+  <td><img src="docs/demo/member/member-password-change.gif" width="270"></td>
+  <td><img src="docs/demo/bookmark/bookmark.gif" width="270"></td>
+</tr>
+<tr>
+  <td align="center"><b>전문가 검색</b></td>
+  <td align="center"><b>제휴 문의</b></td>
+  <td align="center"><b>환불 신청</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/expert-search/expert-search.gif" width="270"></td>
+  <td><img src="docs/demo/partnership/partnership.gif" width="270"></td>
+  <td><img src="docs/demo/refund-request/refund-request.gif" width="270"></td>
+</tr>
+</table>
+
+<br/>
+
 
 ## 핵심 플로우
 
@@ -210,38 +380,6 @@ Session / Login / Admin / Project / Bid 5종 인터셉터를 계층적으로 적
 - JDK 21 이상
 - MySQL 8.0 이상
 - Gradle 8.x 이상
-
-### 환경 변수 설정
-
-프로젝트 루트에 `.env` 파일을 생성하고 다음 환경 변수를 설정하세요.
-
-```env
-DB_USERNAME=root
-DB_PASSWORD=
-
-# 구글 OAuth2 설정
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-# 카카오 OAuth2 설정
-KAKAO_CLIENT_ID=
-KAKAO_CLIENT_SECRET=
-
-TOSS_CLIENT_KEY=
-TOSS_SECRET_KEY=
-
-# 이메일 인증
-MAIL_USERNAME=
-MAIL_PASSWORD=
-
-# SolAPI 문자, 알림톡 SMS 서비스
-SOLAPI_KEY=
-SOLAPI_SECRET_KEY=
-SOLAPI_SENDER_NUMBER=
-
-# AI
-GEMINI_API_KEY=
-```
 
 ### 빌드 및 실행
 
@@ -488,20 +626,5 @@ cd SevMerge
 ### 실시간 기능
 - WebSocket 기반 실시간 채팅
 - SSE(Server-Sent Events) 기반 실시간 알림
-
-## 커밋 컨벤션
-
-```
-<타입>(<스코프>): <제목>
-```
-
-- feat: 새 기능
-- fix: 버그 수정
-- refactor: 리팩터링
-- docs: 문서
-- style: 스타일
-- test: 테스트
-- chore: 빌드/기타
-
 
 SevMerge © 2026
