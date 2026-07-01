@@ -1,10 +1,18 @@
 <style>
     /* ── 바닥 고정: body flex column, footer 항상 최하단 ── */
-    html { height: 100%; }
     body {
-        min-height: 100%;        /* html 100% = 100vh, can grow beyond */
+        min-height: 100vh;
         display: flex !important;
         flex-direction: column !important;
+    }
+    /* iOS Safari background-attachment:fixed 미지원 대응 — 항상 전체 화면을 채우는 고정 배경 */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: inherit;
+        z-index: -1;
+        pointer-events: none;
     }
     body > *:not(header):not(footer):not(style):not(script):not(.chatbot-toggle):not(.chatbot-window):not(.noti-toast) {
         flex: 1 0 auto;
@@ -195,7 +203,7 @@
             </svg>
         </div>
         <div class="chatbot-header-text">
-            <div class="chatbot-title">코드요 AI 도우미</div>
+            <div class="chatbot-title">ICodeU AI 도우미</div>
             <div class="chatbot-status">온라인</div>
         </div>
         <button class="chatbot-close" onclick="toggleChatbot()" aria-label="닫기">
@@ -206,7 +214,7 @@
     </div>
     <div class="chatbot-messages" id="chatbotMessages">
         <div class="chat-row bot">
-            <div class="chat-bubble">안녕하세요! 코드요 이용 중 궁금한 점이나 프로젝트 등록을 도와드릴게요. 😊</div>
+            <div class="chat-bubble">안녕하세요! ICodeU 이용 중 궁금한 점이나 프로젝트 등록을 도와드릴게요. 😊</div>
         </div>
     </div>
     <div class="chatbot-suggestions">

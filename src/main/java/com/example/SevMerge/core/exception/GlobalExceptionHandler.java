@@ -14,6 +14,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * 에러 메시지를 JavaScript alert() 내 문자열로 안전하게 삽입하기 위한 이스케이프.
+     * - 싱글쿼트, 백슬래시 이스케이프 처리
+     * - </script> 태그 브레이크아웃 방지를 위해 < 와 > 도 이스케이프
+     */
+    private String escapeForJsAlert(String raw) {
+        if (raw == null) return "오류가 발생했습니다.";
+        return raw
+                .replace("\\", "\\\\")
+                .replace("'", "\\'")
+                .replace("<", "\\u003C")
+                .replace(">", "\\u003E")
+                .replace("\n", "\\n")
+                .replace("\r", "");
+    }
+
     @ExceptionHandler(BadRequestException.class)
     @ResponseBody
     public String badRequest(BadRequestException e, HttpServletRequest request,
@@ -22,7 +38,7 @@ public class GlobalExceptionHandler {
         log.warn("=== 400 Bad Request ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
-        String message = e.getMessage().replace("'", "\\'");
+        String message = escapeForJsAlert(e.getMessage());
         return """
                 <script>
                     alert('%s');
@@ -37,7 +53,7 @@ public class GlobalExceptionHandler {
         log.warn("=== 401 Unauthorized ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
-        String message = e.getMessage().replace("'", "\\'");
+        String message = escapeForJsAlert(e.getMessage());
         return """
                 <script>
                     alert('%s');
@@ -55,7 +71,7 @@ public class GlobalExceptionHandler {
 
 
 
-        String message = e.getMessage().replace("'", "\\'");
+        String message = escapeForJsAlert(e.getMessage());
 
 
 
@@ -94,7 +110,7 @@ public class GlobalExceptionHandler {
 
 
 
-        String message = e.getMessage().replace("'", "\\'");
+        String message = escapeForJsAlert(e.getMessage());
 
 
 
@@ -113,7 +129,7 @@ public class GlobalExceptionHandler {
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
 
-        String message = e.getMessage().replace("'", "\\'");
+        String message = escapeForJsAlert(e.getMessage());
 
         return """
                 <script>
@@ -187,7 +203,7 @@ public class GlobalExceptionHandler {
         log.warn("=== File 전송 오류 ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
-        String message = e.getMessage().replace("'", "\\'");
+        String message = escapeForJsAlert(e.getMessage());
         return """
                 <script>
                     alert('%s');

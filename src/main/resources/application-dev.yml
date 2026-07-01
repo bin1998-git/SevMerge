@@ -26,6 +26,8 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
+      # WARNING: 'create' drops and recreates all tables on every startup — dev/test only.
+      # Change to 'validate' or 'none' before deploying to production.
       ddl-auto: create
     show-sql: true
     properties:

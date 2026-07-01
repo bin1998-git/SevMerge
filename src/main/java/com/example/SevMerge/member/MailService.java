@@ -33,7 +33,8 @@ public class MailService {
             session.setAttribute("code_" + email, code);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("이메일 발송 실패 - email={}, error={}", email, e.getMessage(), e);
+            throw new com.example.SevMerge.core.exception.InternalServerException("이메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
         }
     }
 

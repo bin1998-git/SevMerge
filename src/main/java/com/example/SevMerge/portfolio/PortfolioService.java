@@ -94,7 +94,8 @@ public class PortfolioService {
                     .build();
             portfolioRepository.save(newPortfolio);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("포트폴리오 이미지 저장 실패 - error={}", e.getMessage(), e);
+            throw new com.example.SevMerge.core.exception.FileException("파일 저장에 실패했습니다.");
         }
     }
 
@@ -122,7 +123,8 @@ public class PortfolioService {
                 // 이미지 파일 경로 반환
                 newImageFile = FileUtil.saveFile(updateDTO.getImageFile());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("포트폴리오 이미지 업데이트 저장 실패 - error={}", e.getMessage(), e);
+                throw new com.example.SevMerge.core.exception.FileException("파일 저장에 실패했습니다.");
             }
         }
         if (newImageFile != null) {

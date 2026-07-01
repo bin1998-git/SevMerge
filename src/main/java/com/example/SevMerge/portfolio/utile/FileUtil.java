@@ -31,12 +31,18 @@ public class FileUtil {
         if(originalFilename == null || originalFilename.isBlank()){
             throw new NotFoundException("파일명이 없습니다.");
         }
+        // 경로 탐색 공격 방지: 파일명만 추출 후 구분자 제거
+        String sanitizedFilename = Paths.get(originalFilename).getFileName().toString()
+                .replaceAll("[/\\\\]", "_");
         // 파일 이미지가 절대 중복되지 않도록 처리
         // uuid로 고유 명사 생성
         String uuid = UUID.randomUUID().toString();
-        String savedFileName = uuid + "_" + originalFilename;
+        String savedFileName = uuid + "_" + sanitizedFilename;
         // 파일 경로
         Path filePath = uploadPath.resolve(savedFileName);
+        if (!filePath.normalize().startsWith(uploadPath.normalize())) {
+            throw new NotFoundException("허용되지 않는 파일명입니다.");
+        }
         Files.copy(file.getInputStream(),filePath);
         return savedFileName;
     }
@@ -59,12 +65,18 @@ public class FileUtil {
         if(originalFilename == null || originalFilename.isBlank()){
             throw new NotFoundException("파일명이 없습니다.");
         }
+        // 경로 탐색 공격 방지: 파일명만 추출 후 구분자 제거
+        String sanitizedFilename = Paths.get(originalFilename).getFileName().toString()
+                .replaceAll("[/\\\\]", "_");
         // 파일 이미지가 절대 중복되지 않도록 처리
         // uuid로 고유 명사 생성
         String uuid = UUID.randomUUID().toString();
-        String savedFileName = uuid + "_" + originalFilename;
+        String savedFileName = uuid + "_" + sanitizedFilename;
         // 파일 경로
         Path filePath = uploadPath.resolve(savedFileName);
+        if (!filePath.normalize().startsWith(uploadPath.normalize())) {
+            throw new NotFoundException("허용되지 않는 파일명입니다.");
+        }
         Files.copy(file.getInputStream(),filePath);
         return savedFileName;
     }

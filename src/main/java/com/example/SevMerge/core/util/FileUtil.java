@@ -42,19 +42,26 @@ public class FileUtil {
         if (originalFilename == null || originalFilename.isBlank()) {
             throw new BadRequestException("파일명이 없습니다");
         }
+        // 경로 탐색 공격 방지: 파일명에서 디렉터리 구분자와 ".." 제거 후 파일명만 추출
+        String sanitizedFilename = Paths.get(originalFilename).getFileName().toString()
+                .replaceAll("[/\\\\]", "_");
 
         // 4단계 : UUID를 사용한 고유 파일명 생성
         // UUID기능
         // 파일명 중복 방지: 사용자가 올린 사진이나 파일을 저장할 때,
         // 파일명이 겹치지 않도록 UUID로 이름을 바꿔 저장합니다.
         String uuid = UUID.randomUUID().toString(); // 난수 발생
-        String savedFileName = uuid + "_" + originalFilename;
+        String savedFileName = uuid + "_" + sanitizedFilename;
         // 예) "12334123-123e-123_a.png 파일명으로 재 생성 됨.
 
         // 5단계 : 메모리상에 존재하는 파일 데이터를 로컬 컴퓨터(디스크)에 저장
         // 5.1 - 파일폴더경로 + 재생성한 파일이름 ---> 정확한 위치에 파일이 생성됨
         // 예 : images/123-2323-123_a.png
         Path filePath = uploadPath.resolve(savedFileName);
+        // 경로 정규화 후 업로드 디렉터리 안에 속하는지 최종 검증
+        if (!filePath.normalize().startsWith(uploadPath.normalize())) {
+            throw new BadRequestException("허용되지 않는 파일명입니다.");
+        }
 
         // 사용자가 올린 파일을 서버의 디스크에 저장
         Files.copy(file.getInputStream(), filePath);

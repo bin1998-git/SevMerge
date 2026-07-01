@@ -1,8 +1,10 @@
 package com.example.SevMerge.partnership;
 
 import com.example.SevMerge.core.exception.BadRequestException;
+import com.example.SevMerge.core.exception.FileException;
 import com.example.SevMerge.portfolio.utile.FileUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PartnerShipService {
@@ -34,7 +37,8 @@ public class PartnerShipService {
                     .build();
             partnerShipRepository.save(partnerShip);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("제휴 파일 저장 실패 - error={}", e.getMessage(), e);
+            throw new FileException("파일 업로드에 실패했습니다.");
         }
     }
 

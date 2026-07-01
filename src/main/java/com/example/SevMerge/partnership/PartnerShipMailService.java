@@ -1,12 +1,15 @@
 package com.example.SevMerge.partnership;
 
+import com.example.SevMerge.core.exception.InternalServerException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PartnerShipMailService {
@@ -52,7 +55,8 @@ public class PartnerShipMailService {
             }
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("제휴 신청 메일 발송 실패 - error={}", e.getMessage(), e);
+            throw new InternalServerException("제휴 신청 메일 발송에 실패했습니다.");
         }
     }
 
@@ -77,7 +81,8 @@ public class PartnerShipMailService {
             );
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("제휴 승인 메일 발송 실패 - email={}, error={}", email, e.getMessage(), e);
+            throw new InternalServerException("승인 메일 발송에 실패했습니다.");
         }
     }
 
@@ -101,7 +106,8 @@ public class PartnerShipMailService {
             );
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("제휴 거절 메일 발송 실패 - email={}, error={}", email, e.getMessage(), e);
+            throw new InternalServerException("거절 메일 발송에 실패했습니다.");
         }
     }
 

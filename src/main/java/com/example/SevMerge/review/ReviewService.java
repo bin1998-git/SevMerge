@@ -13,6 +13,7 @@ import com.example.SevMerge.payment.PaymentStatus;
 import com.example.SevMerge.project.Project;
 import com.example.SevMerge.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -64,9 +66,8 @@ public class ReviewService {
         }
 
 
-        System.out.println("projectId: " + reviewDTO.getProjectId());
-        System.out.println("reviewerId: " + reviewer.getId());
-        System.out.println("targeterId: " + targetEntity.getId());
+        log.debug("리뷰 작성 - projectId={}, reviewerId={}, targetId={}",
+                reviewDTO.getProjectId(), reviewer.getId(), targetEntity.getId());
 
         reviewRepository.save(reviewDTO.toEntity(reviewer, targetEntity,project));
 

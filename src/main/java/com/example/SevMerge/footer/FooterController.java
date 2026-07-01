@@ -3,11 +3,13 @@ package com.example.SevMerge.footer;
 
 import com.example.SevMerge.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class FooterController {
@@ -22,7 +24,7 @@ public class FooterController {
         model.addAttribute("isCareers", "careers".equals(tab));
         model.addAttribute("isPartnership", "partnership".equals(tab));
         model.addAttribute("tabExpert", "expert".equals(tab));
-        System.out.println("expert".equals(tab));
+        log.debug("support 탭 요청 - tab={}, isExpert={}", tab, "expert".equals(tab));
         return "footerProc/support";
     }
     // 이용약관

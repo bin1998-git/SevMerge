@@ -259,7 +259,7 @@ public class AdminController {
             @RequestBody Map<String, String> body,
             HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+        if (sessionUser == null || !sessionUser.isAdmin()) {
             return ResponseEntity.status(403).body("접근 권한이 없습니다.");
         }
         String action = body.get("action");
@@ -414,7 +414,7 @@ public class AdminController {
     public ResponseEntity<?> adminForceSettle(@PathVariable Long paymentId,
                                               HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+        if (sessionUser == null || !sessionUser.isAdmin()) {
             return ResponseEntity.status(403).body("접근 권한이 없습니다.");
         }
         paymentService.adminForceSettle(paymentId);
@@ -427,7 +427,7 @@ public class AdminController {
     public ResponseEntity<?> approveEscrowSettlement(@PathVariable Long requestId,
                                                      HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+        if (sessionUser == null || !sessionUser.isAdmin()) {
             return ResponseEntity.status(403).body("접근 권한이 없습니다.");
         }
         paymentService.adminApproveSettlement(requestId);
@@ -440,7 +440,7 @@ public class AdminController {
     public ResponseEntity<?> rejectEscrowSettlement(@PathVariable Long requestId,
                                                     HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+        if (sessionUser == null || !sessionUser.isAdmin()) {
             return ResponseEntity.status(403).body("접근 권한이 없습니다.");
         }
         paymentService.adminRejectSettlement(requestId);

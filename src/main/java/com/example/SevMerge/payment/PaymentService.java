@@ -130,7 +130,7 @@ public class PaymentService {
     public PaymentResponse settle(Long paymentId, Long requesterId) {
         Payment payment = findById(paymentId);
 
-        if (!Objects.equals(payment.getClientId(), requesterId)) {
+        if (!Objects.equals(payment.getClientId(), requesterId) && !isAdminMember(requesterId)) {
             throw new ForbiddenException("정산 권한이 없습니다.");
         }
 
@@ -253,7 +253,9 @@ public class PaymentService {
     public void requestSettlement(Long paymentId, Long expertId, String message) {
         Payment payment = findById(paymentId);
 
-        if (!Objects.equals(payment.getExpertId(), expertId)) {
+        boolean isAdmin = isAdminMember(expertId);
+
+        if (!Objects.equals(payment.getExpertId(), expertId) && !isAdmin) {
             throw new ForbiddenException("정산 요청 권한이 없습니다.");
         }
         if (payment.getStatus() != PaymentStatus.PAID) {
@@ -273,7 +275,7 @@ public class PaymentService {
             throw new NotFoundException("프로젝트 정보를 찾을 수 없습니다.");
         }
 
-        if (!"COMPLETED".equals(projectStatus)) {
+        if (!"COMPLETED".equals(projectStatus) && !isAdmin) {
             throw new BadRequestException("작업 완료(COMPLETED) 상태의 프로젝트에만 정산 요청이 가능합니다.");
         }
 
