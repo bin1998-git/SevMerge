@@ -1,0 +1,509 @@
+{{> layout/header}}
+
+<style>
+    body { background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%); background-attachment: fixed; }
+
+    .uf-wrap { max-width: 680px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
+
+    .uf-card {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.6);
+        border: 1.5px solid rgba(255,255,255,.85);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(37,99,235,.08);
+        overflow: hidden;
+    }
+
+    .uf-card-head {
+        background: linear-gradient(135deg, #1846C9 0%, #2563eb 55%, #5b8fff 100%);
+        padding: 28px 32px;
+        position: relative;
+        overflow: hidden;
+    }
+    .uf-card-head::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 85% 50%, rgba(255,255,255,.12) 0%, transparent 55%);
+        pointer-events: none;
+    }
+    .uf-head-title { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: -.02em; }
+    .uf-head-sub { font-size: 13px; color: rgba(255,255,255,.75); margin-top: 4px; }
+
+    .uf-body { padding: 32px; }
+
+    /* 폼 */
+    .uf-form { display: flex; flex-direction: column; gap: 22px; }
+    .uf-fg { display: flex; flex-direction: column; gap: 7px; }
+    .uf-label { font-size: 13px; font-weight: 700; color: #2d4a7a; }
+    .uf-input {
+        padding: 12px 16px;
+        background: rgba(255,255,255,.7);
+        border: 1.5px solid rgba(37,99,235,.15);
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: inherit;
+        color: #1e3a6e;
+        outline: none;
+        transition: all .15s;
+    }
+    .uf-input:focus { border-color: #2563eb; background: rgba(255,255,255,.95); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .uf-input:disabled { color: #93aecf; background: rgba(240,244,250,.6); cursor: not-allowed; }
+
+    /* 구분선 */
+    .uf-divider { border: none; border-top: 1px solid rgba(37,99,235,.08); margin: 4px 0; }
+
+    /* 프로필 이미지 */
+    .uf-avatar-wrap { display: flex; align-items: center; gap: 20px; }
+    .uf-avatar {
+        width: 80px; height: 80px; border-radius: 50%;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 2px solid #bfdbfe;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 30px; font-weight: 900; color: #2563eb;
+        flex-shrink: 0; overflow: hidden;
+        background-size: cover; background-position: center;
+    }
+    .uf-avatar-btns { display: flex; flex-direction: column; gap: 7px; }
+
+    /* 버튼 */
+    .uf-btn {
+        display: inline-block; padding: 9px 18px; border-radius: 20px;
+        font-size: 13px; font-weight: 700; cursor: pointer;
+        border: none; font-family: inherit; text-decoration: none;
+        transition: all .15s;
+    }
+    .uf-btn-primary { background: #2563eb; color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.25); }
+    .uf-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .uf-btn-danger { background: rgba(239,68,68,.08); border: 1.5px solid rgba(239,68,68,.25); color: #dc2626; }
+    .uf-btn-danger:hover { background: rgba(239,68,68,.14); }
+    .uf-btn-ghost { background: rgba(240,244,250,.8); border: 1.5px solid #e2e5ef; color: #6b7280; }
+    .uf-btn-ghost:hover { border-color: #2563eb; color: #2563eb; }
+
+    .uf-img-hint { font-size: 11px; color: #9ca3af; }
+
+    /* 전화번호 인증 */
+    .uf-phone-row { display: flex; gap: 8px; }
+    .uf-phone-row .uf-input { flex: 1; }
+
+    /* 비밀번호 섹션 */
+    .uf-pw-section {
+        background: rgba(239,246,255,.5);
+        border: 1.5px solid rgba(37,99,235,.1);
+        border-radius: 14px;
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .uf-pw-section-title { font-size: 14px; font-weight: 800; color: #1e3a6e; margin-bottom: 2px; }
+    .uf-pw-section-sub { font-size: 12px; color: #4a6fa5; }
+
+    /* 액션 버튼 열 */
+    .uf-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    .uf-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #4a6fa5; text-decoration: none; }
+    .uf-back:hover { color: #2563eb; }
+
+    /* 모달 */
+    .uf-modal-bg {
+        display: none; position: fixed; inset: 0;
+        background: rgba(13,27,46,.5); z-index: 9999;
+        align-items: center; justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .uf-modal-bg.open { display: flex; }
+    .uf-modal {
+        backdrop-filter: blur(20px);
+        background: rgba(255,255,255,.88);
+        border: 1.5px solid rgba(255,255,255,.9);
+        border-radius: 20px;
+        padding: 28px;
+        max-width: 400px; width: 90%;
+        box-shadow: 0 20px 60px rgba(37,99,235,.15);
+    }
+    .uf-modal-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; color: #1e3a6e; }
+    .uf-modal-sub { font-size: 13px; color: #4a6fa5; margin-bottom: 16px; }
+    .uf-modal-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .uf-modal-cancel { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; background: rgba(243,244,248,.8); color: #4b5563; border: none; cursor: pointer; font-family: inherit; }
+    .uf-modal-confirm { padding: 9px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; background: #2563eb; color: #fff; border: none; cursor: pointer; font-family: inherit; }
+
+    @media (max-width: 640px) {
+        .uf-wrap { padding: 20px 12px 60px; }
+        .uf-body { padding: 22px 18px; }
+        .uf-card-head { padding: 22px 20px; }
+        .uf-actions { flex-direction: column; }
+        .uf-btn-primary { text-align: center; }
+    }
+</style>
+
+<div class="uf-wrap">
+    <a href="/my-pages?tab=edit" class="uf-back" style="display:inline-flex;margin-bottom:16px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H8v2H6v2H4v2H2v2h2v2h2v2h2v2h2v-2h-2v-2H6v-2h16v-2H6V8h2V6h2V4z"/></svg>
+        마이페이지로 돌아가기
+    </a>
+
+    <div class="uf-card">
+        <div class="uf-card-head">
+            <div class="uf-head-title">계정 / 정보 수정</div>
+            <div class="uf-head-sub">프로필 이미지, 이름, 연락처, 비밀번호를 변경할 수 있습니다.</div>
+        </div>
+
+        <div class="uf-body">
+            {{#member}}
+            <form class="uf-form" id="updateForm" enctype="multipart/form-data">
+
+                {{! ── 프로필 이미지 ── }}
+                <div class="uf-fg">
+                    <label class="uf-label">프로필 이미지</label>
+                    <div class="uf-avatar-wrap">
+                        {{#profileImage}}
+                            <div class="uf-avatar" id="imgPreview"
+                                 style="background-image:url('{{profileImageUrl}}'); font-size:0;"></div>
+                        {{/profileImage}}
+                        {{^profileImage}}
+                            <div class="uf-avatar" id="imgPreview">{{name}}</div>
+                        {{/profileImage}}
+                        <div class="uf-avatar-btns">
+                            <input type="file" id="profileImageFile" name="profileImageFile"
+                                   accept="image/*" style="display:none;" onchange="previewImage(this)"/>
+                            <button type="button" class="uf-btn uf-btn-primary"
+                                    onclick="document.getElementById('profileImageFile').click()">
+                                이미지 변경
+                            </button>
+                            {{#profileImage}}
+                            <button type="button" class="uf-btn uf-btn-danger"
+                                    onclick="deleteProfileImage()">
+                                이미지 삭제
+                            </button>
+                            {{/profileImage}}
+                            <span class="uf-img-hint">JPG, PNG, GIF (5MB 이하)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="uf-divider"/>
+
+                {{! ── 기본 정보 ── }}
+                <div class="uf-fg">
+                    <label class="uf-label" for="updateName">이름</label>
+                    <input type="text" id="updateName" name="name" class="uf-input"
+                           value="{{name}}" placeholder="이름을 입력하세요"/>
+                </div>
+
+                <div class="uf-fg">
+                    <label class="uf-label">이메일</label>
+                    {{#isSocial}}
+                        <input type="text" class="uf-input"
+                               value="{{provider}} 계정 (소셜 로그인)" disabled/>
+                    {{/isSocial}}
+                    {{^isSocial}}
+                        <input type="email" class="uf-input" value="{{email}}" disabled/>
+                    {{/isSocial}}
+                </div>
+
+                <div class="uf-fg">
+                    <label class="uf-label" for="updatePhone">휴대폰 번호</label>
+                    <div class="uf-phone-row">
+                        <input type="text" id="updatePhone" name="phone" class="uf-input"
+                               value="{{phone}}" placeholder="010-1234-5678"/>
+                        <button type="button" class="uf-btn uf-btn-ghost"
+                                style="white-space:nowrap;" onclick="sendPhoneCode()">
+                            인증번호 발송
+                        </button>
+                    </div>
+                </div>
+
+                <div class="uf-fg" id="phoneCodeBox" style="display:none;">
+                    <label class="uf-label" for="phoneCode">인증번호</label>
+                    <div class="uf-phone-row">
+                        <input type="text" id="phoneCode" class="uf-input"
+                               placeholder="인증번호 6자리"/>
+                        <button type="button" class="uf-btn uf-btn-ghost"
+                                style="white-space:nowrap;" onclick="verifyPhoneCode()">
+                            확인
+                        </button>
+                    </div>
+                    <span id="phoneVerifyMsg" style="font-size:12px;margin-top:4px;"></span>
+                </div>
+
+                <hr class="uf-divider"/>
+
+                {{! ── 비밀번호 변경 (소셜 아닐 때만) ── }}
+                {{^isSocial}}
+                <input type="hidden" id="updateCurrentPassword"/>
+                <div class="uf-pw-section">
+                    <div>
+                        <div class="uf-pw-section-title">비밀번호 변경</div>
+                        <div class="uf-pw-section-sub">변경을 원하지 않으면 비워두세요. 현재 비밀번호를 먼저 확인해야 입력할 수 있습니다.</div>
+                    </div>
+                    <div class="uf-fg">
+                        <label class="uf-label" for="updatePassword">새 비밀번호</label>
+                        <input type="password" id="updatePassword" name="newPassword" class="uf-input"
+                               placeholder="현재 비밀번호 확인 후 입력 가능"
+                               readonly onclick="openPwVerifyModal()" style="cursor:pointer;"/>
+                    </div>
+                    <div class="uf-fg">
+                        <label class="uf-label" for="updatePasswordConfirm">새 비밀번호 확인</label>
+                        <input type="password" id="updatePasswordConfirm" name="newPasswordConfirm" class="uf-input"
+                               placeholder="변경할 경우만 입력"/>
+                    </div>
+                </div>
+                {{/isSocial}}
+
+                {{! ── 제출 ── }}
+                <div class="uf-actions">
+                    <a href="/my-pages?tab=edit" class="uf-btn uf-btn-ghost">취소</a>
+                    <button type="button" class="uf-btn uf-btn-primary"
+                            style="padding:10px 28px;font-size:14px;" onclick="submitUpdate()">
+                        수정 완료
+                    </button>
+                </div>
+
+            </form>
+            {{/member}}
+        </div>
+    </div>
+</div>
+
+{{! ── 비밀번호 확인 모달 ── }}
+<div class="uf-modal-bg" id="pwVerifyModalBg">
+    <div class="uf-modal">
+        <h3 class="uf-modal-title">비밀번호 변경</h3>
+        <p class="uf-modal-sub">변경하려면 현재 비밀번호를 먼저 확인해 주세요.</p>
+        <input type="password" id="pwVerifyInput" class="uf-input"
+               placeholder="현재 비밀번호를 입력하세요"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();confirmCurrentPassword();}"/>
+        <span id="pwVerifyModalMsg" style="font-size:12px;margin-top:6px;display:block;"></span>
+        <div class="uf-modal-btns">
+            <button type="button" class="uf-modal-cancel" onclick="closePwVerifyModal()">취소</button>
+            <button type="button" class="uf-modal-confirm" onclick="confirmCurrentPassword()">확인</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── 프로필 이미지 미리보기 ──
+    function previewImage(input) {
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('imgPreview');
+            preview.style.backgroundImage = "url('" + e.target.result + "')";
+            preview.style.backgroundSize = 'cover';
+            preview.style.backgroundPosition = 'center';
+            preview.style.fontSize = '0';
+            preview.textContent = '';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    // ── 프로필 이미지 삭제 ──
+    function deleteProfileImage() {
+        if (!confirm('프로필 이미지를 삭제하시겠습니까?')) return;
+        fetch('/my-pages/profile-image', { method: 'DELETE' })
+            .then(res => {
+                if (res.ok) { alert('이미지가 삭제되었습니다.'); location.reload(); }
+                else { alert('삭제에 실패했습니다.'); }
+            })
+            .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    // ── 전화번호 하이픈 자동 입력 ──
+    const phoneInput = document.getElementById('updatePhone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/[^0-9]/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length < 4)       e.target.value = v;
+            else if (v.length < 8)  e.target.value = v.slice(0,3) + '-' + v.slice(3);
+            else                    e.target.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7);
+        });
+    }
+
+    // ── 전화번호 인증 ──
+    let phoneVerified = false;
+
+    function sendPhoneCode() {
+        const phone = document.getElementById('updatePhone').value.trim();
+        if (!phone) { alert('휴대폰 번호를 입력해 주세요.'); return; }
+        fetch('/api/sms/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone })
+        })
+        .then(res => {
+            if (res.ok) {
+                const box = document.getElementById('phoneCodeBox');
+                box.style.display = 'flex';
+                box.style.flexDirection = 'column';
+                alert('인증번호가 발송되었습니다.');
+            } else {
+                alert('인증번호 발송에 실패했습니다.');
+            }
+        })
+        .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    function verifyPhoneCode() {
+        const phone = document.getElementById('updatePhone').value.trim();
+        const code  = document.getElementById('phoneCode').value.trim();
+        const msg   = document.getElementById('phoneVerifyMsg');
+        if (!code) { alert('인증번호를 입력해 주세요.'); return; }
+        fetch('/api/sms/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone, code: code })
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok) {
+                phoneVerified = true;
+                msg.textContent = '인증되었습니다.';
+                msg.style.color = '#22c55e';
+            } else {
+                phoneVerified = false;
+                msg.textContent = data.message || '인증에 실패했습니다.';
+                msg.style.color = '#ef4444';
+            }
+        })
+        .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    // ── 비밀번호 확인 모달 ──
+    let currentPasswordVerified = false;
+
+    function openPwVerifyModal() {
+        if (currentPasswordVerified) return;
+        document.getElementById('pwVerifyInput').value = '';
+        document.getElementById('pwVerifyModalMsg').textContent = '';
+        document.getElementById('pwVerifyModalBg').classList.add('open');
+        setTimeout(() => document.getElementById('pwVerifyInput').focus(), 100);
+    }
+
+    function closePwVerifyModal() {
+        document.getElementById('pwVerifyModalBg').classList.remove('open');
+    }
+
+    function confirmCurrentPassword() {
+        const currentPw = document.getElementById('pwVerifyInput').value;
+        const msg = document.getElementById('pwVerifyModalMsg');
+        if (!currentPw) {
+            msg.textContent = '현재 비밀번호를 입력해 주세요.';
+            msg.style.color = '#ef4444';
+            return;
+        }
+        fetch('/api/member/verify-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword: currentPw })
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok) {
+                currentPasswordVerified = true;
+                document.getElementById('updateCurrentPassword').value = currentPw;
+                const pwInput = document.getElementById('updatePassword');
+                if (pwInput) {
+                    pwInput.readOnly = false;
+                    pwInput.placeholder = '새 비밀번호를 입력하세요';
+                    pwInput.style.cursor = 'text';
+                }
+                closePwVerifyModal();
+                if (pwInput) pwInput.focus();
+            } else {
+                msg.textContent = data.message || '비밀번호가 일치하지 않습니다.';
+                msg.style.color = '#ef4444';
+            }
+        })
+        .catch(() => {
+            msg.textContent = '통신 오류가 발생했습니다.';
+            msg.style.color = '#ef4444';
+        });
+    }
+
+    document.getElementById('pwVerifyModalBg').addEventListener('click', function(e) {
+        if (e.target === this) closePwVerifyModal();
+    });
+
+    // ── 비밀번호 유효성 검사 ──
+    const pwInput      = document.getElementById('updatePassword');
+    const pwConfirm    = document.getElementById('updatePasswordConfirm');
+    const pwRegex      = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+
+    if (pwInput) {
+        pwInput.addEventListener('input', function() {
+            const pw = this.value;
+            if (!pw) { this.style.borderColor = ''; return; }
+            this.style.borderColor = pwRegex.test(pw) ? '#22c55e' : '#ef4444';
+            if (pwConfirm && pwConfirm.value) checkPwMatch();
+        });
+    }
+    if (pwConfirm) {
+        pwConfirm.addEventListener('input', checkPwMatch);
+    }
+    function checkPwMatch() {
+        if (!pwConfirm || !pwConfirm.value) { if (pwConfirm) pwConfirm.style.borderColor = ''; return; }
+        const pw = pwInput ? pwInput.value : '';
+        pwConfirm.style.borderColor = (pw === pwConfirm.value) ? '#22c55e' : '#ef4444';
+    }
+
+    // ── 최종 제출 ──
+    function submitUpdate() {
+        const nameVal    = document.getElementById('updateName').value.trim();
+        const phoneVal   = document.getElementById('updatePhone').value.trim();
+        const currentPwEl = document.getElementById('updateCurrentPassword');
+        const pwEl       = document.getElementById('updatePassword');
+        const pwConfirmEl = document.getElementById('updatePasswordConfirm');
+        const currentPwVal = currentPwEl ? currentPwEl.value : '';
+        const pwVal      = pwEl ? pwEl.value : '';
+        const confirmVal = pwConfirmEl ? pwConfirmEl.value : '';
+        const originalPhone = '{{member.phone}}';
+
+        if (!nameVal) { alert('이름을 입력해 주세요.'); return; }
+
+        if (pwVal) {
+            if (!currentPwVal) { alert('현재 비밀번호를 확인해 주세요.'); return; }
+            if (!pwRegex.test(pwVal)) {
+                alert('비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.');
+                return;
+            }
+            if (pwVal !== confirmVal) { alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.'); return; }
+            if (pwVal === currentPwVal) { alert('기존 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.'); return; }
+        }
+
+        if (phoneVal !== originalPhone && !phoneVerified) {
+            alert('변경한 휴대폰 번호는 인증이 필요합니다.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('data', new Blob(
+            [JSON.stringify({ name: nameVal, phone: phoneVal, currentPassword: currentPwVal, newPassword: pwVal })],
+            { type: 'application/json' }
+        ));
+
+        const imageFile = document.getElementById('profileImageFile').files[0];
+        if (imageFile) formData.append('profileImageFile', imageFile);
+
+        fetch('/my-pages', { method: 'PUT', body: formData })
+            .then(res => {
+                if (res.ok) {
+                    alert('회원 정보 수정이 완료되었습니다.');
+                    window.location.href = '/my-pages?tab=edit';
+                } else {
+                    res.text().then(t => alert('수정 실패: ' + t));
+                }
+            })
+            .catch(() => alert('통신 오류가 발생했습니다.'));
+    }
+
+    // ── 아바타 이니셜 처리 ──
+    const avatarEl = document.getElementById('imgPreview');
+    if (avatarEl && avatarEl.textContent.trim()) {
+        const t = avatarEl.textContent.trim();
+        avatarEl.textContent = t.charAt(0);
+    }
+</script>
+
+{{> layout/footer}}

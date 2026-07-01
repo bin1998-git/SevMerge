@@ -1,8 +1,10 @@
 package com.example.SevMerge.core.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -134,10 +136,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public String runtime(RuntimeException e, HttpServletRequest request) {
+    public Object runtime(RuntimeException e, HttpServletRequest request, HttpServletResponse response) {
         log.warn("=== 예상치 못한 RuntimeException ===");
         log.warn("요청 URL : {}", request.getRequestURL());
         log.warn("에러 메시지 : {}", e.getMessage());
+
+        // SSE 엔드포인트(/notifications/subscribe)에서 예외 발생 시
+        // text/event-stream 요청에 HTML 뷰를 돌려주면 브라우저 EventSource가
+        // 잘못된 응답을 받아 무한 재연결을 시도하거나 "이상한 도메인" 표시가 생길 수 있음.
+        // Accept: text/event-stream 요청이면 빈 SSE 스트림으로 조용히 종료.
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains(MediaType.TEXT_EVENT_STREAM_VALUE)) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+            try {
+                response.getWriter().write("");
+            } catch (Exception ignored) {}
+            return null;
+        }
+
         request.setAttribute("msg", "시스템 오류가 발생했습니다. 관리자에게 문의해주세요.");
         return "err/500";
     }

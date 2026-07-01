@@ -224,8 +224,17 @@ public class PaymentService {
     }
 
     public List<PaymentResponse> getExpertPayments(Long expertId) {
-        return paymentRepository.findByExpertId(expertId)
-                .stream().map(PaymentResponse::from).toList();
+        return paymentRepository.findByExpertId(expertId).stream().map(p -> {
+            PaymentResponse resp = PaymentResponse.from(p);
+            try {
+                String ps = (String) em
+                        .createNativeQuery("SELECT project_status FROM project_tb WHERE id = :pid")
+                        .setParameter("pid", p.getProjectId())
+                        .getSingleResult();
+                resp.setProjectStatus(ps);
+            } catch (Exception ignored) {}
+            return resp;
+        }).toList();
     }
 
     public PaymentResponse getByProjectId(Long projectId) {
@@ -337,7 +346,70 @@ public class PaymentService {
         log.info("[Escrow] 정산요청 반려 — requestId={}", requestId);
     }
 
-    // ── 관리자 에스크로 목록 조회 ──
+    // ── 관리자 에스크로 현황 조회 (Payment 기반) ──
+
+    /**
+     * 관리자 에스크로 관리 목록
+     * Payment 테이블 기준으로 에스크로 현황 조회 (PAID = 보관중, SETTLED = 정산완료, REFUNDED = 환불)
+     * 전문가 정산요청(EscrowSettlementRequest) 여부도 함께 표시
+     */
+    public List<AdminPaymentEscrowDTO> getAdminPaymentEscrowList(String status) {
+        List<Payment> payments;
+        if ("PAID".equals(status)) {
+            payments = paymentRepository.findByStatusOrderByPaidAtDesc(PaymentStatus.PAID);
+        } else if ("SETTLED".equals(status)) {
+            payments = paymentRepository.findByStatusOrderByPaidAtDesc(PaymentStatus.SETTLED);
+        } else if ("REFUNDED".equals(status)) {
+            payments = paymentRepository.findByStatusOrderByPaidAtDesc(PaymentStatus.REFUNDED);
+        } else {
+            payments = paymentRepository.findAllByOrderByPaidAtDesc();
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+
+        return payments.stream().map(p -> {
+            String clientName = memberRepository.findById(p.getClientId())
+                    .map(m -> m.getName()).orElse("(알 수 없음)");
+            String expertName = memberRepository.findById(p.getExpertId())
+                    .map(m -> m.getName()).orElse("(알 수 없음)");
+            String expertEmail = memberRepository.findById(p.getExpertId())
+                    .map(m -> m.getEmail()).orElse("");
+
+            // 전문가 정산요청 PENDING 여부
+            boolean hasSettlementRequest = escrowRequestRepository
+                    .existsByPaymentIdAndStatus(p.getId(), EscrowRequestStatus.PENDING);
+            EscrowSettlementRequest pendingReq = hasSettlementRequest
+                    ? escrowRequestRepository.findByPaymentIdAndStatus(p.getId(), EscrowRequestStatus.PENDING).orElse(null)
+                    : null;
+
+            String statusLabel = switch (p.getStatus()) {
+                case PAID     -> "보관중";
+                case SETTLED  -> "정산완료";
+                case REFUNDED -> "환불";
+            };
+
+            return new AdminPaymentEscrowDTO(
+                    p.getId(),
+                    p.getProjectId(),
+                    clientName,
+                    expertName,
+                    expertEmail,
+                    String.format("%,d", p.getAmount()),
+                    String.format("%,d", p.getNetAmount()),
+                    String.format("%,d", p.getPlatformFee()),
+                    sdf.format(p.getPaidAt()),
+                    statusLabel,
+                    p.getStatus() == PaymentStatus.PAID,
+                    p.getStatus() == PaymentStatus.SETTLED,
+                    p.getStatus() == PaymentStatus.REFUNDED,
+                    hasSettlementRequest,
+                    pendingReq != null ? pendingReq.getId() : null,
+                    pendingReq != null ? pendingReq.getMessage() : null
+            );
+        }).collect(Collectors.toList());
+    }
+
+    // ── 관리자 에스크로 목록 조회 (기존 — EscrowSettlementRequest 기반) ──
 
     public List<AdminEscrowDTO> getAdminEscrowList(String status) {
         List<EscrowSettlementRequest> list;
@@ -382,6 +454,60 @@ public class PaymentService {
         }).collect(Collectors.toList());
     }
 
+    // ── 관리자 직접 정산 (전문가 요청 없이) ──
+
+    /**
+     * 관리자가 Payment(PAID) → SETTLED 직접 처리
+     * 전문가가 정산요청을 안 해도 관리자가 직접 지급 가능
+     * 의뢰인이 완료 승인을 하지 않을 때 관리자가 중재하여 전문가에게 지급
+     */
+    @Transactional
+    public void adminForceSettle(Long paymentId) {
+        Payment payment = findById(paymentId);
+
+        if (payment.getStatus() == PaymentStatus.SETTLED) {
+            throw new BadRequestException("이미 정산 완료된 건입니다.");
+        }
+        if (payment.getStatus() == PaymentStatus.REFUNDED) {
+            throw new BadRequestException("이미 환불 처리된 건입니다.");
+        }
+
+        try {
+            payment.settle();
+        } catch (IllegalStateException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+
+        // 전문가 97% 지급
+        em.createQuery("UPDATE Member m SET m.balance = m.balance + :amount WHERE m.id = :id")
+                .setParameter("amount", payment.getNetAmount())
+                .setParameter("id", payment.getExpertId())
+                .executeUpdate();
+
+        // 플랫폼 3% 수수료
+        int adminUpdated = em.createQuery(
+                "UPDATE Member m SET m.balance = m.balance + :fee WHERE m.role = :role")
+                .setParameter("fee", payment.getPlatformFee())
+                .setParameter("role", Role.ADMIN)
+                .executeUpdate();
+        if (adminUpdated == 0) {
+            log.warn("[Escrow] 관리자 계정 없음 — 수수료 {}원 미지급 (paymentId={})",
+                    payment.getPlatformFee(), paymentId);
+        }
+
+        // 연결된 정산요청 PENDING → APPROVED 처리
+        escrowRequestRepository.findByPaymentIdAndStatus(paymentId, EscrowRequestStatus.PENDING)
+                .ifPresent(EscrowSettlementRequest::approve);
+
+        // 프로젝트 → DONE
+        em.createNativeQuery("UPDATE project_tb SET project_status = 'DONE' WHERE id = :pid")
+                .setParameter("pid", payment.getProjectId())
+                .executeUpdate();
+
+        log.info("[Escrow] 관리자 직접 정산 — paymentId={}, expertId={}, netAmount={}",
+                paymentId, payment.getExpertId(), payment.getNetAmount());
+    }
+
     // ── 전문가 정산요청 현황 조회 ──
 
     public Set<Long> getPendingSettlementPaymentIds(Long expertId) {
@@ -404,6 +530,30 @@ public class PaymentService {
     }
 
     // ── DTO ──
+
+    /**
+     * 관리자 에스크로 현황 DTO (Payment 기반)
+     * - 에스크로 생성 시 자동 포함 (Payment PAID = 보관중)
+     * - 전문가 정산요청 메시지도 함께 표시
+     */
+    public record AdminPaymentEscrowDTO(
+            Long   paymentId,
+            Long   projectId,
+            String clientName,
+            String expertName,
+            String expertEmail,
+            String amount,
+            String netAmount,
+            String platformFee,
+            String paidAt,
+            String statusLabel,
+            boolean isPaid,
+            boolean isSettled,
+            boolean isRefunded,
+            boolean hasSettlementRequest,
+            Long   settlementRequestId,
+            String settlementMessage
+    ) {}
 
     public record AdminEscrowDTO(
             Long   requestId,

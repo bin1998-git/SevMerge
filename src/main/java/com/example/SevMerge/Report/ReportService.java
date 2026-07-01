@@ -135,6 +135,39 @@ public class ReportService {
         report.completeProcessing();
     }
 
+    // 관리자 수동 차단
+    @Transactional
+    public void blockMemberByAdmin(Long commentId) {
+        Comment commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+        Member member = commentEntity.getMember();
+        if (member == null) {
+            throw new IllegalArgumentException("댓글 작성자를 찾을 수 없습니다.");
+        }
+
+        List<Report> reports = reportRepository.findByCommentId(commentId);
+        String reportIds = reports.stream()
+                .map(r -> String.valueOf(r.getId()))
+                .collect(java.util.stream.Collectors.joining(","));
+
+        member.changeStatusByBlacklist(Status.COMMUNITY_RESTRICTED);
+
+        BlackList blackList = BlackList.builder()
+                .member(member)
+                .reason("관리자 수동 차단")
+                .reportIds(reportIds.isEmpty() ? "-" : reportIds)
+                .expiredAt(LocalDateTime.now().plusDays(30))
+                .isActive(true)
+                .build();
+
+        blacklistRepository.save(blackList);
+
+        for (Report report : reports) {
+            report.completeProcessing();
+        }
+    }
+
     // 차단된 회원 정지해제하는거
     @Transactional
     public void releaseMember(Long memberId) {

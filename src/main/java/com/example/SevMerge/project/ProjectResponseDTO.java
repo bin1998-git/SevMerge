@@ -76,6 +76,14 @@ public class ProjectResponseDTO {
             if (this.createdAt == null) return "";
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this.createdAt);
         }
+
+        public String getBudgetMinFormatted() {
+            return budgetMin == null ? "-" : String.format("%,d", budgetMin);
+        }
+
+        public String getBudgetMaxFormatted() {
+            return budgetMax == null ? "-" : String.format("%,d", budgetMax);
+        }
     }
 
     // 상세 조회 응답 DTO
@@ -101,6 +109,14 @@ public class ProjectResponseDTO {
         private boolean isCertifiedOnly;
         private Timestamp createdAt;
         private boolean isOpen;
+
+        public String getBudgetMinFormatted() {
+            return budgetMin == null ? "-" : String.format("%,d", budgetMin);
+        }
+
+        public String getBudgetMaxFormatted() {
+            return budgetMax == null ? "-" : String.format("%,d", budgetMax);
+        }
 
         public DetailDTO(Project project) {
             this.id = project.getId();

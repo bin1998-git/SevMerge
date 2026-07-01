@@ -34,21 +34,38 @@ public class SessionInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession(false);
         if (session == null) return true;
 
-        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        SessionUser sessionUser;
+        try {
+            sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        } catch (IllegalStateException e) {
+            // 빠른 페이지 이동 시 병렬 요청 중 하나가 세션을 invalidate한 경우
+            return true;
+        }
         if (sessionUser == null) return true;
 
-        Long lastRefresh = (Long) session.getAttribute(LAST_REFRESH_KEY);
+        Long lastRefresh;
+        try {
+            lastRefresh = (Long) session.getAttribute(LAST_REFRESH_KEY);
+        } catch (IllegalStateException e) {
+            return true;
+        }
         long now = System.currentTimeMillis();
         if (lastRefresh != null && now - lastRefresh < REFRESH_INTERVAL_MS) return true;
 
         Member fresh = memberRepository.findById(sessionUser.getId()).orElse(null);
         if (fresh == null || fresh.isDeleted() || fresh.getStatus() == Status.SUSPENDED) {
-            session.invalidate();
+            try {
+                session.invalidate();
+            } catch (IllegalStateException ignored) {}
             response.sendRedirect("/login");
             return false;
         }
-        session.setAttribute(Define.SESSION_USER, new SessionUser(fresh));
-        session.setAttribute(LAST_REFRESH_KEY, now);
+        try {
+            session.setAttribute(Define.SESSION_USER, new SessionUser(fresh));
+            session.setAttribute(LAST_REFRESH_KEY, now);
+        } catch (IllegalStateException ignored) {
+            // 세션이 다른 스레드에 의해 이미 invalidate된 경우 무시
+        }
         return true;
     }
 
@@ -62,7 +79,16 @@ public class SessionInterceptor implements HandlerInterceptor {
 
             HttpSession session = request.getSession(false);
             if (session != null) {
-                SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
+                SessionUser member;
+                try {
+                    member = (SessionUser) session.getAttribute(Define.SESSION_USER);
+                } catch (IllegalStateException e) {
+                    // 세션이 이미 invalidate된 경우
+                    modelAndView.addObject("isLoggedIn", false);
+                    modelAndView.addObject("isExpert", false);
+                    modelAndView.addObject("isAdmin", false);
+                    return;
+                }
                 if (member != null) {
                     modelAndView.addObject("isLoggedIn", true);
                     modelAndView.addObject("sessionUser", member);
@@ -74,9 +100,10 @@ public class SessionInterceptor implements HandlerInterceptor {
                         modelAndView.addObject("headerBalance", 0);
                     }
                     try {
-                        Member memberEntity = memberRepository.findById(member.getId()).orElse(null);
+                        // notificationService.countUnRead()는 Member 엔티티를 파라미터로 받으므로
+                        // 추가 DB 조회 없이 SessionUser의 ID만으로 처리하도록 위임
                         modelAndView.addObject("hasNewNotification",
-                                memberEntity != null && notificationService.countUnRead(memberEntity) > 0);
+                                notificationService.hasUnRead(member.getId()));
                     } catch (Exception e) {
                         modelAndView.addObject("hasNewNotification", false);
                     }

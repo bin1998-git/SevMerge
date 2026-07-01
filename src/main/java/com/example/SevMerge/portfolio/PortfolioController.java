@@ -28,7 +28,12 @@ public class PortfolioController {
     // 리스트
     @GetMapping("/portfolios")
     public String showPortfolios(HttpSession session,
-                                 Model model, @RequestParam("expertId") Long expertId, @RequestParam(defaultValue = "1") int page) {
+                                 Model model, @RequestParam(value = "expertId", required = false) Long expertId, @RequestParam(defaultValue = "1") int page) {
+        if (expertId == null) {
+            SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+            if (sessionMember != null && sessionMember.isExpert()) return "redirect:/portfolios?expertId=" + sessionMember.getId();
+            return "redirect:/experts";
+        }
 
         SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         Page<PortfolioResponse.ListDTO> portfolios = portfolioService.findByMemberId(expertId, page);
@@ -76,7 +81,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/portfolios/save")
-    public String savePortfoliosPage(HttpSession session, Model model, @RequestParam("expertId") Long expertId) {
+    public String savePortfoliosPage(HttpSession session, Model model, @RequestParam(value = "expertId", required = false) Long expertId) {
         SessionUser member = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (member == null) {
             return "redirect:/login";
@@ -84,6 +89,7 @@ public class PortfolioController {
         if (!member.isExpert()){
             throw new BadRequestException("전문가만 포트폴리오를 작성할수 있습니다.");
         }
+        if (expertId == null) expertId = member.getId();
         ExpertProfileResponse expertProfileEntity = expertProfileService.getByMemberId(member.getId());
 
         model.addAttribute("expertProfile", expertProfileEntity);

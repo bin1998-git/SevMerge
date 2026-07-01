@@ -298,8 +298,9 @@ public class MemberController {
                 .filter(b -> b.getBannerImage() != null)
                 .map(b -> {
                     Map<String, Object> map = new java.util.HashMap<>();
+                    String img = b.getBannerImage();
                     map.put("expertId", b.getExpertId());
-                    map.put("bannerImage", "/images/" + b.getBannerImage());
+                    map.put("bannerImage", img.startsWith("http") ? img : "/images/" + img);
                     return map;
                 }).toList();
         model.addAttribute("auctionAds", auctionAds);
@@ -332,7 +333,9 @@ public class MemberController {
                         }
                         if (project.getSelectedExpertId() == null) {
                             bidService.findSelectedBidByProjectId(project.getId())
-                                    .ifPresent(bid -> project.setSelectedExpertId(bid.getExpert().getId()));
+                                    .ifPresent(bid -> {
+                                        if (bid.getExpert() != null) project.setSelectedExpertId(bid.getExpert().getId());
+                                    });
                         }
                         if (project.getSelectedExpertId() != null) {
                             boolean hasReview = reviewRepository.existsByReviewerAndTargeterAndProject(

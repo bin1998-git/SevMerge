@@ -24,4 +24,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     // 미정산 결제 존재 여부 (탈퇴 제한용)
     boolean existsByClientIdAndStatus(Long clientId, PaymentStatus status);
+
+    // 상태별 전체 결제 목록 (관리자 에스크로 현황)
+    List<Payment> findByStatusOrderByPaidAtDesc(PaymentStatus status);
+
+    // 전체 결제 목록 (관리자용)
+    List<Payment> findAllByOrderByPaidAtDesc();
 }

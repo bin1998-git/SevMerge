@@ -31,7 +31,12 @@ public class BidResponseDTO {
         private boolean isSelected;
         private boolean isRejected;
         private boolean isHold;
+        private String rejectReason;
         private Timestamp createdAt;
+
+        public String getProposedPriceFormatted() {
+            return proposedPrice == null ? "-" : String.format("%,d", proposedPrice);
+        }
 
         public ListDTO(Bid bid) {
             this.id = bid.getId();
@@ -50,6 +55,7 @@ public class BidResponseDTO {
             this.isSelected = bid.getStatus() == BidStatus.SELECTED;
             this.isRejected = bid.getStatus() == BidStatus.REJECTED;
             this.isHold = bid.getStatus() == BidStatus.HOLD;
+            this.rejectReason = bid.getRejectReason();
             this.createdAt = bid.getCreatedAt();
         }
     }
@@ -69,6 +75,10 @@ public class BidResponseDTO {
         private String status;
         private boolean isSelected;
         private Timestamp createdAt;
+
+        public String getProposedPriceFormatted() {
+            return proposedPrice == null ? "-" : String.format("%,d", proposedPrice);
+        }
 
         public DetailDTO(Bid bid) {
             this.id = bid.getId();
@@ -113,6 +123,10 @@ public class BidResponseDTO {
         private PaymentInfo payment;
         private java.util.List<com.example.SevMerge.deliverable.DeliverableResponse.ListDTO> deliverables;
 
+        public String getProposedPriceFormatted() {
+            return proposedPrice == null ? "-" : String.format("%,d", proposedPrice);
+        }
+
         public OrderDTO(Bid bid, Payment paymentEntity) {
             this.id = bid.getId();
             this.projectId = bid.getProject().getId();
@@ -148,6 +162,10 @@ public class BidResponseDTO {
         private Integer netAmount;
         private boolean isPaid;
         private boolean isSettled;
+
+        public String getAmountFormatted() { return amount == null ? "-" : String.format("%,d", amount); }
+        public String getPlatformFeeFormatted() { return platformFee == null ? "-" : String.format("%,d", platformFee); }
+        public String getNetAmountFormatted() { return netAmount == null ? "-" : String.format("%,d", netAmount); }
 
         public PaymentInfo(Payment p) {
             this.amount = p.getAmount();

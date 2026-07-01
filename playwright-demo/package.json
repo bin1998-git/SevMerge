@@ -1,0 +1,21 @@
+{
+  "name": "playwright-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "demo:admin":  "npx playwright test tests/01-admin.spec.ts  --config=playwright.config.ts",
+    "demo:expert": "npx playwright test tests/02-expert.spec.ts --config=playwright.config.ts",
+    "demo:client": "npx playwright test tests/03-client.spec.ts --config=playwright.config.ts",
+    "demo:all":    "npx playwright test --config=playwright.config.ts",
+    "report":      "npx playwright show-report",
+    "record":      "node record-videos.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}

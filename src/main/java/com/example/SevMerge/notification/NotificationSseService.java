@@ -1,6 +1,7 @@
 package com.example.SevMerge.notification;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationSseService {
@@ -20,7 +22,15 @@ public class NotificationSseService {
     public SseEmitter createConnection(Long memberId) {
 
         SseEmitter old = emitterMap.remove(memberId);
-        if (old != null) old.complete();
+        if (old != null) {
+            try {
+                old.complete();
+            } catch (Exception e) {
+                // 빠른 페이지 이동 시 이전 emitter의 async context가 이미 종료된 경우
+                // IllegalStateException 등이 발생할 수 있으나 무시해도 안전함
+                log.debug("이전 SSE emitter 종료 중 무시 가능한 예외 발생 (memberId={}): {}", memberId, e.getMessage());
+            }
+        }
 
         SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);
 
@@ -48,7 +58,7 @@ public class NotificationSseService {
                     .data(resDTO, MediaType.APPLICATION_JSON)
             );
         } catch (IOException e) {
-            emitterMap.remove(receiverId);
+            emitterMap.remove(receiverId, emitter);
         }
     }
 

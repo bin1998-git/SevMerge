@@ -95,7 +95,7 @@
         <div class="balance-card">
             <div class="balance-left">
                 <div class="balance-label">현재 잔액</div>
-                <div class="balance-amount">{{balance}}원</div>
+                <div class="balance-amount">{{balanceFormatted}}원</div>
             </div>
             <div class="balance-right">
                 <a href="/charge/form">충전하기</a>
@@ -118,15 +118,15 @@
 
             <div class="info-row">
                 <span class="info-label">계약 금액</span>
-                <span class="info-value highlight">{{amount}}원</span>
+                <span class="info-value highlight">{{amountFormatted}}원</span>
             </div>
             <div class="info-row">
-                <span class="info-label">플랫폼 수수료 (10%)</span>
-                <span class="info-value">{{platformFee}}원</span>
+                <span class="info-label">플랫폼 수수료 (3%)</span>
+                <span class="info-value">{{platformFeeFormatted}}원</span>
             </div>
             <div class="info-row">
                 <span class="info-label">전문가 수령 예정</span>
-                <span class="info-value">{{netAmount}}원</span>
+                <span class="info-value">{{netAmountFormatted}}원</span>
             </div>
             <p class="fee-note">※ 프로젝트 완료 확인 후 전문가에게 지급됩니다</p>
 
@@ -143,7 +143,7 @@
             <div class="shortage-box">
                 <div class="shortage-title">잔액이 부족합니다</div>
                 <div class="shortage-desc">
-                    <span class="shortage-amount">{{shortage}}원</span> 이상 충전이 필요합니다.
+                    <span class="shortage-amount">{{shortageFormatted}}원</span> 이상 충전이 필요합니다.
                 </div>
             </div>
             <a href="/charge/form" class="charge-link">충전하러 가기 →</a>

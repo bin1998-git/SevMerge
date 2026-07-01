@@ -60,7 +60,7 @@
         border: 1px solid rgba(255,255,255,.7); border-radius: 8px; padding: 7px 4px; text-align: center;
     }
     .expert-stat-val { display: block; font-size: 16px; font-weight: 900; color: #2563eb; margin-bottom: 1px; }
-    .expert-stat-lbl { font-size: 9px; color: #9ca3af; font-weight: 500; }
+    .expert-stat-lbl { font-size: 9px; color: #9ca3af; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
     .grade-badge { display: inline-flex; align-items: center; background: transparent; border: none; padding: 0; }
     .grade-badge-img { width: 114px; height: 48px; object-fit: contain; flex-shrink: 0; margin-bottom: 10px; }
@@ -92,7 +92,7 @@
     .section-link-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
     .section-link-title { font-size: 12px; font-weight: 700; color: #1c1e26; display: flex; align-items: center; gap: 5px; }
     .section-link-arrow { font-size: 16px; color: #c4c9d9; }
-    .section-link-desc  { font-size: 10px; color: #9ca3af; line-height: 1.4; }
+    .section-link-desc  { font-size: 10px; color: #9ca3af; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
     .badge-live { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 20px; background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
     .badge-ws   { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 20px; background: #fdf4ff; color: #9333ea; border: 1px solid #e9d5ff; }
@@ -294,15 +294,24 @@
                         <span class="dash-card-title">프로젝트 목록</span>
                         <a href="/projects" class="dash-card-more">전체보기 →</a>
                     </div>
-                    <div class="dash-card-body">
-                        <div class="section-links">
-                            <a href="/projects" class="section-link-card">
-                                <div class="section-link-top">
-                                    <span class="section-link-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22H6v-2h10V4H6V2h14v2h-2v16h2v2ZM6 7h2v2H6v2h2v2H6v2h2v2H6v3H4v-3H2v-2h2v-2H2v-2h2V9H2V7h2V4h2v3Zm16 13h-2V4h2v16Z"/></svg> 전체 프로젝트 보기</span>
-                                    <span class="section-link-arrow">›</span>
+                    <div class="dash-card-body" style="padding:0;">
+                        {{#projects}}
+                        <a href="/projects/{{id}}" style="display:block;padding:12px 16px;border-bottom:1px solid rgba(37,99,235,.06);text-decoration:none;transition:background .12s;" onmouseover="this.style.background='rgba(255,255,255,.6)'" onmouseout="this.style.background=''">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:12px;color:#2563eb;font-weight:700;margin-bottom:3px;">{{categoryName}}</div>
+                                    <div style="font-size:13px;font-weight:700;color:#1e3a6e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{title}}</div>
+                                    <div style="font-size:11px;color:#9ca3af;margin-top:2px;">{{budgetMinFormatted}}~{{budgetMaxFormatted}}원 · D-{{dDay}}</div>
                                 </div>
-                                <div class="section-link-desc">수주 가능한 프로젝트 둘러보기</div>
-                            </a>
+                                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;flex-shrink:0;{{#isOpen}}background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;{{/isOpen}}{{^isOpen}}background:rgba(156,163,175,.1);color:#9ca3af;{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{^isOpen}}마감{{/isOpen}}</span>
+                            </div>
+                        </a>
+                        {{/projects}}
+                        {{^projects}}
+                        <div style="text-align:center;padding:32px 0;font-size:13px;color:#c4c9d9;">수주 가능한 프로젝트가 없습니다.</div>
+                        {{/projects}}
+                        <div style="padding:10px 16px;border-top:1px solid rgba(37,99,235,.06);">
+                            <a href="/projects" style="font-size:12px;color:#2563eb;font-weight:600;text-decoration:none;">전체 {{totalProjectCount}}개 프로젝트 보기 →</a>
                         </div>
                     </div>
                 </div>
@@ -400,7 +409,7 @@
                 stars += '<span style="color:#d1d5db">★</span>';
             }
         }
-        el.innerHTML = stars + '<br><small style="color:#6b7280">' + rating.toFixed(1) + '</small>';
+        el.innerHTML = '<span style="white-space:nowrap;letter-spacing:-1px;font-size:13px">' + stars + '</span><br><small style="color:#6b7280">' + rating.toFixed(1) + '</small>';
     })();
 </script>
 

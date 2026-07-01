@@ -129,6 +129,10 @@ public class ProjectController {
         boolean isOwner = sessionUser != null && sessionUser.getId().equals(project.getMemberId());
         model.addAttribute("isOwner", isOwner);
 
+        boolean alreadyBid = sessionUser != null && !isOwner
+                && bidRepository.existsByProjectIdAndExpertId(id, sessionUser.getId());
+        model.addAttribute("alreadyBid", alreadyBid);
+
         model.addAttribute("deliverables", deliverableService.getByProject(id));
 
         int bidCount = (bids != null) ? bids.size() : 0;
@@ -181,7 +185,7 @@ public class ProjectController {
         log.info("project 수정 요청");
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-
+        if (sessionUser == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
         req.validate();
         // 세션유저 검증이 필요없음으로 null
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
@@ -196,6 +200,7 @@ public class ProjectController {
                                     HttpSession session) {
         log.info("project 삭제 요청");
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         projectService.deleteProject(id, member);
         return ResponseEntity.ok().build();

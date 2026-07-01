@@ -24,6 +24,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
            """)
     Long countNotificationsByReceiver(@Param("receiver") Member receiver);
 
+    // 읽지 않은 알림 유무 (헤더 뱃지용) — memberId만으로 조회해 추가 DB 조회 불필요
+    @Query("""
+           SELECT COUNT(n) > 0 FROM Notification n WHERE n.receiver.id = :receiverId AND n.isRead = false AND n.isDeleted = false
+           """)
+    boolean existsUnReadByReceiverId(@Param("receiverId") Long receiverId);
+
 
     // 전체 읽음 처리
     @Modifying(clearAutomatically = true)

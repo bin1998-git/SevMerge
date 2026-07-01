@@ -81,11 +81,12 @@ public class ProjectService {
     // 리턴 타입을 Page<ProjectResponseDTO.ListDTO>로 변경
     public Page<ProjectResponseDTO.ListDTO> findByCategory(String category, Pageable pageable) {
         log.info("project 카테고리별 조회 서비스 시작");
-
-        Page<Project> projectPage = projectRepository.findByCategory(Category.valueOf(category), pageable);
-
-
-        return projectPage.map(ProjectResponseDTO.ListDTO::new);
+        try {
+            Page<Project> projectPage = projectRepository.findByCategory(Category.valueOf(category), pageable);
+            return projectPage.map(ProjectResponseDTO.ListDTO::new);
+        } catch (IllegalArgumentException e) {
+            return Page.empty(pageable);
+        }
     }
 
 
@@ -118,11 +119,14 @@ public class ProjectService {
     // 입찰 필터 조회
     public List<ProjectResponseDTO.ListDTO> findByBidFilter(String bidFilter, Pageable pageable) {
         log.info("findByBidFilter 서비스 시작 - bidFilter: {}", bidFilter);
-        Page<Project> projectList = projectRepository.findByBidFilter(BidFilter.valueOf(bidFilter), pageable);
-        return projectList.stream()
-                .map(ProjectResponseDTO.ListDTO::new)
-                .collect(Collectors.toList());
-
+        try {
+            Page<Project> projectList = projectRepository.findByBidFilter(BidFilter.valueOf(bidFilter), pageable);
+            return projectList.stream()
+                    .map(ProjectResponseDTO.ListDTO::new)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            return new ArrayList<>();
+        }
     }
 
     // 키워드 검색
@@ -408,7 +412,7 @@ public class ProjectService {
                 projects = projectRepository.findAdminProjectsByStatusAndKeyword(status, keyword);
             }
             return projects.stream().map(ProjectResponseDTO.ListDTO::new).toList();
-        } catch (BadRequestException e) {
+        } catch (IllegalArgumentException | BadRequestException e) {
             return new ArrayList<>();
         }
     }

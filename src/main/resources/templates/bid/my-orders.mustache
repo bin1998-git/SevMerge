@@ -135,13 +135,14 @@
                 {{#orders}}
                 <div class="order-row">
                     <span class="cell cell-title">{{projectTitle}}</span>
-                    <span class="cell cell-price">{{proposedPrice}}원</span>
-                    <span class="cell cell-settle">{{payment.netAmount}}원</span>
+                    <span class="cell cell-price">{{proposedPriceFormatted}}원</span>
+                    <span class="cell cell-settle">{{payment.netAmountFormatted}}원</span>
                     <span class="cell">{{estimatedDays}}일</span>
                     <span class="cell">
                         {{#isInProgress}}<span class="badge badge-progress">진행중</span>{{/isInProgress}}
+                        {{#isCompleted}}<span class="badge badge-waiting" style="background:rgba(245,158,11,.12);color:#d97706;border:1px solid rgba(245,158,11,.3);">정산대기중</span>{{/isCompleted}}
                         {{#isDone}}
-                            {{^payment.isSettled}}<span class="badge badge-waiting">승인 대기</span>{{/payment.isSettled}}
+                            {{^payment.isSettled}}<span class="badge badge-waiting">의뢰인 승인 대기</span>{{/payment.isSettled}}
                             {{#payment.isSettled}}<span class="badge badge-settled">정산완료</span>{{/payment.isSettled}}
                         {{/isDone}}
                     </span>

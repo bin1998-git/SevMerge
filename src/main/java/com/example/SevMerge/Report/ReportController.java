@@ -73,15 +73,25 @@ public class ReportController {
     // 신고 댓글 삭제 처리
     @PostMapping("admin/reports/{commentId}/delete")
     public String deleteReport(@PathVariable(name = "commentId") Long commentId,
+                                @RequestParam(name = "from", required = false) String from,
                                 HttpSession session) {
-
-        // 관리자 권한 검증
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
             return "redirect:/login";
         }
-
         reportService.softDeleteComment(commentId);
+        return "blacklists".equals(from) ? "redirect:/admin/blacklists" : "redirect:/admin/reports";
+    }
+
+    // 댓글 작성자 수동 차단
+    @PostMapping("/admin/reports/{commentId}/block")
+    public String blockMember(@PathVariable(name = "commentId") Long commentId,
+                               HttpSession session) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) {
+            return "redirect:/login";
+        }
+        reportService.blockMemberByAdmin(commentId);
         return "redirect:/admin/reports";
     }
 

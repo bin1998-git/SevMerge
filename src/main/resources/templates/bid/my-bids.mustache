@@ -138,13 +138,14 @@
                 {{#bids}}
                 <div class="bid-row">
                     <span class="cell cell-title">{{projectTitle}}</span>
-                    <span class="cell cell-price">{{proposedPrice}}만원</span>
+                    <span class="cell cell-price">{{proposedPriceFormatted}}원</span>
                     <span class="cell">{{estimatedDays}}일</span>
                     <span class="cell">{{createdAt}}</span>
                     <span class="cell">
                         {{#isPending}}<span class="badge badge-pending">검토중</span>{{/isPending}}
                         {{#isSelected}}<span class="badge badge-selected">낙찰됨</span>{{/isSelected}}
-                        {{^isPending}}{{^isSelected}}<span class="badge badge-rejected">미선정</span>{{/isSelected}}{{/isPending}}
+                        {{#isRejected}}<span class="badge badge-rejected" title="{{rejectReason}}">거절됨 ℹ</span>{{/isRejected}}
+                        {{^isPending}}{{^isSelected}}{{^isRejected}}<span class="badge badge-rejected">미선정</span>{{/isRejected}}{{/isSelected}}{{/isPending}}
                     </span>
                     <span class="cell">
                         {{#isPending}}

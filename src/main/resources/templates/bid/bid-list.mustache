@@ -99,6 +99,51 @@
     }
     .reject-btn:hover { background: rgba(254,242,242,.85); border-color: #ef4444; }
 
+    .reject-reason-box {
+        margin-top: 8px; padding: 8px 12px;
+        background: rgba(254,242,242,.6); border: 1px solid rgba(254,202,202,.7);
+        border-radius: 8px; font-size: 12px; color: #b91c1c; line-height: 1.5;
+    }
+    .reject-reason-box strong { display: block; margin-bottom: 2px; }
+
+    /* 거절 모달 */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0; z-index: 9000;
+        background: rgba(0,0,0,.35); backdrop-filter: blur(4px);
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+        background: rgba(255,255,255,.95); border: 1.5px solid rgba(255,255,255,.9);
+        border-radius: 20px; padding: 32px 28px; width: 100%; max-width: 440px;
+        box-shadow: 0 24px 60px rgba(37,99,235,.15);
+    }
+    .modal-title { font-size: 17px; font-weight: 900; color: #1e3a6e; margin-bottom: 6px; }
+    .modal-desc  { font-size: 13px; color: #4a6fa5; margin-bottom: 18px; }
+    .modal-textarea {
+        width: 100%; padding: 12px 14px; border-radius: 12px; resize: vertical;
+        border: 1.5px solid rgba(37,99,235,.2); background: rgba(255,255,255,.8);
+        font-size: 13px; font-family: inherit; color: #1e3a6e; outline: none;
+        min-height: 100px; box-sizing: border-box; transition: border-color .15s;
+    }
+    .modal-textarea:focus { border-color: rgba(37,99,235,.5); }
+    .modal-char-count { font-size: 11px; color: #93aecf; text-align: right; margin-top: 4px; margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-cancel-btn {
+        flex: 1; padding: 11px; border-radius: 12px; border: 1.5px solid rgba(37,99,235,.2);
+        background: rgba(255,255,255,.7); color: #4a6fa5; font-size: 14px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .modal-cancel-btn:hover { background: rgba(255,255,255,.95); }
+    .modal-confirm-btn {
+        flex: 1; padding: 11px; border-radius: 12px; border: none;
+        background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff;
+        font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+        box-shadow: 0 4px 12px rgba(239,68,68,.3); transition: all .15s;
+    }
+    .modal-confirm-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(239,68,68,.4); }
+    .modal-confirm-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
     /* ── 빈 상태 ── */
     .empty-state { text-align: center; padding: 60px 0; color: #93aecf; font-size: 15px; }
 
@@ -146,7 +191,7 @@
                     </div>
                 </div>
                 <div class="proj-info-right">
-                    <div class="proj-budget">{{projects.budgetMin}}~{{projects.budgetMax}}만원</div>
+                    <div class="proj-budget">{{projects.budgetMinFormatted}}~{{projects.budgetMaxFormatted}}원</div>
                     <div class="proj-d-day">D-{{projects.dDay}}</div>
                 </div>
             </div>
@@ -169,9 +214,14 @@
                             {{#isRejected}}<span class="cert-badge" style="background:#fff1f2;color:#e11d48;border:1px solid #fecdd3;">❌ 거절됨</span>{{/isRejected}}
                         </div>
                         <div class="bid-content">{{coverLetter}}</div>
+                        {{#isRejected}}{{#rejectReason}}
+                        <div class="reject-reason-box">
+                            <strong>거절 사유</strong>{{rejectReason}}
+                        </div>
+                        {{/rejectReason}}{{/isRejected}}
                     </div>
                     <div class="bid-right">
-                        <div class="bid-price">{{proposedPrice}}만원</div>
+                        <div class="bid-price">{{proposedPriceFormatted}}원</div>
                         <div class="bid-date">{{createdAt}}</div>
                         {{#isSelected}}<span class="selected-badge">✓ 낙찰 완료</span>{{/isSelected}}
                         {{#isRejected}}<span class="rejected-badge">✕ 거절됨</span>{{/isRejected}}
@@ -199,23 +249,83 @@
     </div>
 </section>
 
+<!-- 거절 사유 입력 모달 -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-box">
+        <div class="modal-title">제안서 거절</div>
+        <p class="modal-desc">거절 사유를 작성해 주세요. 전문가에게 알림이 전송됩니다.</p>
+        <textarea class="modal-textarea" id="rejectReasonInput" maxlength="300"
+                  placeholder="거절 사유를 입력하세요. (예: 예산 범위 초과, 기술 스택 불일치 등)"></textarea>
+        <div class="modal-char-count"><span id="rejectCharCount">0</span> / 300</div>
+        <div class="modal-actions">
+            <button class="modal-cancel-btn" onclick="closeRejectModal()">취소</button>
+            <button class="modal-confirm-btn" id="rejectConfirmBtn" onclick="submitReject()">거절하기</button>
+        </div>
+    </div>
+</div>
+
 <script>
+let _rejectBidId = null;
+
 function selectBid(bidId) {
     if (!confirm('정말 이 전문가를 낙찰하시겠습니까?\n낙찰 완료 후 보유 잔액에서 계약금이 자동 차감됩니다.')) return;
     fetch(`/bids/${bidId}/select`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
         .then(res => {
-            if (res.ok) { alert('🎉 낙찰 처리가 완료되었습니다!\n계약금이 에스크로로 이체되었습니다.'); location.href = '/projects'; }
+            if (res.ok) { alert('낙찰 처리가 완료되었습니다!\n계약금이 에스크로로 이체되었습니다.'); location.href = '/projects'; }
             else res.json().then(d => alert('낙찰 처리 실패\n' + (d.message || '잠시 후 다시 시도해주세요.')));
         }).catch(() => alert('서버 통신 중 오류가 발생했습니다.'));
 }
+
 function rejectBid(bidId) {
-    if (!confirm('이 제안서를 거절하시겠습니까?')) return;
-    fetch(`/bids/${bidId}/reject`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } })
-        .then(res => {
-            if (res.ok) { alert('제안서가 거절되었습니다.'); location.reload(); }
-            else alert('거절 처리에 실패했습니다.');
-        }).catch(() => alert('서버 통신 중 오류가 발생했습니다.'));
+    _rejectBidId = bidId;
+    document.getElementById('rejectReasonInput').value = '';
+    document.getElementById('rejectCharCount').textContent = '0';
+    document.getElementById('rejectModal').classList.add('active');
+    document.getElementById('rejectReasonInput').focus();
 }
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').classList.remove('active');
+    _rejectBidId = null;
+}
+
+function submitReject() {
+    const reason = document.getElementById('rejectReasonInput').value.trim();
+    if (!reason) {
+        document.getElementById('rejectReasonInput').style.borderColor = '#ef4444';
+        document.getElementById('rejectReasonInput').focus();
+        return;
+    }
+    const btn = document.getElementById('rejectConfirmBtn');
+    btn.disabled = true;
+    btn.textContent = '처리 중...';
+    fetch(`/bids/${_rejectBidId}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+    }).then(res => {
+        if (res.ok) {
+            closeRejectModal();
+            alert('제안서가 거절되었습니다.');
+            location.reload();
+        } else {
+            return res.json().then(d => { throw new Error(d.message || '거절 처리에 실패했습니다.'); });
+        }
+    }).catch(err => {
+        alert(err.message);
+        btn.disabled = false;
+        btn.textContent = '거절하기';
+    });
+}
+
+document.getElementById('rejectReasonInput').addEventListener('input', function() {
+    document.getElementById('rejectCharCount').textContent = this.value.length;
+    this.style.borderColor = '';
+});
+
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) closeRejectModal();
+});
 </script>
 
 {{> layout/footer}}

@@ -30,7 +30,7 @@ public class ReviewController {
                             @RequestParam(defaultValue = "1") int page) {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) return "login-form";
+        if (sessionUser == null) return "member/login-form";
 
         PageRequest pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<ReviewResponse.ReviewListDTO> reviewPage = reviewService.findMyReviewsPage(sessionUser.getId(), pageable);
@@ -57,10 +57,12 @@ public class ReviewController {
                                  @RequestParam(required = false) Long projectId) {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) return "login-form";
+        if (sessionUser == null) return "member/login-form";
 
         // expertId로 넘어온 경우 targetId로 통합
         if (targetId == null && expertId != null) targetId = expertId;
+
+        if (targetId == null) return "redirect:/projects";
 
         Member targeter = memberService.findMemberById(targetId);
         model.addAttribute("targeter", targeter);
@@ -79,7 +81,7 @@ public class ReviewController {
                              @RequestParam(required = false) Long projectId) {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) return "login-form";
+        if (sessionUser == null) return "member/login-form";
 
         reviewDTO.setProjectId(projectId);  // DTO에 projectId 세팅
 
@@ -99,7 +101,7 @@ public class ReviewController {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
-            return "login-form";
+            return "member/login-form";
         }
         ReviewResponse.ReviewDetailDTO review = reviewService.detail(reviewId);
 
@@ -114,7 +116,7 @@ public class ReviewController {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
-            return "login-form";
+            return "member/login-form";
         }
 
         model.addAttribute("review",reviewService.detail(reviewId));
@@ -144,7 +146,7 @@ public class ReviewController {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
-            return "login-form";
+            return "member/login-form";
         }
         reviewService.deleteReview(reviewId,sessionUser.getId());
         // 삭제후 해당 전문가 리뷰 목록으로 돌아간다

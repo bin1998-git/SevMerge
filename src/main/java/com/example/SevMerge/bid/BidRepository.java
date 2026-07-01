@@ -118,4 +118,13 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
         AND b.project.projectStatus NOT IN ('DONE', 'CANCELLED')
         """)
     boolean existsActiveByExpertId(@Param("expertId") Long expertId);
+
+    @Query("""
+        SELECT COUNT(b) > 0 FROM Bid b
+        WHERE b.project.id = :projectId
+        AND b.expert.id = :expertId
+        AND b.isDeleted = false
+        """)
+    boolean existsByProjectIdAndExpertId(@Param("projectId") Long projectId,
+                                          @Param("expertId") Long expertId);
 }

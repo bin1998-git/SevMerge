@@ -69,7 +69,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/reviews/**",
                         "/withdrawal/**",
                         "/refund-applications",
-                        "/refund-applications/**"
+                        "/refund-applications/**",
+                        "/expert-profile/**",
+                        "/api/project/ai/**"
                         )
                 .excludePathPatterns(
                         "/",
@@ -115,7 +117,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**",
                         "/faqs/**",
-                "/api/admin")
+                "/api/admin",
+                "/api/admin/**")
                 .excludePathPatterns(
                         "/admin/comments/{id}/report"
                         );

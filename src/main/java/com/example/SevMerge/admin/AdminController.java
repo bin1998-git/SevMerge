@@ -2,6 +2,7 @@ package com.example.SevMerge.admin;
 
 import com.example.SevMerge.Report.BlackList;
 import com.example.SevMerge.Report.BlacklistRepository;
+import com.example.SevMerge.Report.ReportResponse;
 import com.example.SevMerge.Report.ReportService;
 import com.example.SevMerge.adbid.AdBidService;
 import com.example.SevMerge.advertisement.AdvertisementService;
@@ -12,8 +13,8 @@ import com.example.SevMerge.member.*;
 import com.example.SevMerge.partnership.PartnerShipService;
 import com.example.SevMerge.project.ProjectResponseDTO;
 import com.example.SevMerge.project.ProjectService;
+import com.example.SevMerge.payment.PaymentService;
 import com.example.SevMerge.revenue.PlatformRevenueService;
-import com.example.SevMerge.withdrawal.WithdrawalService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.SevMerge.member.SessionUser;
+import com.example.SevMerge.core.exception.BadRequestException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -42,10 +44,10 @@ public class AdminController {
     private final BlacklistRepository blacklistRepository;
     private final ReportService reportService;
     private final PartnerShipService partnerShipService;
-    private final WithdrawalService withdrawalService;
     private final AdvertisementService advertisementService;
     private final PlatformRevenueService platformRevenueService;
     private final AdBidService adBidService;
+    private final PaymentService paymentService;
 
     @GetMapping("/admin/main")
     public String dashboardPage(HttpSession session, Model model,
@@ -254,14 +256,19 @@ public class AdminController {
     @PatchMapping("/api/admin/experts/{memberId}/approval")
     public ResponseEntity<?> processExpertApproval(
             @PathVariable Long memberId,
-            @RequestBody Map<String, String> body) {
+            @RequestBody Map<String, String> body,
+            HttpSession session) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(403).body("접근 권한이 없습니다.");
+        }
         String action = body.get("action");
         if ("APPROVE".equals(action)) {
             memberService.approveExpert(memberId);
         } else if ("REJECT".equals(action)) {
             memberService.rejectExpert(memberId, body.get("reason"));
         } else {
-            throw new IllegalArgumentException("잘못된 요청 액션입니다.");
+            throw new BadRequestException("잘못된 요청 액션입니다.");
         }
         return ResponseEntity.ok().build();
     }
@@ -288,8 +295,9 @@ public class AdminController {
         model.addAttribute("prevPage", page > 1 ? page - 1 : null);
         model.addAttribute("nextPage", page < tp ? page + 1 : null);
         model.addAttribute("keyword", keyword != null ? keyword : "");
-        model.addAttribute("reportedCommentCount", 0);  // ← 추가
-        model.addAttribute("reportedComments", new ArrayList<>());  // ← 추가
+        List<ReportResponse.CommentReportSummaryDTO> reportedComments = reportService.getReportedCommentSummaries();
+        model.addAttribute("reportedCommentCount", reportedComments.size());
+        model.addAttribute("reportedComments", reportedComments);
         return "admin/admin-blacklist";
     }
 
@@ -301,38 +309,6 @@ public class AdminController {
         if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
         reportService.releaseMember(memberId);
         return "redirect:/admin/blacklists";
-    }
-
-    // 출금요청 관리 페이지
-    @GetMapping("/admin/experts/withdraw")
-    public String adminExpertWithdraw(@RequestParam(value = "status", required = false) String status,
-                                      @RequestParam(defaultValue = "1") int page, Model model) {
-        List<WithdrawalService.AdminWithdrawalDTO> all = withdrawalService.getAllForAdmin(status);
-        long pendingCount = all.stream().filter(WithdrawalService.AdminWithdrawalDTO::isPending).count();
-        int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
-        int s = (page - 1) * ps, e = Math.min(s + ps, total);
-        model.addAttribute("withdrawals", s < total ? all.subList(s, e) : new ArrayList<>());
-        model.addAttribute("totalCount", total);
-        model.addAttribute("pendingCount", pendingCount);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", tp);
-        model.addAttribute("prevPage", page > 1 ? page - 1 : null);
-        model.addAttribute("nextPage", page < tp ? page + 1 : null);
-        model.addAttribute("currentStatus", status != null ? status : "");
-        model.addAttribute("isWithdrawAll", status == null);
-        model.addAttribute("isWithdrawPending", "PENDING".equals(status));
-        model.addAttribute("isWithdrawCompleted", "COMPLETED".equals(status));
-        model.addAttribute("isWithdrawRejected", "REJECTED".equals(status));
-        return "admin/admin-withdraw";
-    }
-
-    // 출금 승인/반려 API
-    @ResponseBody
-    @PatchMapping("/api/admin/withdraw/{id}")
-    public ResponseEntity<?> processWithdraw(@PathVariable Long id,
-                                             @RequestBody Map<String, String> body) {
-        withdrawalService.processWithdrawal(id, body.get("action"));
-        return ResponseEntity.ok().build();
     }
 
     // 광고 승인 관리 페이지
@@ -382,7 +358,91 @@ public class AdminController {
     }
 
     @GetMapping("/admin/experts/grade")
-    public String adminExpertGrade() {
-        return "admin/admin-expert";
+    public String adminExpertGrade(HttpSession session) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
+        return "redirect:/admin/experts";
+    }
+
+    // ── 에스크로 관리 페이지 ──
+
+    /**
+     * 에스크로 관리 페이지
+     * - Payment 전체 목록 기반 (에스크로 생성 시 자동 포함)
+     * - 전문가 정산요청 메시지 함께 표시
+     * - 관리자가 직접 정산(force-settle) 또는 요청 승인/반려 처리
+     */
+    @GetMapping("/admin/escrow")
+    public String adminEscrowPage(@RequestParam(value = "status", required = false) String status,
+                                  @RequestParam(defaultValue = "1") int page,
+                                  HttpSession session,
+                                  Model model) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || sessionUser.getRole() != Role.ADMIN) return "redirect:/login";
+
+        java.util.List<PaymentService.AdminPaymentEscrowDTO> all = paymentService.getAdminPaymentEscrowList(status);
+
+        long paidCount     = all.stream().filter(PaymentService.AdminPaymentEscrowDTO::isPaid).count();
+        long settledCount  = all.stream().filter(PaymentService.AdminPaymentEscrowDTO::isSettled).count();
+        long requestCount  = all.stream().filter(PaymentService.AdminPaymentEscrowDTO::hasSettlementRequest).count();
+
+        int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
+        int s = (page - 1) * ps, e = Math.min(s + ps, total);
+
+        model.addAttribute("escrowList",    s < total ? all.subList(s, e) : new ArrayList<>());
+        model.addAttribute("totalCount",    total);
+        model.addAttribute("paidCount",     paidCount);
+        model.addAttribute("settledCount",  settledCount);
+        model.addAttribute("requestCount",  requestCount);
+        model.addAttribute("currentPage",   page);
+        model.addAttribute("totalPages",    tp);
+        model.addAttribute("prevPage",      page > 1 ? page - 1 : null);
+        model.addAttribute("nextPage",      page < tp ? page + 1 : null);
+        model.addAttribute("currentStatus", status != null ? status : "");
+        model.addAttribute("isEscrowAll",      status == null || status.isEmpty());
+        model.addAttribute("isEscrowPaid",     "PAID".equals(status));
+        model.addAttribute("isEscrowSettled",  "SETTLED".equals(status));
+        model.addAttribute("isEscrowRefunded", "REFUNDED".equals(status));
+
+        return "admin/admin-escrow";
+    }
+
+    // 관리자 직접 정산 (전문가 요청 없이도 가능)
+    @ResponseBody
+    @PatchMapping("/api/admin/escrow/{paymentId}/force-settle")
+    public ResponseEntity<?> adminForceSettle(@PathVariable Long paymentId,
+                                              HttpSession session) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(403).body("접근 권한이 없습니다.");
+        }
+        paymentService.adminForceSettle(paymentId);
+        return ResponseEntity.ok().build();
+    }
+
+    // 전문가 정산요청 승인 (EscrowSettlementRequest 기반)
+    @ResponseBody
+    @PatchMapping("/api/admin/escrow/{requestId}/approve")
+    public ResponseEntity<?> approveEscrowSettlement(@PathVariable Long requestId,
+                                                     HttpSession session) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(403).body("접근 권한이 없습니다.");
+        }
+        paymentService.adminApproveSettlement(requestId);
+        return ResponseEntity.ok().build();
+    }
+
+    // 전문가 정산요청 반려
+    @ResponseBody
+    @PatchMapping("/api/admin/escrow/{requestId}/reject")
+    public ResponseEntity<?> rejectEscrowSettlement(@PathVariable Long requestId,
+                                                    HttpSession session) {
+        SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null || !sessionUser.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(403).body("접근 권한이 없습니다.");
+        }
+        paymentService.adminRejectSettlement(requestId);
+        return ResponseEntity.ok().build();
     }
 }

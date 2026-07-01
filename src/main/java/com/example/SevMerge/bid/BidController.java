@@ -30,11 +30,14 @@ public class BidController {
 
     // 1. 제안서 작성 폼
     @GetMapping("/bids/save-form")
-    public String saveForm(@RequestParam Long projectId, Model model, HttpSession session) {
+    public String saveForm(@RequestParam(required = false) Long projectId, Model model, HttpSession session) {
         log.info("제안서 등록 폼 요청 - projectId: {}", projectId);
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) {
             return "redirect:/login";
+        }
+        if (projectId == null) {
+            return "redirect:/projects";
         }
         if (!sessionUser.isExpert()) {
             return "redirect:/projects/" + projectId;
@@ -61,10 +64,11 @@ public class BidController {
     // 3. 제안서 목록 조회 (의뢰인 시점)
     @GetMapping("/bids")
     public String list(Model model,
-                       @RequestParam Long projectId,
+                       @RequestParam(required = false) Long projectId,
                        @RequestParam(defaultValue = "0") int page,
                        HttpSession session) {
         log.info("의뢰인의 제안서 목록 조회 요청 - projectId: {}", projectId);
+        if (projectId == null) return "redirect:/projects";
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser != null) {
             model.addAttribute("sessionUser", sessionUser);
@@ -93,6 +97,7 @@ public class BidController {
                          HttpSession session) {
         log.info("전문가 본인의 제안서 목록 요청");
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return "redirect:/login";
 
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         Page<BidResponseDTO.ListDTO> bidPage = bidService.findMyBids(member, page);
@@ -114,7 +119,7 @@ public class BidController {
                            HttpSession session) {
         log.info("전문가 주문 관리 요청");
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-
+        if (sessionUser == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         Page<BidResponseDTO.OrderDTO> orderPage = bidService.findMyOrders(member, page);
 
@@ -137,7 +142,7 @@ public class BidController {
     public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
         log.info("제안서 수정 폼 요청 - bidId: {}", id);
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-
+        if (sessionUser == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         BidResponseDTO.DetailDTO bid = bidService.findBidById(id, member);
         model.addAttribute("bid", bid);
@@ -152,7 +157,7 @@ public class BidController {
                                     HttpSession session) {
         log.info("제안서 수정 요청 - bidId: {}", id);
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-
+        if (sessionUser == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
         req.validate();
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         bidService.updateBid(id, req, member);
@@ -165,7 +170,7 @@ public class BidController {
     public ResponseEntity<?> delete(@PathVariable Long id, HttpSession session) {
         log.info("제안서 취소 요청 - bidId: {}", id);
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
-
+        if (sessionUser == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         bidService.deleteBid(id, member);
         return ResponseEntity.ok().build();
@@ -192,6 +197,7 @@ public class BidController {
     public ResponseEntity<?> hold(@PathVariable Long id, HttpSession session) {
         log.info("제안서 보류 서비스 시작");
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionUser == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
         bidService.holdBid(id, member);
         return ResponseEntity.ok().build();
@@ -200,15 +206,21 @@ public class BidController {
 
 
     // 10. 제안서 거절 (의뢰인이 거절 - JS 비동기)
-    @DeleteMapping("/bids/{id}/reject")
+    @PostMapping("/bids/{id}/reject")
     @ResponseBody
-    public ResponseEntity<?> reject(@PathVariable Long id, HttpSession session) {
+    public ResponseEntity<?> reject(@PathVariable Long id,
+                                    @RequestBody Map<String, String> body,
+                                    HttpSession session) {
         log.info("제안서 거절 요청 - bidId: {}", id);
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         if (sessionUser == null) return ResponseEntity.status(401).build();
-        Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
-        bidService.rejectBid(id, member);
-        return ResponseEntity.ok().build();
+        try {
+            Member member = memberRepository.findById(sessionUser.getId()).orElseThrow();
+            bidService.rejectBid(id, body.get("reason"), member);
+            return ResponseEntity.ok().build();
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     // 11. 전문가 작업 완료 신고

@@ -7,6 +7,7 @@ import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.SevMerge.member.MemberRepository;
@@ -30,6 +31,7 @@ public class ExpertProfileController {
           HttpSession session) {
 
     SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+    if (sessionUser == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     Member member = memberRepository.findById(sessionUser.getId())
             .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
     ExpertProfileResponse response = expertProfileService.save(member, req);
@@ -59,6 +61,7 @@ public class ExpertProfileController {
       HttpSession session) {
 
     SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
+    if (sessionUser == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     ExpertProfileResponse response = expertProfileService.update(sessionUser.getId(), req);
     return ResponseEntity.ok(ApiResponse.ok(response));
   }

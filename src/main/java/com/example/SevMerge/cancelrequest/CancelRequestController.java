@@ -28,9 +28,10 @@ public class CancelRequestController {
         try {
             Member member = memberRepository.findById(user.getId()).orElseThrow();
             cancelRequestService.requestCancel(projectId, member, reason);
+            return "redirect:/my-pages?tab=projects";
         } catch (BadRequestException e) {
+            return "redirect:/my-pages?tab=projects&error=" + e.getMessage();
         }
-        return "redirect:/my-pages?tab=projects";
     }
 
     @PostMapping("/cancel-requests/{id}/approve")

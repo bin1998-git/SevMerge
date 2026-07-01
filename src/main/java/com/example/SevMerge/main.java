@@ -146,8 +146,14 @@ public class main {
                 map.put("expertId", b.getExpertId());
                 map.put("expertName", winner != null ? winner.getName() : "");
                 map.put("adMessage", b.getAdMessage() != null ? b.getAdMessage() : "");
-                map.put("bannerImage", b.getBannerImage() != null ?
-                        "/images/" + b.getBannerImage() : "/images/default-banner.png");
+                String bannerImg = b.getBannerImage();
+                if (bannerImg == null || bannerImg.isBlank()) {
+                    map.put("bannerImage", "/images/default-banner.png");
+                } else if (bannerImg.startsWith("http")) {
+                    map.put("bannerImage", bannerImg);
+                } else {
+                    map.put("bannerImage", "/images/" + bannerImg);
+                }
                 return map;
             }).toList();
             model.addAttribute("auctionAds", auctionAds);

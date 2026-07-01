@@ -295,7 +295,7 @@ public class BidService {
 
     // 제안서 거절
     @Transactional
-    public void rejectBid(Long id, Member session) {
+    public void rejectBid(Long id, String reason, Member session) {
         log.info("제안서 거절 서비스 시작");
 
         Bid bid = bidRepository.findById(id).orElseThrow(
@@ -314,7 +314,10 @@ public class BidService {
         if (bid.getStatus() != BidStatus.PENDING) {
             throw new BadRequestException("처리가 된 제안서 입니다");
         }
-        bid.reject();
+        if (reason == null || reason.isBlank()) {
+            throw new BadRequestException("거절 사유를 입력해주세요.");
+        }
+        bid.reject(reason.trim());
         notificationService.notifyBidRejected(bid.getExpert(), bid.getProject().getTitle());
     }
 
@@ -346,8 +349,12 @@ public class BidService {
         if (!bid.getExpert().getId().equals(session.getId())) throw new ForbiddenException("본인 제안서만 수정 가능합니다");
         if (bid.getStatus() != BidStatus.SELECTED) throw new BadRequestException("낙찰된 제안서만 작업물을 제출할 수 있습니다");
 
-        String savedName = com.example.SevMerge.core.util.FileUtil.saveFile(file, com.example.SevMerge.core.util.FileUtil.IMAGES_DIR);
-        String originalName = file.getOriginalFilename();
+        String savedName = null;
+        String originalName = null;
+        if (file != null && !file.isEmpty()) {
+            savedName = com.example.SevMerge.core.util.FileUtil.saveFile(file, com.example.SevMerge.core.util.FileUtil.IMAGES_DIR);
+            originalName = file.getOriginalFilename();
+        }
         bid.submitWork(savedName, originalName, note);
 
         // 프로젝트 상태 COMPLETED 전환

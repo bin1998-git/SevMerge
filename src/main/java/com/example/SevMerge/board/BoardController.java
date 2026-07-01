@@ -8,7 +8,7 @@ import com.example.SevMerge.member.Role;
 import com.example.SevMerge.member.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import com.example.SevMerge.core.exception.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,8 +54,14 @@ public class BoardController {
             return "board/board-list";
         }
 
+        BoardType type;
+        try {
+            type = BoardType.valueOf(boardType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            type = BoardType.FREE;
+        }
         Page<BoardResponse.ListDTO> boardPage =
-                boardService.findAllByBoardType(BoardType.valueOf(boardType.toUpperCase()), keyword, page);
+                boardService.findAllByBoardType(type, keyword, page);
         model.addAttribute("boards", boardPage.getContent());
         model.addAttribute("boardCount", boardPage.getTotalElements());
         model.addAttribute("totalPages", boardPage.getTotalPages());
@@ -88,7 +94,7 @@ public class BoardController {
     // ── 작성 페이지 ─────────────────────────────────────────────────
     @GetMapping("/boards/save")
     public String saveBoardPage(@RequestParam(defaultValue = "FREE") String boardType,
-                                Model model, HttpSession session) throws BadRequestException {
+                                Model model, HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
 
         if (boardType.equalsIgnoreCase("NOTICE")) {
@@ -167,8 +173,14 @@ public class BoardController {
                               Model model, HttpSession session) {
         SessionUser sessionUser = (SessionUser) session.getAttribute(Define.SESSION_USER);
         model.addAttribute("isAdmin", sessionUser != null && sessionUser.getRole() == Role.ADMIN);
+        BoardType type;
+        try {
+            type = BoardType.valueOf(boardType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            type = BoardType.FREE;
+        }
         List<BoardResponse.ListDTO> all =
-                boardService.getAdminBoardsByType(BoardType.valueOf(boardType.toUpperCase()), keyword);
+                boardService.getAdminBoardsByType(type, keyword);
         int ps = 15, total = all.size(), tp = Math.max(1, (int) Math.ceil((double) total / ps));
         int s = (page - 1) * ps, e = Math.min(s + ps, total);
         model.addAttribute("boards", s < total ? all.subList(s, e) : new java.util.ArrayList<>());

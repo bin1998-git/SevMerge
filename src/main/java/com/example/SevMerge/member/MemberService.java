@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -445,7 +446,7 @@ public class MemberService {
             Role role = Role.valueOf(roleFilter.toUpperCase());
             Page<Member> memberPage = memberRepository.findByRoleAndKeyword(role, keyword, pageable);
             return memberPage.map(MemberResponse::from);
-        } catch (BadRequestException e) {
+        } catch (IllegalArgumentException e) {
             return Page.empty(pageable);
         }
     }
@@ -743,12 +744,20 @@ public class MemberService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(multiValueMap, headers1);
 
-        ResponseEntity<MemberResponse.OAuthToken> response1 = restTemplate1.exchange(
-                "https://kauth.kakao.com/oauth/token",
-                HttpMethod.POST,
-                request,
-                MemberResponse.OAuthToken.class
-        );
+        ResponseEntity<MemberResponse.OAuthToken> response1;
+        try {
+            response1 = restTemplate1.exchange(
+                    "https://kauth.kakao.com/oauth/token",
+                    HttpMethod.POST,
+                    request,
+                    MemberResponse.OAuthToken.class
+            );
+        } catch (RestClientException e) {
+            throw new BadRequestException("소셜 로그인 통신 오류: " + e.getMessage());
+        }
+        if (response1.getBody() == null) {
+            throw new BadRequestException("OAuth 토큰 응답이 없습니다.");
+        }
         return response1.getBody();
     }
 
@@ -764,12 +773,20 @@ public class MemberService {
         HttpEntity request2 = new HttpEntity(headers2);
 
         // HTTP  요청 2
-        ResponseEntity<MemberResponse.KakaoProfile> response2 = restTemplate2.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
-                request2,
-                MemberResponse.KakaoProfile.class
-        );
+        ResponseEntity<MemberResponse.KakaoProfile> response2;
+        try {
+            response2 = restTemplate2.exchange(
+                    "https://kapi.kakao.com/v2/user/me",
+                    HttpMethod.POST,
+                    request2,
+                    MemberResponse.KakaoProfile.class
+            );
+        } catch (RestClientException e) {
+            throw new BadRequestException("소셜 로그인 통신 오류: " + e.getMessage());
+        }
+        if (response2.getBody() == null) {
+            throw new BadRequestException("OAuth 토큰 응답이 없습니다.");
+        }
         return response2.getBody();
     }
 
@@ -941,12 +958,20 @@ public class MemberService {
         params.add("grant_type", "authorization_code");
 
         HttpEntity<MultiValueMap<String, String>> req1 = new HttpEntity<>(params, headers1);
-        ResponseEntity<MemberResponse.GoogleToken> tokenRes = rt1.exchange(
-                "https://oauth2.googleapis.com/token",
-                HttpMethod.POST,
-                req1,
-                MemberResponse.GoogleToken.class
-        );
+        ResponseEntity<MemberResponse.GoogleToken> tokenRes;
+        try {
+            tokenRes = rt1.exchange(
+                    "https://oauth2.googleapis.com/token",
+                    HttpMethod.POST,
+                    req1,
+                    MemberResponse.GoogleToken.class
+            );
+        } catch (RestClientException e) {
+            throw new BadRequestException("소셜 로그인 통신 오류: " + e.getMessage());
+        }
+        if (tokenRes.getBody() == null) {
+            throw new BadRequestException("OAuth 토큰 응답이 없습니다.");
+        }
         String accessToken = tokenRes.getBody().getAccessToken();
 
         // 2. 사용자 정보 조회
@@ -955,12 +980,20 @@ public class MemberService {
         headers2.add("Authorization", "Bearer " + accessToken);
 
         HttpEntity<Void> req2 = new HttpEntity<>(headers2);
-        ResponseEntity<MemberResponse.GoogleProfile> profileRes = rt2.exchange(
-                "https://www.googleapis.com/oauth2/v3/userinfo",
-                HttpMethod.GET,
-                req2,
-                MemberResponse.GoogleProfile.class
-        );
+        ResponseEntity<MemberResponse.GoogleProfile> profileRes;
+        try {
+            profileRes = rt2.exchange(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    HttpMethod.GET,
+                    req2,
+                    MemberResponse.GoogleProfile.class
+            );
+        } catch (RestClientException e) {
+            throw new BadRequestException("소셜 로그인 통신 오류: " + e.getMessage());
+        }
+        if (profileRes.getBody() == null) {
+            throw new BadRequestException("OAuth 프로필 응답이 없습니다.");
+        }
         return profileRes.getBody();
     }
 

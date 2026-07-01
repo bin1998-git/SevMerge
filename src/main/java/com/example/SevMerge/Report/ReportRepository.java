@@ -11,15 +11,15 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     // 관리자 전용 모든 신고내역 조회
     @Query("""
-        SELECT r FROM Report r 
-        JOIN FETCH r.comment c 
-        JOIN FETCH c.board b 
-        JOIN FETCH c.member cm     
-        JOIN FETCH r.reporter rm   
-        WHERE r.isProcessed = false 
-          AND (:keyword IS NULL OR :keyword = '' 
-               OR c.content LIKE %:keyword% 
-               OR cm.name LIKE %:keyword% 
+        SELECT r FROM Report r
+        JOIN FETCH r.comment c
+        LEFT JOIN FETCH c.board b
+        LEFT JOIN FETCH c.member cm
+        JOIN FETCH r.reporter rm
+        WHERE r.isProcessed = false
+          AND (:keyword IS NULL OR :keyword = ''
+               OR c.content LIKE %:keyword%
+               OR cm.name LIKE %:keyword%
                OR r.reason LIKE %:keyword%)
         ORDER BY r.id DESC
     """)

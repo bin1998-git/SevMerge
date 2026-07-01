@@ -65,6 +65,9 @@
         @Column(name = "submitted_at")
         private Timestamp submittedAt;
 
+        @Column(name = "reject_reason", columnDefinition = "TEXT")
+        private String rejectReason;
+
         @Column(nullable = false)
         @Builder.Default
         private boolean isDeleted = false;
@@ -105,6 +108,7 @@
 
         public void fail() {
             this.status = BidStatus.REJECTED;
+            this.rejectReason = "다른 전문가가 낙찰되었습니다.";
         }
         // 소프트 딜리트 삭제 메서드
 
@@ -113,8 +117,9 @@
         }
 
         // 제안서 거절
-        public void reject() {
+        public void reject(String reason) {
             this.status = BidStatus.REJECTED;
+            this.rejectReason = reason;
         }
 
         // 제안서의 상태를 보류하는 메서드

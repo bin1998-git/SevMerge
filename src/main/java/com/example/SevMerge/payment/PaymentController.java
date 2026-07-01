@@ -48,15 +48,24 @@ public class PaymentController {
 
         int balance = chargeService.getBalance(sessionUser.getId());
 
+        int platformFee = (int)(amount * 0.03);
+        int netAmount   = amount - platformFee;
+        int shortage    = Math.max(0, amount - balance);
+
         model.addAttribute("projectId",        projectId);
         model.addAttribute("expertId",         expertId);
         model.addAttribute("amount",           amount);
         model.addAttribute("balance",          balance);
-        model.addAttribute("platformFee",      (int)(amount * 0.03));
-        model.addAttribute("netAmount",        amount - (int)(amount * 0.03));
+        model.addAttribute("platformFee",      platformFee);
+        model.addAttribute("netAmount",        netAmount);
         model.addAttribute("balanceSufficient",   balance >= amount);
         model.addAttribute("balanceInsufficient", balance < amount);
-        model.addAttribute("shortage",            Math.max(0, amount - balance));
+        model.addAttribute("shortage",            shortage);
+        model.addAttribute("amountFormatted",     String.format("%,d", amount));
+        model.addAttribute("balanceFormatted",    String.format("%,d", balance));
+        model.addAttribute("platformFeeFormatted",String.format("%,d", platformFee));
+        model.addAttribute("netAmountFormatted",  String.format("%,d", netAmount));
+        model.addAttribute("shortageFormatted",   String.format("%,d", shortage));
 
         return "payment/form";
     }
@@ -138,13 +147,19 @@ public class PaymentController {
 
         int balance = chargeService.getBalance(sessionUser.getId());
         model.addAttribute("balance", balance);
+        model.addAttribute("balanceFormatted", String.format("%,d", balance));
 
         if (sessionUser.isExpert()) {
             java.util.Set<Long> pendingIds = paymentService.getPendingSettlementPaymentIds(sessionUser.getId());
             java.util.List<PaymentResponse> payments = paymentService.getExpertPayments(sessionUser.getId());
             payments.forEach(p -> {
-                p.setHasSettlementRequest(pendingIds.contains(p.getId()));
-                p.setCanRequestSettlement(p.isPaid() && !pendingIds.contains(p.getId()));
+                boolean hasPending = pendingIds.contains(p.getId());
+                p.setHasSettlementRequest(hasPending);
+                p.setCanRequestSettlement(
+                        p.isPaid()
+                        && "COMPLETED".equals(p.getProjectStatus())
+                        && !hasPending
+                );
             });
             model.addAttribute("payments", payments);
             model.addAttribute("isExpert", true);

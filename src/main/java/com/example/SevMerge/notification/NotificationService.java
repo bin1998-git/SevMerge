@@ -95,6 +95,11 @@ public class NotificationService {
         return notificationRepository.countNotificationsByReceiver(receiver);
     }
 
+    // 안 읽은 알림 유무 반환 (헤더 뱃지용, memberId만으로 조회해 추가 Member 조회 불필요)
+    public boolean hasUnRead(Long memberId) {
+        return notificationRepository.existsUnReadByReceiverId(memberId);
+    }
+
     // 메세지 읽음 처리 (단건)
     @Transactional
     public void markAsRead(Long id, Member sessionMember) {

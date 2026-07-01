@@ -1,0 +1,540 @@
+<!DOCTYPE html><html lang='ko'><head><meta charset='utf-8'><title>SevMerge README</title><style>body{margin:0;background:#f3f5f9;font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',-apple-system,sans-serif;color:#1f2328;line-height:1.65}
+.wrap{max-width:920px;margin:24px auto;padding:48px 56px;background:#fff;border:1px solid #d0d7de;border-radius:10px}
+h1,h2{border-bottom:1px solid #d8dee4;padding-bottom:.3em;margin-top:1.6em}h1{font-size:2em}h2{font-size:1.5em}
+img{max-width:100%;border-radius:8px}table{border-collapse:collapse;margin:14px 0}th,td{border:1px solid #d0d7de;padding:8px 13px;text-align:center;vertical-align:middle}th{background:#f6f8fa}
+code{background:#eff1f3;padding:.15em .4em;border-radius:5px}pre{background:#0d1117;color:#e6edf3;padding:16px;border-radius:8px;overflow:auto}pre code{background:none;color:inherit}
+details{margin:10px 0;background:#f6f8fa;border:1px solid #d8dee4;border-radius:8px;padding:8px 14px}summary{cursor:pointer;font-weight:600}blockquote{color:#59636e;border-left:3px solid #d0d7de;margin:0;padding:0 1em}</style></head><body><div class='wrap'><div align="center">
+
+<img src="docs/assets/logo.png" width="380">
+
+# 🖥️ SevMerge — IT 외주 역제안 입찰 플랫폼
+
+**의뢰인이 프로젝트를 등록하면, 전문가들이 먼저 제안서를 제출해 경쟁하는 역(逆)제안 입찰 방식의 프리랜서 매칭 플랫폼**
+
+안전한 거래를 위한 **에스크로 결제**, **실시간 채팅·알림**, **AI 의뢰 작성 도우미**까지 갖춘 풀스택 웹 서비스
+
+<br/>
+
+![Java](https://img.shields.io/badge/Java_21-007396?style=flat-square&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.4.5-6DB33F?style=flat-square&logo=springboot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL_8.0-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Mustache](https://img.shields.io/badge/Mustache_SSR-1E1E1E?style=flat-square&logo=mustache&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white)
+
+</div>
+
+<p><br/></p>
+<h2>🚀 프로젝트 개요</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>프로젝트 유형</td>
+<td>개인 프로젝트 (백엔드 중심 풀스택)</td>
+</tr>
+<tr>
+<td>개발 기간</td>
+<td>2026.05 ~ 2026.06 (약 4주)</td>
+</tr>
+<tr>
+<td>핵심 가치</td>
+<td>역제안 입찰 · 에스크로 안전거래 · 실시간 소통 · AI 작성 보조</td>
+</tr>
+<tr>
+<td>아키텍처</td>
+<td>Spring Boot 모놀리식 + Mustache 서버사이드 렌더링(SSR)</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>https://github.com/bin1998-git/SevMerge</td>
+</tr>
+</tbody>
+</table>
+<p><br/></p>
+<h2>🔍 해결하고자 하는 문제</h2>
+<p>기존 외주 플랫폼에서는 다음과 같은 문제가 발생합니다.</p>
+<ul>
+<li>의뢰인이 수많은 전문가를 직접 탐색·연락해야 하는 <strong>비효율적 매칭 구조</strong></li>
+<li>선불 결제 후 작업 미완료 시 환불이 어려운 <strong>거래 신뢰 문제</strong></li>
+<li>신규 전문가의 실력 파악이 어려운 <strong>정보 비대칭 문제</strong></li>
+</ul>
+<p><strong>SevMerge</strong> 는 이 흐름을 뒤집어, 의뢰인이 프로젝트만 올리면 전문가들이 제안서를 들고 경쟁하는 <strong>역제안(reverse-bidding)</strong> 구조와, 플랫폼이 대금을 보관했다가 작업 완료 시 정산하는 <strong>에스크로</strong> 로 위 문제를 해결합니다.</p>
+<p><br/></p>
+<h2>🎮 기술 스택</h2>
+<h3>✨ Back-End</h3>
+<details>
+<summary>⚡️ BE 자세히 살펴보기</summary>
+<br/>
+<ul>
+<li>Java : 21 (Toolchain)</li>
+<li>Spring Boot : 3.4.5</li>
+<li>Spring Data JPA / Hibernate</li>
+<li>Spring Security (BCrypt, CSRF, Session)</li>
+<li>Spring WebSocket (STOMP)</li>
+<li>Spring AI : 1.1.1 (Google GenAI)</li>
+<li>Mustache (SSR)</li>
+<li>MySQL : 8.0</li>
+<li>Lombok / Validation / Gradle</li>
+</ul>
+</details>
+
+<h3>💻 Front-End</h3>
+<details>
+<summary>⚡️ FE 자세히 살펴보기</summary>
+<br/>
+<ul>
+<li>Mustache (Server-Side Rendering)</li>
+<li>HTML5 / CSS3 / Vanilla JavaScript</li>
+<li>Chart.js : 4.4.1 (관리자 통계)</li>
+<li>WebSocket / SSE (실시간 UI)</li>
+</ul>
+</details>
+
+<h3>🛠 외부 API</h3>
+<details>
+<summary>⚡️ API 자세히 살펴보기</summary>
+<br/>
+<ul>
+<li>Toss Payments API (서버 사이드 결제 승인)</li>
+<li>Kakao / Google 소셜 로그인 (OAuth 2.0)</li>
+<li>Google Gemini 2.5 Flash (Spring AI)</li>
+<li>SolAPI (SMS · 알림톡)</li>
+<li>Gmail SMTP (이메일 인증)</li>
+</ul>
+</details>
+
+<h3>🙌🏻 Tools</h3>
+<p><img src="https://img.shields.io/badge/Java-007396?style=flat&logo=openjdk&logoColor=white"/> <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=springboot&logoColor=white"/> <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=flat&logo=springsecurity&logoColor=white"/> <img src="https://img.shields.io/badge/Spring_AI-6DB33F?style=flat&logo=spring&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white"/> <img src="https://img.shields.io/badge/Chart.js-FF6384?style=flat&logo=chartdotjs&logoColor=white"/> <br/><img src="https://img.shields.io/badge/Mustache-1E1E1E?style=flat&logo=mustache&logoColor=white"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white"/> <img src="https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white"/> <img src="https://img.shields.io/badge/IntelliJ_IDEA-000000?style=flat&logo=intellijidea&logoColor=white"/></p>
+<p><br/></p>
+<h2>⚙ 의존성</h2>
+<pre><code class="language-gradle">implementation 'org.springframework.boot:spring-boot-starter-web'
+implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+implementation 'org.springframework.boot:spring-boot-starter-mustache'
+implementation 'org.springframework.boot:spring-boot-starter-validation'
+implementation 'org.springframework.boot:spring-boot-starter-security'
+implementation 'org.springframework.security:spring-security-crypto'
+implementation 'org.springframework.boot:spring-boot-starter-websocket'
+implementation 'org.springframework.boot:spring-boot-starter-mail'
+implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+implementation 'com.solapi:sdk:1.0.3'
+implementation 'org.webjars.npm:chart.js:4.4.1'
+implementation 'org.webjars:webjars-locator-core'
+runtimeOnly 'com.mysql:mysql-connector-j'
+compileOnly 'org.projectlombok:lombok'
+</code></pre>
+<p><br/></p>
+<h2>1️⃣ 프로젝트 구조</h2>
+<details>
+<summary>⚡️ 구조 자세히 살펴보기</summary>
+
+
+<pre><code>src/main/java/com/example/SevMerge
+├── member              # 회원, 로그인, OAuth(Kakao/Google), 이메일/SMS 인증, 마이페이지
+├── expertprofile       # 전문가 프로필, 등급 산정(베이지안), 인증 전문가
+├── expertwish/bookmark # 전문가 찜, 북마크
+├── project             # 프로젝트(의뢰) 등록·검색·상태 관리
+├── bid / adbid         # 제안서(입찰), 수신 필터, 낙찰, 광고 입찰
+├── payment             # 에스크로 생성·정산·환불
+├── charge / refund     # Toss 잔액 충전, 환불 신청·심사
+├── withdrawal/revenue  # 전문가 정산금 출금, 매출 집계
+├── review / portfolio  # 리뷰·별점, 전문가 포트폴리오
+├── deliverable         # 산출물 제출
+├── board / comment     # 게시판, 댓글
+├── chatRoom/chatMessage# WebSocket(STOMP) 실시간 채팅
+├── message             # 쪽지(첨부파일)
+├── notification        # SSE 실시간 알림 + 정리 스케줄러
+├── ai                  # Spring AI(Gemini) 의뢰 작성·Q&amp;A
+├── advertisement       # 광고 슬롯
+├── partnership/faq/footer # 제휴 문의, FAQ, 정책/약관
+├── Report / admin      # 신고·블랙리스트, 관리자 페이지
+└── core                # config / interceptor / filter / exception / util
+</code></pre>
+
+
+</details>
+
+<p><br/></p>
+<h2>2️⃣ 프로젝트 주제</h2>
+<ul>
+<li>실무 활용도가 높은 <strong>결제·정산·외부 API</strong> 가 결합된 도메인 중 <strong>IT 외주 매칭</strong> 을 선정</li>
+<li>단순 매칭이 아닌 <strong>역제안 입찰(reverse-bidding)</strong> 구조로 차별화</li>
+<li>거래 신뢰 문제를 <strong>에스크로</strong> 로 해결</li>
+</ul>
+<p><br/></p>
+<h2>3️⃣ 기능 구분</h2>
+<h4>🙋 의뢰인 (Client)</h4>
+<ul>
+<li>프로젝트 등록(AI 작성 보조), 제안서 비교·낙찰, 에스크로 결제·정산</li>
+<li>잔액 충전(Toss), 환불 신청, 리뷰 작성, 실시간 채팅·알림·쪽지</li>
+</ul>
+<h4>🧑‍💻 전문가 (Expert)</h4>
+<ul>
+<li>관리자 심사를 거친 인증 전문가 활동, 베이지안 등급 산정</li>
+<li>프로젝트 탐색·제안서 제출, 포트폴리오, 정산금 출금, 광고 입찰</li>
+</ul>
+<h4>🛡 관리자 (Admin)</h4>
+<ul>
+<li>대시보드(Chart.js 통계), 전문가 심사·승인, 회원·신고·환불·광고·공지 관리</li>
+</ul>
+<p><br/></p>
+<h2>4️⃣ ERD &amp; 도메인 모델</h2>
+<p><img width="1275" src="https://github.com/user-attachments/assets/184e5114-7fe8-43e7-82a8-12cd08987f77"></p>
+<p><br/></p>
+<table>
+<thead>
+<tr>
+<th>엔티티</th>
+<th>설명</th>
+<th>핵심 상태/필드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Member</td>
+<td>회원</td>
+<td><code>role</code>(CLIENT/EXPERT/ADMIN), <code>status</code>(ACTIVE/PENDING/REJECTED/SUSPENDED/BLACKLISTED), <code>balance</code></td>
+</tr>
+<tr>
+<td>ExpertProfile</td>
+<td>전문가 프로필</td>
+<td><code>isCertified</code>, <code>grade</code>(NORMAL/SKILLED/MASTER)</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>의뢰</td>
+<td><code>status</code>(OPEN/IN_PROGRESS/DONE/CANCELLED…), <code>category</code>, <code>bidFilter</code></td>
+</tr>
+<tr>
+<td>Bid</td>
+<td>제안서</td>
+<td><code>status</code>(PENDING/SELECTED/HOLD/REJECTED), 제안 금액/기간</td>
+</tr>
+<tr>
+<td>Payment</td>
+<td>에스크로</td>
+<td><code>status</code>(PAID/SETTLED/REFUNDED), <code>platformFee</code>, <code>netAmount</code></td>
+</tr>
+<tr>
+<td>Review / Notification</td>
+<td>리뷰 / 알림</td>
+<td>별점, 읽음 여부(30일 후 자동 정리)</td>
+</tr>
+<tr>
+<td>Report / BlackList</td>
+<td>신고/제재</td>
+<td>누적 3회 자동 정지</td>
+</tr>
+</tbody>
+</table>
+<p><br/></p>
+<h2>5️⃣ 핵심 플로우</h2>
+<h4>역제안 입찰 + 에스크로 흐름</h4>
+<p><svg style="width:100%;max-width:880px;height:auto" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 980 220' >
+<defs><marker id='ah' markerWidth='10' markerHeight='10' refX='8' refY='3' orient='auto'><path d='M0,0 L8,3 L0,6 Z' fill='#2D6BFF'/></marker></defs>
+<rect x='0' y='0' width='980' height='220' rx='16' fill='#F7F9FF'/>
+<text x='24' y='34' fill='#0B1020' font-size='17' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>역제안 입찰 + 에스크로 흐름</text>
+<rect x='24' y='70' width='168' height='56' rx='12' fill='#FFFFFF' stroke='#2D6BFF' stroke-width='2'/><text x='108.0' y='94.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>의뢰인</text><text x='108.0' y='112.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>프로젝트 등록</text>
+<rect x='210' y='70' width='168' height='56' rx='12' fill='#FFFFFF' stroke='#2D6BFF' stroke-width='2'/><text x='294.0' y='94.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전문가</text><text x='294.0' y='112.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>제안서 제출</text>
+<rect x='396' y='70' width='168' height='56' rx='12' fill='#FFFFFF' stroke='#2D6BFF' stroke-width='2'/><text x='480.0' y='94.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>의뢰인</text><text x='480.0' y='112.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>비교 · 낙찰</text>
+<rect x='582' y='70' width='168' height='56' rx='12' fill='#EAF0FF' stroke='#2D6BFF' stroke-width='2'/><text x='666.0' y='94.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>에스크로 결제</text><text x='666.0' y='112.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>PAID</text>
+<rect x='768' y='70' width='168' height='56' rx='12' fill='#FFFFFF' stroke='#2D6BFF' stroke-width='2'/><text x='852.0' y='103.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>작업 완료 확인</text>
+<line x1='192' y1='98.0' x2='210' y2='98.0' stroke='#2D6BFF' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='378' y1='98.0' x2='396' y2='98.0' stroke='#2D6BFF' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='564' y1='98.0' x2='582' y2='98.0' stroke='#2D6BFF' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='750' y1='98.0' x2='768' y2='98.0' stroke='#2D6BFF' stroke-width='2.5' marker-end='url(#ah)'/>
+<rect x='728' y='160' width='210' height='46' rx='12' fill='#E9FBF3' stroke='#1DBE7B' stroke-width='2'/><text x='833.0' y='188.0' text-anchor='middle' fill='#0B7a4f' font-size='13' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>정산 SETTLED · 수수료 10%</text>
+<rect x='953' y='160' width='150' height='46' rx='12' fill='#FFEEF0' stroke='#FF5B6E' stroke-width='2'/><text x='1028.0' y='188.0' text-anchor='middle' fill='#a51b2c' font-size='13' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>환불 REFUNDED</text>
+<line x1='812.0' y1='126' x2='838' y2='160' stroke='#1DBE7B' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='882.0' y1='126' x2='1018' y2='160' stroke='#FF5B6E' stroke-width='2.5' marker-end='url(#ah)'/>
+</svg></p>
+<h4>상태 머신 (Bid / Payment)</h4>
+<p><svg style="width:100%;max-width:880px;height:auto" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 980 250' >
+<defs><marker id='ah' markerWidth='10' markerHeight='10' refX='8' refY='3' orient='auto'><path d='M0,0 L8,3 L0,6 Z' fill='#2D6BFF'/></marker></defs>
+<rect x='0' y='0' width='980' height='250' rx='16' fill='#F7F9FF'/>
+<rect x='20' y='20' width='450' height='210' rx='14' fill='#FFFFFF' stroke='#EAF0FF' stroke-width='2'/>
+<text x='40' y='48' fill='#2D6BFF' font-size='15' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>Bid · 제안서 상태</text>
+<rect x='40' y='70' width='120' height='46' rx='12' fill='#EAF0FF' stroke='#2D6BFF' stroke-width='2'/><text x='100.0' y='98.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>PENDING</text>
+<rect x='300' y='64' width='140' height='40' rx='12' fill='#E9FBF3' stroke='#1DBE7B' stroke-width='2'/><text x='370.0' y='89.0' text-anchor='middle' fill='#0B7a4f' font-size='14' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>SELECTED</text>
+<rect x='300' y='116' width='140' height='40' rx='12' fill='#FFF7E6' stroke='#FFB020' stroke-width='2'/><text x='370.0' y='141.0' text-anchor='middle' fill='#8a5b00' font-size='14' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>HOLD</text>
+<rect x='300' y='168' width='140' height='40' rx='12' fill='#FFEEF0' stroke='#FF5B6E' stroke-width='2'/><text x='370.0' y='193.0' text-anchor='middle' fill='#a51b2c' font-size='14' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>REJECTED</text>
+<line x1='160' y1='93' x2='300' y2='84' stroke='#1DBE7B' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='160' y1='93' x2='300' y2='136' stroke='#FFB020' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='160' y1='93' x2='300' y2='188' stroke='#FF5B6E' stroke-width='2.5' marker-end='url(#ah)'/>
+<rect x='510' y='20' width='450' height='210' rx='14' fill='#FFFFFF' stroke='#EAF0FF' stroke-width='2'/>
+<text x='530' y='48' fill='#2D6BFF' font-size='15' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>Payment · 에스크로 상태</text>
+<rect x='530' y='90' width='130' height='46' rx='12' fill='#EAF0FF' stroke='#2D6BFF' stroke-width='2'/><text x='595.0' y='118.0' text-anchor='middle' fill='#0B1020' font-size='15' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>PAID</text>
+<rect x='790' y='64' width='150' height='40' rx='12' fill='#E9FBF3' stroke='#1DBE7B' stroke-width='2'/><text x='865.0' y='89.0' text-anchor='middle' fill='#0B7a4f' font-size='14' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>SETTLED</text>
+<rect x='790' y='138' width='150' height='40' rx='12' fill='#FFEEF0' stroke='#FF5B6E' stroke-width='2'/><text x='865.0' y='163.0' text-anchor='middle' fill='#a51b2c' font-size='14' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>REFUNDED</text>
+<line x1='660' y1='107' x2='790' y2='86' stroke='#1DBE7B' stroke-width='2.5' marker-end='url(#ah)'/>
+<line x1='660' y1='121' x2='790' y2='160' stroke='#FF5B6E' stroke-width='2.5' marker-end='url(#ah)'/>
+<text x='690' y='80' fill='#5B6472' font-size='12' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>완료정산</text>
+<text x='690' y='178' fill='#5B6472' font-size='12' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>분쟁환불</text>
+</svg></p>
+<p><br/></p>
+<h2>6️⃣ 주요 기능 (핵심 시연)</h2>
+<blockquote>
+<p>아래 GIF는 <strong>Playwright E2E 시나리오 녹화본</strong> 을 기능 단위로 짧게 잘라낸 실제 동작 화면입니다.</p>
+</blockquote>
+<table>
+<tr>
+  <td align="center"><b>프로젝트 탐색</b></td>
+  <td align="center"><b>제안서 제출 (역제안 입찰)</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/expert-explore.gif" width="380"></td>
+  <td><img src="docs/demo/expert-bid.gif" width="380"></td>
+</tr>
+<tr>
+  <td align="center"><b>잔액 충전 (Toss)</b></td>
+  <td align="center"><b>에스크로 결제 내역</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/client-charge.gif" width="380"></td>
+  <td><img src="docs/demo/client-escrow.gif" width="380"></td>
+</tr>
+</table>
+
+<p><br/></p>
+<h2>7️⃣ 기능 — 의뢰인 (Client)</h2>
+<table>
+<tr>
+  <td align="center"><b>마이페이지</b></td>
+  <td align="center"><b>실시간 알림</b></td>
+  <td align="center"><b>쪽지 (첨부파일)</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/client-mypage.gif" width="270"></td>
+  <td><img src="docs/demo/client-notify.gif" width="270"></td>
+  <td><img src="docs/demo/client-message.gif" width="270"></td>
+</tr>
+</table>
+
+<p><br/></p>
+<h2>8️⃣ 기능 — 전문가 (Expert)</h2>
+<table>
+<tr>
+  <td align="center"><b>전문가 대시보드</b></td>
+  <td align="center"><b>마이페이지 (등급·평점)</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/expert-dashboard.gif" width="380"></td>
+  <td><img src="docs/demo/expert-mypage.gif" width="380"></td>
+</tr>
+<tr>
+  <td align="center"><b>실시간 채팅 (WebSocket)</b></td>
+  <td align="center"><b>실시간 알림</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/expert-chat.gif" width="380"></td>
+  <td><img src="docs/demo/expert-notify.gif" width="380"></td>
+</tr>
+<tr>
+  <td align="center"><b>쪽지 (첨부파일)</b></td>
+  <td align="center"><b>정산금 출금</b></td>
+</tr>
+<tr>
+  <td><img src="docs/demo/expert-message.gif" width="380"></td>
+  <td><img src="docs/demo/expert-withdraw.gif" width="380"></td>
+</tr>
+<tr>
+  <td align="center" colspan="2"><b>게시판 · 후기</b></td>
+</tr>
+<tr>
+  <td align="center" colspan="2"><img src="docs/demo/expert-board.gif" width="380"></td>
+</tr>
+</table>
+
+<p><br/></p>
+<h2>9️⃣ 기능 — 관리자 (Admin)</h2>
+<ul>
+<li>전문가 심사·승인 (승인 시 인증 전문가 부여), 회원·신고·블랙리스트(누적 3회 자동 정지) 관리</li>
+<li>환불 분쟁 처리, 광고·제휴·공지·FAQ 관리</li>
+<li>대시보드 통계 (Chart.js) — 월별 매출 추이, 카테고리별 프로젝트, 전문가 등급 비율 등</li>
+</ul>
+<p><svg style="width:100%;max-width:880px;height:auto" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 980 470' >
+<defs><linearGradient id='bg' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#F1F6FF'/><stop offset='1' stop-color='#FFFFFF'/></linearGradient></defs>
+<rect x='0' y='0' width='980' height='470' rx='16' fill='url(#bg)'/>
+<text x='28' y='44' fill='#0F172A' font-size='20' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>관리자 대시보드</text>
+<text x='28' y='64' fill='#64748B' font-size='12' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>* 예시 데이터 — 실제 화면 레이아웃(통계 카드 + 통합 추이 차트 + 최근 가입 회원)</text>
+<rect x='28' y='82' width='178' height='86' rx='12' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='44' y='108' fill='#64748B' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전체 회원</text>
+<text x='44' y='136' fill='#0F172A' font-size='22' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>1,284</text>
+<text x='44' y='156' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>이번 달 <tspan fill='#16A34A' font-weight='700'>+128</tspan></text>
+<rect x='218' y='82' width='178' height='86' rx='12' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='234' y='108' fill='#64748B' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전체 프로젝트</text>
+<text x='234' y='136' fill='#0F172A' font-size='22' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>312</text>
+<text x='234' y='156' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>진행 중 <tspan fill='#64748B' font-weight='700'>57개</tspan></text>
+<rect x='408' y='82' width='178' height='86' rx='12' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='424' y='108' fill='#64748B' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>완료 프로젝트</text>
+<text x='424' y='136' fill='#0F172A' font-size='22' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>187</text>
+<text x='424' y='156' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>이번 달 <tspan fill='#16A34A' font-weight='700'>+24</tspan></text>
+<rect x='598' y='82' width='178' height='86' rx='12' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='614' y='108' fill='#64748B' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>승인 대기 전문가</text>
+<text x='614' y='136' fill='#0F172A' font-size='22' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>9</text>
+<text x='614' y='156' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>승인하러 가기 →<tspan fill='#2563EB' font-weight='700'></tspan></text>
+<rect x='788' y='82' width='178' height='86' rx='12' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='804' y='108' fill='#64748B' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>광고 총 수익</text>
+<text x='804' y='136' fill='#D97706' font-size='17' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>4,820,000P</text>
+<text x='804' y='156' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>이번 달 <tspan fill='#16A34A' font-weight='700'>+360,000P</tspan></text>
+<rect x='28' y='196' width='600' height='250' rx='14' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='48' y='226' fill='#0F172A' font-size='14' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>📊 현황 통합 통계</text>
+<rect x='198' y='214' width='11' height='11' rx='2' fill='#2563EB'/>
+<text x='213' y='224' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전체 프로젝트</text>
+<rect x='316' y='214' width='11' height='11' rx='2' fill='#16A34A'/>
+<text x='331' y='224' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>완료 프로젝트</text>
+<rect x='434' y='214' width='11' height='11' rx='2' fill='#D97706'/>
+<text x='449' y='224' fill='#64748B' font-size='11' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>신규 회원수</text>
+<line x1='72' y1='250' x2='600' y2='250' stroke='#F1F5F9' stroke-width='1'/>
+<text x='64' y='254' text-anchor='end' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>20</text>
+<line x1='72' y1='288' x2='600' y2='288' stroke='#F1F5F9' stroke-width='1'/>
+<text x='64' y='292' text-anchor='end' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>15</text>
+<line x1='72' y1='325' x2='600' y2='325' stroke='#F1F5F9' stroke-width='1'/>
+<text x='64' y='329' text-anchor='end' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>10</text>
+<line x1='72' y1='362' x2='600' y2='362' stroke='#F1F5F9' stroke-width='1'/>
+<text x='64' y='366' text-anchor='end' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>5</text>
+<line x1='72' y1='400' x2='600' y2='400' stroke='#F1F5F9' stroke-width='1'/>
+<text x='64' y='404' text-anchor='end' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>0</text>
+<path d='M 72.0,340.0 L 160.0,317.5 L 248.0,332.5 L 336.0,295.0 L 424.0,310.0 L 512.0,280.0 L 600.0,265.0' fill='none' stroke='#2563EB' stroke-width='2.5'/>
+<circle cx='72.0' cy='340.0' r='3' fill='#2563EB'/>
+<circle cx='160.0' cy='317.5' r='3' fill='#2563EB'/>
+<circle cx='248.0' cy='332.5' r='3' fill='#2563EB'/>
+<circle cx='336.0' cy='295.0' r='3' fill='#2563EB'/>
+<circle cx='424.0' cy='310.0' r='3' fill='#2563EB'/>
+<circle cx='512.0' cy='280.0' r='3' fill='#2563EB'/>
+<circle cx='600.0' cy='265.0' r='3' fill='#2563EB'/>
+<path d='M 72.0,377.5 L 160.0,362.5 L 248.0,370.0 L 336.0,355.0 L 424.0,347.5 L 512.0,347.5 L 600.0,332.5' fill='none' stroke='#16A34A' stroke-width='2.5'/>
+<circle cx='72.0' cy='377.5' r='3' fill='#16A34A'/>
+<circle cx='160.0' cy='362.5' r='3' fill='#16A34A'/>
+<circle cx='248.0' cy='370.0' r='3' fill='#16A34A'/>
+<circle cx='336.0' cy='355.0' r='3' fill='#16A34A'/>
+<circle cx='424.0' cy='347.5' r='3' fill='#16A34A'/>
+<circle cx='512.0' cy='347.5' r='3' fill='#16A34A'/>
+<circle cx='600.0' cy='332.5' r='3' fill='#16A34A'/>
+<path d='M 72.0,310.0 L 160.0,332.5 L 248.0,287.5 L 336.0,317.5 L 424.0,295.0 L 512.0,272.5 L 600.0,280.0' fill='none' stroke='#D97706' stroke-width='2.5'/>
+<circle cx='72.0' cy='310.0' r='3' fill='#D97706'/>
+<circle cx='160.0' cy='332.5' r='3' fill='#D97706'/>
+<circle cx='248.0' cy='287.5' r='3' fill='#D97706'/>
+<circle cx='336.0' cy='317.5' r='3' fill='#D97706'/>
+<circle cx='424.0' cy='295.0' r='3' fill='#D97706'/>
+<circle cx='512.0' cy='272.5' r='3' fill='#D97706'/>
+<circle cx='600.0' cy='280.0' r='3' fill='#D97706'/>
+<text x='72' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-24</text>
+<text x='160' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-25</text>
+<text x='248' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-26</text>
+<text x='336' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-27</text>
+<text x='424' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-28</text>
+<text x='512' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-29</text>
+<text x='600' y='418' text-anchor='middle' fill='#94A3B8' font-size='9' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>06-30</text>
+<rect x='640' y='196' width='312' height='250' rx='14' fill='#FFFFFF' stroke='#E2E8F0' stroke-width='1.5'/>
+<text x='658' y='226' fill='#0F172A' font-size='14' font-weight='800' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>최근 가입 회원</text>
+<circle cx='668' cy='252' r='12' fill='#E8EFFF'/>
+<text x='668' y='256' text-anchor='middle' fill='#2563EB' font-size='10' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>김</text>
+<text x='688' y='251' fill='#0F172A' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>김다영</text>
+<text x='688' y='266' fill='#64748B' font-size='10' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>의뢰인</text>
+<rect x='894' y='241' width='42' height='20' rx='10' fill='#16A34A' fill-opacity='0.12'/>
+<text x='915.0' y='255' text-anchor='middle' fill='#16A34A' font-size='10.5' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>활성</text>
+<circle cx='668' cy='292' r='12' fill='#E8EFFF'/>
+<text x='668' y='296' text-anchor='middle' fill='#2563EB' font-size='10' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>이</text>
+<text x='688' y='291' fill='#0F172A' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>이학산</text>
+<text x='688' y='306' fill='#64748B' font-size='10' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전문가</text>
+<rect x='894' y='281' width='42' height='20' rx='10' fill='#16A34A' fill-opacity='0.12'/>
+<text x='915.0' y='295' text-anchor='middle' fill='#16A34A' font-size='10.5' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>활성</text>
+<circle cx='668' cy='332' r='12' fill='#E8EFFF'/>
+<text x='668' y='336' text-anchor='middle' fill='#2563EB' font-size='10' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>최</text>
+<text x='688' y='331' fill='#0F172A' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>최원종</text>
+<text x='688' y='346' fill='#64748B' font-size='10' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전문가</text>
+<rect x='894' y='321' width='42' height='20' rx='10' fill='#D97706' fill-opacity='0.12'/>
+<text x='915.0' y='335' text-anchor='middle' fill='#D97706' font-size='10.5' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>모집중</text>
+<circle cx='668' cy='372' r='12' fill='#E8EFFF'/>
+<text x='668' y='376' text-anchor='middle' fill='#2563EB' font-size='10' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>안</text>
+<text x='688' y='371' fill='#0F172A' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>안준현</text>
+<text x='688' y='386' fill='#64748B' font-size='10' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>의뢰인</text>
+<rect x='894' y='361' width='42' height='20' rx='10' fill='#16A34A' fill-opacity='0.12'/>
+<text x='915.0' y='375' text-anchor='middle' fill='#16A34A' font-size='10.5' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>활성</text>
+<circle cx='668' cy='412' r='12' fill='#E8EFFF'/>
+<text x='668' y='416' text-anchor='middle' fill='#2563EB' font-size='10' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>정</text>
+<text x='688' y='411' fill='#0F172A' font-size='12.5' font-weight='600' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>정다빈</text>
+<text x='688' y='426' fill='#64748B' font-size='10' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>전문가</text>
+<rect x='894' y='401' width='42' height='20' rx='10' fill='#16A34A' fill-opacity='0.12'/>
+<text x='915.0' y='415' text-anchor='middle' fill='#16A34A' font-size='10.5' font-weight='700' font-family='Apple SD Gothic Neo, Malgun Gothic, Noto Sans KR, sans-serif'>활성</text>
+</svg></p>
+<p><br/></p>
+<h2>🧩 기술적 하이라이트</h2>
+<h3>1. 에스크로 — 동시성을 고려한 원자적 잔액 처리</h3>
+<p>낙찰 시 의뢰인 잔액을 에스크로로 묶을 때, 조건부 <code>UPDATE</code> 한 방으로 잔액 검증과 차감을 원자적으로 처리해 동시 요청에서의 이중 차감을 방지합니다.</p>
+<pre><code class="language-java">// PaymentService.createEscrow — 잔액이 충분할 때만 차감되는 원자적 UPDATE
+int updated = em.createQuery(
+    &quot;UPDATE Member m SET m.balance = m.balance - :amount &quot; +
+    &quot;WHERE m.id = :id AND m.balance &gt;= :amount&quot;)
+    .setParameter(&quot;amount&quot;, amount)
+    .setParameter(&quot;id&quot;, clientId)
+    .executeUpdate();
+
+if (updated == 0) throw new BadRequestException(&quot;잔액 차감에 실패했습니다.&quot;);
+</code></pre>
+<h3>2. 결제 보안 — 서버 사이드 Toss 승인</h3>
+<p>클라이언트가 아닌 서버에서 Toss confirm API를 직접 호출해 결제 금액 위변조를 방지합니다.</p>
+<h3>3. 전문가 등급 — 베이지안 평균으로 별점 왜곡 보정</h3>
+<p>리뷰가 적은 신규 전문가의 별점 왜곡을 완화하기 위해 전체 평균을 사전(prior)으로 활용하는 베이지안 평균을 적용합니다.</p>
+<h3>4. 다단 인터셉터 기반 인가 + Rate Limiting</h3>
+<p>Session / Login / Admin / Project / Bid 5종 인터셉터와 RateLimitFilter를 계층적으로 적용해 권한과 요청 빈도를 제어합니다.</p>
+<h3>5. 알림·외부연동의 트랜잭션 분리</h3>
+<p>SMS·이메일·SSE 알림 등 외부 연동을 트랜잭션 커밋 이후에 실행해 롤백 시 불필요한 외부 호출을 방지합니다.</p>
+<p><br/></p>
+<h2>🔗 URL 매핑</h2>
+<details>
+<summary>주요 엔드포인트 보기</summary>
+
+| Method | URL | 설명 | 권한 |
+|--------|-----|------|------|
+| GET | `/` | 메인 페이지 | 비로그인 |
+| GET/POST | `/members/login` · `/members/join` | 로그인 / 회원가입 | 비로그인 |
+| GET | `/projects` · `/projects/{id}` | 프로젝트 목록 / 상세 | 로그인 |
+| GET/POST | `/projects/new` | 프로젝트 등록 | 의뢰인 |
+| POST | `/api/v1/bids` · `/bids/{id}/select` | 제안서 제출 / 낙찰 | 전문가 / 의뢰인 |
+| POST | `/api/v1/payments/escrow` · `/{id}/settle` | 에스크로 생성 / 정산 | 의뢰인 |
+| POST | `/api/v1/charges` · `/refunds` · `/withdrawals` | 충전 / 환불 / 출금 | 로그인 |
+| POST | `/api/v1/project/ai/draft` · `/ask` | AI 초안 / Q&A | 의뢰인 / 로그인 |
+| GET | `/chats/{roomId}` · `/api/v1/notifications` | 채팅방 / 알림(SSE) | 로그인 |
+| GET | `/admin` · `/admin/experts/pending` | 관리자 대시보드 / 전문가 심사 | 관리자 |
+
+</details>
+
+<p><br/></p>
+<h2>⚙️ 실행 방법</h2>
+<pre><code class="language-bash">git clone https://github.com/bin1998-git/SevMerge.git
+cd SevMerge
+
+# MySQL DB 생성
+# CREATE DATABASE sevmerge DEFAULT CHARACTER SET utf8mb4;
+
+# .env 작성 후 실행 (JDK 21+, MySQL 8.0+)
+./gradlew bootRun          # Windows: gradlew.bat bootRun
+</code></pre>
+<p><code>.env</code> 예시</p>
+<pre><code class="language-env">DB_USERNAME=root
+DB_PASSWORD=
+GOOGLE_CLIENT_ID=        GOOGLE_CLIENT_SECRET=
+KAKAO_CLIENT_ID=         KAKAO_CLIENT_SECRET=
+TOSS_CLIENT_KEY=         TOSS_SECRET_KEY=
+MAIL_USERNAME=           MAIL_PASSWORD=
+SOLAPI_KEY=              SOLAPI_SECRET_KEY=     SOLAPI_SENDER_NUMBER=
+GEMINI_API_KEY=
+</code></pre>
+<blockquote>
+<p>실행 후 http://localhost:8080 접속 (초기 구동 시 <code>db/data.sql</code> 시드 데이터 자동 적재)</p>
+</blockquote>
+<p><br/></p>
+<h2>🌿 커밋 컨벤션</h2>
+<p><code>&lt;타입&gt;(&lt;스코프&gt;): &lt;제목&gt;</code> — <code>feat</code> 새 기능 · <code>fix</code> 버그 · <code>refactor</code> 리팩터링 · <code>docs</code> 문서 · <code>style</code> 스타일 · <code>test</code> 테스트 · <code>chore</code> 빌드/기타</p>
+<div align="center">
+<br/>
+
+**SevMerge** © 2026
+
+</div></div></body></html>

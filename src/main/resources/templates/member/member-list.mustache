@@ -1,0 +1,243 @@
+{{> layout/header}}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #c8d8f0 0%, #dce8f8 40%, #b8cce8 100%);
+        background-attachment: fixed;
+    }
+
+    .ml-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 36px 28px 80px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 페이지 헤더 */
+    .ml-page-head {
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .ml-page-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #1c1e26;
+        letter-spacing: -.5px;
+    }
+    .ml-page-desc {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+
+    /* 글래스 테이블 */
+    .ml-table-wrap {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        background: rgba(255,255,255,.6);
+        border-radius: 16px;
+        border: 1.5px solid rgba(255,255,255,.85);
+        box-shadow: 0 4px 24px rgba(37,99,235,.07);
+        overflow: hidden;
+    }
+
+    .ml-table-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 24px;
+        background: rgba(255,255,255,.45);
+        border-bottom: 1px solid rgba(255,255,255,.65);
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ca3af;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+    }
+
+    .ml-table-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(255,255,255,.5);
+        font-size: 13px;
+        color: #374151;
+        transition: background .12s;
+    }
+    .ml-table-row:last-child { border-bottom: none; }
+    .ml-table-row:hover { background: rgba(255,255,255,.35); }
+
+    /* 컬럼 너비 */
+    .col-no    { width: 48px;  flex-shrink: 0; text-align: center; color: #9ca3af; }
+    .col-avatar{ width: 44px;  flex-shrink: 0; display: flex; justify-content: center; }
+    .col-name  { width: 130px; flex-shrink: 0; font-weight: 700; color: #1e3a6e; }
+    .col-email { flex: 1;      min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #4b5563; }
+    .col-phone { width: 130px; flex-shrink: 0; color: #6b7280; }
+    .col-date  { width: 110px; flex-shrink: 0; color: #9ca3af; font-size: 12px; }
+    .col-action{ width: 130px; flex-shrink: 0; text-align: right; }
+
+    /* 아바타 */
+    .ml-avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 1.5px solid #bfdbfe;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 800; color: #2563eb;
+        overflow: hidden; flex-shrink: 0;
+        background-size: cover; background-position: center;
+    }
+
+    /* 상태 배지 */
+    .ml-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .ml-badge-pending { background: rgba(245,158,11,.1); color: #d97706; border: 1px solid rgba(245,158,11,.25); }
+    .ml-badge-approved { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .ml-badge-rejected { background: rgba(239,68,68,.08); color: #dc2626; border: 1px solid rgba(239,68,68,.2); }
+
+    /* 액션 버튼 */
+    .ml-btn {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: inherit;
+        text-decoration: none;
+        transition: all .15s;
+    }
+    .ml-btn-primary { background: #2563eb; color: #fff; box-shadow: 0 2px 6px rgba(37,99,235,.2); }
+    .ml-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .ml-btn-ghost { background: rgba(240,244,250,.8); border: 1.5px solid #e2e5ef; color: #4b5563; }
+    .ml-btn-ghost:hover { border-color: #2563eb; color: #2563eb; }
+
+    .ml-btn-row { display: flex; gap: 6px; justify-content: flex-end; }
+
+    /* 빈 상태 */
+    .ml-empty {
+        text-align: center;
+        padding: 70px 0;
+        font-size: 15px;
+        color: #9ca3af;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .ml-empty-icon { font-size: 40px; opacity: .5; }
+
+    @media (max-width: 860px) {
+        .ml-wrap { padding: 20px 12px 60px; }
+        .col-phone { display: none; }
+        .col-date  { display: none; }
+        .col-email { width: 120px; flex: unset; }
+    }
+    @media (max-width: 580px) {
+        .ml-table-head { display: none; }
+        .ml-table-row {
+            flex-wrap: wrap;
+            padding: 14px 16px;
+            gap: 8px;
+        }
+        .col-no    { display: none; }
+        .col-avatar{ width: 36px; }
+        .col-name  { flex: 1; min-width: 0; }
+        .col-email { width: 100%; order: 10; font-size: 12px; }
+        .col-action{ width: 100%; order: 11; text-align: left; }
+    }
+</style>
+
+<div class="ml-wrap">
+
+    <div class="ml-page-head">
+        <div>
+            <div class="ml-page-title">승인 대기 전문가 목록</div>
+            <div class="ml-page-desc">전문가 신청 후 승인 대기 중인 회원 목록입니다. 승인 관리 페이지에서 처리하세요.</div>
+        </div>
+        <a href="/admin/experts?status=PENDING" class="ml-btn ml-btn-primary">
+            승인 관리 페이지로 이동
+        </a>
+    </div>
+
+    <div class="ml-table-wrap">
+
+        {{#members}}
+        {{! 헤더는 첫 번째 행 전에 한 번만 — 실제 프로젝트에서는 별도 섹션으로 분리됩니다 }}
+        {{/members}}
+
+        {{! ── 테이블 헤더 ── }}
+        <div class="ml-table-head">
+            <div class="col-no">#</div>
+            <div class="col-avatar"></div>
+            <div class="col-name">이름</div>
+            <div class="col-email">이메일</div>
+            <div class="col-phone">전화번호</div>
+            <div class="col-date">신청일</div>
+            <div class="col-action">관리</div>
+        </div>
+
+        {{! ── 목록 ── }}
+        {{#members}}
+        <div class="ml-table-row">
+            <div class="col-no">{{id}}</div>
+            <div class="col-avatar">
+                {{#profileImage}}
+                    <div class="ml-avatar"
+                         style="background-image:url('{{profileImageUrl}}'); font-size:0;"></div>
+                {{/profileImage}}
+                {{^profileImage}}
+                    <div class="ml-avatar ml-avatar-initial">{{name}}</div>
+                {{/profileImage}}
+            </div>
+            <div class="col-name">{{name}}</div>
+            <div class="col-email" title="{{email}}">{{email}}</div>
+            <div class="col-phone">{{phone}}</div>
+            <div class="col-date">{{createdAt}}</div>
+            <div class="col-action">
+                <div class="ml-btn-row">
+                    <a href="/admin/experts/{{id}}" class="ml-btn ml-btn-ghost">상세 보기</a>
+                    <a href="/admin/experts?status=PENDING" class="ml-btn ml-btn-primary">승인 처리</a>
+                </div>
+            </div>
+        </div>
+        {{/members}}
+
+        {{! ── 빈 목록 ── }}
+        {{^members}}
+        <div class="ml-empty">
+            <div class="ml-empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="#bfdbfe">
+                    <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/>
+                </svg>
+            </div>
+            <div style="font-weight:700;color:#4a6fa5;">승인 대기 중인 전문가가 없습니다.</div>
+            <div style="font-size:13px;">현재 처리할 전문가 신청이 없습니다.</div>
+        </div>
+        {{/members}}
+
+    </div>
+</div>
+
+<script>
+    // 아바타 이니셜 처리 (첫 글자만 표시)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.ml-avatar-initial').forEach(function(el) {
+            const t = el.textContent.trim();
+            el.textContent = t ? t.charAt(0) : '?';
+        });
+    });
+</script>
+
+{{> layout/footer}}

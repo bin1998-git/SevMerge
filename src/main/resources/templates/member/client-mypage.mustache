@@ -235,7 +235,7 @@
                                         <span style="font-size:12px; font-weight:500; color:#4a6fa5; margin-left:6px;">★ {{avgRating}}</span>
                                     </div>
                                     <div class="cm-item-meta">
-                                        희망금액 <strong style="color:#2563eb;">{{proposedPrice}}만원</strong>
+                                        희망금액 <strong style="color:#2563eb;">{{proposedPriceFormatted}}원</strong>
                                         &nbsp;·&nbsp; 예상기간 <strong style="color:#1e3a6e;">{{estimatedDays}}일</strong>
                                     </div>
                                 </div>
@@ -281,9 +281,12 @@
 
                 {{! ===== 내 프로젝트 ===== }}
                 {{#isProjects}}
-                    <div class="cm-content-head">
-                        <div class="cm-content-title">{{projectsTitle}}</div>
-                        <div class="cm-content-sub">{{projectsDesc}}</div>
+                    <div class="cm-content-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <div class="cm-content-title">{{projectsTitle}}</div>
+                            <div class="cm-content-sub">{{projectsDesc}}</div>
+                        </div>
+                        <a href="/projects/save-form" class="cm-btn cm-btn-primary" style="flex-shrink:0;margin-top:2px;">+ 프로젝트 등록</a>
                     </div>
                     {{#projects}}
                         <div class="cm-item">
@@ -294,7 +297,7 @@
                                 <div class="cm-item-meta">등록일 {{createdAt}} · 제안 {{bidCount}}건</div>
                             </div>
                             <div class="cm-item-right">
-                                <div class="cm-item-price">{{budgetMin}}~{{budgetMax}}만원</div>
+                                <div class="cm-item-price">{{budgetMinFormatted}}~{{budgetMaxFormatted}}원</div>
                                 <span class="cm-item-status {{#isOpen}}st-open{{/isOpen}}{{^isOpen}}st-closed{{/isOpen}}">{{#isOpen}}모집중{{/isOpen}}{{#isClosed}}진행중{{/isClosed}}{{#isCompleted}}검토대기{{/isCompleted}}{{^isOpen}}{{^isClosed}}{{^isCompleted}}마감{{/isCompleted}}{{/isClosed}}{{/isOpen}}</span>
                                 {{#isClosed}}
                                     {{#cancelPending}}

@@ -399,7 +399,7 @@
                 <div style="width:15% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">작성자</div>
                 <div style="width:12% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">신고 수</div>
                 <div style="width:15% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">상태</div>
-                <div style="width:10% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">확인</div>
+                <div style="width:10% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">관리</div>
             </div>
             {{#reportedComments}}
                 <div class="admin-table-row" style="display:flex !important; flex-direction:row !important; width:100% !important; align-items:center !important; padding:14px 0 !important; border-bottom:1px solid rgba(255,255,255,.5) !important; box-sizing:border-box !important;">
@@ -414,9 +414,14 @@
                         {{#reReported}}<span style="background:#fee2e2; color:#dc2626; font-weight:800; font-size:12px; padding:5px 11px; border-radius:999px;">🔴 재신고 {{reportCount}}회</span>{{/reReported}}
                         {{^reReported}}<span style="background:#fef9c3; color:#a16207; font-weight:700; font-size:12px; padding:5px 11px; border-radius:999px;">신규 신고</span>{{/reReported}}
                     </div>
-                    <div style="width:10% !important; text-align:center !important; display:flex !important; justify-content:center !important; align-items:center !important;">
-                        {{#boardId}}<a href="/boards/{{boardId}}" target="_blank" style="background:#2563eb; color:#fff; text-decoration:none; padding:6px 12px; border-radius:6px; font-size:0.85rem; font-weight:700;">보기</a>{{/boardId}}
-                        {{^boardId}}<span style="color:#9ca3af; font-size:0.85rem;">-</span>{{/boardId}}
+                    <div style="width:10% !important; text-align:center !important; display:flex !important; flex-direction:column !important; justify-content:center !important; align-items:center !important; gap:6px !important;">
+                        {{#boardId}}<a href="/boards/{{boardId}}" target="_blank" style="background:#2563eb; color:#fff; text-decoration:none; padding:4px 10px; border-radius:6px; font-size:0.8rem; font-weight:700;">보기</a>{{/boardId}}
+                        {{^commentDeleted}}
+                        <form action="/admin/reports/{{commentId}}/delete" method="post" style="margin:0;" onsubmit="return confirm('이 댓글을 삭제하시겠습니까?');">
+                            <input type="hidden" name="from" value="blacklists"/>
+                            <button type="submit" style="background:#fff3f3; color:#ef4444; border:1px solid #fecaca; border-radius:6px; font-size:0.8rem; font-weight:700; padding:4px 10px; cursor:pointer; font-family:inherit;">삭제</button>
+                        </form>
+                        {{/commentDeleted}}
                     </div>
                 </div>
             {{/reportedComments}}

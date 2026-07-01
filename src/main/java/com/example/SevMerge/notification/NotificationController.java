@@ -35,6 +35,7 @@ public class NotificationController {
     @GetMapping("/notifications")
     public String notificationPage(Model model, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         model.addAttribute("notifications", notificationService.findAllNotifications(member));
         return "notification/notification-list";
@@ -44,6 +45,7 @@ public class NotificationController {
     @ResponseBody
     public ApiResponse<?> readNotification(@PathVariable("id") Long notificationId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) throw new RuntimeException("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         notificationService.markAsRead(notificationId, member);
 
@@ -53,6 +55,7 @@ public class NotificationController {
     @PostMapping("/notifications/read-all")
     public String readAll(HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         notificationService.changeAllRead(member);
         return "redirect:/notifications";
@@ -62,6 +65,7 @@ public class NotificationController {
     @ResponseBody
     public ApiResponse<?> deleteNotification(@PathVariable("id") Long notificationId, HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) throw new RuntimeException("로그인이 필요합니다.");
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         notificationService.deleteNotification(notificationId, member);
         return ApiResponse.ok("알림을 삭제했습니다.");
@@ -70,6 +74,7 @@ public class NotificationController {
     @PostMapping("/notifications/delete-all")
     public String deleteAll(HttpSession session) {
         SessionUser sessionMember = (SessionUser) session.getAttribute(Define.SESSION_USER);
+        if (sessionMember == null) return "redirect:/login";
         Member member = memberRepository.findById(sessionMember.getId()).orElseThrow();
         notificationService.deleteAllNotifications(member);
         return "redirect:/notifications";

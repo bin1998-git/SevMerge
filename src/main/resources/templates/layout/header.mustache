@@ -479,8 +479,7 @@
                     <div class="admin-dropdown-container">
                         <span class="admin-dropdown-trigger">전문가 승인</span>
                         <div class="nav-submenu">
-                            <a href="/payment/my" class="submenu-link">에스크로 관리</a>
-                            <a href="/admin/experts/withdraw"       class="submenu-link">출금 요청 관리</a>
+                            <a href="/admin/escrow" class="submenu-link">에스크로 관리</a>
                             <a href="/admin/experts?status=PENDING" class="submenu-link">전문가 승인 관리</a>
                             <a href="/admin/refund-applications"    class="submenu-link">환불 요청 관리</a>
 
@@ -512,8 +511,7 @@
                         <a href="/admin/blacklists"               class="nav-drawer-item">블랙리스트</a>
                         <div class="nav-drawer-divider"></div>
                         <span class="nav-drawer-section-label">전문가 승인</span>
-                        <a href="/payment/my"                     class="nav-drawer-item">에스크로 관리</a>
-                        <a href="/admin/experts/withdraw"         class="nav-drawer-item">출금 요청 관리</a>
+                        <a href="/admin/escrow"                   class="nav-drawer-item">에스크로 관리</a>
                         <a href="/admin/experts?status=PENDING"   class="nav-drawer-item">전문가 승인 관리</a>
                         <a href="/admin/refund-applications"      class="nav-drawer-item">환불 요청 관리</a>
                         <div class="nav-drawer-divider"></div>
@@ -767,8 +765,7 @@
                     (href.includes('boards')              && currentPath.includes('board')) ||
                     (href.includes('notices')             && currentPath.includes('notice')) ||
                     (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
-                    (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
-                    (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
+                    (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('grade')) ||
                     (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications')) ||
                     href === currentPath;
                 if (match) link.classList.add('active');
@@ -780,8 +777,7 @@
                     (href.includes('boards')              && currentPath.includes('board')) ||
                     (href.includes('notices')             && currentPath.includes('notice')) ||
                     (href.includes('/admin/escrow')       && currentPath.includes('/admin/escrow')) ||
-                    (href.includes('withdraw')            && currentPath.includes('/admin/experts/withdraw')) ||
-                    (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('withdraw') && !currentPath.includes('grade')) ||
+                    (href.includes('status=PENDING')      && currentPath.includes('/admin/experts') && !currentPath.includes('grade')) ||
                     (href.includes('refund-applications') && currentPath.includes('/admin/refund-applications')) ||
                     (href.includes('advertisements')      && currentPath.includes('/admin/advertisements')) ||
                     (href.includes('ad-slots')            && currentPath.includes('/admin/ad-slots'));

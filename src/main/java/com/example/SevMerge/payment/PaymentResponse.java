@@ -34,6 +34,12 @@ public class PaymentResponse {
     private boolean hasSettlementRequest;
     private boolean canRequestSettlement;
 
+    // 프로젝트 상태 (정산요청 가능 여부 판단용)
+    private String projectStatus;
+
+    public String getAmountFormatted()      { return amount      == null ? "-" : String.format("%,d", amount); }
+    public String getPlatformFeeFormatted() { return platformFee == null ? "-" : String.format("%,d", platformFee); }
+    public String getNetAmountFormatted()   { return netAmount   == null ? "-" : String.format("%,d", netAmount); }
 
     public static PaymentResponse from(Payment payment) {
         String statusName = payment.getStatus().name();
