@@ -165,26 +165,26 @@ SevMerge는 프로젝트 등록, 제안서 비교, 계약, 결제, 작업 진행
 | 엔티티 | 테이블명 | 설명 | 핵심 상태 |
 |---|---|---|---|
 | Member | member_tb | 회원 | role, status, balance |
-| ExpertProfile | expert_profile_tb | 전문가 프로필 | isCertified, expertGrade, 베이지안 평균 등급 산정 |
-| Project | project_tb | 프로젝트(의뢰) | projectStatus, category, bidFilter |
+| ExpertProfile | expert_profile_tb | 전문가 | isCertified, expertGrade, 베이지안 평균 등급 산정 |
+| Project | project_tb | 프로젝트 | projectStatus, category, bidFilter |
 | Bid | bid_tb | 제안서 | status, workStatus |
-| Payment | payment_tb | 에스크로 결제 | status, platformFee |
-| EscrowSettlementRequest | escrow_settlement_request_tb | 정산 요청 | status |
-| Deliverable | deliverable_tb | 작업 산출물 | status, round |
-| CancelRequest | cancel_request_tb | 작업 취소 요청 | status |
-| Charge | charge_tb | 잔액 충전 | status |
-| Withdrawal | withdrawal_tb | 정산금 출금 | status |
-| RefundRequest | refund_application_tb | 환불 신청 | status |
+| Payment | payment_tb | 결제 | status, platformFee |
+| EscrowSettlementRequest | escrow_settlement_request_tb | 정산요청 | status |
+| Deliverable | deliverable_tb | 작업산출 | status, round |
+| CancelRequest | cancel_request_tb | 작업취소 | status |
+| Charge | charge_tb | 잔액충전 | status |
+| Withdrawal | withdrawal_tb | 정산출금 | status |
+| RefundRequest | refund_application_tb | 환불신청 | status |
 | Review | review_tb | 리뷰 | countStar |
 | Notification | notification_tb | 알림 | type(12종), isRead |
-| Advertisement | advertisement_tb | 광고 신청 | status, placement |
-| AdSlot / AdBid | ad_slot_tb / ad_bid_tb | 광고 슬롯 경매 | AdSlotStatus, AdBidStatus |
-| Report / BlackList | comment_report_tb / blacklist_tb | 신고 / 제재 | isProcessed, isActive(누적 3회 자동 정지) |
-| PlatformRevenue | platform_revenue_tb | 플랫폼 수익 | type, status |
-| Board / Comment | - / comment_tb | 게시판 / 댓글 | boardType, inquiryScope, answerStatus |
-| ChatRoom / ChatMessage | chat_room_tb / chat_message_tb | 실시간 채팅 | deletedByClient/Expert, isRead, isDeleted |
-| Message | message_tb | 쪽지(파일 첨부) | isRead, isDeletedBySender/Receiver |
-| PartnerShip | partner_ship_tb | 제휴 문의 | status, type |
+| Advertisement | advertisement_tb | 광고신청 | status, placement |
+| AdSlot / AdBid | ad_slot_tb / ad_bid_tb | 광고경매 | AdSlotStatus, AdBidStatus |
+| Report / BlackList | comment_report_tb / blacklist_tb | 신고제재 | isProcessed, isActive(누적 3회 자동 정지) |
+| PlatformRevenue | platform_revenue_tb | 수익관리 | type, status |
+| Board / Comment | - / comment_tb | 게시판 | boardType, inquiryScope, answerStatus |
+| ChatRoom / ChatMessage | chat_room_tb / chat_message_tb | 채팅 | deletedByClient/Expert, isRead, isDeleted |
+| Message | message_tb | 쪽지첨부 | isRead, isDeletedBySender/Receiver |
+| PartnerShip | partner_ship_tb | 제휴문의 | status, type |
 
 ## 기능 시연
 
