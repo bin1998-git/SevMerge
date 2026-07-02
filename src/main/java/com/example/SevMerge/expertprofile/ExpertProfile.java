@@ -74,9 +74,9 @@ public class ExpertProfile {
             throw new CalculateException("점수 산출에 실패했습니다. 관리자에게 문의하세요.");
         } else if (score >= 0 && score < 2.5) {
             return Grade.NORMAL;
-        } else if(score >= 2.5 && score < 3.0) {
+        } else if(score >= 2.5 && score < 4.0) {
             return Grade.SKILLED;
-        } else if (score >= 3.0) {
+        } else if (score >= 4.0) {
             return Grade.MASTER;
         } else {
             return Grade.NORMAL;
