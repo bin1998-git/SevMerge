@@ -266,6 +266,17 @@
                     </div>
                 </div>
 
+                <div class="f-divider"></div>
+                <div class="section-label">약관 동의</div>
+                <div class="terms-box">
+                    <div class="terms-item"><input type="checkbox" id="term1" class="term-check"/><label for="term1">[필수] 서비스 이용약관에 동의합니다</label></div>
+                    <div class="terms-item"><input type="checkbox" id="term2" class="term-check"/><label for="term2">[필수] 수수료 정책에 동의합니다</label></div>
+                    <div class="terms-item"><input type="checkbox" id="term3" class="term-check"/><label for="term3">[필수] 개인정보 처리방침에 동의합니다</label></div>
+                </div>
+
+                {{#errorMessage}}<div class="error-box">{{errorMessage}}</div>{{/errorMessage}}
+                <button type="submit" class="submit-btn">회원가입</button>
+
                 {{#errorMessage}}<div class="error-box">{{errorMessage}}</div>{{/errorMessage}}
                 <button type="submit" class="submit-btn">회원가입</button>
             </form>
@@ -369,8 +380,9 @@
     });
 
     form.addEventListener('submit',function(e){
-        if(!form.name.value.trim()||!form.email.value.trim()||!pwInput.value||!pwConfirmInput.value||!form.phone.value.trim()){e.preventDefault();alert('필수 항목을 모두 입력해 주세요.');return;}
-        if(pwInput.value!==pwConfirmInput.value){e.preventDefault();alert('비밀번호가 일치하지 않습니다.');}
+    if(!form.name.value.trim()||!form.email.value.trim()||!pwInput.value||!pwConfirmInput.value||!form.phone.value.trim()){e.preventDefault();alert('필수 항목을 모두 입력해 주세요.');return;}
+    if(pwInput.value!==pwConfirmInput.value){e.preventDefault();alert('비밀번호가 일치하지 않습니다.');return;}
+    if(![...document.querySelectorAll('.term-check')].every(c=>c.checked)){e.preventDefault();alert('의뢰인 가입을 위해 필수 약관에 모두 동의해 주세요.');}
     });
 </script>
 {{> layout/footer}}
