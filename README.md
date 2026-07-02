@@ -160,30 +160,31 @@ SevMerge는 프로젝트 등록, 제안서 비교, 계약, 결제, 작업 진행
 <img src="docs/ERD/ERD.img.png" width="800">
 
 
-| 엔티티 | 테이블명 | 핵심 상태/필드 | 설명 |
-|---|---|---|---|
-| Member | member_tb | role(CLIENT/EXPERT/ADMIN)<br>status(ACTIVE/PENDING/REJECTED/SUSPENDED/BLACKLISTED/COMMUNITY_RESTRICTED)<br>balance | 회원 |
-| ExpertProfile | expert_profile_tb | isCertified<br>expertGrade(NORMAL/SKILLED/MASTER)<br>베이지안 평균 기반 등급 산정 | 전문가 |
-| Project | project_tb | projectStatus(OPEN/CLOSED/IN_PROGRESS/COMPLETED/DONE/CANCELLED/DRAFT)<br>category<br>bidFilter | 프로젝트 |
-| Bid | bid_tb | status(PENDING/SELECTED/REJECTED/HOLD)<br>workStatus(IN_PROGRESS/UNDER_REVIEW/WORK_DONE) | 제안서 |
-| Payment | payment_tb | status(PAID/SETTLED/REFUNDED)<br>platformFee | 에스크로 결제 |
-| EscrowSettlementRequest | escrow_settlement_request_tb | status(PENDING/APPROVED/REJECTED) | 정산 요청 |
-| Deliverable | deliverable_tb | status(SUBMITTED/REVISION_REQUESTED/APPROVED)<br>round | 작업 산출물 |
-| CancelRequest | cancel_request_tb | status(PENDING/APPROVED) | 작업 취소 요청 |
-| Charge | charge_tb | status(PENDING/DONE/FAILED) | 잔액 충전 |
-| Withdrawal | withdrawal_tb | status(PENDING/COMPLETED/REJECTED) | 정산금 출금 |
-| RefundRequest | refund_application_tb | status(PENDING/APPROVED/REJECTED) | 환불 신청 |
-| Review | review_tb | countStar | 리뷰 |
-| Notification | notification_tb | type(주요: NEW_BID-새 제안, BID_SELECTED-제안 선정, PAYMENT_COMPLETED-결제 완료, EXPERT_APPROVED-전문가 승인, REFUND_APPROVED-환불 승인 등 12종)<br>isRead | 알림 |
-| Advertisement | advertisement_tb | status(PENDING/ACTIVE/REJECTED/EXPIRED)<br>placement(MAIN_BANNER/EXPERT_CAROUSEL) | 광고 신청 |
-| AdSlot / AdBid | ad_slot_tb / ad_bid_tb | AdSlotStatus(OPEN/CLOSED/AWARDED)<br>AdBidStatus(PENDING/WINNER/LOST) | 광고 슬롯 경매 |
-| Report / BlackList | comment_report_tb / blacklist_tb | isProcessed<br>isActive (누적 3회 자동 정지) | 신고 / 제재 |
-| PlatformRevenue | platform_revenue_tb | type(AD/PARTNERSHIP/COMMISSION)<br>status(CONFIRMED/CANCELLED) | 플랫폼 수익 |
-| Board / Comment | - / comment_tb | boardType(FREE/NOTICE/INQUIRY)<br>inquiryScope(NORMAL/PAYMENT/SECURITY)<br>answerStatus(WAITING/ANSWERED) | 게시판 / 댓글 |
-| ChatRoom / ChatMessage | chat_room_tb / chat_message_tb | ChatRoom: deletedByClient/deletedByExpert(양쪽 삭제 플래그)<br>ChatMessage: isRead<br>isDeleted<br>deletedBySender/deletedByReceiver | 실시간 채팅 |
-| Message | message_tb | isRead<br>isDeletedBySender/isDeletedByReceiver<br>MessageFiles(1:N 첨부파일) | 쪽지 (파일 첨부) |
-| PartnerShip | partner_ship_tb | status(PENDING/APPROVED/REJECTED)<br>type(COMPANY/MARKET/EDUCATION) | 제휴 문의 |
+## 🗂️ 도메인 모델
 
+| 엔티티 | 테이블명 | 설명 | 핵심 상태 |
+|---|---|---|---|
+| Member | member_tb | 회원 | role, status, balance |
+| ExpertProfile | expert_profile_tb | 전문가 프로필 | isCertified, expertGrade, 베이지안 평균 등급 산정 |
+| Project | project_tb | 프로젝트(의뢰) | projectStatus, category, bidFilter |
+| Bid | bid_tb | 제안서 | status, workStatus |
+| Payment | payment_tb | 에스크로 결제 | status, platformFee |
+| EscrowSettlementRequest | escrow_settlement_request_tb | 정산 요청 | status |
+| Deliverable | deliverable_tb | 작업 산출물 | status, round |
+| CancelRequest | cancel_request_tb | 작업 취소 요청 | status |
+| Charge | charge_tb | 잔액 충전 | status |
+| Withdrawal | withdrawal_tb | 정산금 출금 | status |
+| RefundRequest | refund_application_tb | 환불 신청 | status |
+| Review | review_tb | 리뷰 | countStar |
+| Notification | notification_tb | 알림 | type(12종), isRead |
+| Advertisement | advertisement_tb | 광고 신청 | status, placement |
+| AdSlot / AdBid | ad_slot_tb / ad_bid_tb | 광고 슬롯 경매 | AdSlotStatus, AdBidStatus |
+| Report / BlackList | comment_report_tb / blacklist_tb | 신고 / 제재 | isProcessed, isActive(누적 3회 자동 정지) |
+| PlatformRevenue | platform_revenue_tb | 플랫폼 수익 | type, status |
+| Board / Comment | - / comment_tb | 게시판 / 댓글 | boardType, inquiryScope, answerStatus |
+| ChatRoom / ChatMessage | chat_room_tb / chat_message_tb | 실시간 채팅 | deletedByClient/Expert, isRead, isDeleted |
+| Message | message_tb | 쪽지(파일 첨부) | isRead, isDeletedBySender/Receiver |
+| PartnerShip | partner_ship_tb | 제휴 문의 | status, type |
 
 ## 기능 시연
 
