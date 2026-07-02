@@ -162,7 +162,7 @@ IT 프로젝트를 진행하고 싶은 의뢰인과, 그 프로젝트를 수행�
 
 ## 🗂️ 도메인 모델
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:20%">
   <col style="width:24%">
@@ -431,7 +431,7 @@ cd SevMerge
 
 ### 회원 / 인증
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -454,7 +454,7 @@ cd SevMerge
 
 ### 프로젝트 관리
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -475,7 +475,7 @@ cd SevMerge
 
 ### 제안서(입찰) 관리
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -498,7 +498,7 @@ cd SevMerge
 
 ### 작업 산출물 / 취소 요청
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -512,7 +512,7 @@ cd SevMerge
 
 ### 결제 / 충전 / 정산 / 환불
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -537,7 +537,7 @@ cd SevMerge
 
 ### 전문가 / 포트폴리오
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -559,7 +559,7 @@ cd SevMerge
 
 ### 리뷰
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -574,7 +574,7 @@ cd SevMerge
 
 ### 채팅 / 쪽지 / 알림
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -599,7 +599,7 @@ cd SevMerge
 
 ### 게시판 / 댓글 / 신고
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -623,7 +623,7 @@ cd SevMerge
 
 ### 광고
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
@@ -643,7 +643,7 @@ cd SevMerge
 
 ### 관리자 / 통계 / 기타
 
-<table style="font-size:90%">
+<table style="font-size:80%">
 <colgroup>
   <col style="width:12%"><col style="width:36%"><col style="width:34%"><col style="width:18%">
 </colgroup>
